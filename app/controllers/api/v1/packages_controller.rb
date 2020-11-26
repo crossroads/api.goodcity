@@ -326,12 +326,16 @@ module Api
       def contained_packages
         container = @package
         contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
-        render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
+        response = ActiveModel::ArraySerializer.new(contained_pkgs, each_serializer: stock_serializer,
+          include_items: true,
           include_orders_packages: false,
           include_packages_locations: true,
           include_storage_type: false,
           include_donor_conditions: false,
           root: "items"
+        ).as_json
+        meta = { total_count: Package.total_quantity_in(container.id) }
+        render json: { meta: meta }.merge(response)
       end
 
       api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
