@@ -10,22 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_17_034323) do
+ActiveRecord::Schema.define(version: 2020_11_26_092838) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "btree_gin"
+  enable_extension "fuzzystrmatch"
   enable_extension "pg_trgm"
-  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "addresses", id: :serial, force: :cascade do |t|
-    t.string "flat"
-    t.string "building"
-    t.string "street"
+    t.string "flat", limit: 255
+    t.string "building", limit: 255
+    t.string "street", limit: 255
     t.integer "district_id"
     t.integer "addressable_id"
-    t.string "addressable_type"
-    t.string "address_type"
+    t.string "addressable_type", limit: 255
+    t.string "address_type", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -48,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
 
   create_table "auth_tokens", id: :serial, force: :cascade do |t|
     t.datetime "otp_code_expiry"
-    t.string "otp_secret_key"
+    t.string "otp_secret_key", limit: 255
     t.integer "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -76,7 +75,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "identifier"
-    t.index ["name_en", "name_zh_tw"], name: "index_booking_types_on_name_en_and_name_zh_tw", unique: true
+    t.index ["identifier"], name: "index_booking_types_on_identifier"
   end
 
   create_table "boxes", id: :serial, force: :cascade do |t|
@@ -160,8 +159,8 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "contacts", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "mobile"
+    t.string "name", limit: 255
+    t.string "mobile", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -175,8 +174,8 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "crossroads_transports", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "cost"
@@ -188,7 +187,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "offer_id"
     t.integer "contact_id"
     t.integer "schedule_id"
-    t.string "delivery_type"
+    t.string "delivery_type", limit: 255
     t.datetime "start"
     t.datetime "finish"
     t.datetime "created_at"
@@ -202,8 +201,8 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "districts", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.integer "territory_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -213,8 +212,8 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "donor_conditions", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean "visible_to_donor", default: true, null: false
@@ -239,7 +238,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
 
   create_table "gogovan_orders", id: :serial, force: :cascade do |t|
     t.integer "booking_id"
-    t.string "status"
+    t.string "status", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -253,8 +252,8 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "gogovan_transports", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean "disabled", default: false
@@ -283,7 +282,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   create_table "holidays", id: :serial, force: :cascade do |t|
     t.datetime "holiday"
     t.integer "year"
-    t.string "name"
+    t.string "name", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -297,7 +296,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "images", id: :serial, force: :cascade do |t|
-    t.string "cloudinary_id"
+    t.string "cloudinary_id", limit: 255
     t.boolean "favourite", default: false
     t.integer "item_id"
     t.datetime "created_at"
@@ -315,11 +314,11 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
 
   create_table "items", id: :serial, force: :cascade do |t|
     t.text "donor_description"
-    t.string "state"
+    t.string "state", limit: 255
     t.integer "offer_id", null: false
     t.integer "package_type_id"
     t.integer "rejection_reason_id"
-    t.string "reject_reason"
+    t.string "reject_reason", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "donor_condition_id"
@@ -336,8 +335,6 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.string "area"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["area"], name: "index_locations_on_area", using: :gin
-    t.index ["building"], name: "index_locations_on_building", using: :gin
   end
 
   create_table "lookups", id: :serial, force: :cascade do |t|
@@ -372,18 +369,17 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.string "messageable_type"
     t.integer "messageable_id"
     t.jsonb "lookup", default: {}
-    t.index ["body"], name: "messages_body_search_idx", using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
 
   create_table "offers", id: :serial, force: :cascade do |t|
-    t.string "language"
-    t.string "state"
-    t.string "origin"
+    t.string "language", limit: 255
+    t.string "state", limit: 255
+    t.string "origin", limit: 255
     t.boolean "stairs"
     t.boolean "parking"
-    t.string "estimated_size"
+    t.string "estimated_size", limit: 255
     t.text "notes"
     t.integer "created_by_id"
     t.datetime "created_at"
@@ -412,7 +408,6 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.index ["created_by_id"], name: "index_offers_on_created_by_id"
     t.index ["crossroads_transport_id"], name: "index_offers_on_crossroads_transport_id"
     t.index ["gogovan_transport_id"], name: "index_offers_on_gogovan_transport_id"
-    t.index ["notes"], name: "offers_notes_search_idx", using: :gin
     t.index ["received_by_id"], name: "index_offers_on_received_by_id"
     t.index ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id"
     t.index ["state"], name: "index_offers_on_state"
@@ -449,9 +444,12 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.string "code"
     t.string "detail_type"
     t.integer "detail_id"
+    t.integer "stockit_contact_id"
+    t.integer "stockit_organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at", null: false
     t.text "description"
+    t.integer "stockit_activity_id"
     t.integer "country_id"
     t.integer "created_by_id"
     t.integer "processed_by_id"
@@ -479,14 +477,10 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "cancellation_reason_id"
     t.boolean "continuous", default: false
     t.date "shipment_date"
-    t.integer "stockit_activity_id"
-    t.integer "stockit_organisation_id"
-    t.integer "stockit_contact_id"
     t.index ["address_id"], name: "index_orders_on_address_id"
     t.index ["beneficiary_id"], name: "index_orders_on_beneficiary_id"
     t.index ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id"
     t.index ["closed_by_id"], name: "index_orders_on_closed_by_id"
-    t.index ["code"], name: "orders_code_idx", using: :gin
     t.index ["country_id"], name: "index_orders_on_country_id"
     t.index ["created_by_id"], name: "index_orders_on_created_by_id"
     t.index ["detail_id", "detail_type"], name: "index_orders_on_detail_id_and_detail_type"
@@ -497,6 +491,9 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.index ["processed_by_id"], name: "index_orders_on_processed_by_id"
     t.index ["shipment_date"], name: "index_orders_on_shipment_date"
     t.index ["state"], name: "index_orders_on_state"
+    t.index ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id"
+    t.index ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id"
+    t.index ["stockit_organisation_id"], name: "index_orders_on_stockit_organisation_id"
     t.index ["submitted_by_id"], name: "index_orders_on_submitted_by_id"
   end
 
@@ -610,23 +607,23 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.boolean "visible_in_selects", default: false
     t.integer "location_id"
     t.boolean "allow_requests", default: true
-    t.boolean "allow_stock", default: false
     t.boolean "allow_pieces", default: false
+    t.boolean "allow_stock", default: false
     t.string "subform"
     t.boolean "allow_box", default: false
     t.boolean "allow_pallet", default: false
-    t.boolean "allow_expiry_date", default: false
     t.decimal "default_value_hk_dollar"
+    t.boolean "allow_expiry_date", default: false
+    t.text "description_en"
+    t.text "description_zh_tw"
     t.integer "length"
     t.integer "width"
     t.integer "height"
     t.string "department"
-    t.text "description_en"
-    t.text "description_zh_tw"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
+    t.index ["description_en"], name: "index_package_types_on_description_en"
+    t.index ["description_zh_tw"], name: "index_package_types_on_description_zh_tw"
     t.index ["location_id"], name: "index_package_types_on_location_id"
-    t.index ["name_en"], name: "package_types_name_en_search_idx", using: :gin
-    t.index ["name_zh_tw"], name: "package_types_name_zh_tw_search_idx", using: :gin
     t.index ["visible_in_selects"], name: "index_package_types_on_visible_in_selects"
   end
 
@@ -636,7 +633,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "height"
     t.text "notes", null: false
     t.integer "item_id"
-    t.string "state"
+    t.string "state", limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer "package_type_id"
@@ -652,9 +649,13 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "box_id"
     t.integer "pallet_id"
     t.integer "order_id"
-    t.integer "on_hand_boxed_quantity", default: 0
-    t.integer "on_hand_palletized_quantity", default: 0
+    t.date "stockit_sent_on"
+    t.date "stockit_designated_on"
+    t.integer "stockit_designated_by_id"
+    t.integer "stockit_sent_by_id"
     t.integer "favourite_image_id"
+    t.date "stockit_moved_on"
+    t.integer "stockit_moved_by_id"
     t.boolean "saleable"
     t.string "case_number"
     t.boolean "allow_web_publish"
@@ -664,43 +665,37 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "detail_id"
     t.string "detail_type"
     t.integer "storage_type_id"
+    t.decimal "value_hk_dollar"
     t.integer "available_quantity", default: 0
     t.integer "on_hand_quantity", default: 0
     t.integer "designated_quantity", default: 0
     t.integer "dispatched_quantity", default: 0
     t.date "expiry_date"
-    t.decimal "value_hk_dollar"
     t.integer "package_set_id"
     t.integer "restriction_id"
     t.text "comment"
-    t.integer "stockit_moved_by_id"
-    t.datetime "stockit_moved_on"
-    t.integer "stockit_sent_by_id"
-    t.integer "stockit_designated_by_id"
-    t.datetime "stockit_designated_on"
-    t.datetime "stockit_sent_on"
+    t.integer "on_hand_boxed_quantity", default: 0
+    t.integer "on_hand_palletized_quantity", default: 0
     t.text "notes_zh_tw"
     t.index ["allow_web_publish"], name: "index_packages_on_allow_web_publish"
     t.index ["available_quantity"], name: "index_packages_on_available_quantity"
     t.index ["box_id"], name: "index_packages_on_box_id"
-    t.index ["case_number"], name: "index_packages_on_case_number", using: :gin
     t.index ["designated_quantity"], name: "index_packages_on_designated_quantity"
-    t.index ["designation_name"], name: "index_packages_on_designation_name", using: :gin
     t.index ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id"
     t.index ["dispatched_quantity"], name: "index_packages_on_dispatched_quantity"
     t.index ["donor_condition_id"], name: "index_packages_on_donor_condition_id"
     t.index ["inventory_number"], name: "index_packages_on_inventory_number"
-    t.index ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
     t.index ["item_id"], name: "index_packages_on_item_id"
     t.index ["location_id"], name: "index_packages_on_location_id"
-    t.index ["notes"], name: "index_packages_on_notes", using: :gin
     t.index ["offer_id"], name: "index_packages_on_offer_id"
     t.index ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity"
     t.index ["order_id"], name: "index_packages_on_order_id"
     t.index ["package_set_id"], name: "index_packages_on_package_set_id"
     t.index ["package_type_id"], name: "index_packages_on_package_type_id"
     t.index ["pallet_id"], name: "index_packages_on_pallet_id"
-    t.index ["state"], name: "index_packages_on_state", using: :gin
+    t.index ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id"
+    t.index ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id"
+    t.index ["stockit_sent_by_id"], name: "index_packages_on_stockit_sent_by_id"
     t.index ["storage_type_id"], name: "index_packages_on_storage_type_id"
   end
 
@@ -751,7 +746,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "permissions", id: :serial, force: :cascade do |t|
-    t.string "name"
+    t.string "name", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -790,10 +785,10 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "rejection_reasons", id: :serial, force: :cascade do |t|
-    t.string "name_en"
+    t.string "name_en", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "name_zh_tw"
+    t.string "name_zh_tw", limit: 255
   end
 
   create_table "requested_packages", id: :serial, force: :cascade do |t|
@@ -832,10 +827,10 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "schedules", id: :serial, force: :cascade do |t|
-    t.string "resource"
+    t.string "resource", limit: 255
     t.integer "slot"
-    t.string "slot_name"
-    t.string "zone"
+    t.string "slot_name", limit: 255
+    t.string "zone", limit: 255
     t.datetime "scheduled_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -856,10 +851,6 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["first_name"], name: "st_contacts_first_name_idx", using: :gin
-    t.index ["last_name"], name: "st_contacts_last_name_idx", using: :gin
-    t.index ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
-    t.index ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
   end
 
   create_table "stockit_local_orders", id: :serial, force: :cascade do |t|
@@ -870,7 +861,6 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "purpose_of_goods"
-    t.index ["client_name"], name: "st_local_orders_client_name_idx", using: :gin
   end
 
   create_table "stockit_organisations", id: :serial, force: :cascade do |t|
@@ -878,7 +868,6 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "st_organisations_name_idx", using: :gin
   end
 
   create_table "stocktake_revisions", id: :serial, force: :cascade do |t|
@@ -923,15 +912,15 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.boolean "is_default", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["package_type_id", "package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id"
-    t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id"
   end
 
   create_table "subscriptions", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "message_id"
-    t.string "state"
+    t.string "state", limit: 255
     t.string "subscribable_type"
     t.integer "subscribable_id"
     t.index ["message_id"], name: "index_subscriptions_on_message_id"
@@ -940,17 +929,28 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "territories", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "timeslots", id: :serial, force: :cascade do |t|
-    t.string "name_en"
-    t.string "name_zh_tw"
+    t.string "name_en", limit: 255
+    t.string "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "user_favourites", force: :cascade do |t|
+    t.string "favourite_type"
+    t.integer "favourite_id"
+    t.integer "user_id"
+    t.boolean "persistent", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["favourite_type", "favourite_id"], name: "index_user_favourites_on_favourite_type_and_favourite_id", unique: true
+    t.index ["favourite_type"], name: "index_user_favourites_on_favourite_type"
   end
 
   create_table "user_roles", id: :serial, force: :cascade do |t|
@@ -964,9 +964,9 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.string "mobile"
+    t.string "first_name", limit: 255
+    t.string "last_name", limit: 255
+    t.string "mobile", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "image_id"
@@ -1062,7 +1062,10 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   add_foreign_key "orders", "countries", name: "orders_country_id_fk"
   add_foreign_key "orders", "districts", name: "orders_district_id_fk"
   add_foreign_key "orders", "organisations", name: "orders_organisation_id_fk"
+  add_foreign_key "orders", "stockit_activities", name: "orders_stockit_activity_id_fk"
+  add_foreign_key "orders", "stockit_contacts", name: "orders_stockit_contact_id_fk"
   add_foreign_key "orders", "stockit_local_orders", column: "detail_id", name: "orders_detail_id_fk"
+  add_foreign_key "orders", "stockit_organisations", name: "orders_stockit_organisation_id_fk"
   add_foreign_key "orders", "users", column: "cancelled_by_id", name: "orders_cancelled_by_id_fk"
   add_foreign_key "orders", "users", column: "closed_by_id", name: "orders_closed_by_id_fk"
   add_foreign_key "orders", "users", column: "created_by_id", name: "orders_created_by_id_fk"
@@ -1096,6 +1099,9 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   add_foreign_key "packages", "pallets", name: "packages_pallet_id_fk"
   add_foreign_key "packages", "restrictions", name: "packages_restriction_id_fk"
   add_foreign_key "packages", "storage_types", name: "packages_storage_type_id_fk"
+  add_foreign_key "packages", "users", column: "stockit_designated_by_id", name: "packages_stockit_designated_by_id_fk"
+  add_foreign_key "packages", "users", column: "stockit_moved_by_id", name: "packages_stockit_moved_by_id_fk"
+  add_foreign_key "packages", "users", column: "stockit_sent_by_id", name: "packages_stockit_sent_by_id_fk"
   add_foreign_key "packages_inventories", "locations"
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
@@ -1116,6 +1122,7 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   add_foreign_key "subpackage_types", "package_types", name: "subpackage_types_package_type_id_fk"
   add_foreign_key "subscriptions", "messages", name: "subscriptions_message_id_fk"
   add_foreign_key "subscriptions", "users", name: "subscriptions_user_id_fk"
+  add_foreign_key "user_favourites", "users"
   add_foreign_key "user_roles", "roles", name: "user_roles_role_id_fk"
   add_foreign_key "user_roles", "users", name: "user_roles_user_id_fk"
   add_foreign_key "users", "images", name: "users_image_id_fk"
