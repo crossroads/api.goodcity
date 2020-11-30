@@ -8,7 +8,7 @@ class Offer < ApplicationRecord
   include OfferFiltering
 
   NOT_ACTIVE_STATES = %w[received closed cancelled inactive].freeze
-  ACTIVE_OFFERS = %w[under_review reviewed scheduled receiving].freeze
+  ACTIVE_OFFERS = %w[submitted under_review reviewed scheduled receiving].freeze
   SUBSCRIPTIONS_REMINDER_STATES = %w[under_review submitted reviewed scheduled receiving
                                      received closed cancelled inactive].freeze
 
