@@ -62,13 +62,12 @@ class User < ApplicationRecord
   # --------------------
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
-  validates :mobile, presence: true, if: lambda { email.blank? }
+  validates :mobile, presence: true, if: lambda { email.blank? && !disabled }
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
   validates :email, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
   validates :email, uniqueness: true, if: lambda { email.present? }
-
   validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
@@ -83,6 +82,9 @@ class User < ApplicationRecord
   after_create :refresh_auth_token!
 
   before_validation :downcase_email
+
+  before_save :reset_email_verification_flag, if: lambda { email_changed? && !new_record? }
+  before_save :reset_mobile_verification_flag, if: lambda { mobile_changed? && !new_record? }
 
   before_destroy :delete_auth_tokens
 
@@ -104,6 +106,7 @@ class User < ApplicationRecord
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
   scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
+  scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
 
   # --------------------
   # Methods
@@ -326,5 +329,15 @@ class User < ApplicationRecord
   # required by PushUpdates module
   def offer
     nil
+  end
+
+  def reset_email_verification_flag
+    self.is_email_verified = false
+    true
+  end
+
+  def reset_mobile_verification_flag
+    self.is_mobile_verified = false
+    true
   end
 end

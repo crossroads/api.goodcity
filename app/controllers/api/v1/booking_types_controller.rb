@@ -14,7 +14,7 @@ module Api
 
       api :GET, '/v1/booking_type', "List all Gogovan Tranports Options."
       def index
-        render json: @booking_types, each_serializer: serializer
+        render json: @booking_types.cached_json
       end
 
       private
