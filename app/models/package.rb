@@ -3,6 +3,7 @@ class Package < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdatesMinimal
+  include AutoFavourite
 
   include PackageFiltering
   include LocationOperations
@@ -87,6 +88,9 @@ class Package < ApplicationRecord
   accepts_nested_attributes_for :packages_locations, :detail, allow_destroy: true, limit: 1
 
   attr_accessor :skip_set_relation_update, :request_from_admin, :detail_attributes
+
+  auto_favourite                              # the package will be auto-favourited
+  auto_favourite_relations ['package_type']   # the package_type will be auto-favourited
 
   # ---------------------
   # Computed properties
