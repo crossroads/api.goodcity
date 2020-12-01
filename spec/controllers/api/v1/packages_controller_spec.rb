@@ -9,7 +9,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
   let(:package) { create :package, :with_inventory_record, item: item }
-  let(:package_with_stockit_id) { create :package, :with_inventory_record, :stockit_package, item: item }
+  let(:package_1) { create :package, :with_inventory_record, item: item }
   let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
@@ -37,9 +37,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     expect(response_status).to eq(201)
   end
 
-  def test_orders_packages(package, stockit_request, count)
+  def test_orders_packages(package, count)
     expect(package.orders_packages.count).to eq count
-    expect(stockit_request).to eq(true)
   end
 
   def test_packages_location_changes(package)
@@ -174,7 +173,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     before do
       generate_and_set_token(user)
-      allow(Stockit::ItemSync).to receive(:delete)
     end
 
     it 'adds an uninventory action to the packages_inventory' do
@@ -236,8 +234,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'fails to designate an uninventorized package' do
-      expect(Stockit::OrdersPackageSync).not_to receive(:create)
-
       put :designate, params: { id: uninventorized_package.id, quantity: 5, order_id: order.id }
 
       expect(response.status).to eq(422)
@@ -245,8 +241,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'designates the entire quantity to the order' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-
       expect {
         put :designate, params: { id: package.id, quantity: 5, order_id: order.id }
       }.to change { package.reload.orders_packages.count }.from(0).to(1)
@@ -257,8 +251,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'designates the part of the quantity to the order' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-
       expect {
         put :designate, params: { id: package.id, quantity: 2, order_id: order.id }
       }.to change { package.reload.orders_packages.count }.from(0).to(1)
@@ -269,9 +261,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'updates an existing designation' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-      allow(Stockit::OrdersPackageSync).to receive(:update)
-
       Package::Operations.designate(package, quantity: 3, to_order: order)
 
       expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(2)
@@ -316,7 +305,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:packages_location) { create(:packages_location, package: package, location: location1, quantity: 5) }
 
     it 'moves the entire quantity to the desired location' do
-      allow(Stockit::ItemSync).to receive(:move)
       expect(package.packages_locations.length).to eq(1)
       expect(package.packages_locations.first.location).to eq(location1)
       expect(package.packages_locations.first.quantity).to eq(5)
@@ -408,7 +396,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "reviewer can create", :show_in_doc do
         post :create, params: { package: package_params }
         expect(response.status).to eq(201)
-        expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
       context 'when saleable value is provided in package parameters' do
@@ -533,47 +520,24 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         before { package_params[:location_id] = location.id }
         let(:package) { create(:package, :with_inventory_number) }
 
-        context 'if STOCKIT is disabled' do
-          before do
-            stub_const('STOCKIT_ENABLED', false)
-          end
-
-          it 'does not allow creation of package with duplicate inventory number' do
-            package_params[:inventory_number] = package.inventory_number
-            expect {
-              post :create, params: { package: package_params }
-            }.to change(Package, :count).by(0)
-          end
-
-          it 'throws uniqueness constraint error for inventory number' do
-            package_params[:inventory_number] = package.inventory_number
+        it 'does not allow creation of package with duplicate inventory number' do
+          package_params[:inventory_number] = package.inventory_number
+          expect {
             post :create, params: { package: package_params }
-            expect(parsed_body['errors']).to include('Inventory number has already been taken')
-          end
+          }.to change(Package, :count).by(0)
         end
 
-        context 'if STOCKIT is enabled' do
-          before do
-            stub_const('STOCKIT_ENABLED', true)
-          end
-
-          it 'does allow creation of package with duplicate inventory number' do
-            package_params[:inventory_number] = package.inventory_number
-            expect {
-              post :create, params: { package: package_params }
-            }.to change(Package, :count).by(1)
-          end
-        end
-
-        after do
-          stub_const('STOCKIT_ENABLED', true)
+        it 'throws uniqueness constraint error for inventory number' do
+          package_params[:inventory_number] = package.inventory_number
+          post :create, params: { package: package_params }
+          expect(parsed_body['errors']).to include('Inventory number has already been taken')
         end
       end
     end
 
     context "create package with storage type with creation of box/pallet setting enabled" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
@@ -586,8 +550,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           inventory_number: "123456",
           location_id: location.id,
           grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id,
         }
       }
       let(:package_params){
@@ -596,7 +558,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           storage_type: "Package",
           notes: 'Notes'
@@ -686,7 +647,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "should not create package with creation of box/pallet setting disabled" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
@@ -697,10 +658,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         {
           quantity: 1,
           inventory_number: "123456",
-          location_id: location.stockit_id,
           grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id,
         }
       }
       let(:package_params) {
@@ -709,7 +667,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id: package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           storage_type: "Package",
           notes: 'Notes'
@@ -730,16 +687,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "create package from gc with sub detail" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let(:computer_params) { FactoryBot.attributes_for(:computer) }
       let(:stockit_item_params) {
         {
           quantity: 1,
           inventory_number: '123456',
           location_id: location.id,
-          grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id
+          grade: "C"
         }
       }
       let(:package_params_with_details){
@@ -748,7 +703,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
           detail_type: "computer",
@@ -762,7 +716,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: 0,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
           detail_type: "computer",
@@ -772,7 +725,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       describe "creating package with detail" do
         it "creates package with detail" do
-          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(201)
           package = Package.last
@@ -782,338 +734,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it "does not create package with detail if anything fails in package" do
-          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
           post :create, params: { package: package_params_with_details_incorrect_params }
           expect(parsed_body["errors"]).to_not be_nil
-        end
-      end
-    end
-
-    describe "Received from Stockit" do
-      let!(:location) { create :location }
-      let!(:order) { create :order, :with_stockit_id }
-      let(:order_1) { create :order, :with_stockit_id }
-      let!(:code) { create :package_type, :with_stockit_id }
-      let(:donor_condition) { create :donor_condition }
-      let!(:dispatched_location) { create :location, :dispatched }
-      # let!(:location_1) { create :location }
-      let(:stockit_item_params) {
-        {
-          quantity: 1,
-          inventory_number: '123456',
-          location_id: location.stockit_id,
-          donor_condition_id: donor_condition.id,
-          grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id,
-          notes: 'Notes'
-        }
-      }
-
-      before { request.headers["X-GOODCITY-APP-NAME"] = STOCKIT_APP }
-
-      before(:each) do
-        allow(Date).to receive(:today).and_return Date.new(2001,2,3)
-      end
-
-      context 'Designate & undesignate from stockit' do
-        before(:all) do
-          WebMock.disable!
-        end
-
-        after(:all) do
-          WebMock.enable!
-        end
-
-        let(:order1) { create :order }
-        let(:stockit_item_params_with_designation){
-          stockit_item_params.merge({
-            stockit_designated_on: Date.today,
-            designation_name: order.code,
-            order_id: order.stockit_id,
-            location_id: location.stockit_id
-          })
-        }
-
-        let(:stockit_item_params_without_designation){
-          stockit_item_params.merge({
-            designation_name: '',
-            order_id: nil,
-            stockit_id: package_with_stockit_id.stockit_id,
-            location_id: location.stockit_id
-          })
-        }
-
-        before(:each) { initialize_inventory(package_with_stockit_id, location: location) }
-
-        it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
-          expect{
-            post :create, params: { package: stockit_item_params_with_designation }
-          }.to change(Package, :count).by(1)
-          package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
-          test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
-          expect(package.orders_packages.first.state).to eq 'designated'
-          expect(package.orders_packages.first.quantity).to eq 1
-          expect(PackagesInventory::Computer.package_quantity(package)).to eq(1)
-          expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(0)
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.location_id).to eq location.id
-        end
-
-        it 'do not creates any orders_package if designation name was nil and not changed' do
-          expect{
-            post :create, params: { package: stockit_item_params_without_designation }
-          }.to change(OrdersPackage, :count).by(0)
-          expect(response.status).to eq(201)
-          test_package_changes(package_with_stockit_id, response.status, '', location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 0)
-        end
-
-        it 'creates orders_package for already existing item which is now designated from stockit' do
-          package = create :package, :stockit_package, item: item
-          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
-          stockit_item_params_with_designation[:quantity] = package.received_quantity
-          expect{
-            post :create, params: { package: stockit_item_params_with_designation }
-          }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          test_orders_packages(package, stockit_request, 1)
-        end
-
-        it 'cancels designation and recreates one if Stockit re-designates' do
-          package = create :package, :stockit_package, :with_inventory_record, item: item, received_quantity: 1
-          order1 = create :order
-          orders_package = create :orders_package, :with_state_designated, order: order1,
-            package: package, quantity: 1
-          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
-          expect{
-            post :create, params: { package: stockit_item_params_with_designation }
-          }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 2)
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.orders_packages.first.order).to eq order1
-          expect(package.orders_packages.first.state).to eq 'cancelled'
-          expect(package.orders_packages.last.order).to eq order
-          expect(package.orders_packages.last.state).to eq 'designated'
-        end
-
-        it 'cancels designation if item was previously designated and now its undesignated from stockit' do
-          package = create :package, :stockit_package, :with_inventory_record, designation_name: 'abc', order: order, received_quantity: 1
-          orders_package = create :orders_package, :with_state_designated, order: order,
-            package: package, quantity: 1
-          packages_location = create :packages_location, package: package, location: location,
-            quantity: package.received_quantity
-          stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
-          expect{
-            post :create, params: { package: stockit_item_params_without_designation }
-          }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, '', location)
-          expect(package.reload.stockit_designated_by_id).to be_nil
-          expect(package.reload.stockit_sent_by_id).to be_nil
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
-          expect(orders_package.reload.state).to eq('cancelled')
-        end
-
-        it 'cancels existing orders_package and re-creates one if designated to some other order' do
-          package = create :package, :stockit_package, designation_name: order1.code, received_quantity: 1
-          initialize_inventory(package, location: location)
-          orders_package = create :orders_package, :with_state_designated, order: order1, package: package, quantity: 1
-          stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
-          expect{
-            post :create, params: { package: stockit_item_params_with_designation }
-          }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 2)
-          expect(package.orders_packages.first.state).to eq('cancelled')
-          expect(package.orders_packages.first.order).to eq(order1)
-          expect(package.orders_packages.last.state).to eq('designated')
-          expect(package.orders_packages.last.order).to eq(order)
-        end
-      end
-
-      context 'Update quantity from Stockit' do
-        let(:order) { create :order, :with_stockit_id }
-        let(:package) { create :package, :with_inventory_record, :stockit_package, received_quantity: 1 }
-        let!(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: 1 }
-
-        let(:package_params){
-          stockit_item_params.merge({
-            quantity: 100,
-            package_type_id:package.package_type_id,
-            state: package.state,
-            stockit_id: package.stockit_id,
-            donor_condition_id: package.donor_condition_id,
-            designation_name: order.code,
-            order_id: order.stockit_id
-          })
-        }
-
-        it 'update quantity of item with edit' do
-          post :create, params: { package: package_params }
-          expect(response.status).to eq(201)
-          expect(PackagesInventory::Computer.package_quantity(package)).to eq(100)
-        end
-      end
-
-      context 'Update quantity of item with Designate and Dispatch operation from Stockit' do
-
-        before(:all) do
-          WebMock.disable!
-        end
-
-        after(:all) do
-          WebMock.enable!
-        end
-
-        let(:order1) { create :order }
-        let(:order) { create :order, :with_stockit_id, :with_state_awaiting_dispatch }
-        let(:package) {create :package, :with_inventory_record, :stockit_package, designation_name: order1.code, received_quantity: 10 }
-
-        let(:stockit_params_with_designation){
-          stockit_item_params.merge({
-            stockit_designated_on: Date.today,
-            designation_name: order.code,
-            order_id: order.stockit_id
-          })
-        }
-
-        let(:stockit_params_with_sent_on_and_designation){
-          stockit_params_with_designation.merge({
-            stockit_sent_on: Date.today
-          })
-        }
-
-        it 'updates quantity of package, orders_package and packages_location record if item(designated) quantity is changed from stockit' do
-          orders_package = create :orders_package, :with_state_designated, order: order,
-            package: package, quantity: 10
-          initialize_inventory(package)
-          stockit_params_with_designation[:quantity] = 8
-          stockit_params_with_designation[:stockit_id] = package.stockit_id
-          expect{
-            post :create, params: { package: stockit_params_with_designation }
-          }.to change(OrdersPackage, :count).by(0)
-          stockit_request = GoodcitySync.request_from_stockit
-          expect(response.status).to eq(201)
-          test_orders_packages(package, stockit_request, 1)
-          expect(PackagesInventory::Computer.package_quantity(package)).to eq(8)
-          expect(orders_package.reload.quantity).to eq(8)
-          expect(package.packages_locations.first.quantity).to eq(8)
-        end
-      end
-
-      context 'Dispatch & Undispatch from stockit' do
-        let(:order) { create :order, :with_stockit_id, :with_state_dispatching }
-
-        before(:all) do
-          WebMock.disable!
-        end
-
-        after(:all) do
-          WebMock.enable!
-        end
-
-        let(:stockit_params_with_sent_on_and_designation){
-          stockit_item_params.merge({
-            stockit_designated_on: Date.today,
-            stockit_sent_on: Date.today,
-            designation_name: order.code,
-            order_id: order.stockit_id
-          })
-        }
-
-        let(:stockit_params_without_sent_on){
-          stockit_item_params.merge({
-            stockit_sent_on: '',
-            designation_name: order.code,
-            order_id: order.stockit_id,
-            location_id: ""
-          })
-        }
-
-        it 'dispatches orders_package if exists with same designation' do
-          package = create :package, :with_inventory_record, :stockit_package, designation_name: 'abc', received_quantity: 1
-          orders_package = create :orders_package, package: package, order: order,
-            state: 'designated', quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
-           expect{
-            post :create, params: { package: stockit_params_with_sent_on_and_designation }
-          }.to change(OrdersPackage, :count).by(0)
-          expect(response.status).to eq(201)
-          test_package_changes(package, response.status, order.code, nil)
-          expect(package.orders_packages.first.state).to eq 'dispatched'
-          expect(package.packages_locations.size).to eq(0)
-        end
-
-        it 'creates new designation and then dispatch if package is not designated before dispatch from stockit' do
-          package = create :package, :with_inventory_record, :stockit_package, designation_name: order.code, received_quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
-          stockit_params_with_sent_on_and_designation[:quantity] = 1
-          expect{
-            post :create, params: { package: stockit_params_with_sent_on_and_designation }
-          }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, nil)
-          expect(package.orders_packages.first.state).to eq 'dispatched'
-          expect(package.orders_packages.first.quantity).to eq 1
-          expect(package.orders_packages.first.dispatched_quantity).to eq 1
-          expect(PackagesInventory::Computer.package_quantity(package)).to eq 0
-          expect(package.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.orders_packages.count).to eq 1
-          expect(package.packages_locations.size).to eq(0)
-        end
-
-        it 'cancels existing designation and dispatches a new designation with new order_id it when dispatched from stockit with another order' do
-          package = create :package, :with_inventory_record, :stockit_package, designation_name: order_1.code, received_quantity: 5
-          orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
-          expect{
-            post :create, params: { package: stockit_params_with_sent_on_and_designation }
-          }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, nil)
-
-          expect(orders_package.reload.state).to eq 'cancelled'
-
-          new_orders_package = package.reload.orders_packages.last
-          expect(new_orders_package.state).to eq 'dispatched'
-          expect(package.packages_locations.size).to eq(0)
-        end
-
-        it 'dispatches existing designation if available with same order_id' do
-          package = create :package, :with_inventory_record, :stockit_package, received_quantity: 10
-          orders_package = create :orders_package, :with_state_designated, package: package, order: order, quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
-          stockit_params_with_sent_on_and_designation[:quantity]   = 1
-          expect{
-            post :create, params: { package: stockit_params_with_sent_on_and_designation }
-          }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, order.code, nil)
-          expect(orders_package.reload.state).to eq 'dispatched'
-        end
-
-        it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
-          package = create :package, :with_inventory_record, :stockit_package, stockit_sent_on: Date.today,
-            order_id: order.id, received_quantity: 1, stockit_designated_by: stockit_user
-          orders_package = create :orders_package, :with_inventory_record, package: package,
-            order: order, state: 'dispatched', sent_on: Date.today, quantity: 1
-          stockit_params_without_sent_on[:stockit_id] = package.reload.stockit_id
-          stockit_params_without_sent_on[:location_id] = dispatched_location.stockit_id
-          expect{
-            post :create, params: { package: stockit_params_without_sent_on }
-          }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, order.code, dispatched_location)
-          expect(orders_package.reload.state).to eq 'designated'
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.reload.stockit_sent_by_id).to be_nil
-          expect(orders_package.order_id).to eq order.id
-          test_packages_location_changes(package)
         end
       end
     end
@@ -1123,8 +745,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
 
     before do
-      allow(Stockit::ItemSync).to receive(:create)
-      allow(Stockit::ItemSync).to receive(:update)
       generate_and_set_token(user)
       touch(package)
     end
@@ -1166,7 +786,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       before do
         generate_and_set_token(user)
-        allow(Stockit::ItemDetailSync).to receive(:create).and_return({ 'success' => 201 })
       end
 
       it "returns 200" do
@@ -1201,13 +820,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       updated_params = { quantity: 30, width: 100 }
       put :update, params: { id: package.id, package: package_params.merge(updated_params) }
       expect(response.status).to eq(200)
-    end
-
-    it "add stockit item-update request" do
-      package = create :package, :received
-      updated_params = { quantity: 30, width: 100, state: "received" }
-      # expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
-      put :update, params: { id: package.id, package: package_params.merge(updated_params) }
     end
 
     context "by setting an inventory_number for the first time" do
@@ -1582,7 +1194,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         current_user = user
         pack(5, package1, into: box)
         pack(2, package2, into: box)
-        pack(5, package2, into: pallet)
+        pack(5, package1, into: pallet)
+        pack(1, box_package, into: pallet)
+        pack(3, package2, into: pallet)
       end
 
       it "fetches all the items that are present inside a box" do
@@ -1591,10 +1205,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["items"].length).to eq(2)
       end
 
+      it "returns total contents in a box" do
+        get :contained_packages, params: { id: box.id }
+        expect(response.status).to eq(200)
+        expect(parsed_body["meta"]["total_count"]).to eq(7)
+      end
+
       it "fetches all the items that are present inside a pallet" do
         get :contained_packages, params: { id: pallet }
         expect(response.status).to eq(200)
-        expect(parsed_body["items"].length).to eq(1)
+        expect(parsed_body["items"].length).to eq(3)
+      end
+
+      it "returns total contents in a pallet" do
+        get :contained_packages, params: { id: pallet }
+        expect(response.status).to eq(200)
+        expect(parsed_body["meta"]["total_count"]).to eq(9)
       end
     end
 
@@ -1822,7 +1448,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         let(:params) { { id: box.id, item_id: package2.id, location_id: location.id, task: 'pack', quantity: 2 } }
 
         before(:each) do
-          GoodcitySync.request_from_stockit = true
           Package::Operations.designate(package2, quantity: package2.available_quantity, to_order: create(:order, state: "submitted").id)
         end
 

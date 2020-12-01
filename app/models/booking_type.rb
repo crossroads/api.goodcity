@@ -1,7 +1,8 @@
-
 class BookingType < ApplicationRecord
+  include CacheableJson
+
   has_many :orders
-  
+
   validates :identifier, :name_en, :name_zh_tw, uniqueness: true
 
   def appointment?

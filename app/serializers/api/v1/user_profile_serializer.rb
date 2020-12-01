@@ -18,5 +18,9 @@ module Api::V1
     def max_role_level
       object.max_role_level
     end
+
+    def user_roles
+      object.user_roles.includes([{ role: { role_permissions: :permission } }])
+    end
   end
 end

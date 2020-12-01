@@ -29,6 +29,10 @@ class PackageType < ApplicationRecord
 
   scope :visible, -> { where(allow_stock: true) }
 
+  scope :with_eager_load, -> {
+    eager_load([:location])
+  }
+
   private
 
   def child_package_type?

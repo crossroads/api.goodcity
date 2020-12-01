@@ -6,6 +6,5 @@ FactoryBot.define do
     last_name { FFaker::Name.last_name }
     mobile_phone_number { '' }
     phone_number { FFaker::PhoneNumber.short_phone_number }
-    stockit_id { 1 }
   end
 end

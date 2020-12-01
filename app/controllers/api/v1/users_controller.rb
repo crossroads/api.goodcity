@@ -25,7 +25,7 @@ module Api
 
         @users = @users.with_roles(params[:roles]) if params[:roles].present?
         @users = @users.where(id: ids_param) if ids_param.present?
-        render json: @users, each_serializer: serializer
+        render json: @users.with_eager_loading, each_serializer: serializer
       end
 
       api :POST, '/v1/users', "Create user"
@@ -57,7 +57,11 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        render json: @user, serializer: serializer
+        if @user.valid?
+          render json: @user, serializer: serializer
+        else
+          render_error(@user.errors.full_messages.join(". "))
+        end
       end
 
       def recent_users
