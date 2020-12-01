@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   include ManageUserRoles
   include FuzzySearch
+  include Mentionable
 
   # --------------------
   # Configuration
