@@ -1,5 +1,6 @@
 class PackageType < ApplicationRecord
   include CacheableJson
+  include AutoFavourite
 
   belongs_to :location
   has_many :subpackage_types
@@ -26,6 +27,8 @@ class PackageType < ApplicationRecord
   after_create :create_default_sub_package_type, unless: :child_package_type?
 
   translates :name, :other_terms
+
+  auto_favourite
 
   scope :visible, -> { where(allow_stock: true) }
 

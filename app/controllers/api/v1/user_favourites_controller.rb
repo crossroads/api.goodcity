@@ -13,8 +13,13 @@ module Api
 
       api :GET, '/v1/user_favourites', "Fetches user_favourites"
       def index
-        user_favourites = @user_favourites.where(favourite_type: params[:types])
-        render json: user_favourites
+        render json: @user_favourites, each_serializer: serializer
+      end
+
+      private
+
+      def serializer
+        Api::V1::UserFavouriteSerializer
       end
     end
   end
