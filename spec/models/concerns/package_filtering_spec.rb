@@ -71,6 +71,26 @@ describe Package do
     end
   end
 
+  context 'packages with associated package-types' do
+    before(:each) do
+      parent_package_type = create :package_type, code: "VCL"
+      child_package_type = parent_package_type.child_package_types.first
+
+      @parent_package = create(:package, :with_inventory_record, package_type_id: parent_package_type.id)
+      @child_package = create(:package, :with_inventory_record, package_type_id: child_package_type.id)
+      @other_package = create(:package, :with_inventory_record, package_type_id: (create :package_type, code: "HPW").id)
+    end
+
+    it 'filters out only associated package-types packages' do
+      expect(Package.filter.count).to eq(3)
+
+      packages = Package.filter('associated_package_types_for' => ["VCL"])
+      expect(packages.count).to eq(2)
+      expect(packages).to match_array([@parent_package, @child_package])
+      expect(packages).to_not include(@other_package)
+    end
+  end
+
   context 'dispatched packages' do
     before(:each) do
       package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
