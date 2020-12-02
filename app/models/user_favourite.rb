@@ -7,6 +7,13 @@ class UserFavourite < ApplicationRecord
   belongs_to :user
   
   after_create :apply_limit
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |user_favourite|
+    Channel.private_channels_for(user_favourite.user, STOCK_APP)
+  end
   
   def apply_limit
     #
