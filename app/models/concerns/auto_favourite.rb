@@ -14,6 +14,7 @@ module AutoFavourite
   end
   
   class_methods do
+    @@auto_favourite_relations = false
     def auto_favourite(enabled = true)
       @@auto_favourite_enabled = enabled
     end
