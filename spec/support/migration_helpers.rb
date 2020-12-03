@@ -122,5 +122,4 @@ module MigrationHelpers
       silently { @migration.migrate(:down) if has_run? }
     end
   end
-
 end

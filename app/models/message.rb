@@ -8,6 +8,7 @@ class Message < ApplicationRecord
   include Mentionable
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
+  belongs_to :recipient, class_name: "User"
 
   belongs_to :messageable, polymorphic: true
   has_many :subscriptions, dependent: :destroy
@@ -22,6 +23,9 @@ class Message < ApplicationRecord
   scope :filter_by_order_id, ->(order_id) { where(messageable_id: order_id.split(","), messageable_type: "Order") }
   scope :filter_by_item_id, ->(item_id) { where(messageable_id: item_id.split(","), messageable_type: "Item") }
   scope :filter_by_package_id, ->(package_id) { where(messageable_id: package_id.split(","), messageable_type: "Package") }
+  scope :from_humans, ->() { where.not(sender_id: non_human_senders) }
+
+  before_save :resolve_recipient
 
   # used to override the state value during serialization
   attr_accessor :state_value, :is_call_log
@@ -38,6 +42,10 @@ class Message < ApplicationRecord
     return if User.current_user.try(:can_manage_private_messages?)
 
     where('is_private = false')
+  end
+
+  def self.non_human_senders
+    [User.system_user.try(:id), User.stockit_user.try(:id)].compact
   end
 
   def parsed_body
@@ -70,5 +78,26 @@ class Message < ApplicationRecord
   # Deprication: This will be removed
   def related_object
     @_obj ||= messageable.instance_of?(Item) ? messageable.offer : messageable
+  end
+
+  #
+  # To ensure backwards compatibility, when a message is saved without a recipient we detect that and use the record to infer it
+  #
+  def resolve_recipient
+    if recipient_id.present?
+      raise Goodcity::ValidationError.new(I18n.t('messages.no_private_recipient')) if is_private
+    else
+      self.recipient_id = messageable_owner_id unless is_private
+    end
+  end
+
+  def messageable_owner_id
+    resolvers = {
+      'Offer' => ->(obj) { obj.try(:created_by_id) },
+      'Order' => ->(obj) { obj.try(:created_by_id) },
+      'Item'  => ->(obj) { obj.try(:offer).try(:created_by_id) }
+    }
+  
+    resolvers[messageable_type].try(:call, messageable)
   end
 end
