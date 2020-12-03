@@ -5,39 +5,30 @@ module MessageSubscriptions
 
   # Who gets subscribed to a new message (i.e. who can see each message)
   def subscribe_users_to_message
-    obj = related_object
-    user_ids = []
-    # Add the following users
-    #   - Donor / Charity user
-    #   - Message sender
-    #   - Anyone who has previously replied to offer/order
-    #   - Admin users processing the offer/order
-    user_ids << obj.try(:created_by_id)
-    user_ids << sender_id
-    user_ids += public_subscribers_to(obj)
-    user_ids += private_subscribers_to(obj)
-    admin_user_fields.each { |field| user_ids << obj.try(field) }
+    obj = messageable
+    non_human_users = Message.non_human_senders
 
-    # Remove the following users
-    #   - SystemUser and StockitUser
-    #   - donor/charity user if the message is private (supervisor channel) or offer/order is cancelled
-    user_ids = user_ids.flatten.uniq
-    user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
-    user_ids -= [obj.try(:created_by_id)] if is_private || obj.try('cancelled?')
+    # -> include all permitted staff members on the first message, or if nobody anwered the donor
+    staff_ids = permitted_staff_members(messageable_type).pluck(:id) if first_message? || (!is_private && nobody_answered?)
 
-    # Cases where we subscribe every staff member
-    #  - For private messages, subscribe all supervisors ONLY for the first message
-    #  - If donor sends a message but no one else is listening, subscribe all reviewers.
-    subscribe_all_staff = if is_private
-                            first_message?
-                          else
-                            obj&.created_by_id.present? && (user_ids.uniq.compact == [sender_id])
-                          end
+    # -> for subsequent messages, only include active staff members
+    staff_ids ||= active_staff_members(messageable_type, obj, is_private)
+    
+    # -> include staff members related to the object (reviewer, closer, etc...)
+    admin_user_fields.each { |field| staff_ids << obj.try(field) }
 
-    user_ids += first_message_subscribers(messageable_type) if subscribe_all_staff
-    user_ids += mentioned_ids if mentioned_ids.present?
+    # -> include anyone that has been mentioned
+    staff_ids += mentioned_ids if mentioned_ids.present?
+
+    # -> include the sender
+    user_ids = [sender_id] + staff_ids
+
+    # -> if the message has a specified recipient, we include it
+    user_ids << recipient_id if recipient_id.present? && !obj.try(:cancelled?)
 
     user_ids.flatten.compact.uniq.each do |user_id|
+      next if user_id.in?(non_human_users)
+
       state = user_id == sender_id ? 'read' : 'unread' # mark as read for sender
       add_subscription(state, user_id)
     end
@@ -45,43 +36,43 @@ module MessageSubscriptions
 
   private
 
-  def first_message_subscribers(klass)
-    message_permissions =  if ['Offer', 'Item'].include?(klass)
-      ['can_manage_offer_messages']
-    elsif klass == 'Order'
-      ['can_manage_order_messages']
-    elsif klass == 'Package'
-      ['can_manage_package_messages']
-    else
-      []
+  def required_staff_permissions(klass)
+    if ['Offer', 'Item'].include?(klass)
+      return ['can_manage_offer_messages']
     end
-
-    User.joins(roles: [:permissions])
-        .where(permissions: { name: message_permissions } )
-        .distinct
-        .pluck(:id)
+    
+    ["can_manage_#{klass.underscore}_messages"]
   end
 
-  # A public subscriber is defined as :
-  #   > Anyone who has a subscription to that record
-  def public_subscribers_to(obj)
-    Subscription
-      .joins(:message)
-      .where(subscribable: obj, messages: { is_private: false })
-      .pluck(:user_id)
+  def permitted_staff_members(klass)
+    message_permissions = required_staff_permissions(klass)
+
+    User
+      .joins(roles: [:permissions])
+      .where(permissions: { name: message_permissions } )
+      .active
+      .distinct
   end
 
-  # A private subscriber is defined as :
-  #   > An admin/stock app user who has answered the private thread
-  def private_subscribers_to(obj)
-    User.joins(messages: [:subscriptions])
-        .where(messages: { is_private: true })
-        .where(subscriptions: { subscribable: obj })
-        .pluck(:id).uniq
+  def active_staff_members(klass, obj, is_private)
+    permitted_staff_members(klass)
+      .joins(:messages)
+      .where('messages.sender_id = users.id')
+      .where(messages: {is_private: is_private, messageable: obj })
+      .pluck(:id)
+      .uniq
   end
 
   def first_message?
-    Message.unscoped.where(is_private: is_private, messageable: messageable).count.eql? 1
+    Message
+      .unscoped
+      .from_humans
+      .where(is_private: is_private, messageable: messageable).count.eql? 1
+  end
+
+  def nobody_answered?
+    senders = Message.unscoped.from_humans.where(is_private: is_private, messageable: messageable).pluck(:sender_id).uniq
+    senders.count.eql?(1) && senders.first.eql?(sender_id)
   end
 
   def admin_user_fields

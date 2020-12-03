@@ -66,17 +66,21 @@ module Messages
         end
       end
 
-      context 'there is no donor (i.e. an admin created the offer)' do
-        let!(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
-        let!(:reviewer2) { create :user, :with_reviewer_role }
-        let(:offer) { create :offer, created_by_id: nil }
-        let(:message) { create :message, sender: reviewer, messageable: offer }
+      context 'if the message has a recipient different from the donor' do
+        let(:other_user) { create :user }
+        let(:message3) { create :message, is_private: false, sender: reviewer, messageable: offer2, recipient: other_user }
 
-        it 'should not subscribe all reviewers' do
-          expect(message.messageable.reviewed_by_id).to eql(nil)
-          expect(message).to receive(:add_subscription).with('read', reviewer.id)
-          expect(message).not_to receive(:add_subscription).with('unread', reviewer2.id)
-          message.subscribe_users_to_message
+        before(:each) do
+          allow_any_instance_of(Message).to receive(:add_subscription)
+        end
+        
+        it 'subscribes the recipient instead of the donor 'do
+          expect(message3).to receive(:add_subscription).with('read', reviewer.id)
+          expect(message3).not_to receive(:add_subscription).with(anything, offer2.created_by_id)
+          expect(message3).to receive(:add_subscription).with('unread', other_user.id)
+          expect(message3).to receive(:add_subscription).with('unread', supervisor.id)
+          
+          message3.subscribe_users_to_message
         end
       end
 
@@ -93,8 +97,7 @@ module Messages
         before { User.current_user = supervisor }
 
         before(:each) do
-          allow(message1).to receive(:add_subscription)
-          allow(message2).to receive(:add_subscription)
+          allow_any_instance_of(Message).to receive(:add_subscription)
         end
 
         it 'should not subscribe donor' do
@@ -110,20 +113,105 @@ module Messages
           end
         end
 
+        context 'if nobody has answered a donor message' do
+          let(:donor) { create(:user) }
+          let(:sample_offer) { create(:offer, created_by: donor, reviewed_by: nil) }
+          let(:staff) { [supervisor, reviewer] }
+
+          before do
+            allow_any_instance_of(Message).to receive(:add_subscription)
+            touch(staff, sample_offer)
+          end
+
+          it 'should subscribe all supervisors' do
+            # Donor sends first message
+            m1 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+
+            expect(m1).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', reviewer.id).once.and_call_original
+            m1.subscribe_users_to_message
+
+            # Donor sends a second message
+            m2 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+            
+            expect(m2).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m2).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m2).to receive(:add_subscription).with('unread', reviewer.id).once.and_call_original
+
+            m2.subscribe_users_to_message
+          end
+
+          it 'should ignore system user messages and subscribe all supervisors' do
+            # Donor sends first message
+            m1 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+
+            expect(m1).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', reviewer.id).once.and_call_original
+            m1.subscribe_users_to_message
+
+            # Answer from system
+            create(:message, sender: User.system_user, messageable: sample_offer, is_private: false)
+
+            # Donor sends a second message
+            m2 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+            
+            expect(m2).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m2).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m2).to receive(:add_subscription).with('unread', reviewer.id).once.and_call_original
+
+            m2.subscribe_users_to_message
+          end
+        end
+
+        context 'if someone has answered a donor message' do
+          let(:donor) { create(:user) }
+          let(:sample_offer) { create(:offer, created_by: donor, reviewed_by: nil) }
+          let(:staff) { [supervisor, reviewer] }
+
+          before do
+            allow_any_instance_of(Message).to receive(:add_subscription)
+            touch(staff, sample_offer)
+          end
+
+          it 'should subscribe the active members' do
+            # First donor message
+            m1 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+
+            expect(m1).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m1).to receive(:add_subscription).with('unread', reviewer.id).once.and_call_original
+            m1.subscribe_users_to_message
+
+            # Answer from supervisor
+            create(:message, sender: supervisor, messageable: sample_offer, is_private: false)
+
+            # Second message from user
+            m2 = create(:message, sender: donor, messageable: sample_offer, is_private: false)
+            
+            expect(m2).to receive(:add_subscription).with('read', donor.id).once.and_call_original
+            expect(m2).to receive(:add_subscription).with('unread', supervisor.id).once.and_call_original
+            expect(m2).not_to receive(:add_subscription).with(anything, reviewer.id)
+
+            m2.subscribe_users_to_message
+          end
+        end
+
         it 'should not subscribe other supervisors for subsequent messages' do
           other_reviewer = create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission)
-
+          
           # The unrelated supervisor receives the first message of the thread
-          expect(message1).to receive(:add_subscription).with('read', reviewer.id)
-          expect(message1).to receive(:add_subscription).with('unread', supervisor.id, )
-          expect(message1).to receive(:add_subscription).with('unread', other_reviewer.id, )
+          expect(message1).to receive(:add_subscription).with('read', reviewer.id).and_call_original
+          expect(message1).to receive(:add_subscription).with('unread', supervisor.id).and_call_original
+          expect(message1).to receive(:add_subscription).with('unread', other_reviewer.id).and_call_original
           message1.subscribe_users_to_message
 
           create :message, is_private: true, sender: reviewer, messageable: offer2
           # The unrelated supervisor doesn't receive subsequent message of the thread
-          expect(message2).to receive(:add_subscription).with('read', reviewer.id)
-          expect(message2).not_to receive(:add_subscription).with('unread', other_reviewer.id)
-          expect(message2).not_to receive(:add_subscription).with('unread', supervisor.id)
+          expect(message2).to receive(:add_subscription).with('read', reviewer.id).and_call_original
+          expect(message2).not_to receive(:add_subscription).with('unread', other_reviewer.id).and_call_original
+          expect(message2).not_to receive(:add_subscription).with('unread', supervisor.id).and_call_original
           message2.subscribe_users_to_message
         end
 
