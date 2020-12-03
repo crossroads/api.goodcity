@@ -20,6 +20,15 @@ class AddRecipientToMessages < ActiveRecord::Migration[5.2]
         AND messageable_type = 'Item'
         AND is_private != true
     SQL
+
+    sql <<-SQL
+      UPDATE messages
+      SET recipient_id = orders.created_by_id
+      FROM orders 
+      WHERE orders.id = messageable_id
+        AND messageable_type = 'Order'
+        AND is_private != true
+    SQL
   end
 
   def down

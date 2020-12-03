@@ -193,7 +193,8 @@ module Api
  
         # Normal users can create non private messages on objects they own
         can :create, Message do |message|
-          @user_id != nil && !message.is_private && message.messageable_owner_id == @user_id && message.recipient_id.nil?
+          next false if message.recipient_id.present? && message.recipient_id != @user_id # e.g donor is trying to contact another donor
+          @user_id != nil && !message.is_private && message.messageable_owner_id == @user_id
         end
       end
 

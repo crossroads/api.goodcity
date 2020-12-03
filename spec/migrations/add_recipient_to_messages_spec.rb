@@ -2,7 +2,8 @@ require 'rails_helper'
 require 'active_record'
 
 describe "Migration: ADD recipient_id to messages", type: :migration do
-  let(:offer) { create :offer }
+  let(:offer) { create :offer, created_by: create(:user) }
+  let(:order) { create :order, created_by: create(:user) }
   let(:donor) { create :user }
   let(:item) { create :item, offer: offer }
   let(:supervisor) { create :user, :with_supervisor_role, :with_can_manage_offer_messages_permission }
@@ -62,6 +63,18 @@ describe "Migration: ADD recipient_id to messages", type: :migration do
         }.to change {
           open_table(:messages).row(id)['recipient_id']
         }.from(nil).to(offer.created_by_id)
+      end
+    end
+
+    context 'and points to an order' do
+      it 'sets recipient_id to the order\'s creator' do
+        id = create_message(is_private: false, record: order)['id']
+
+        expect {
+          migration.up
+        }.to change {
+          open_table(:messages).row(id)['recipient_id']
+        }.from(nil).to(order.created_by_id)
       end
     end
 

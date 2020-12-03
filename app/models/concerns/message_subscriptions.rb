@@ -24,7 +24,7 @@ module MessageSubscriptions
     user_ids = [sender_id] + staff_ids
 
     # -> if the message has a specified recipient, we include it
-    user_ids << recipient_id if recipient_id.present? && !obj.try(:cancelled?)
+    user_ids << recipient_id if !is_private && recipient_id.present? && !obj.try(:cancelled?)
 
     user_ids.flatten.compact.uniq.each do |user_id|
       next if user_id.in?(non_human_users)
@@ -45,6 +45,8 @@ module MessageSubscriptions
   end
 
   def permitted_staff_members(klass)
+    return User.none unless klass.present?
+    
     message_permissions = required_staff_permissions(klass)
 
     User
