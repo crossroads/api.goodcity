@@ -8,7 +8,7 @@ class Ability
 
   PERMISSION_NAMES = %w[
     can_manage_items can_manage_goodcity_requests
-    can_manage_packages can_manage_offers can_manage_organisations_users
+    can_manage_packages can_manage_offers can_search_offers can_manage_organisations_users
     can_manage_deliveries can_manage_delivery_address
     can_manage_delivery_address can_manage_orders can_manage_order_transport
     can_manage_holidays can_manage_orders_packages can_manage_images
