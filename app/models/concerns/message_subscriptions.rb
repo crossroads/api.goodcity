@@ -36,22 +36,29 @@ module MessageSubscriptions
 
   private
 
-  def required_staff_permissions(klass)
+  def managed_by?(user)
+    return false unless user.present?
+
+    perm = required_staff_permission(messageable_type)
+    user.user_permissions_names.include?(perm)
+  end
+
+  def required_staff_permission(klass)
     if ['Offer', 'Item'].include?(klass)
-      return ['can_manage_offer_messages']
+      return 'can_manage_offer_messages'
     end
     
-    ["can_manage_#{klass.underscore}_messages"]
+    "can_manage_#{klass.underscore}_messages"
   end
 
   def permitted_staff_members(klass)
     return User.none unless klass.present?
-    
-    message_permissions = required_staff_permissions(klass)
+
+    message_permission = required_staff_permission(klass)
 
     User
       .joins(roles: [:permissions])
-      .where(permissions: { name: message_permissions } )
+      .where(permissions: { name: message_permission } )
       .active
       .distinct
   end
