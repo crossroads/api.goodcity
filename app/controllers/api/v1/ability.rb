@@ -207,6 +207,8 @@ module Api
           can [:index, :show, :update, :complete_review, :close_offer, :search,
             :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer, :resume_receiving], Offer
         end
+
+        can [:search], Offer if can_search_offers?
       end
 
       def offers_package_abilities
