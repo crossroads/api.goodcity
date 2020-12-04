@@ -7,12 +7,12 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
   let(:goodcity_request) { create(:goodcity_request) }
   let(:goodcity_request_params) { FactoryBot.attributes_for(:goodcity_request) }
   let(:parsed_body) { JSON.parse(response.body ) }
+  let(:package_type) { create(:package_type) }
   let(:requests_fetched) do
     parsed_body['goodcity_requests'].map {|r| GoodcityRequest.find(r['id']) }
   end
 
   describe "GET goodicty_request" do
-
     before do
       generate_and_set_token(user)
     end
@@ -57,7 +57,10 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
   end
 
   describe "POST goodcity_request/1" do
-    before { generate_and_set_token(user) }
+    before do
+      generate_and_set_token(user)
+      goodcity_request_params[:package_type_id] = package_type.id
+    end
 
     it "returns 201", :show_in_doc do
       expect {
@@ -67,7 +70,6 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     end
 
     context "As a charity user" do
-      let(:package_type) { create(:package_type) }
       let(:order) { create :order, created_by: charity_user }
       let(:other_order) { create :order }
 
@@ -80,7 +82,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
           post :create, params: {
             goodcity_request: {
             order_id: order.id,
-            package_type: package_type.id,
+            package_type_id: package_type.id,
             quantity: 1,
             description: "foo"
             }
@@ -94,13 +96,41 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
           post :create, params: {
             goodcity_request: {
             order_id: other_order.id,
-            package_type: package_type.id,
+            package_type_id: package_type.id,
             quantity: 1,
             description: "foo"
             }
           }
         }.not_to change(GoodcityRequest, :count)
         expect(response.status).to eq(403)
+      end
+
+      context 'when package_type_id is blank' do
+        it 'does not create new record' do
+          goodcity_request_params[:package_type_id] = nil
+          expect {
+            post :create, params: {
+            goodcity_request: {
+            order_id: order.id,
+            package_type_id: nil,
+            quantity: 1
+            }
+          }
+          }.not_to change(GoodcityRequest, :count)
+        end
+
+        it 'sends error in the response' do
+          goodcity_request_params[:package_type_id] = nil
+          post :create, params: {
+            goodcity_request: {
+            order_id: order.id,
+            package_type_id: nil,
+            quantity: 1
+            }
+          }
+          expect(parsed_body['errors'][0]['message']).to eq("Package type can't be blank")
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
       end
     end
   end
@@ -124,6 +154,22 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     it "it forbids me from updating a request for another user's order", :show_in_doc do
       put :update, params: { id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id) }
       expect(response.status).to eq(403)
+    end
+
+    context 'when package_type_id is nil' do
+      it 'does not update the record' do
+        gc_request[:package_type_id] = nil
+        expect{
+          put :update, params: { id: gc_request.id, goodcity_request: gc_request.attributes.except(:id) }
+        }.not_to change { gc_request }
+      end
+
+      it 'sends error in the response' do
+        gc_request[:package_type_id] = nil
+        put :update, params: { id: gc_request.id, goodcity_request: gc_request.attributes.except(:id) }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_body['errors'][0]['message']).to eq("Package type can't be blank")
+      end
     end
   end
 

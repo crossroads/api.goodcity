@@ -17,5 +17,6 @@ RSpec.describe GoodcityRequest, type: :model do
   describe "validations" do
     it { is_expected.to_not allow_value(0).for(:quantity) }
     it { is_expected.to allow_value(1).for(:quantity) }
+    it { is_expected.to validate_presence_of(:package_type_id) }
   end
 end
