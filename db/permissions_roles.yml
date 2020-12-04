@@ -68,6 +68,7 @@ Stock fulfilment: &stock_fulfilment
 - can_manage_goodcity_requests
 - can_manage_package_detail
 - can_manage_orders
+- can_search_offers
 - can_manage_orders_packages
 - can_remove_offers_packages
 - can_manage_order_transport
@@ -100,7 +101,7 @@ Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
 - can_manage_package_detail
-- can_manage_offers
+- can_search_offers
 - can_manage_deliveries
 - can_manage_orders
 - can_manage_orders_packages

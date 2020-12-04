@@ -59,6 +59,32 @@ describe "Offer abilities" do
     end
   end
 
+  context "Order Fulfilment User" do
+    let(:user) { create(:user, :with_token, :with_can_search_offers_permission, role_name: 'Order Fulfilment') }
+    let(:offer)     { create :offer, state: 'received' }
+    let(:can)       { [:search] }
+    let(:cannot)    { [:index, :show, :update, :destroy] }
+    it{ can.each do |do_action|
+      is_expected.to be_able_to(do_action, offer)
+    end}
+    it{ cannot.each do |do_action|
+      is_expected.to_not be_able_to(do_action, offer)
+    end}
+  end
+
+  context "Stock Fulfilment User" do
+    let(:user) { create(:user, :with_token, :with_can_search_offers_permission, role_name: 'Stock Fulfilment') }
+    let(:offer)     { create :offer, state: 'received' }
+    let(:can)       { [:search] }
+    let(:cannot)    { [:index, :show, :update, :destroy] }
+    it{ can.each do |do_action|
+      is_expected.to be_able_to(do_action, offer)
+    end}
+    it{ cannot.each do |do_action|
+      is_expected.to_not be_able_to(do_action, offer)
+    end}
+  end
+
   context "when Owner" do
     let(:user)        { create :user }
     context "and offer is draft" do
