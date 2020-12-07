@@ -107,6 +107,11 @@ class User < ApplicationRecord
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
   scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
   scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
+  scope :with_permissions, ->(perm) {
+    active.joins(roles: [:permissions])
+      .where(permissions: { name: perm } )
+      .where('user_roles.expires_at > now() OR user_roles.expires_at IS NULL')
+  }
 
   # --------------------
   # Methods

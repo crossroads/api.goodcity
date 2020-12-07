@@ -86,7 +86,7 @@ class Message < ApplicationRecord
   def resolve_recipient
     if recipient_id.present?
       raise Goodcity::ValidationError.new(I18n.t('messages.no_private_recipient')) if is_private
-    elsif sender_id != messageable_owner_id && managed_by?(sender)
+    elsif managed_by?(sender)
       # > A staff member created a message with no recipient, we default to the donor
       self.recipient_id = messageable_owner_id unless is_private
     end

@@ -56,11 +56,7 @@ module MessageSubscriptions
 
     message_permission = required_staff_permission(klass)
 
-    User
-      .joins(roles: [:permissions])
-      .where(permissions: { name: message_permission } )
-      .active
-      .distinct
+    User.with_permissions(message_permission).distinct
   end
 
   def active_staff_members(klass, obj, is_private)
