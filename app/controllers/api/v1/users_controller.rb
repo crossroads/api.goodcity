@@ -88,10 +88,6 @@ module Api
         Api::V1::UserSerializer
       end
 
-      def mentionable_role
-        (MENTIONABLE_ROLES & params['roles'].split(',').map(&:strip).uniq)
-      end
-
       def search_user_and_render_json
         records = @users.limit(25)
         records = records.filter_users(params)
