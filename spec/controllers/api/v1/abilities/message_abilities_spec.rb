@@ -10,6 +10,7 @@ describe 'Message abilities' do
   let(:all_actions) { %i[index show create update destroy manage] }
   let(:sender)      { create :user }
   let(:charity) { create(:user, :charity) }
+  let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_messages_permission) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
   let(:message) { create :message, messageable: offer, is_private: is_private }
@@ -57,8 +58,8 @@ describe 'Message abilities' do
     let(:user) { sender }
     let(:offer) { create :offer, created_by: sender }
     let(:other_offer) { create :offer, created_by: sender }
-    let!(:message) { create :message, is_private: is_private, messageable: offer }
-    let!(:message2) { create :message, is_private: is_private, messageable: other_offer, recipient: user }
+    let!(:message) { create :message, sender: reviewer, is_private: is_private, messageable: offer }
+    let!(:message2) { create :message, sender: reviewer, is_private: is_private, messageable: other_offer, recipient: user }
 
     @can = %i[index show create]
     @cannot = %i[update destroy manage]
@@ -95,7 +96,6 @@ describe 'Message abilities' do
     end
 
     context 'when donor recieves a message from a reviewer' do
-      let(:reviewer) { create(:user, :reviewer) }
       let!(:message) { create :message, is_private: is_private, messageable: offer, sender: reviewer }
 
       it 'should be able to read the message' do
@@ -108,9 +108,9 @@ describe 'Message abilities' do
     end
 
     context 'private_message' do
-      let(:is_private) { true }
+      let(:private_message) { create :message, sender: reviewer, is_private: true, messageable: offer }
       it 'is not allowed to do any action' do
-        all_actions.map { |action| is_expected.to_not be_able_to(action, message) }
+        all_actions.map { |action| is_expected.to_not be_able_to(action, private_message) }
       end
     end
 
@@ -125,10 +125,11 @@ describe 'Message abilities' do
 
   context 'Charity user' do
     let(:is_private) { false }
+    let(:order_fulfiller) { create(:user, :with_can_manage_order_messages_permission)}
     let(:donor) { create(:user) }
     let(:order) { create :order, created_by: charity }
     let(:offer) { create(:offer, created_by: donor) }
-    let(:message) { create :message, is_private: is_private, messageable: order }
+    let(:message) { create :message, sender: order_fulfiller, is_private: is_private, messageable: order }
     let!(:subscription) { create :subscription, message: message, subscribable: order, state: 'unread', user: charity}
     let(:user) { charity }
 
@@ -147,7 +148,7 @@ describe 'Message abilities' do
     end
 
     context 'when charity user recieves a message from an order admin' do
-      let(:order_administrator) { create(:user, :order_administrator) }
+      let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_order_messages_permission) }
       let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
 
       it 'should be able to read the message' do
@@ -160,7 +161,7 @@ describe 'Message abilities' do
     end
 
     context 'when a charity user recieves a public message from a reviewer regarding an offer' do
-      let(:reviewer) { create(:user, :reviewer) }
+      let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_messages_permission) }
       let!(:message) { create :message, is_private: false, messageable: offer, sender: reviewer, recipient: user }
       let!(:message_to_donor) { create :message, is_private: false, messageable: offer, sender: reviewer, recipient: offer.created_by }
       let!(:message_from_donor) { create :message, is_private: false, messageable: offer, sender: offer.created_by }

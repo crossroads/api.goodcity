@@ -3,7 +3,7 @@ class AddRecipientToMessages < ActiveRecord::Migration[5.2]
     add_column :messages, :recipient_id, :integer, index: true
     add_foreign_key :messages, :users, column: :recipient_id
 
-    sql <<-SQL
+    execute <<-SQL
       UPDATE messages
       SET recipient_id = offers.created_by_id
       FROM offers 
@@ -12,7 +12,7 @@ class AddRecipientToMessages < ActiveRecord::Migration[5.2]
         AND is_private != true
     SQL
 
-    sql <<-SQL
+    execute <<-SQL
       UPDATE messages
       SET recipient_id = offers.created_by_id
       FROM offers, items 
@@ -21,7 +21,7 @@ class AddRecipientToMessages < ActiveRecord::Migration[5.2]
         AND is_private != true
     SQL
 
-    sql <<-SQL
+    execute <<-SQL
       UPDATE messages
       SET recipient_id = orders.created_by_id
       FROM orders 
@@ -33,11 +33,5 @@ class AddRecipientToMessages < ActiveRecord::Migration[5.2]
 
   def down
     remove_column :messages, :recipient_id
-  end
-
-  private
-
-  def sql(query)
-    ActiveRecord::Base.connection.execute(query);
   end
 end

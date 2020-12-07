@@ -517,4 +517,29 @@ describe User, :type => :model do
       expect(users).to match_array([user_4, user_5])
     end
   end
+
+  describe "Scopes" do
+    describe "with_permissions" do
+      let(:user_with_role) { create(:user) }
+      let(:user_without_role) { create(:user) }
+      let(:user_with_expired_role) { create(:user) }
+      let(:users) { [user_with_role, user_without_role, user_with_expired_role] }
+
+      let(:role) { create(:role,  :with_permissions, permissions: ['can_manage_offers', 'can_manage_messages']) }
+      let(:unrelated_role) { create(:role, :with_permissions, permissions: ['can_manage_orders']) }
+
+      before do
+        create(:user_role, user: user_with_role, role: role)
+        create(:user_role, user: user_with_expired_role, role: role, expires_at: 1.year.ago)
+
+        users.each { |u| unrelated_role.grant(u) }
+      end
+
+      it "only returns users with active (non-expired) permission" do
+        res = User.with_permissions(:can_manage_offers)
+        expect(res.count).to eq(1)
+        expect(res.first).to eq(user_with_role)
+      end
+    end
+  end
 end
