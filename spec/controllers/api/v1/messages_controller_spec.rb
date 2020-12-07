@@ -4,6 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
@@ -136,25 +137,25 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one order" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
-        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2) }
+        3.times { create :message, sender: reviewer, messageable: order }
+        3.times { create :message, sender: reviewer, messageable: order2 }
 
         get :index, params: { order_id: order.id }
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
-        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2) }
-
+        3.times { create :message, sender: reviewer, messageable: order }
+        3.times { create :message, sender: reviewer, messageable: order2 }
+        
         get :index, params: { order_id: "#{order.id},#{order2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for a certain state" do
-        3.times { create :message, messageable: offer }
+        3.times { create :message, messageable: offer, sender_id: reviewer.id }
         3.times { create :message, messageable: offer, sender_id: user.id }
-        3.times { create :message, messageable: offer2 }
+        3.times { create :message, messageable: offer2, sender_id: reviewer.id }
         get :index, params: { offer_id: "#{offer.id},#{offer2.id}", state: 'unread' }
         expect(subject['messages'].length).to eq(6)
       end

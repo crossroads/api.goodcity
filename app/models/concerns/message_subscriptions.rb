@@ -37,7 +37,7 @@ module MessageSubscriptions
   private
 
   def managed_by?(user)
-    return false unless user.present?
+    return false unless user.present? && messageable_type.present?
 
     perm = required_staff_permission(messageable_type)
     user.user_permissions_names.include?(perm)
