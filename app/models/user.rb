@@ -247,11 +247,6 @@ class User < ApplicationRecord
     has_permission?("can_disable_user") && User.current_user.id != id&.to_i
   end
 
-  def can_manage_private_messages?
-    (user_permissions_names &
-    ["can_manage_offer_messages", "can_manage_order_messages", "can_manage_package_messages"]).any?
-  end
-
   def downcase_email
     email.downcase! if email.present?
   end

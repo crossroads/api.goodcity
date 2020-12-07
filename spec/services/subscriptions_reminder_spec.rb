@@ -3,7 +3,7 @@ require 'rails_helper'
 describe SubscriptionsReminder do
   let(:donor)        { create(:user) }
   let(:charity)       { create(:user, :charity) }
-  let(:reviewer)     { create(:user, :reviewer) }
+  let(:reviewer)     { create(:user, :reviewer, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission) }
   let(:supervisor)   { create(:user, :supervisor) }
   let(:offer)        { create(:offer, :submitted, created_by: donor) }
   let(:reviewer_offer) { create(:offer, :submitted, created_by: reviewer) }
@@ -19,7 +19,7 @@ describe SubscriptionsReminder do
 
   # All specs begin life with an offer+message and an order+message
   let!(:message) { create(:message, messageable: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
-  let!(:message1) { create(:message, :with_order, messageable: order, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
+  let!(:message1) { create(:message, messageable: order, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
 
   context "check spec setup" do
     it "correctly forms the test conditions" do
@@ -171,11 +171,11 @@ describe SubscriptionsReminder do
         Offer.update_all(state: 'draft') # exclude existing offers from this spec
         offer1 = create(:offer, state: 'draft')
         offer1.submit!
+
         expect(offer1.messages.count).to eq(1) # system 'Thank you for submitting your offer'
         expect(offer1.messages.first.created_at).to be < offer1.created_by.sms_reminder_sent_at
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
-
     end
   end
 

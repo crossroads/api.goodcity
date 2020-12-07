@@ -67,12 +67,6 @@ class Message < ApplicationRecord
 
   after_destroy :notify_deletion_to_subscribers
 
-  def self.default_scope
-    return if User.current_user.try(:can_manage_private_messages?)
-
-    where('is_private = false')
-  end
-
   def self.non_human_senders
     [User.system_user.try(:id), User.stockit_user.try(:id)].compact
   end
