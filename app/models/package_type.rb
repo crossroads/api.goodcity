@@ -1,7 +1,6 @@
 class PackageType < ApplicationRecord
   include CacheableJson
-  include AutoFavourite
-
+  
   belongs_to :location
   has_many :subpackage_types
   has_many :child_package_types, through: :subpackage_types,
