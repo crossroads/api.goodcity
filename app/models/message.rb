@@ -1,3 +1,32 @@
+#
+# Message Model
+#
+# Messages have a few important fields:
+#   - messageable           A goodcity record (e.g offer) being discussed
+#   - sender_id             The person sending the message
+#   - recipient_id (opt)    Some outsider you're discussing the record with
+#   - is_private            Whether the message is internal (within staff members) or not
+#
+# There are 2 kinds of messages, 'private' and 'public' messages.
+#
+# > Private Messages
+#   Those messages are destined to Crossroads staff members, they relate to a record (e.g an offer) of Goodcity
+#   Other users, such as the donor of the offer, never hear about them
+#
+#   >> Expectations
+#     - Sender is always an entitled staff member (at time of creation)
+#     - Recipient is ALWAYS NULL
+#
+# > Public Messages
+#   These messages are between Crossroads staff members and users. The current use cases are
+#     - Staff members want to talk to a donor about one of their offers
+#     - Staff members want to talk to a charity ABOUT one offer
+#
+#   >> Expectations
+#     - Sender is an entitled staff member OR a user
+#     - Recipient should be PRESENT -- Will be defaulted to the owner of the record if not
+#
+#
 class Message < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :messageable }
 
