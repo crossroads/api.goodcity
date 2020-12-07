@@ -128,23 +128,6 @@ describe Message, type: :model do
     end
   end
 
-  describe 'default scope' do
-    let!(:private_message) { create :message, :private }
-
-    it "should not allow donor to access private messages" do
-      User.current_user = donor
-      expect(Message.all).to_not include(private_message)
-      expect{
-        Message.find(private_message.id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should allow reviewer to access private messages" do
-      User.current_user = reviewer
-      expect(Message.all).to include(private_message)
-    end
-  end
-
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
   end

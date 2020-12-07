@@ -168,7 +168,7 @@ class TwilioInboundCallManager
   # Notify all the offer's subscribed reviewers and supervisors that a donor is calling
   # If none exist, notify all reviewers and supervisors
   def call_notify_channels
-    staff_ids = Message.unscoped.joins(:subscriptions)
+    staff_ids = Message.joins(:subscriptions)
       .select("distinct subscriptions.user_id as user_id")
       .where(is_private: false, messageable: offer)
       .map(&:user_id)

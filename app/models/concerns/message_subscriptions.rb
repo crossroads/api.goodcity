@@ -76,7 +76,7 @@ module MessageSubscriptions
   end
 
   def nobody_answered?
-    senders = Message.unscoped.from_humans.where(is_private: is_private, messageable: messageable).pluck(:sender_id).uniq
+    senders = Message.from_humans.where(is_private: is_private, messageable: messageable).pluck(:sender_id).uniq
     senders.count.eql?(1) && senders.first.eql?(sender_id)
   end
 

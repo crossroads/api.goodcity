@@ -131,7 +131,7 @@ RSpec.describe Item, type: :model do
   end
 
   describe "#submit" do
-    let(:message) { Message.unscoped.last }
+    let(:message) { Message.last }
 
     it "on item addition for reviewed offer reset its offer's state" do
       offer = create :offer, :reviewed
