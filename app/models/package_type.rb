@@ -28,8 +28,6 @@ class PackageType < ApplicationRecord
 
   translates :name, :other_terms
 
-  auto_favourite
-
   scope :visible, -> { where(allow_stock: true) }
 
   scope :with_eager_load, -> {
