@@ -32,12 +32,5 @@ RSpec.describe Api::V1::UserFavouritesController, type: :controller do
       expect(parsed_body['user_favourites'].length).to eq(1)
       expect(parsed_body['user_favourites'][0]["user_id"]).to_not eq(user1.id)
     end
-
-    # it "return serialized purpose" do
-    #   purpose
-    #   get :index
-    #   expect(parsed_body['purposes'].length).to eq(1)
-    #   expect(parsed_body['purposes'][0]['name_en']).to eq(purpose.name_en)
-    # end
   end
 end
