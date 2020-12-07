@@ -5,9 +5,10 @@ require 'rails_helper'
 module Messages
   describe Operations do
     let(:offer) { create :offer }
-    let(:message) { create :message, messageable: offer }
+    let(:message) { create :message, sender: reviewer, messageable: offer }
     let!(:supervisor) { create :user, :with_supervisor_role, :with_can_manage_offer_messages_permission }
     let(:reviewer) { create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission ) }
+    let(:other_reviewer) { create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission ) }
 
     let(:offer1) { create :offer }
     let(:offer2) { create :offer }
@@ -33,17 +34,16 @@ module Messages
       end
 
       it 'should subscribe users who have sent previous messages' do
-        subs = create(:subscription, :with_offer, message: message, user_id: reviewer.id)
-        subs.update(subscribable: message.messageable)
+        create(:message, sender: other_reviewer, messageable: message.messageable)
 
-        expect(message).to receive(:add_subscription).with('unread', reviewer.id)
+        expect(message).to receive(:add_subscription).with('unread', other_reviewer.id)
         message.subscribe_users_to_message
       end
 
       it 'should subscribe admin users processing the offer' do
-        message.messageable.reviewed_by_id = reviewer.id
+        message.messageable.reviewed_by_id = other_reviewer.id
 
-        expect(message).to receive(:add_subscription).with('unread', reviewer.id)
+        expect(message).to receive(:add_subscription).with('unread', other_reviewer.id)
         message.subscribe_users_to_message
       end
 
