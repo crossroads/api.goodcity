@@ -320,6 +320,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       let!(:donor) { create(:user) }
       let(:supervisor) { create(:user, :with_supervisor_role, :with_can_mention_users_permission) }
       let!(:order_administrator) { create(:user, :with_order_administrator_role, :with_can_mention_users_permission) }
+      let!(:stock_administrator) { create(:user, :with_stock_administrator_role, :with_can_mention_users_permission) }
+      let!(:stock_fulfilment) { create(:user, :with_stock_fulfilment_role, :with_can_mention_users_permission) }
       let!(:charity) { create(:user, :charity) }
       let!(:order_fulfilment) { create(:user, :order_fulfilment) }
       let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
@@ -365,12 +367,31 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       context 'stock app' do
-        it 'returns order_administrator and order_fulfilment users' do
+        before do
           generate_and_set_token(order_administrator)
+        end
 
-          get :mentionable_users, params: { order_id: order.id, roles: 'Order administrator, Order fulfilment' }
+        it 'returns order_administrator and order_fulfilment users' do
+          get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
           users = [[User.order_administrators.map(&:id), User.order_fulfilments.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
+        end
+
+        context 'when order_id params is not present' do
+          it 'returns stock_administrator and stock_fulfilment users' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+            expect(parsed_body['users']).to match_array(users)
+          end
+        end
+
+
+        context 'when order_id params is present' do
+          it 'returns user who created the order and the users belonging to the role' do
+            get :mentionable_users, params: {order_id: order.id, roles: 'Stock administrator, Stock fulfilment' }
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), charity.id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+            expect(parsed_body['users']).to match_array(users)
+          end
         end
       end
     end
