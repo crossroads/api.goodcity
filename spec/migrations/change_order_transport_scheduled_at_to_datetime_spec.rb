@@ -1,50 +1,24 @@
 require 'rails_helper'
 require 'active_record'
 
-require Rails.root.join('db/migrate/20181121040221_change_order_transport_scheduled_at_to_datetime')
-
 describe "Migrate OrderTransports to have scheduled_at as DateTime instead of date", type: :migration do
 
-  MIGRATION_VERSION = "20181121040221"
-
-  let(:migration) { ChangeOrderTransportScheduledAtToDatetime.new }
-
-  def migration_has_been_run?(version)
-    table_name = ActiveRecord::SchemaMigration.table_name
-    query = "SELECT version FROM %s WHERE version = '%s'" % [table_name, version]
-    ActiveRecord::Base.connection.execute(query).any?
-  end
+  let(:migration) { load_migration('20181121040221_change_order_transport_scheduled_at_to_datetime') }
 
   before do
-    ActiveRecord::Migration.verbose = false
-    if migration_has_been_run?(MIGRATION_VERSION)
-      migration.migrate(:down)
-    end
+    migration.down if migration.has_run?
   end
 
   after do
-    ActiveRecord::Migration.verbose = true
-    unless migration_has_been_run?(MIGRATION_VERSION)
-      migration.migrate(:up)
-    end
+    migration.up unless migration.has_run?
   end
 
   def type_of(column)
-    res = ActiveRecord::Base.connection.execute <<-SQL
-      SELECT data_type
-      FROM information_schema.columns
-      WHERE table_name = 'order_transports' and column_name = '#{column}'
-    SQL
-    res.first['data_type']
+    open_table(:order_transports).column_type(column)
   end
 
   def get_column_for_id(column, id)
-    res = ActiveRecord::Base.connection.execute <<-SQL
-      SELECT #{column}
-      FROM order_transports
-      WHERE id = #{id}
-    SQL
-    return res.first[column]
+    open_table(:order_transports).column_value(id, column)
   end
 
   it 'Should change the type of scheduled_at from Date to DateTime' do
