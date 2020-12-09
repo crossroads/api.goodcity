@@ -13,6 +13,10 @@ Rails.application.routes.draw do
       post "auth/verify",   to: "authentication#verify"
       post "auth/hasura",   to: "authentication#hasura"
 
+      resources :users do
+        get :me, on: :collection
+      end
+      
       get "shared/:model",      to: "shareables#list"
       get "shared/:model/:uid", to: "shareables#find"
     end
