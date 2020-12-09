@@ -5,7 +5,7 @@ module Api::V1
     attributes :id, :body, :state, :is_private, :created_at,
                :updated_at, :messageable_type,
                :messageable_id, :lookup, :offer_id,
-               :item_id, :designation_id, :order_id
+               :item_id, :designation_id, :order_id, :recipient_id
 
     has_one :sender, serializer: UserSerializer, root: :user
 
