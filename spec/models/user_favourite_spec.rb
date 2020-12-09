@@ -21,11 +21,10 @@ RSpec.describe UserFavourite, type: :model do
       User.current_user = user 
     }
 
-    it 'creates user_favourites record for model' do
+    it 'creates user_favourites record for model and its associations' do
       package_type = create :package_type 
-      package = create :package, package_type: package_type
+      package = create :package, package_type_id: package_type.id
       expect(UserFavourite.count).to eq(2)
-      expect(UserFavourite.pluck(:favourite_id)).to include(package.id)
     end
 
     it 'creates user_favourites record for models relationships assigned to "auto_favourite_relations"' do

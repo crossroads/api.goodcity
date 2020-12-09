@@ -7,7 +7,7 @@ RSpec.describe Api::V1::UserFavouritesController, type: :controller do
   let!(:user_favourite1) { create(:user_favourite) }
   let(:parsed_body) { JSON.parse(response.body) }
 
-  describe "GET user_favourit" do
+  describe "GET user_favourite" do
     before(:each) do
       generate_and_set_token(user) 
       current_user = user
