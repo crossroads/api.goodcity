@@ -37,6 +37,7 @@ RSpec.configure do |config|
   Kernel.srand 852
 
   config.include ControllerMacros, type: :controller
+  config.include MigrationHelpers, type: :migration
   config.include ActiveJob::TestHelper
   config.include LocaleSwitcher
   config.include Touch
