@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 context Api::V2::GoodcitySerializer do
+  SERIALIZER_DEFAULT_OPTS = {}
 
   describe 'String options parsing' do
     let(:model) { :user }
@@ -17,6 +18,29 @@ context Api::V2::GoodcitySerializer do
           "{roles}.*"                   => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:name, :level]}}
         }.each do |input, expected_res|
           expect(Api::V2::GoodcitySerializer.parse_include_paths(model, input)).to eq(expected_res)
+        end
+      end
+
+      describe "whitelist" do
+        it "removes relationships if they are not present in the whitelist" do
+          whitelist = { users: [:first_name, :last_name] }
+          serializer_options = Api::V2::GoodcitySerializer.parse_include_paths(model, 'roles.*,', { whitelist: whitelist })
+          expect(serializer_options[:include]).not_to include('roles')
+        end
+
+        it "removes fields if they are not present in the whitelist" do
+          whitelist = { users: [:first_name, :last_name] }
+          serializer_options = Api::V2::GoodcitySerializer.parse_include_paths(model, '*', { whitelist: whitelist })
+          expect(serializer_options[:include]).to eq([])
+          expect(serializer_options[:fields][:user]).to eq([:first_name, :last_name])
+        end
+
+        it "removes fields of relationships if they are not present in the whitelist" do
+          whitelist = { roles: [:name], users: [:first_name, :last_name] }
+          serializer_options = Api::V2::GoodcitySerializer.parse_include_paths(model, 'roles.name,roles.level,first_name,mobile', { whitelist: whitelist })
+          expect(serializer_options[:include]).to eq([:roles])
+          expect(serializer_options[:fields][:user]).to eq([:first_name]) # mobile was removed
+          expect(serializer_options[:fields][:role]).to eq([:name]) # level was removed
         end
       end
     end
@@ -40,6 +64,4 @@ context Api::V2::GoodcitySerializer do
       end
     end
   end
-
-
 end

@@ -227,6 +227,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
+    guid (0.1.1)
     hashdiff (1.0.1)
     hashie (4.1.0)
     http-accept (1.7.0)
@@ -543,6 +544,7 @@ DEPENDENCIES
   go_go_van_api!
   grape-swagger-rails
   guard-rspec
+  guid
   http_accept_language
   jsonapi-serializer
   jwt (~> 2.2.2)

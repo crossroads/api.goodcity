@@ -43,9 +43,9 @@ module Api
       # Helpers
       # ------------------------
 
-      def serializer_options(model)
+      def serializer_options(model, opts)
         return {} unless params[:include].present?
-        GoodcitySerializer.parse_include_paths(model, params[:include])
+        GoodcitySerializer.parse_include_paths(model, params[:include], opts)
       end
 
       def render_error(error_message, code: 422)

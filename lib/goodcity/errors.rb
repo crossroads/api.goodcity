@@ -38,6 +38,8 @@ module Goodcity
 
   class ExternalServiceError < BaseError; end
 
+  class UnsupportedError < BaseError; end
+
   # ----------------------------
   # Generic
   # ----------------------------
