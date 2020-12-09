@@ -13,8 +13,7 @@ module Api
 
       api :GET, '/v1/user_favourites', "Fetches user_favourites"
       def index
-        user_favourites = @user_favourites.where(user_id: current_user.id)
-        render json: user_favourites, each_serializer: serializer
+        render json: @user_favourites, each_serializer: serializer
       end
 
       private

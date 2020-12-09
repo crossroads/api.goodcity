@@ -2,8 +2,7 @@ module AutoFavourite
   extend ActiveSupport::Concern
   
   included do
-    after_create  :mark_recent_usage
-    after_update  :mark_recent_usage
+    before_save   :mark_recent_usage
     after_destroy :remove_from_favourites
     
     scope :recently_used, -> (user_id) {
@@ -35,7 +34,7 @@ module AutoFavourite
       rel = self.try(name)
       if rel.present?
         foreign_key = self._reflections[name].foreign_key
-        UserFavourite.add_user_favourite(rel) #if self["#{foreign_key}_changed?"].present?
+        UserFavourite.add_user_favourite(rel) if self.new_record? || self.send("#{foreign_key}_changed?")
       end
     end
   end
