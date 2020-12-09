@@ -50,18 +50,50 @@ module Api::V2
       end
 
       #
+      # Given a certain configuration and a whitelist, removes all the relationships and fields which are not allowed
+      #
+      # @param [Hash] config the json serializer config
+      # @param [Hash] whitelist a map of model to array of fields, describing what is permitted per model
+      #
+      # @return [Hash] the whitelisted configuration
+      #
+      def apply_config_whitelist(config, whitelist)
+        return config unless whitelist
+
+        models    = whitelist.keys
+        included  = (config.dig(:include) || []).select { |m| m.in?(models) }
+
+        fields = models.reduce({}) do |res, model|
+          model_singular  = model.to_s.singularize.to_sym
+          selected_fields = config.dig(:fields, model_singular)
+
+          next res unless selected_fields.present?
+
+          allowed = whitelist[model] || []
+          res[model_singular] = selected_fields if allowed == '*'
+          res[model_singular] = selected_fields.select { |f| f.in?(allowed) } if allowed.is_a?(Array) if allowed.is_a?(Array)
+          res[model_singular] ||= []
+          res
+        end
+
+        { include: included, fields: fields }
+      end
+
+      #
       # Generates FastJSON Serializer options based on a query string
       #
       # e.g /users?include=first_name,last_name,roles.*,orders.code
       #
       # @param [Symbol] root_model the root serializer model e.g :user
       # @param [String] str the include string to parse
+      # @param [Hash] opts options
+      # @param [Hash] opts.whitelist a map of model to array of fields, describing what is permitted per model
       #
       # @return [Hash] The fast_jsonapi options
       #
-      def parse_include_paths(root_model, str)
-        return {} if str.blank?
-      
+      def parse_include_paths(root_model, str, opts = {})      
+        return apply_config_whitelist({}, opts[:whitelist]) if str.blank?
+
         fields    = { root_model => [] }
         includes  = []
 
@@ -83,10 +115,10 @@ module Api::V2
           end
         end
 
-        {
+        apply_config_whitelist({
           include:  includes.uniq.each(&:to_sym),
           fields:   fields.transform_values { |arr| arr.flatten.uniq }
-        }
+        }, opts[:whitelist])
       end
     end
   end
