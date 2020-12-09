@@ -23,6 +23,7 @@ module Api
           param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
           param :state, String, desc: "Current User's Subscription State e.g. unread, read "
           param :order_id, String, desc: "Order id on which message is created", allow_nil: true
+          param :recipient_id, String, desc: "Specific user id to subscribe the message to", allow_nil: true
         end
       end
 
@@ -154,7 +155,8 @@ module Api
         params.require(:message).permit(
           :body, :is_private,
           :messageable_type,
-          :messageable_id
+          :messageable_id,
+          :recipient_id
         )
       end
     end
