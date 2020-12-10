@@ -262,4 +262,38 @@ context OrderFulfilmentOperations do
       end
     end
   end
+
+  describe 'Bug recreation' do
+    describe 'PackagesLocation sync issue prevented dispatch' do
+      let(:location) { create(:location) }
+      let(:location2) { create(:location) }
+      let(:package) { create(:package, :with_inventory_number, received_quantity: 1) }
+      let(:order1) { create(:order, state: 'dispatching') }
+      let(:order2) { create(:order, state: 'dispatching') }
+      let(:order3) { create(:order, state: 'dispatching') }
+      let(:order4) { create(:order, state: 'dispatching') }
+      let(:orders_package1) { create(:orders_package, state: 'designated', package_id: package.id, order: order1, quantity: 128) }
+      let(:orders_package2) { create(:orders_package, state: 'designated', package_id: package.id, order: order2, quantity: 48) }
+      let(:orders_package3) { create(:orders_package, state: 'designated', package_id: package.id, order: order3, quantity: 92) }
+      let(:orders_package4) { create(:orders_package, state: 'designated', package_id: package.id, order: order4, quantity: 82) }
+
+      before do
+        initialize_inventory(package, location: location)
+        Package::Operations::register_gain(package, quantity: 379, location: location)
+        Package::Operations.move(30, package, from: location, to: location2)
+        touch(orders_package1, orders_package2, orders_package3, orders_package4)
+        PackagesInventory::Computer.update_package_quantities!(package)
+        expect(package.on_hand_quantity).to eq(380)
+        expect(package.available_quantity).to eq(30)
+        expect(package.designated_quantity).to eq(350)
+        expect(package.dispatched_quantity).to eq(0)
+      end
+
+      it 'should dispatche correctly' do
+        expect {   
+          OrdersPackage::Operations.dispatch(orders_package1.reload, quantity: 128, from_location: location)
+        }.not_to raise_error
+      end
+    end
+  end
 end
