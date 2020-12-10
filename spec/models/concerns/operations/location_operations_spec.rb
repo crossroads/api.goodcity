@@ -6,13 +6,16 @@ context LocationOperations do
     let(:dispatch_location) { create(:location, :dispatched) }
     let(:src_location) { create(:location) }
     let(:dest_location) { create(:location) }
-    let(:pkg_loc) { create(:packages_location, location: src_location, quantity: 30) }
-    let(:pkg) { pkg_loc.package }
+    let(:pkg) { create(:package, :with_inventory_number, received_quantity: 30) }
+    let(:pkg_loc) { PackagesLocation.find_by(package: pkg, location: src_location) }
     let(:subject) {
       Class.new { include LocationOperations }
     }
 
-    before { touch(pkg) }
+    before do
+      initialize_inventory(pkg, location: src_location)
+      expect(pkg_loc.quantity).to eq(30)
+    end
 
     def move(qty, from: src_location, to: dest_location)
       subject::Operations::move(qty, pkg,
@@ -21,9 +24,9 @@ context LocationOperations do
     end
 
     context 'to a destination which already has some packages' do
-      let!(:dest_pkg_loc) {
-        create :packages_location, package: pkg_loc.package, location: dest_location, quantity: 2
-      }
+      before { Package::Operations::register_gain(pkg, quantity: 2, location: dest_location) }
+
+      let(:dest_pkg_loc) { PackagesLocation.find_by(package: pkg, location: dest_location) }
 
       it 'subtracts the quantity from the source location' do
         expect { move(15) }.to change {

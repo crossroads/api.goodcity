@@ -301,8 +301,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     let!(:location1) { create :location }
     let!(:location2) { create :location }
-    let!(:package) { create :package, received_quantity: 1 }
-    let!(:packages_location) { create(:packages_location, package: package, location: location1, quantity: 5) }
+    let!(:package) { create :package, :with_inventory_number, received_quantity: 5 }
+
+    before { initialize_inventory(package, location: location1) }
 
     it 'moves the entire quantity to the desired location' do
       expect(package.packages_locations.length).to eq(1)
@@ -337,7 +338,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'updates existing packages_location with the moved quantity' do
-      create(:packages_location, package: package, quantity: 1, location: location2)
+      Package::Operations::register_gain(package, quantity: 1, location: location2)
 
       expect(package.packages_locations.length).to eq(2)
       expect(package.packages_locations.first.location).to eq(location1)
@@ -1472,21 +1473,21 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       @package = create :package
       @location = create :location
       @package = create(:package, :with_inventory_number, received_quantity: 20)
-      create(:packages_location, package: @package, location: @location, quantity: 20)
+      initialize_inventory(@package, location: @location)
     end
 
     it 'performs loss action on package' do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
       put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 2,
-                            from: @location.id,
-                            action_name: "loss",
-                            description: "Loss action on Package",
-                          }
-                        }
+        params: {
+          id: @package.id,
+          quantity: 2,
+          from: @location.id,
+          action_name: "loss",
+          description: "Loss action on Package",
+        }
+      }
 
       expect(response.status).to eq(200)
       expect(@package.packages_locations.first.quantity).to eq(18)
@@ -1549,7 +1550,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       generate_and_set_token(user)
       @location = create :location
       @package = create(:package, :with_inventory_number, received_quantity: 20)
-      create(:packages_location, package: @package, location: @location, quantity: 20)
+      initialize_inventory(@package, location: @location)
     end
 
     it 'returns package details' do

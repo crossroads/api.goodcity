@@ -42,7 +42,7 @@ RSpec.describe PackagesLocation, type: :model do
       expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels.length).to eq(1)
         expect(channels).to eq([ Channel::STOCK_CHANNEL ])
-      end.twice
+      end
       package_location.quantity = 2
       package_location.save
     end
@@ -51,7 +51,7 @@ RSpec.describe PackagesLocation, type: :model do
       expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels.length).to eq(2)
         expect(channels).to eq([ Channel::STOCK_CHANNEL, Channel::STAFF_CHANNEL ])
-      end.twice
+      end
       package_location_from_donor.quantity = 2
       package_location_from_donor.save
     end
