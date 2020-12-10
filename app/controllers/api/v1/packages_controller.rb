@@ -392,7 +392,6 @@ module Api
           :state, :state_event, :stockit_designated_on,
           :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
-          packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
                               computer_accessory_attributes, medical_attributes].flatten.uniq
         ]
