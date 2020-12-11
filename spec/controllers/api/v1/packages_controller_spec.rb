@@ -688,6 +688,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     context "create package from gc with sub detail" do
       let!(:location) { create :location }
       let!(:code) { create :package_type }
+      let!(:box) { create :storage_type, :with_box }
+      let!(:pallet) { create :storage_type, :with_pallet }
+      let!(:pkg_storage) { create :storage_type, :with_pkg }
+
       let(:computer_params) { FactoryBot.attributes_for(:computer) }
       let(:stockit_item_params) {
         {
@@ -724,13 +728,28 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
 
       describe "creating package with detail" do
-        it "creates package with detail" do
+        it "creates package with detail if storage type is package" do
+          package_params_with_details[:storage_type]="Package"
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(201)
           package = Package.last
           expect(parsed_body["package"]["id"]).to eq(package.id)
           expect(parsed_body["package"]["detail_type"]).to eq(package.detail_type)
           expect(parsed_body["package"]["detail_id"]).to eq(package.detail_id)
+        end
+
+        it "does not creates package with detail if storage type is Box" do
+          package_params_with_details[:storage_type]="Box"
+          post :create, params: { package: package_params_with_details }
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to_not be_nil
+        end
+
+        it "does not creates package with detail if storage type is Pallet" do
+          package_params_with_details[:storage_type]="Pallet"
+          post :create, params: { package: package_params_with_details }
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to_not be_nil
         end
 
         it "does not create package with detail if anything fails in package" do
