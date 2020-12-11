@@ -26,6 +26,7 @@ module OfferFiltering
     def self.priority
       where <<-SQL
         (offers.state = 'scheduled' AND schedules.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
+        (offers.state = 'submitted' AND submitted_at::timestamptz < '#{12.hours.ago}') OR
         (offers.state = 'reviewed' AND review_completed_at::timestamptz < '#{48.hours.ago}') OR
         (offers.state = 'under_review' AND reviewed_at::timestamptz < '#{24.hours.ago}') OR
         (offers.state = 'receiving' AND start_receiving_at::timestamptz < timestamptz '#{last_6pm}')

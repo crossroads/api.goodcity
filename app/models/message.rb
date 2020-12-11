@@ -1,3 +1,32 @@
+#
+# Message Model
+#
+# Messages have a few important fields:
+#   - messageable           A goodcity record (e.g offer) being discussed
+#   - sender_id             The person sending the message
+#   - recipient_id (opt)    Some outsider you're discussing the record with
+#   - is_private            Whether the message is internal (within staff members) or not
+#
+# There are 2 kinds of messages, 'private' and 'public' messages.
+#
+# > Private Messages
+#   Those messages are destined to Crossroads staff members, they relate to a record (e.g an offer) of Goodcity
+#   Other users, such as the donor of the offer, never hear about them
+#
+#   >> Expectations
+#     - Sender is always an entitled staff member (at time of creation)
+#     - Recipient is ALWAYS NULL
+#
+# > Public Messages
+#   These messages are between Crossroads staff members and users. The current use cases are
+#     - Staff members want to talk to a donor about one of their offers
+#     - Staff members want to talk to a charity ABOUT one offer
+#
+#   >> Expectations
+#     - Sender is an entitled staff member OR a user
+#     - Recipient should be PRESENT -- Will be defaulted to the owner of the record if not
+#
+#
 class Message < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :messageable }
 
@@ -8,6 +37,7 @@ class Message < ApplicationRecord
   include Mentionable
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
+  belongs_to :recipient, class_name: "User"
 
   belongs_to :messageable, polymorphic: true
   has_many :subscriptions, dependent: :destroy
@@ -22,6 +52,9 @@ class Message < ApplicationRecord
   scope :filter_by_order_id, ->(order_id) { where(messageable_id: order_id.split(","), messageable_type: "Order") }
   scope :filter_by_item_id, ->(item_id) { where(messageable_id: item_id.split(","), messageable_type: "Item") }
   scope :filter_by_package_id, ->(package_id) { where(messageable_id: package_id.split(","), messageable_type: "Package") }
+  scope :from_humans, ->() { where.not(sender_id: non_human_senders) }
+
+  before_save :resolve_recipient
 
   # used to override the state value during serialization
   attr_accessor :state_value, :is_call_log
@@ -34,10 +67,8 @@ class Message < ApplicationRecord
 
   after_destroy :notify_deletion_to_subscribers
 
-  def self.default_scope
-    return if User.current_user.try(:can_manage_private_messages?)
-
-    where('is_private = false')
+  def self.non_human_senders
+    [User.system_user.try(:id), User.stockit_user.try(:id)].compact
   end
 
   def parsed_body
@@ -70,5 +101,27 @@ class Message < ApplicationRecord
   # Deprication: This will be removed
   def related_object
     @_obj ||= messageable.instance_of?(Item) ? messageable.offer : messageable
+  end
+
+  #
+  # To ensure backwards compatibility, when a message is saved without a recipient we detect that and use the record to infer it
+  #
+  def resolve_recipient
+    if recipient_id.present?
+      raise Goodcity::ValidationError.new(I18n.t('messages.no_private_recipient')) if is_private
+    elsif managed_by?(sender)
+      # > A staff member created a message with no recipient, we default to the donor
+      self.recipient_id = messageable_owner_id unless is_private
+    end
+  end
+
+  def messageable_owner_id
+    resolvers = {
+      'Offer' => ->(obj) { obj.try(:created_by_id) },
+      'Order' => ->(obj) { obj.try(:created_by_id) },
+      'Item'  => ->(obj) { obj.try(:offer).try(:created_by_id) }
+    }
+  
+    resolvers[messageable_type].try(:call, messageable)
   end
 end

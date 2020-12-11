@@ -28,6 +28,7 @@ class ResyncDuplicateUsers
         Order.where(created_by_id: bad_ids).each do |order|
           order.update(created_by_id: original_user.id)
           order.messages.where(sender_id: bad_ids).update_all(sender_id: original_user.id)
+          order.messages.where(recipient_id: bad_ids).update_all(recipient_id: original_user.id)
           order.subscriptions.where(user_id: bad_ids).update_all(user_id: original_user.id)
         end
   

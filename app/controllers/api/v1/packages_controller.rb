@@ -227,7 +227,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location associated_package_types storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
+        params_for_filter = %w[state location associated_package_types_for storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -326,12 +326,16 @@ module Api
       def contained_packages
         container = @package
         contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
-        render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
+        response = ActiveModel::ArraySerializer.new(contained_pkgs, each_serializer: stock_serializer,
+          include_items: true,
           include_orders_packages: false,
           include_packages_locations: true,
           include_storage_type: false,
           include_donor_conditions: false,
           root: "items"
+        ).as_json
+        meta = { total_count: Package.total_quantity_in(container.id) }
+        render json: { meta: meta }.merge(response)
       end
 
       api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"

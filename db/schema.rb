@@ -369,6 +369,8 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
     t.string "messageable_type"
     t.integer "messageable_id"
     t.jsonb "lookup", default: {}
+    t.integer "recipient_id"
+    t.index ["body"], name: "messages_body_search_idx", using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
@@ -693,6 +695,7 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
     t.index ["package_set_id"], name: "index_packages_on_package_set_id"
     t.index ["package_type_id"], name: "index_packages_on_package_type_id"
     t.index ["pallet_id"], name: "index_packages_on_pallet_id"
+    t.index ["state"], name: "index_packages_on_state", using: :gin
     t.index ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id"
     t.index ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id"
     t.index ["stockit_sent_by_id"], name: "index_packages_on_stockit_sent_by_id"
@@ -1040,6 +1043,7 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
   add_foreign_key "items", "package_types", name: "items_package_type_id_fk"
   add_foreign_key "items", "rejection_reasons", name: "items_rejection_reason_id_fk"
   add_foreign_key "medicals", "countries", name: "medicals_country_id_fk"
+  add_foreign_key "messages", "users", column: "recipient_id"
   add_foreign_key "messages", "users", column: "sender_id", name: "messages_sender_id_fk"
   add_foreign_key "offers", "cancellation_reasons", name: "offers_cancellation_reason_id_fk"
   add_foreign_key "offers", "companies", name: "offers_company_id_fk"

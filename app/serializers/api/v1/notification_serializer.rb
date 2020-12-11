@@ -3,7 +3,7 @@ module Api::V1
     attributes :unread_count
 
     def unread_count
-      record = Message.unscoped.select("count(subscriptions.state)")
+      record = Message.select("count(subscriptions.state)")
         .joins("INNER JOIN subscriptions on messages.id = subscriptions.message_id")
         .where(
           subscriptions: {state: "unread", user_id: User.current_user.id},

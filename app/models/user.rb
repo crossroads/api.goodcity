@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   include ManageUserRoles
   include FuzzySearch
+  include Mentionable
 
   # --------------------
   # Configuration
@@ -107,6 +108,11 @@ class User < ApplicationRecord
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
   scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
   scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
+  scope :with_permissions, ->(perm) {
+    active.joins(roles: [:permissions])
+      .where(permissions: { name: perm } )
+      .where('user_roles.expires_at > now() OR user_roles.expires_at IS NULL')
+  }
 
   # --------------------
   # Methods
@@ -240,11 +246,6 @@ class User < ApplicationRecord
 
   def can_disable_user?(id = nil)
     has_permission?("can_disable_user") && User.current_user.id != id&.to_i
-  end
-
-  def can_manage_private_messages?
-    (user_permissions_names &
-    ["can_manage_offer_messages", "can_manage_order_messages", "can_manage_package_messages"]).any?
   end
 
   def downcase_email

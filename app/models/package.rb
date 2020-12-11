@@ -147,6 +147,10 @@ class Package < ApplicationRecord
     PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
   end
 
+  def self.total_quantity_in(pkg_id)
+    PackagesInventory::Computer.total_quantity_in(pkg_id)
+  end
+
   def designation
     orders_packages.designated.first
   end
@@ -244,10 +248,6 @@ class Package < ApplicationRecord
       current_image.update_column(:favourite, true)
       self.favourite_image_id = current_image.id
     end
-  end
-
-  def singleton_package?
-    received_quantity == 1
   end
 
   def storage_type_name
