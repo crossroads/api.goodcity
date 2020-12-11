@@ -89,8 +89,7 @@ class Package < ApplicationRecord
 
   attr_accessor :skip_set_relation_update, :request_from_admin, :detail_attributes
 
-  auto_favourite                              # the package will be auto-favourited
-  auto_favourite_relations ['package_type']   # the package_type will be auto-favourited when changed
+  auto_favourite(relations: ['package_type'], enabled: true)
 
   # ---------------------
   # Computed properties

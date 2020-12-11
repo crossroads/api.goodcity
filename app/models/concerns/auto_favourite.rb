@@ -4,21 +4,17 @@ module AutoFavourite
   included do
     before_save   :mark_recent_usage
     after_destroy :remove_from_favourites
-    
+
     scope :recently_used, -> (user_id) {
-      joins(%{
-        LEFT JOIN user_favourites ON user_favourites.favourite_type = '#{self.class.name}' AND user_favourites.user_id = #{user_id}
-      }).order('user_favourites.updated_at').limit(20)
+      UserFavourite.where(favourite_type: self.class.name, user_id: user_id).order('updated_at desc')
     }
   end
   
   class_methods do
     @@auto_favourite_relations = false
-    def auto_favourite(enabled = true)
+
+    def auto_favourite(relations: [], enabled: true)
       @@auto_favourite_enabled = enabled
-    end
-    
-    def auto_favourite_relations(relations = [])
       @@auto_favourite_relations = relations
     end
   end
