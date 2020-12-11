@@ -100,15 +100,6 @@ class OrdersPackage < ApplicationRecord
       orders_package.sent_on    =  Time.now
       orders_package.updated_by =  User.current_user
     end
-
-    after_transition on: :dispatch, do: :delete_packages_locations
-  end
-
-  # Once a package is dispatched, remove the location entry
-  def delete_packages_locations
-    if package.singleton_package?
-      package.packages_locations.destroy_all
-    end
   end
 
   def undispatch_orders_package

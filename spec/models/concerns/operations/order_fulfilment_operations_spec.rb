@@ -42,7 +42,7 @@ context OrderFulfilmentOperations do
 
         it 'fails due to the order being unprocessed' do
           expect {
-            subject::Operations::dispatch(orders_package, from_location: pkg.locations.first, quantity: orders_package.quantity)
+            subject::Operations::dispatch(orders_package, from_location: location, quantity: orders_package.quantity)
           }.to raise_error(
             Goodcity::OperationsError
           ).with_message('Cannot dispatch packages from an unprocessed order')
@@ -63,18 +63,24 @@ context OrderFulfilmentOperations do
           before do
             touch(orders_package)
             touch(inventory_length_before)
-            subject::Operations::dispatch(orders_package, from_location: pkg.locations.first, quantity: orders_package.quantity)
           end
 
+          def apply_dispatch!
+            subject::Operations::dispatch(orders_package, from_location: location, quantity: orders_package.quantity)
+          end 
+
           it 'does not move the packages to the dispatch location' do
+            apply_dispatch!
             expect(PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)).to be_nil
           end
 
           it "removes the package's original location" do
+            apply_dispatch!
             expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
           end
 
           it 'records a DISPATCH action in the inventory' do
+            apply_dispatch!
             expect(inventory_rows_added).to eq(1)
 
             row = PackagesInventory.last
@@ -84,8 +90,27 @@ context OrderFulfilmentOperations do
           end
 
           it "sets the sent_on field" do
+            apply_dispatch!
             expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
             expect(orders_package.reload.sent_on).not_to be_nil
+          end
+
+          context 'with multiple locations' do
+            let(:other_location) { create(:location) }
+
+            before { Package::Operations::register_gain(pkg, quantity: 10, location: other_location) }
+
+            it 'does not affect other locations' do
+              expect(PackagesInventory::Computer.package_quantity(pkg, location: location)).to eq(30)
+              expect(PackagesInventory::Computer.package_quantity(pkg, location: other_location)).to eq(10)
+              expect(pkg.reload.packages_locations.count).to eq(2)
+
+              apply_dispatch!
+
+              expect(PackagesInventory::Computer.package_quantity(pkg, location: location)).to eq(0)
+              expect(PackagesInventory::Computer.package_quantity(pkg, location: other_location)).to eq(10)
+              expect(pkg.reload.packages_locations.count).to eq(1)
+            end
           end
         end
       end
@@ -259,6 +284,40 @@ context OrderFulfilmentOperations do
         expect { undispatch_partial }.to change {
           orders_package.reload.state
         }.from('dispatched').to('designated')
+      end
+    end
+  end
+
+  describe 'Bug recreation' do
+    describe 'all PackagesLocation are deleted after any dispatch if received_quantity = 1' do
+      let(:location) { create(:location) }
+      let(:location2) { create(:location) }
+      let(:package) { create(:package, :with_inventory_number, received_quantity: 1) }
+      let(:order1) { create(:order, state: 'dispatching') }
+      let(:order2) { create(:order, state: 'dispatching') }
+      let(:order3) { create(:order, state: 'dispatching') }
+      let(:order4) { create(:order, state: 'dispatching') }
+      let(:orders_package1) { create(:orders_package, state: 'designated', package_id: package.id, order: order1, quantity: 128) }
+      let(:orders_package2) { create(:orders_package, state: 'designated', package_id: package.id, order: order2, quantity: 48) }
+      let(:orders_package3) { create(:orders_package, state: 'designated', package_id: package.id, order: order3, quantity: 92) }
+      let(:orders_package4) { create(:orders_package, state: 'designated', package_id: package.id, order: order4, quantity: 82) }
+
+      before do
+        initialize_inventory(package, location: location)
+        Package::Operations::register_gain(package, quantity: 379, location: location)
+        Package::Operations.move(30, package, from: location, to: location2)
+        touch(orders_package1, orders_package2, orders_package3, orders_package4)
+        PackagesInventory::Computer.update_package_quantities!(package)
+        expect(package.on_hand_quantity).to eq(380)
+        expect(package.available_quantity).to eq(30)
+        expect(package.designated_quantity).to eq(350)
+        expect(package.dispatched_quantity).to eq(0)
+      end
+
+      it 'should dispatche correctly' do
+        expect {   
+          OrdersPackage::Operations.dispatch(orders_package1.reload, quantity: 128, from_location: location)
+        }.not_to raise_error
       end
     end
   end

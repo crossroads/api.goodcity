@@ -246,10 +246,6 @@ class Package < ApplicationRecord
     end
   end
 
-  def singleton_package?
-    received_quantity == 1
-  end
-
   def storage_type_name
     storage_type&.name
   end
