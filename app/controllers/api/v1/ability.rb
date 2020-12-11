@@ -187,11 +187,15 @@ module Api
         can %i[index show create notifications], Message, messageable_type: 'Item' if can_manage_offer_messages?
         can %i[index show create notifications], Message, messageable_type: 'Order' if can_manage_order_messages?
         can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
-        can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
+        can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
+        can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+        can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+ 
         # Normal users can create non private messages on objects they own
         can :create, Message do |message|
-          @user_id != nil && !message.is_private && message.related_object&.created_by_id == @user_id
+          next false if message.recipient_id && message.recipient_id != @user_id # e.g donor is trying to contact another donor
+          @user_id != nil && !message.is_private && message.messageable_owner_id == @user_id
         end
       end
 
@@ -207,6 +211,8 @@ module Api
           can [:index, :show, :update, :complete_review, :close_offer, :search,
             :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer, :resume_receiving], Offer
         end
+
+        can [:search], Offer if can_search_offers?
       end
 
       def offers_package_abilities

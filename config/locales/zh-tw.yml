@@ -29,6 +29,8 @@ zh-tw:
     mobile_exists: 這個電話號碼已存在。
     invalid_mobile: 對不起，您的電話號碼並不正確。
     invalid_pin: 驗證碼不正確。
+  messages:
+    no_private_recipient: Private messages cannot have a recipient
   box_pallet:
     errors:
       invalid_quantity: 增加份量不可多於可用份量
