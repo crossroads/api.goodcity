@@ -17,7 +17,6 @@ RSpec.describe UserFavourite, type: :model do
   describe '#add_user_favourite' do
 
     before { 
-      Package.auto_favourite_relations ['package_type']
       User.current_user = user 
     }
 

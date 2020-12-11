@@ -38,8 +38,8 @@ class UserFavourite < ApplicationRecord
         favourite: record,
         persistent: persistent
       ).first_or_initialize do |fav|
-        fav.save  if fav.new_record?
-        fav.touch if fav.persisted?
+        fav.updated_at = Time.now
+        fav.save
       end
     end
     
