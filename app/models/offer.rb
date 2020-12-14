@@ -3,7 +3,7 @@ class Offer < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdates
-
+  include ShareSupport
   include OfferSearch
   include OfferFiltering
 
@@ -35,6 +35,13 @@ class Offer < ApplicationRecord
   has_many :offers_packages
   has_many :packages, through: :offers_packages
   has_many :messages, as: :messageable, dependent: :destroy
+
+  #
+  # Sharing support
+  #
+  public_context do
+    has_many :items, -> { publicly_shared }
+  end
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
 
