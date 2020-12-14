@@ -24,4 +24,8 @@ module ControllerMacros
       iat: Time.current.to_i
     }
   end
+
+  def response_json
+    JSON.parse(response.body)
+  end
 end
