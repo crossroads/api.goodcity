@@ -278,6 +278,7 @@ module Api
           quantity: params[:quantity].to_i,
           location: params[:from],
           action: params[:action_name],
+          processing_destination_lookup_id: params[:processing_destination_lookup_id],
           description: params[:description])
 
         send_stock_item_response
