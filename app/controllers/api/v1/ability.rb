@@ -54,6 +54,11 @@ module Api
         printer_abilities
         offers_package_abilities
         canned_response_abilities
+        processing_destination_lookup_abilities
+      end
+
+      def processing_destination_lookup_abilities
+        can :index, ProcessingDestinationsLookup if can_read_processing_destination_lookup?
       end
 
       def printer_abilities

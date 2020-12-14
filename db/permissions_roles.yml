@@ -90,6 +90,7 @@ Stock fulfilment: &stock_fulfilment
 - can_read_users
 - can_manage_organisations
 - can_update_my_printers
+- can_read_processing_destination_lookup
 
 Stock administrator:
 - *stock_fulfilment
@@ -133,6 +134,7 @@ Order fulfilment: &order_fulfilment
 - can_manage_package_messages
 - can_manage_organisations
 - can_update_my_printers
+- can_read_processing_destination_lookup
 
 Order administrator:
 - *order_fulfilment

@@ -114,7 +114,7 @@ module StockOperations
     # @param [String] action: the inventory action (optional)
     # @param [String] description: notes to detail the action
     #
-    def register_quantity_change(package, quantity:, location:, action:, description: nil, source: nil)
+    def register_quantity_change(package, quantity:, location:, action:, description: nil, source: nil, processing_destination_lookup_id: nil)
       return package if quantity.zero?
 
       params = {
@@ -124,6 +124,8 @@ module StockOperations
         description: description,
         source: source
       }
+
+      params[:source] = ProcessingDestinationsLookup.find_by(id: processing_destination_lookup_id) if action == PackagesInventory::Actions::PROCESS
 
       if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)
         register_loss(package, params)
