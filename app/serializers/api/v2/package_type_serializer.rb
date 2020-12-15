@@ -1,6 +1,6 @@
 module Api::V2
-  class PackageTypeSerializer
-    include FastJsonapi::ObjectSerializer
+  class PackageTypeSerializer < GoodcitySerializer
+
 
     # ----------------------------
     #   Attributes

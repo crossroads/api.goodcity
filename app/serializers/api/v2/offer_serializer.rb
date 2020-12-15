@@ -1,6 +1,5 @@
 module Api::V2
-  class OfferSerializer
-    include FastJsonapi::ObjectSerializer
+  class OfferSerializer < GoodcitySerializer
 
     # ----------------------------
     #   Attributes
@@ -18,6 +17,7 @@ module Api::V2
     # ----------------------------
 
     has_many :items
+    has_many :images
     has_one  :closed_by, serializer: UserSerializer
     has_one  :created_by, serializer: UserSerializer
     has_one  :reviewed_by, serializer: UserSerializer

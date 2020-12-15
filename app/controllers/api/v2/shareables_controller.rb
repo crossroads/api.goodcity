@@ -1,17 +1,19 @@
 module Api
   module V2
     class ShareablesController < Api::V2::ApiController
-      skip_before_action :validate_token
-      skip_authorization_check
+      load_and_authorize_resource :shareables, parent: false, except: [:resource_index, :resource_show]
+      skip_before_action :validate_token, only: [:resource_index, :resource_show]
+      skip_authorization_check, only: [:resource_index, :resource_show]
 
       SERIALIZER_ALLOWED_FIELDS = {
         :offers => [:id, :state, :notes, :created_at],
-        :items  => [:id, :donor_description, :state, :offer_id, :created_at, :package_type_id]
+        :items  => [:id, :donor_description, :state, :offer_id, :created_at, :package_type_id],
+        :images => [:id, :favourite, :cloudinary_id, :angle, :imageable_type, :imageable_id]
       }.with_indifferent_access
 
       SERIALIZER_ALLOWED_RELATIONSHIPS = {
-        :offers => [:items], # We don't include the items, as some might not have been shared
-        :items  => [:package_types, :offers, :images]
+        :offers => [:items, :images], # We don't include the items, as some might not have been shared
+        :items  => [:package_type, :offer, :images]
       }.with_indifferent_access
 
       ALLOWED_MODELS = [:offers, :items]
@@ -25,7 +27,7 @@ module Api
         error 500, "Internal Server Error"
       end
 
-      api :GET, "/v2/shared/:model", "Lists publicly availabel models"
+      api :GET, "/v2/shared/:model", "Lists publicly available models"
       description <<-EOS
         Returns the publicly available records of the specified model
 
@@ -33,14 +35,63 @@ module Api
         * 200 - always succeeds with 200
         * 422 - bad or unsupported model
       EOS
-      param :include, String, required: false, desc: "A comma separated list of the attributes/relationships to include in the response"
-      def list
+      def resource_index
         records = model_klass.publicly_listed
         records = paginate(records)
-        render json: serialize(records, meta: pagination_meta);
+
+        render json: serialize(records, {
+          meta: pagination_meta,
+          params: {
+            include_public_uid: true
+          }
+        });
+      end
+
+      api :GET, "/v2/shared/:model/:public_uid", "Shows a publicly available model"
+      description <<-EOS
+        Returns the publicly available record of the specified model
+
+        ===Response status codes
+        * 200 - always succeeds with 200
+        * 422 - bad or unsupported model
+        * 404 - not found
+      EOS
+      def resource_show
+        record = find_shared_record!(params[:public_uid], model_klass.name)
+        
+        render json: serialize(record, {
+          params: {
+            include_public_uid: true
+          }
+        });
+      end
+
+      api :GET, "/v2/shareables/:id", "Gets the shareable row by id"
+      description <<-EOS
+        Returns the shareable row
+
+        ===Response status codes
+        * 200 - always succeeds with 200
+        * 404 - not found
+        * 404 - forbidden
+      EOS
+      def show
+        
       end
 
       private
+
+      def find_shared_record!(public_uid, type)
+        shareable = Shareable
+          .non_expired
+          .of_type(type)
+          .where(public_uid: public_uid)
+          .first
+
+        raise Goodcity::NotFoundError unless shareable.present? && shareable.resource.present?
+
+        shareable.resource
+      end
 
       def model_klass
         @model_klass ||= begin
@@ -55,11 +106,14 @@ module Api
       end
 
       def serialize(records, opts = {})
-        model_serializer.new(records, { **opts, **serializer_options(params[:model]) })
+        model_serializer.new(records, {
+          **opts,
+          **serializer_options(params[:model])
+        })
       end
 
-      def constantize(sig)
-        sig.constantize
+      def constantize(s)
+        s.constantize
       rescue
         raise_unsupported!
       end
@@ -87,13 +141,13 @@ module Api
           include: relations,
           fields: [*relations, model].reduce({}) do |fields, model|
             fields[singularize(model)] = SERIALIZER_ALLOWED_FIELDS[model] || []
+            fields[singularize(model)] << :public_uid
             fields
           end
         }
       end
 
-      def raise_unsupported!
-        byebug
+      def raise_unsupported!        
         raise Goodcity::UnsupportedError.new(
           I18n.t('errors.unsupported_type', type: params[:model])
         )

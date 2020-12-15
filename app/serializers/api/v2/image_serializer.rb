@@ -1,6 +1,6 @@
 module Api::V2
-  class ImageSerializer
-    include FastJsonapi::ObjectSerializer
+  class ImageSerializer < GoodcitySerializer
+
 
     # ----------------------------
     #   Attributes

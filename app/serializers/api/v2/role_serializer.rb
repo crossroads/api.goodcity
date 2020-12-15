@@ -1,6 +1,5 @@
 module Api::V2
-  class RoleSerializer
-    include FastJsonapi::ObjectSerializer
+  class RoleSerializer < GoodcitySerializer
 
     # ----------------------------
     #   Attributes

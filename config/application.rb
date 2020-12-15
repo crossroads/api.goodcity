@@ -30,6 +30,7 @@ module GoodCityServer
     config.autoload_paths += %W(#{config.root}/app/models/concerns/operations)
     config.eager_load_paths << "#{Rails.root}/lib/goodcity/error"
     config.eager_load_paths << "#{Rails.root}/lib/classes"
+    config.eager_load_paths << "#{Rails.root}/app/serializers/v2/concerns"
 
     # config.active_record.schema_format = :sql
 

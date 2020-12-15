@@ -1,6 +1,6 @@
 module Api::V2
-  class ItemSerializer
-    include FastJsonapi::ObjectSerializer
+  class ItemSerializer < GoodcitySerializer
+
 
     # ----------------------------
     #   Attributes
@@ -15,6 +15,7 @@ module Api::V2
     # ----------------------------
 
     has_one   :offer
+    has_one   :package_type
     has_many  :packages
     has_many  :images,   serializer: ImageSerializer, polymorphic: true
   end

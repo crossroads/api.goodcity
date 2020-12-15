@@ -17,8 +17,9 @@ Rails.application.routes.draw do
         get :me, on: :collection
       end
       
-      get "shared/:model",      to: "shareables#list"
-      get "shared/:model/:uid", to: "shareables#find"
+      get "shared/:model",              to: "shareables#resource_index"
+      get "shared/:model/:public_uid",  to: "shareables#resource_show"
+
     end
 
     namespace "v1", defaults: { format: "json" } do
