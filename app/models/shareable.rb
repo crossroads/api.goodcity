@@ -6,6 +6,15 @@ class Shareable < ApplicationRecord
 
   before_create :assign_public_id
 
+  scope :non_expired, -> () { where("shareables.expires_at IS NULL OR shareables.expires_at > now()") }
+  scope :of_type, -> (type) { where(resource_type: type) }
+
+  class << self
+    def public_uid_of(resource)
+      Shareable.find_by(resource: resource).try(:public_uid)
+    end
+  end
+
   private
 
   def assign_public_id

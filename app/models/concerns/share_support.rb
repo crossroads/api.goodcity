@@ -2,12 +2,12 @@ module ShareSupport
   extend ActiveSupport::Concern
 
   included do
-    scope :publicly_shared, -> {
+    scope :publicly_shared, ->(table = table_name) {
       # Exclude records which do not have a shared record
       joins <<-SQL
         INNER JOIN shareables ON 
-          shareables.resource_id = #{table_name}.id AND
-          shareables.resource_type = '#{self.name.demodulize}' AND
+          shareables.resource_id = #{table}.id AND
+          shareables.resource_type = '#{table.to_s.classify}' AND
           (
             shareables.expires_at IS NULL OR
             shareables.expires_at > now()
@@ -30,7 +30,7 @@ module ShareSupport
       base_class      = self
       custom_context  = defined?(@@public_context) ? @@public_context : nil
 
-      Class.new(self) do 
+      Class.new(base_class) do 
         def self.name
           base_class.name
         end
