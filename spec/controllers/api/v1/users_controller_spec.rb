@@ -377,20 +377,55 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           expect(parsed_body['users']).to match_array(users)
         end
 
-        context 'when order_id params is not present' do
-          it 'returns stock_administrator and stock_fulfilment users' do
-            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        it 'returns stock_administrator,stock_fulfilment users' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
+          users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+          expect(parsed_body['users']).to match_array(users)
+        end
+
+        context 'when is_private is true' do
+          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: true, order_id: order.id }
+
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
             expect(parsed_body['users']).to match_array(users)
+          end
+
+          it 'does not return order owner' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: true, order_id: order.id }
+
+            expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
           end
         end
 
-
-        context 'when order_id params is present' do
+        context 'when is_private is false' do
           it 'returns user who created the order and the users belonging to the role' do
-            get :mentionable_users, params: {order_id: order.id, roles: 'Stock administrator, Stock fulfilment' }
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), charity.id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+            get :mentionable_users, params: { order_id: order.id, roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: false }
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id), order.created_by_id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
             expect(parsed_body['users']).to match_array(users)
+          end
+
+          it 'returns order owner' do
+            get :mentionable_users, params: { order_id: order.id, roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: false }
+
+            expect(parsed_body['users'].map { |u| u['id'] }).to include(order.created_by_id)
+          end
+        end
+
+        context 'when stock admin / stock fulfilment users try to mention client' do
+          before { generate_and_set_token(stock_administrator) }
+          context 'when is_private is true' do
+            it 'does not allow them to mention client' do
+              get :mentionable_users, params: { order_id: order.id, is_private: true, roles: 'Stock administrator, Stock fulfilment' }
+              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
+            end
+          end
+
+          context 'when is_private is false' do
+            it 'does not allow them to mention client' do
+              get :mentionable_users, params: { order_id: order.id, is_private: false, roles: 'Stock administrator, Stock fulfilment' }
+              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
+            end
           end
         end
       end
