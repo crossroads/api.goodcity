@@ -125,11 +125,10 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
   end
 
   describe "POST /shareables (#create)" do
-    let(:offer) { create(:offer) }
-    let(:item) { create(:item) }
-    let(:package) { create(:package) }
-
+  
     context "as an unauthenticated user" do
+      let(:offer) { create(:offer) }
+
       it "returns a 401 " do
         shareable = create(:shareable)
 
@@ -164,7 +163,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(new_shareable.resource).to eq(resource)
           expect(new_shareable.allow_listing).to eq(true)
 
-          expect(response.status).to eq(200)
+          expect(response.status).to eq(201)
         end
 
         it "returns a 403 for another type" do
@@ -173,6 +172,89 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect {
             post :create, params: { resource_id: resource.id, resource_type: resource.class.name, allow_listing: true }
           }.not_to change(Shareable, :count)
+          expect(response.status).to eq(403)
+        end
+
+        context 'if the record has already been shared' do
+          let(:resource) { create(resource_type) }
+          let(:existing_shareable) { create(:shareable, resource: resource) }
+
+          before { touch(existing_shareable) }
+
+          it "returns a 409" do
+            expect {
+              post :create, params: { resource_id: resource.id, resource_type: resource.class.name, allow_listing: true }
+            }.not_to change(Shareable, :count)
+  
+            expect(response.status).to eq(409)
+          end
+
+          it "overwrites the existing shareable object" do
+            expect {
+              post :create, params: { resource_id: resource.id, resource_type: resource.class.name, allow_listing: true, overwrite: true }
+            }.not_to change(Shareable, :count)
+            
+            expect(Shareable.find_by(id: existing_shareable.id)).to eq(nil) # it's been deleted
+
+            expect(response.status).to eq(201)
+          end
+        end
+      end
+    end
+  end
+  
+  describe "PUT /shareables/:id (#update)" do
+    context "as an unauthenticated user" do
+      let(:shareable) { create(:shareable, allow_listing: false) }
+
+      it "returns a 401 " do
+        put :update, params: { id: shareable.id, allow_listing: true }
+        expect(response.status).to eq(401)
+      end
+    end
+
+    {
+      :can_manage_offers    => :offer,
+      :can_manage_items     => :item,
+      :can_manage_packages  => :package
+    }.each do |permission, resource_type|
+      context "as staff with #{permission} permission" do
+        let(:user) { create(:user, :supervisor, "with_#{permission}_permission".to_sym) }
+        let(:time) { 1.year.from_now.change(:usec => 0) }
+
+        before { generate_and_set_token(user) }
+
+        it "allows editing the 'allow_listing' field of a shareable record of type #{resource_type}" do
+          resource  = create(resource_type)
+          shareable = create(:shareable, resource: resource, allow_listing: false)
+
+          expect {
+            put :update, params: { id: shareable.id, allow_listing: true }
+          }.to change {
+            shareable.reload.allow_listing
+          }.from(false).to(true)
+
+          expect(response.status).to eq(200)
+        end
+
+        it "allows editing the 'expires_at' field of a shareable record of type #{resource_type}" do
+          resource  = create(resource_type)
+          shareable = create(:shareable, resource: resource, expires_at: nil)
+
+          expect {
+            put :update, params: { id: shareable.id, expires_at: time }
+          }.to change {
+            shareable.reload.expires_at
+          }.from(nil).to(time)
+
+          expect(response.status).to eq(200)
+        end
+
+        it "returns a 403 for another type" do
+          resource  = create(:holiday)
+          shareable = create(:shareable, resource: resource)
+
+          put :update, params: { id: shareable.id, allow_listing: true }
           expect(response.status).to eq(403)
         end
       end

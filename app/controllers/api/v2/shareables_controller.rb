@@ -5,6 +5,8 @@ module Api
       skip_before_action :validate_token, only: [:resource_index, :resource_show]
       skip_authorization_check only: [:resource_index, :resource_show]
 
+      rescue_from PG::UniqueViolation, with: :raise_duplicate!
+
       SERIALIZER_ALLOWED_FIELDS = {
         :offers => [:id, :state, :notes, :created_at],
         :items  => [:id, :donor_description, :state, :offer_id, :created_at, :package_type_id],
@@ -30,6 +32,12 @@ module Api
       def_param_group :shareable do
         param :resource_id, String, required: true, allow_nil: false, desc: "The resource id"
         param :resource_type, String, required: true, allow_nil: false, desc: "The resource type"
+        param :allow_listing, ['true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
+        param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
+        param :overwrite, ['true', 'false'], allow_nil: true, desc: "If set, allows overwriting existing shareable records"
+      end
+
+      def_param_group :shareable_update do
         param :allow_listing, ['true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
         param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
       end
@@ -78,21 +86,22 @@ module Api
         Returns the shareable row
 
         ===Response status codes
-        * 200 - always succeeds with 200
+        * 200 - sucess
         * 404 - not found
         * 403 - forbidden
+        * 401 - unauthorized
       EOS
       def show
         render json: serialize_shareables(@shareable)
       end
 
-      api :GET, "/v2/shareables", "Gets the shareable row by id"
+      api :GET, "/v2/shareables", "Gets the shareables"
       description <<-EOS
         Returns the shareable row
 
         ===Response status codes
-        * 200 - always succeeds with 200
-        * 404 - forbidden
+        * 200 - success
+        * 401 - unauthorized
       EOS
       def index
         records = paginate(@shareables)
@@ -108,19 +117,51 @@ module Api
         Returns the shareable row
 
         ===Response status codes
-        * 200 - always succeeds with 200
+        * 200 - success
         * 404 - forbidden
         * 422 - bad payload
+        * 409 - already exists
       EOS
       param_group :shareable
-      def create
+      def create        
+        existing = Shareable.find_by(
+          resource_id:    @shareable.resource_id,
+          resource_type:  @shareable.resource_type,
+        )
+
+        if existing.present?
+          raise Goodcity::DuplicateRecordError unless allow_overwrite?
+          existing.destroy!
+        end
+
         @shareable.assign_attributes(shareable_params)
         @shareable.created_by = current_user
 
-        if @shareable.save
-          render json: serialize_shareables(@shareable)
+        if  @shareable.save
+          render json: serialize_shareables( @shareable), status: 201
         else
-          invalid_params(@shareable.errors.full_messages.first)
+          invalid_params @shareable.errors.full_messages.first
+        end
+      end
+
+      api :PUT, "/v2/shareables/:id", "Updates a shareable row by id"
+      description <<-EOS
+        Returns the shareable row
+
+        ===Response status codes
+        * 200 - success
+        * 404 - forbidden
+        * 422 - bad payload
+        * 409 - already exists
+      EOS
+      param_group :shareable_update
+      def update        
+        @shareable.assign_attributes(shareable_update_params)
+
+        if  @shareable.save
+          render json: serialize_shareables(@shareable), status: 200
+        else
+          invalid_params @shareable.errors.full_messages.first
         end
       end
 
@@ -128,6 +169,14 @@ module Api
 
       def shareable_params
         params.permit(:resource_id, :resource_type, :allow_listing, :expires_at)
+      end
+
+      def shareable_update_params
+        params.permit(:allow_listing, :expires_at)
+      end
+
+      def allow_overwrite?
+        params[:overwrite] == 'true'
       end
 
       def find_shared_record!(public_uid, type)
