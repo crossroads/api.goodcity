@@ -399,7 +399,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
 
         context 'when is_private is false' do
-          it 'returns user who created the order and the users belonging to the role' do
+          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
             get :mentionable_users, params: { order_id: order.id, roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: false }
             users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id), order.created_by_id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
             expect(parsed_body['users']).to match_array(users)
