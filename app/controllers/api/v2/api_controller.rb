@@ -91,16 +91,21 @@ module Api
         )
       end
 
+      def parse_error_message(e)
+        return e if e.is_a?(String)
+        return e.try(:message) || 'Unknown error'
+      end
+
       def access_denied
         render_goodcity_error Goodcity::AccessDeniedError.new
       end
 
       def invalid_params(e)
-        render_goodcity_error Goodcity::InvalidParamsError.with_text(e&.message)
+        render_goodcity_error Goodcity::InvalidParamsError.with_text(parse_error_message(e))
       end
 
       def not_found(e)
-        render_goodcity_error Goodcity::NotFoundError.with_text(e&.message)
+        render_goodcity_error Goodcity::NotFoundError.with_text(parse_error_message(e))
       end
 
       def render_goodcity_error(e)

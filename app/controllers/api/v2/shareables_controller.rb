@@ -1,9 +1,9 @@
 module Api
   module V2
     class ShareablesController < Api::V2::ApiController
-      load_and_authorize_resource :shareables, parent: false, except: [:resource_index, :resource_show]
+      load_and_authorize_resource :shareable, parent: false, except: [:resource_index, :resource_show]
       skip_before_action :validate_token, only: [:resource_index, :resource_show]
-      skip_authorization_check, only: [:resource_index, :resource_show]
+      skip_authorization_check only: [:resource_index, :resource_show]
 
       SERIALIZER_ALLOWED_FIELDS = {
         :offers => [:id, :state, :notes, :created_at],
@@ -27,6 +27,13 @@ module Api
         error 500, "Internal Server Error"
       end
 
+      def_param_group :shareable do
+        param :resource_id, String, required: true, allow_nil: false, desc: "The resource id"
+        param :resource_type, String, required: true, allow_nil: false, desc: "The resource type"
+        param :allow_listing, ['true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
+        param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
+      end
+
       api :GET, "/v2/shared/:model", "Lists publicly available models"
       description <<-EOS
         Returns the publicly available records of the specified model
@@ -39,7 +46,7 @@ module Api
         records = model_klass.publicly_listed
         records = paginate(records)
 
-        render json: serialize(records, {
+        render json: serialize_resource(records, {
           meta: pagination_meta,
           params: {
             include_public_uid: true
@@ -59,7 +66,7 @@ module Api
       def resource_show
         record = find_shared_record!(params[:public_uid], model_klass.name)
         
-        render json: serialize(record, {
+        render json: serialize_resource(record, {
           params: {
             include_public_uid: true
           }
@@ -73,13 +80,55 @@ module Api
         ===Response status codes
         * 200 - always succeeds with 200
         * 404 - not found
-        * 404 - forbidden
+        * 403 - forbidden
       EOS
       def show
-        
+        render json: serialize_shareables(@shareable)
+      end
+
+      api :GET, "/v2/shareables", "Gets the shareable row by id"
+      description <<-EOS
+        Returns the shareable row
+
+        ===Response status codes
+        * 200 - always succeeds with 200
+        * 404 - forbidden
+      EOS
+      def index
+        records = paginate(@shareables)
+        records = records.of_type(params[:resource_type]) if params[:resource_type].present?
+
+        render json: serialize_shareables(records, {
+          meta: pagination_meta
+        })
+      end
+
+      api :POST, "/v2/shareables", "Creates a shareable row by id"
+      description <<-EOS
+        Returns the shareable row
+
+        ===Response status codes
+        * 200 - always succeeds with 200
+        * 404 - forbidden
+        * 422 - bad payload
+      EOS
+      param_group :shareable
+      def create
+        @shareable.assign_attributes(shareable_params)
+        @shareable.created_by = current_user
+
+        if @shareable.save
+          render json: serialize_shareables(@shareable)
+        else
+          invalid_params(@shareable.errors.full_messages.first)
+        end
       end
 
       private
+
+      def shareable_params
+        params.permit(:resource_id, :resource_type, :allow_listing, :expires_at)
+      end
 
       def find_shared_record!(public_uid, type)
         shareable = Shareable
@@ -105,11 +154,15 @@ module Api
         @serializer_klass ||= constantize("Api::V2::#{model_klass.name}Serializer")
       end
 
-      def serialize(records, opts = {})
+      def serialize_resource(records, opts = {})
         model_serializer.new(records, {
           **opts,
           **serializer_options(params[:model])
         })
+      end
+
+      def serialize_shareables(shareable, opts = {})
+        Api::V2::ShareableSerializer.new(shareable, opts)
       end
 
       def constantize(s)

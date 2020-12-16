@@ -4,5 +4,15 @@ FactoryBot.define do
     expires_at { nil }
     association :created_by, factory: :user
     association :resource, factory: :offer
+
+    trait :offer do
+      association :resource, factory: :offer
+    end
+    trait :package do
+      association :resource, factory: :package
+    end
+    trait :item do
+      association :resource, factory: :item
+    end
   end
 end
