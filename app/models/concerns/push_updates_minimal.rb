@@ -4,6 +4,7 @@ module PushUpdatesMinimal
   module ClassMethods
     attr_reader :target_channels
     attr_reader :target_channels_func
+    attr_reader :push_update_serializer_version
 
     private
 
@@ -13,14 +14,23 @@ module PushUpdatesMinimal
         @target_channels_func = block
       end
     end
+
+    def push_serializer_version(version = "1")
+      @push_update_serializer_version = version
+    end
   end
 
   def push_changes
     PushService.new.send_update_store target_channels, {
       item: push_update_serialize(self),
       sender: push_update_sender,
-      operation: read_operation(self)
+      operation: read_operation(self),
+      type: self.class.name.underscore
     }
+  end
+
+  def push_update_serializer_version
+    self.class.push_update_serializer_version || "1"
   end
 
   def target_channels
@@ -34,7 +44,8 @@ module PushUpdatesMinimal
 
   def push_update_serialize(record)
     associations = record.class.reflections.keys.map(&:to_sym)
-    "Api::V1::#{record.class}Serializer".safe_constantize.new(record, { exclude: associations })
+    v = push_update_serializer_version
+    "Api::V#{v}::#{record.class}Serializer".safe_constantize.new(record, { exclude: associations })
   end
 
   def push_update_sender

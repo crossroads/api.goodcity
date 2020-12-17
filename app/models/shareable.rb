@@ -17,10 +17,11 @@ class Shareable < ApplicationRecord
   # Live update rules
   after_save :push_changes
   after_destroy :push_changes
+  push_serializer_version "2"
   push_targets do |record|
     chans = []
-    chans << [Channel::STAFF_CHANNEL, Channel::BROWSE_APP] if record.resource_type.in?['Item', 'Offer']
-    chans << Channel::STOCK_CHANNEL if record.resource_type.in?['Package', 'Order']
+    chans << [Channel::STAFF_CHANNEL, Channel::BROWSE_CHANNEL] if record.resource_type.in?(['Item', 'Offer'])
+    chans << Channel::STOCK_CHANNEL if record.resource_type.in?(['Package', 'Order'])
     chans
   end
 
