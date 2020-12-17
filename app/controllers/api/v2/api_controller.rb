@@ -43,7 +43,7 @@ module Api
       # Helpers
       # ------------------------
 
-      def serializer_options(model, opts)
+      def serializer_options(model, opts = {})
         return {} unless params[:include].present?
         GoodcitySerializer.parse_include_paths(model, params[:include], opts)
       end
