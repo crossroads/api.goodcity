@@ -300,70 +300,122 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
 
   describe "POST message/1" do
-    before do
-      generate_and_set_token(user)
-    end
+    let(:donor) { create :user }
+    let(:charity) { create :user, :charity }
+    let(:staff) { reviewer }
+    let(:offer) { create :offer, created_by: donor }
 
-    it 'returns 201', :show_in_doc do
-      post :create, params: { message: message_params }, as: :json
-      expect(response.status).to eq(201)
-    end
+    context 'a public message about an offer' do
+      let(:message_params) { {
+        :body=> "Lorem Ipsum",
+        :is_private=>false,
+        :messageable_id=> offer.id,
+        :messageable_type=>"Offer"
+      } }
 
-    context 'to specific recipients' do
-      let(:donor) { create :user }
-      let(:charity) { create :user, :charity }
-      let(:staff) { reviewer }
-      let(:offer) { create :offer, created_by: donor }
-
-      let(:message_params) {
-        FactoryBot.attributes_for(:message, is_private: false, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer')
-      }
-
-      context 'as a normal user' do
+      context 'as the donor' do
         before { generate_and_set_token(donor) }
 
-        it 'prevents me from setting a recipient_id' do
-          post :create, params: { message: { **message_params, recipient_id: charity.id } }, as: :json
+        it 'succeeds' do
+          expect {
+            post :create, params: { message: message_params }, as: :json
+          }.to change(Message, :count).by(1)
+          expect(response.status).to eq(201)
+        end
+
+        it 'doesnt set a recipient' do
+          expect {
+            post :create, params: { message: message_params }, as: :json
+          }.to change(Message, :count).by(1)
+
+          expect(Message.last.recipient).to eq(nil)
+        end
+
+        it 'fails if a third user is specified as recipient' do
+          post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
           expect(response.status).to eq(403)
         end
       end
 
-      context 'as an entitled staff member' do
-        before { generate_and_set_token(staff) }
+      context 'as a charity about an offer' do
+        before { generate_and_set_token(charity) }
 
-        it 'allows to set a recipient_id' do
-          post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
-          pp subject
-          expect(response.status).to eq(201)
-          mid = subject['message']['id']
-          new_message = Message.find_by(id: mid)
-          expect(new_message).not_to be_nil
-          expect(new_message.recipient).to eq(charity)
+        context 'that has NOT been shared' do
+          it 'fails with 403' do
+            post :create, params: { message: message_params }, as: :json
+            expect(response.status).to eq(403)
+          end
         end
 
-        it 'defaults the recipient_id to the donor if missing' do
-          post :create, params: { message: message_params }, as: :json
-          pp message_params
-          expect(response.status).to eq(201)
-          mid = subject['message']['id']
-          new_message = Message.find_by(id: mid)
-          expect(new_message).not_to be_nil
-          expect(new_message.recipient).to eq(donor)
-        end
+        context 'that has been publicly shared' do
+          before { Shareable.publish(offer) }
 
-        context 'if the message is private' do
-          let(:message_params) {
-            FactoryBot.attributes_for(:message, is_private: true, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer')
-          }
+          it 'suceeds' do
+            expect {
+              post :create, params: { message: message_params }, as: :json
+            }.to change(Message, :count).by(1)
+            expect(response.status).to eq(201)
+          end
 
-          it 'prevents me from setting a recipient_id' do
-            post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
-            expect(response.status).to eq(422)
-            expect(subject['error']).to eq('Private messages cannot have a recipient')
+          it 'doesnt set a recipient' do
+            expect {
+              post :create, params: { message: message_params }, as: :json
+            }.to change(Message, :count).by(1)
+            expect(Message.last.recipient).to eq(nil)
+          end
+
+          it 'fails if a third user is specified as recipient' do
+            post :create, params: { message: { **message_params, recipient_id: donor.id } }, as: :json
+            expect(response.status).to eq(403)
           end
         end
       end
-    end
+
+      context 'to specific recipients' do  
+        context 'as a normal user' do
+          before { generate_and_set_token(donor) }
+  
+          it 'prevents me from setting a recipient_id' do
+            post :create, params: { message: { **message_params, recipient_id: charity.id } }, as: :json
+            expect(response.status).to eq(403)
+          end
+        end
+  
+        context 'as an entitled staff member' do
+          before { generate_and_set_token(staff) }
+  
+          it 'allows to set a recipient_id' do
+            post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
+            expect(response.status).to eq(201)
+            mid = subject['message']['id']
+            new_message = Message.find_by(id: mid)
+            expect(new_message).not_to be_nil
+            expect(new_message.recipient).to eq(charity)
+          end
+  
+          it 'defaults the recipient_id to the donor if missing' do
+            post :create, params: { message: message_params }, as: :json
+            expect(response.status).to eq(201)
+            mid = subject['message']['id']
+            new_message = Message.find_by(id: mid)
+            expect(new_message).not_to be_nil
+            expect(new_message.recipient).to eq(donor)
+          end
+  
+          context 'if the message is private' do
+            let(:message_params) {
+              FactoryBot.attributes_for(:message, is_private: true, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer')
+            }
+  
+            it 'prevents me from setting a recipient_id' do
+              post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
+              expect(response.status).to eq(422)
+              expect(subject['error']).to eq('Private messages cannot have a recipient')
+            end
+          end
+        end
+      end
+    end 
 
     context 'backward compatibility' do
       let(:offer) { create(:offer, :with_messages, created_by: user) }
