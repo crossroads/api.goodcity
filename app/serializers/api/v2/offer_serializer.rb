@@ -1,6 +1,7 @@
 module Api::V2
   class OfferSerializer < GoodcitySerializer
-
+    include Api::V2::Concerns::PublicUID
+    
     # ----------------------------
     #   Attributes
     # ----------------------------

@@ -1,7 +1,5 @@
 module Api::V2
   class GoodcitySerializer < Serializer
-    include Api::V2::Concerns::PublicUID
-
     def initialize(resources, opts = {})
       options = opts
 
