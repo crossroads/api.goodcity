@@ -278,6 +278,7 @@ module Api
           quantity: params[:quantity].to_i,
           location: params[:from],
           action: params[:action_name],
+          source: source,
           description: params[:description])
 
         send_stock_item_response
@@ -368,6 +369,10 @@ module Api
 
       def render_order_status_error
         render json: { errors: I18n.t("orders_package.order_status_error") }, status: 403
+      end
+
+      def source
+        ProcessingDestination.find_by(id: params[:processing_destination_id]) if params[:action_name] == PackagesInventory::Actions::PROCESS
       end
 
       def stock_serializer
