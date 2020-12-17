@@ -95,6 +95,21 @@ module Api
         render json: serialize_shareables(@shareable)
       end
 
+      api :DELETE, "/v2/shareables/:id", "Deletes the shareable row by id"
+      description <<-EOS
+        Deletes the shareable row
+
+        ===Response status codes
+        * 200 - sucess
+        * 404 - not found
+        * 403 - forbidden
+        * 401 - unauthorized
+      EOS
+      def destroy
+        @shareable.destroy!
+        render json: {}, status: 200
+      end
+
       api :GET, "/v2/shareables", "Gets the shareables"
       description <<-EOS
         Returns the shareable row

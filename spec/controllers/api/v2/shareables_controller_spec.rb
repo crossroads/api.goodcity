@@ -113,11 +113,69 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(parsed_body['data']['attributes']['resource_id']).to eq(resource.id)
         end
 
+        it "returns a 404 for a non existing record" do
+          resource  = create(:holiday) # We expect this not to be shareable
+
+          get :show, params: { id: '99999999' }
+          expect(response.status).to eq(404)
+        end
+
         it "returns a 403 for another type" do
           resource  = create(:holiday) # We expect this not to be shareable
           shareable = create(:shareable, resource: resource)
 
           get :show, params: { id: shareable.id }
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+  end
+
+  describe "DELETE /shareables/:id (#destroy)" do
+
+    context "as an unauthenticated user" do
+      it "returns a 401 " do
+        shareable = create(:shareable)
+
+        delete :destroy, params: { id: shareable.id }
+        expect(response.status).to eq(401)
+      end
+    end
+
+    {
+      :can_manage_offers    => :offer,
+      :can_manage_items     => :item,
+      :can_manage_packages  => :package
+    }.each do |permission, resource_type|
+      context "as staff with #{permission} permission" do
+        let(:user) { create(:user, :supervisor, "with_#{permission}_permission".to_sym) }
+
+        before { generate_and_set_token(user) }
+
+        it "returns a 200 for a shared #{resource_type}" do
+          resource  = create(resource_type)
+          shareable = create(:shareable, resource: resource)
+
+          expect {
+            delete :destroy, params: { id: shareable.id }
+          }.to change(Shareable, :count).by(-1)
+
+          expect(response.status).to eq(200)
+          expect(Shareable.find_by(id: shareable.id)).to be_nil
+        end
+
+        it "returns a 404 for a non existing record" do
+          resource  = create(:holiday) # We expect this not to be shareable
+
+          delete :destroy, params: { id: '99999999' }
+          expect(response.status).to eq(404)
+        end
+
+        it "returns a 403 for another type" do
+          resource  = create(:holiday) # We expect this not to be shareable
+          shareable = create(:shareable, resource: resource)
+
+          delete :destroy, params: { id: shareable.id }
           expect(response.status).to eq(403)
         end
       end

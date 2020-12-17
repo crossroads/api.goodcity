@@ -40,6 +40,8 @@ module Goodcity
 
   class UnsupportedError < BaseError; end
 
+  class UnknownError < BaseError; end
+
   # ----------------------------
   # Generic
   # ----------------------------
