@@ -688,6 +688,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     context "create package from gc with sub detail" do
       let!(:location) { create :location }
       let!(:code) { create :package_type }
+      let!(:box) { create :storage_type, :with_box }
+      let!(:pallet) { create :storage_type, :with_pallet }
+      let!(:pkg_storage) { create :storage_type, :with_pkg }
+
       let(:computer_params) { FactoryBot.attributes_for(:computer) }
       let(:stockit_item_params) {
         {
@@ -723,8 +727,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         })
       }
 
-      describe "creating package with detail" do
-        it "creates package with detail" do
+      context 'if storage type is Package' do
+        it "creates a package with detail " do
+          package_params_with_details[:storage_type] = "Package"
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(201)
           package = Package.last
@@ -732,8 +737,28 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(parsed_body["package"]["detail_type"]).to eq(package.detail_type)
           expect(parsed_body["package"]["detail_id"]).to eq(package.detail_id)
         end
+      end
 
-        it "does not create package with detail if anything fails in package" do
+      context 'if storage type is Box' do
+        it "does not creates package with detail " do
+          package_params_with_details[:storage_type] = "Box"
+          post :create, params: { package: package_params_with_details }
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to_not be_nil
+        end
+      end
+
+      context 'if storage type is Pallet' do
+        it "does not creates package with detail " do
+          package_params_with_details[:storage_type] = "Pallet"
+          post :create, params: { package: package_params_with_details }
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to_not be_nil
+        end
+      end
+
+      context 'if package params are incorrect' do
+        it "does not creates package with detail " do
           post :create, params: { package: package_params_with_details_incorrect_params }
           expect(parsed_body["errors"]).to_not be_nil
         end

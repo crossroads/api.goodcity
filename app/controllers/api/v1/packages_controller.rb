@@ -121,8 +121,8 @@ module Api
       param_group :package
 
       def update
-        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.assign_attributes(package_params)
+        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity = package_params[:quantity] if package_params[:quantity].to_i.positive?
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
         @package.request_from_admin = is_admin_app?
@@ -494,6 +494,8 @@ module Api
       end
 
       def assign_detail
+        return if @package.box_or_pallet?
+
         PackageDetailBuilder.new(
           package_params
         ).build_or_update_record
