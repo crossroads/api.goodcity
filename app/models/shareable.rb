@@ -1,6 +1,8 @@
 require 'guid'
 
 class Shareable < ApplicationRecord
+  include PushUpdatesMinimal
+
   belongs_to :created_by, class_name: "User"
   belongs_to :resource, polymorphic: true
 
@@ -11,6 +13,16 @@ class Shareable < ApplicationRecord
 
   validates :resource_id,   presence: true
   validates :resource_type, presence: true
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    chans = []
+    chans << [Channel::STAFF_CHANNEL, Channel::BROWSE_APP] if record.resource_type.in?['Item', 'Offer']
+    chans << Channel::STOCK_CHANNEL if record.resource_type.in?['Package', 'Order']
+    chans
+  end
 
   class << self
     def public_uid_of(resource)
