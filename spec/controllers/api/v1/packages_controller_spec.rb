@@ -1467,7 +1467,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   end
 
   describe 'PUT register_quantity_change' do
-    let(:processing_destination) { create(:processing_destinations_lookup) }
+    let(:processing_destination) { create(:processing_destination) }
 
     before do
       generate_and_set_token(user)
@@ -1503,17 +1503,17 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           quantity: 10,
           from: @location.id,
           action_name: "process",
-          processing_destination_lookup_id: processing_destination.id
+          processing_destination_id: processing_destination.id
         }
       }
 
       expect(response).to have_http_status(:success)
       expect(@package.package_actions.last.action).to eq('process')
-      expect(@package.package_actions.last.source_type).to eq('ProcessingDestinationsLookup')
+      expect(@package.package_actions.last.source_type).to eq('ProcessingDestination')
     end
 
     context 'when action is not process' do
-      it 'should not add ProcessingDestinationsLookup' do
+      it 'should not add ProcessingDestination' do
         put :register_quantity_change, {
           params: {
             id: @package.id,
@@ -1521,7 +1521,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             from: @location.id,
             action_name: "gain",
             description: "gain action on Package",
-            processing_destination_lookup_id: processing_destination.id
+            processing_destination_id: processing_destination.id
           }
         }
 
