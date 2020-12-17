@@ -54,10 +54,10 @@ module Api
         printer_abilities
         offers_package_abilities
         canned_response_abilities
-        processing_destination_lookup_abilities
+        processing_destination_abilities
       end
 
-      def processing_destination_lookup_abilities
+      def processing_destination_abilities
         can :index, ProcessingDestination if can_manage_packages?
       end
 
