@@ -54,6 +54,11 @@ module Api
         printer_abilities
         offers_package_abilities
         canned_response_abilities
+        processing_destination_abilities
+      end
+
+      def processing_destination_abilities
+        can :index, ProcessingDestination if can_manage_packages?
       end
 
       def printer_abilities
@@ -191,7 +196,7 @@ module Api
 
         can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
- 
+
         # Normal users can create non private messages on objects they own
         can :create, Message do |message|
           next false if message.recipient_id && message.recipient_id != @user_id # e.g donor is trying to contact another donor

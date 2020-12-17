@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_26_092838) do
+ActiveRecord::Schema.define(version: 2020_12_17_054805) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -777,6 +777,12 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
     t.string "text_zh_tw"
     t.integer "booking_type_id"
     t.index ["booking_type_id"], name: "index_process_checklists_on_booking_type_id"
+  end
+
+  create_table "processing_destinations", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "purposes", id: :serial, force: :cascade do |t|
