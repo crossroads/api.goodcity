@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index, :create, :destroy]
       resources :canned_responses, only: [:index]
+      resources :user_favourites, only: [:index]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
       resources :stocktakes, only: [:show, :index, :destroy, :create] do

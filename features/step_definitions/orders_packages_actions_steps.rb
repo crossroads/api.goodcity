@@ -18,6 +18,7 @@ end
 
 # We provide a list of states for the orders_packages
 And(/^Their OrdersPackages are of state "([^"]*)"$/) do |orders_package_states|
+  User.current_user = create(:user, :with_token, :with_can_manage_packages_permission)
   op_states = orders_package_states.split('|')
   stub_request(:post, 'http://www.example.com/api/v1/items').to_return(status: 200, body: '', headers: {})
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
@@ -44,6 +45,7 @@ end
 And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
   properties = qty_table.hashes
   location = create :location
+  User.current_user = create(:user, :with_token, :with_can_manage_packages_permission)
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
     dict[state] = properties.map do |row|
       remaining_qty = row['On-site Quantity'].to_i
