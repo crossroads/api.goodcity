@@ -48,6 +48,41 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
       end
     end
 
+    describe "Filtering support" do
+      let(:user) { create(:user, :supervisor, :with_can_manage_offers_permission, :with_can_manage_items_permission) }
+      let(:received_types) { parsed_body['data'].map { |r| r['attributes']['resource_type'] }.uniq  }
+      let(:received_ids) { parsed_body['data'].map { |r| r['id'] }  }
+
+      let(:offer_shareable1) { create(:shareable, :offer) }
+      let(:offer_shareable2) { create(:shareable, :offer) }
+      let(:item_shareable1) { create(:shareable, :item) }
+      let(:item_shareable2) { create(:shareable, :item) }
+
+      before do
+        generate_and_set_token(user)
+        touch(offer_shareable1, offer_shareable2, item_shareable1, item_shareable2)
+      end
+
+      it "allows filtering by type" do
+        get :index, params: { resource_type: 'Offer' }
+        expect(response.status).to eq(200)
+        expect(received_types).to eq(['Offer'])
+        expect(received_ids).to eq([
+          offer_shareable1.id.to_s,
+          offer_shareable2.id.to_s,
+        ])
+      end
+
+      it "allows filtering by type and id" do
+        get :index, params: { resource_type: 'Offer', resource_id: offer_shareable1.resource_id }
+        expect(response.status).to eq(200)
+        expect(received_types).to eq(['Offer'])
+        expect(received_ids).to eq([
+          offer_shareable1.id.to_s
+        ])
+      end
+    end
+
     describe "Pagination Support" do
       let(:user) { create(:user, :supervisor, :with_can_manage_offers_permission) }
       let(:ids) { 17.times.map { create(:shareable, :offer) }.map(&:id).map(&:to_s) }
