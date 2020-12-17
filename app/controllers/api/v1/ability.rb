@@ -58,7 +58,7 @@ module Api
       end
 
       def processing_destination_lookup_abilities
-        can :index, ProcessingDestinationsLookup if can_manage_packages?
+        can :index, ProcessingDestination if can_manage_packages?
       end
 
       def printer_abilities
