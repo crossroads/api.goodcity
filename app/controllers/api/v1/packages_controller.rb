@@ -494,7 +494,7 @@ module Api
       end
 
       def assign_detail
-        return if %w[Box Pallet].include?(@package.storage_type_name)
+        return if @package.box_or_pallet?
 
         PackageDetailBuilder.new(
           package_params

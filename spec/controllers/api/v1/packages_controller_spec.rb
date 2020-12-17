@@ -728,8 +728,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
 
       context 'if storage type is Package' do
-        it "does not creates package with detail " do
-          package_params_with_details[:storage_type]="Package"
+        it "creates a package with detail " do
+          package_params_with_details[:storage_type] = "Package"
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(201)
           package = Package.last
@@ -741,7 +741,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'if storage type is Box' do
         it "does not creates package with detail " do
-          package_params_with_details[:storage_type]="Box"
+          package_params_with_details[:storage_type] = "Box"
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(422)
           expect(parsed_body["errors"]).to_not be_nil
@@ -750,14 +750,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'if storage type is Pallet' do
         it "does not creates package with detail " do
-          package_params_with_details[:storage_type]="Pallet"
+          package_params_with_details[:storage_type] = "Pallet"
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(422)
           expect(parsed_body["errors"]).to_not be_nil
         end
       end
 
-      context 'if anything fails in package' do
+      context 'if package params are incorrect' do
         it "does not creates package with detail " do
           post :create, params: { package: package_params_with_details_incorrect_params }
           expect(parsed_body["errors"]).to_not be_nil
