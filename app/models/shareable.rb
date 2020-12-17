@@ -16,6 +16,31 @@ class Shareable < ApplicationRecord
     def public_uid_of(resource)
       Shareable.find_by(resource: resource).try(:public_uid)
     end
+
+    def shared_resource?(resource)
+      return false unless resource.present?
+      Shareable.non_expired.where(resource: resource).limit(1).first.present?
+    end
+
+    #
+    # Create a shareable record for the spiecified resource
+    #
+    # @param [Model] resource the record to publish
+    # @param [Time] expiry (opt) the expiry date of the shareable record
+    # @param [User] author the publisher
+    #
+    # @return [Shareable] the shareable record
+    #
+    def publish(resource, expiry: nil, author: User.current_user || User.system_user)
+      ActiveRecord::Base.transaction do
+        Shareable.where(resource: resource).destroy_all
+        Shareable.create({
+          resource:   resource,
+          expires_at: expiry,
+          created_by: author
+        })
+      end
+    end
   end
 
   private

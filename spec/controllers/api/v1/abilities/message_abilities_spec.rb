@@ -147,6 +147,36 @@ describe 'Message abilities' do
       end
     end
 
+    context 'when charity user tries to create' do
+      context 'a public message' do
+        let(:message) { create(:message, sender: charity, messageable: offer, is_private: false) }
+
+        context 'about an record that has NOT been publicly shared' do
+          it 'should succeed' do
+            is_expected.not_to be_able_to(:create, message)
+          end
+        end
+
+        context 'about a SHARED record' do
+          before { Shareable.publish(offer) }
+
+          it 'should fail' do
+            is_expected.to be_able_to(:create, message)
+          end
+        end
+      end
+
+      context 'a private message' do
+        let(:message) { create(:message, sender: charity, messageable: offer, is_private: true) }
+
+        before { Shareable.publish(offer) }
+
+        it 'should fail' do
+          is_expected.not_to be_able_to(:create, message)
+        end
+      end
+    end
+
     context 'when charity user recieves a message from an order admin' do
       let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_order_messages_permission) }
       let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
