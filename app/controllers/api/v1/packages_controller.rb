@@ -280,6 +280,7 @@ module Api
           action: params[:action_name],
           source: source,
           description: params[:description])
+
         send_stock_item_response
       end
 
