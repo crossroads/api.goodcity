@@ -120,7 +120,8 @@ module Api
       EOS
       def index
         records = paginate(@shareables)
-        records = records.of_type(params[:resource_type]) if params[:resource_type].present?
+        records = records.of_type(params[:resource_type])                      if params[:resource_type].present?
+        records = records.where(resource_id: params[:resource_id].split(','))  if params[:resource_id].present?
 
         render json: serialize_shareables(records, {
           meta: pagination_meta
