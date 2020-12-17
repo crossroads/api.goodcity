@@ -25,7 +25,7 @@ module PushUpdatesForMessage
     state_groups = {}
     user_ids.flatten.compact.uniq.each do |user_id|
       state = state_for_user(user_id)
-      app_names = app_names_for_user(user_id)
+      app_names = app_names_for_user(user_id) || []
       app_names.each do |app_name|
         channel = Channel.private_channels_for(user_id, app_name)
         state_groups[state] = ((state_groups[state] || []) + channel)
@@ -99,7 +99,7 @@ module PushUpdatesForMessage
       return [owner_id == user_id ? BROWSE_APP : STOCK_APP]
     end
 
-    return STOCK_APP if object_class == "Package"
+    return [STOCK_APP] if object_class == "Package"
 
     if ["Offer", "Item"].include?(object_class)
       to = []

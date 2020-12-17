@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V2::OfferSerializer do
 
   let(:offer)             { create(:offer) }
-  let(:json)              { Api::V2::OfferSerializer.new(offer).as_json }
+  let(:json)              { Api::V2::OfferSerializer.new(offer, Api::V2::GoodcitySerializer.parse_include_paths(:offer, '*')).as_json }
   let(:attributes)        { json['data']['attributes'] }
   let(:relationships)     { json['data']['relationships'] }
   let(:included_records)  { json['included'] }
