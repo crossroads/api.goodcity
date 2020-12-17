@@ -43,7 +43,7 @@ module Api
       # Helpers
       # ------------------------
 
-      def serializer_options(model, opts = {})
+      def serializer_options(model, opts)
         return {} unless params[:include].present?
         GoodcitySerializer.parse_include_paths(model, params[:include], opts)
       end
@@ -91,21 +91,16 @@ module Api
         )
       end
 
-      def parse_error_message(e)
-        return e if e.is_a?(String)
-        return e.try(:message) || 'Unknown error'
-      end
-
       def access_denied
         render_goodcity_error Goodcity::AccessDeniedError.new
       end
 
       def invalid_params(e)
-        render_goodcity_error Goodcity::InvalidParamsError.with_text(parse_error_message(e))
+        render_goodcity_error Goodcity::InvalidParamsError.with_text(e&.message)
       end
 
       def not_found(e)
-        render_goodcity_error Goodcity::NotFoundError.with_text(parse_error_message(e))
+        render_goodcity_error Goodcity::NotFoundError.with_text(e&.message)
       end
 
       def render_goodcity_error(e)
