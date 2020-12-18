@@ -4,6 +4,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
   let(:included_types)  { parsed_body['included'].map { |inc| inc['type'] }.uniq }
   let(:included_items)  { parsed_body['included'].select { |inc| inc['type'].eql?('item') } }
+  let(:included_packages) { parsed_body['included'].select { |inc| inc['type'].eql?('package') } }
   let(:included_images) { parsed_body['included'].select { |inc| inc['type'].eql?('image') } }
 
   describe "GET /shareables (#index)" do
@@ -364,15 +365,19 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
       let(:item2) { create(:item, offer: offer2) }
       let(:item3) { create(:item, offer: offer3) }
       let(:item4) { create(:item, offer: offer4) }
+      let(:package1) { create(:package, item: item1) }
+      let(:package2) { create(:package, item: item2) }
+      let(:package3) { create(:package, item: item3) }
+      let(:package4) { create(:package, item: item4) }
       let(:shareable1) { create :shareable, resource: offer1,  allow_listing: false }
       let(:shareable3) { create :shareable, resource: offer3,  allow_listing: true }
       let(:shareable4) { create :shareable, resource: offer4,  allow_listing: true }
 
       before do
-        create(:image, imageable: item1)
-        create(:image, imageable: item2)
-        create(:image, imageable: item3)
-        create(:image, imageable: item4)
+        create(:image, imageable: package1)
+        create(:image, imageable: package2)
+        create(:image, imageable: package3)
+        create(:image, imageable: package4)
         touch(
           shareable1,
           shareable3,
@@ -393,6 +398,13 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(parsed_body['data']['id']).to eq(offer3.id.to_s)
         end
 
+        it "includes the district_id" do
+          get :resource_show, params: { model: 'offers', public_uid: shareable3.public_uid }
+          expect(response.status).to eq(200)
+          expect(parsed_body['data']['attributes']['district_id']).not_to be_nil
+          expect(parsed_body['data']['attributes']['district_id']).to eq(offer3.created_by.address.district_id)
+        end
+
         it "fails with 404 for a record that expired" do
           shareable3.update(expires_at: 1.day.ago)
           get :resource_show, params: { model: 'offers', public_uid: shareable3.public_uid }
@@ -404,17 +416,26 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(response.status).to eq(404)
         end
 
-        context 'with a shared item' do
-          before { create :shareable, resource: item4 }
+        context 'with a shared package' do
+          before { create :shareable, resource: package4 }
 
-          it "suceeds with 200 and includes the item" do
+          it "suceeds with 200 and includes the package" do
             get :resource_show, params: { model: 'offers', public_uid: shareable4.public_uid }
             expect(response.status).to eq(200)
             expect(parsed_body['data']['id']).to eq(offer4.id.to_s)
-            expect(included_items[0]['type']).to eq('item')
-            expect(included_items[0]['attributes'].keys).to match_array([
-              'id', 'donor_description', 'state', 'offer_id', 'created_at', 'package_type_id', 'public_uid'
+            expect(included_packages.length).to eq(1)
+            expect(included_packages[0]['type']).to eq('package')
+            expect(included_packages[0]['attributes']['offer_id']).to eq(offer4.id)
+            expect(included_packages[0]['attributes'].keys).to match_array([
+              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'grade', 'offer_id',
+              'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
             ])
+          end
+
+          it "doesnt includes the item" do
+            get :resource_show, params: { model: 'offers', public_uid: shareable4.public_uid }
+            expect(response.status).to eq(200)
+            expect(included_items.length).to eq(0)
           end
         end
       end
@@ -437,12 +458,14 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           get :resource_index, params: { model: 'offers' }
           expect(response.status).to eq(200)  
           expect(parsed_body['data'][0]['attributes'].keys).to eq([
-            'id', 'state', 'notes', 'created_at', 'public_uid'
+            'id', 'state', 'notes', 'created_at', 'public_uid', 'district_id'
           ])
         end
 
-        context 'with shared relationships' do
-          before { create :shareable, resource: item4 }
+        context 'with shared relationships' do 
+          before do
+            create :shareable, resource: package4
+          end
 
           it "includes images" do
             get :resource_index, params: { model: 'offers' }
@@ -450,33 +473,34 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             expect(included_types).to include('image')
           end
 
-          it "includes items" do
+          it "includes packages" do
             get :resource_index, params: { model: 'offers' }
             expect(response.status).to eq(200)
-            expect(included_types).to include('item')
+            expect(included_types).to include('package')
           end
 
-          it "only includes the images of shared items" do
+          it "only includes the images of shared packages" do
             get :resource_index, params: { model: 'offers' }
             expect(response.status).to eq(200)
             expect(included_images.length).to eq(1)
-            expect(included_images[0]['attributes']['imageable_type']).to eq('Item')
-            expect(included_images[0]['attributes']['imageable_id']).to eq(item4.id)
+            expect(included_images[0]['attributes']['imageable_type']).to eq('Package')
+            expect(included_images[0]['attributes']['imageable_id']).to eq(package4.id)
           end
 
-          it "only includes shared items" do
+          it "only includes shared packages" do
             get :resource_index, params: { model: 'offers' }
             expect(response.status).to eq(200)
-            expect(included_items.length).to eq(1)
-            expect(included_items[0]['id']).to eq(item4.id.to_s)
+            expect(included_packages.length).to eq(1)
+            expect(included_packages[0]['id']).to eq(package4.id.to_s)
           end
 
-          it "only shows the whitelisted attributes of the item relationships" do
+          it "only shows the whitelisted attributes of the package relationships" do
             get :resource_index, params: { model: 'offers' }
             expect(response.status).to eq(200)
-            expect(included_items[0]['type']).to eq('item')
-            expect(included_items[0]['attributes'].keys).to match_array([
-              'id', 'donor_description', 'state', 'offer_id', 'created_at', 'package_type_id', 'public_uid'
+            expect(included_packages[0]['type']).to eq('package')
+            expect(included_packages[0]['attributes'].keys).to match_array([
+              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'grade', 'offer_id',
+              'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
             ])
           end
         end
