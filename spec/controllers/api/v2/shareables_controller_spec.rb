@@ -417,7 +417,10 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
         end
 
         context 'with a shared package' do
-          before { create :shareable, resource: package4 }
+          before do
+            create(:package, item: item4 # another package which should not be included
+            create :shareable, resource: package4
+          end
 
           it "suceeds with 200 and includes the package" do
             get :resource_show, params: { model: 'offers', public_uid: shareable4.public_uid }
