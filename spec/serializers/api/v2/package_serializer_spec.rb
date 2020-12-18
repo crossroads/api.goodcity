@@ -2,8 +2,10 @@ require 'rails_helper'
 
 describe Api::V2::PackageSerializer do
 
-  let(:package)           { create(:package) }
-  let(:json)              { Api::V2::PackageSerializer.new(package.reload).as_json }
+  let(:item)              { create(:item, offer: create(:offer)) }
+  let(:package)           { create(:package, item: item) }
+  let(:params)            { {} }
+  let(:json)              { Api::V2::PackageSerializer.new(package.reload, { params: params }).as_json }
   let(:attributes)        { json['data']['attributes'] }
   let(:relationships)     { json['data']['relationships'] }
   let(:included_records)  { json['included'] }
@@ -30,7 +32,6 @@ describe Api::V2::PackageSerializer do
       expect(to_date_string(attributes['created_at'])).to eq(to_date_string(package[:created_at]))
       expect(to_date_string(attributes['updated_at'])).to eq(to_date_string(package[:updated_at]))
       expect(attributes['package_type_id']).to eq(package[:package_type_id])
-      expect(attributes['offer_id']).to eq(package[:offer_id])
       expect(attributes['grade']).to eq(package[:grade])
       expect(attributes['donor_condition_id']).to eq(package[:donor_condition_id])
       expect(attributes['received_quantity']).to eq(package[:received_quantity])
@@ -48,6 +49,14 @@ describe Api::V2::PackageSerializer do
       expect(attributes['on_hand_boxed_quantity']).to eq(package[:on_hand_boxed_quantity])
       expect(attributes['on_hand_palletized_quantity']).to eq(package[:on_hand_palletized_quantity])
       expect(attributes['notes_zh_tw']).to eq(package[:notes_zh_tw])
+    end
+
+    context 'with public params' do
+      let(:params) { { include_public_attributes: true } }
+
+      it 'includes an offer_id' do
+        expect(attributes['offer_id']).to eq(package.item.offer_id)
+      end
     end
   end
 
