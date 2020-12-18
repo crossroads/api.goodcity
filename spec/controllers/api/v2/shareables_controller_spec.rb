@@ -457,7 +457,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
         it "only returns whitelisted fields and the public id" do
           get :resource_index, params: { model: 'offers' }
           expect(response.status).to eq(200)  
-          expect(parsed_body['data'][0]['attributes'].keys).to eq([
+          expect(parsed_body['data'][0]['attributes'].keys).to match_array([
             'id', 'state', 'notes', 'created_at', 'public_uid', 'district_id'
           ])
         end
