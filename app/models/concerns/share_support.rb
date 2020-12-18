@@ -36,8 +36,8 @@ module ShareSupport
         end
         
         default_scope { publicly_shared }
-
-        custom_context.call if custom_context.present?
+        
+        self.instance_eval &custom_context if custom_context.present?
       end
     end
   end

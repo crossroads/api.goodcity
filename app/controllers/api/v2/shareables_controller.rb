@@ -8,17 +8,17 @@ module Api
       rescue_from PG::UniqueViolation, with: :raise_duplicate!
 
       SERIALIZER_ALLOWED_FIELDS = {
-        :offers => [:id, :state, :notes, :created_at],
-        :items  => [:id, :donor_description, :state, :offer_id, :created_at, :package_type_id],
+        :offers => [:id, :state, :notes, :created_at, :district_id],
+        :packages => [:id, :notes, :notes_zh_tw, :package_type_id, :grade, :offer_id, :received_quantity, :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id],
         :images => [:id, :favourite, :cloudinary_id, :angle, :imageable_type, :imageable_id]
       }.with_indifferent_access
 
       SERIALIZER_ALLOWED_RELATIONSHIPS = {
-        :offers => [:items, :images], # We don't include the items, as some might not have been shared
-        :items  => [:package_type, :offer, :images]
+        :offers => [:packages, :images],
+        :packages  => [:package_type, :images]
       }.with_indifferent_access
 
-      ALLOWED_MODELS = [:offers, :items]
+      ALLOWED_MODELS = [:offers, :packages]
 
       resource_description do
         short "Access publicly shared records"
@@ -57,7 +57,7 @@ module Api
         render json: serialize_resource(records, {
           meta: pagination_meta,
           params: {
-            include_public_uid: true
+            include_public_attributes: true
           }
         });
       end
@@ -72,11 +72,11 @@ module Api
         * 404 - not found
       EOS
       def resource_show
-        record = find_shared_record!(params[:public_uid], model_klass.name)
+        record = find_shared_record!(params[:public_uid], model_klass)
         
         render json: serialize_resource(record, {
           params: {
-            include_public_uid: true
+            include_public_attributes: true
           }
         });
       end
@@ -195,16 +195,16 @@ module Api
         params[:overwrite] == 'true'
       end
 
-      def find_shared_record!(public_uid, type)
+      def find_shared_record!(public_uid, klass)
         shareable = Shareable
           .non_expired
-          .of_type(type)
+          .of_type(klass.name)
           .where(public_uid: public_uid)
           .first
 
         raise Goodcity::NotFoundError unless shareable.present? && shareable.resource.present?
 
-        shareable.resource
+        klass.find(shareable.resource_id)
       end
 
       def model_klass

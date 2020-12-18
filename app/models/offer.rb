@@ -40,8 +40,8 @@ class Offer < ApplicationRecord
   # Sharing support
   #
   public_context do
-    has_many :items, -> { publicly_shared }
-    has_many :images, -> { publicly_shared(:items) }, through: :items
+    has_many :packages, -> { publicly_shared }, through: :items
+    has_many :images, -> { publicly_shared(:packages) }, through: :packages
   end
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
