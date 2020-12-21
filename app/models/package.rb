@@ -131,6 +131,7 @@ class Package < ApplicationRecord
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
+      package.assign_offer if package.inventory_number.present? && package.item.present?
     end
 
     before_transition on: :mark_missing do |package|
@@ -259,6 +260,10 @@ class Package < ApplicationRecord
 
   def box_or_pallet?
     %w[Box Pallet].include?(storage_type_name)
+  end
+
+  def assign_offer
+    offers_packages.where(offer_id: item.offer_id).first_or_create
   end
 
   private
