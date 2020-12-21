@@ -37,7 +37,7 @@ jobs:
           name: Download Code Climate test reporter
           command: |
             mkdir -p tmp/
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 > ./tmp/cc-test-reporter
             chmod +x ./tmp/cc-test-reporter
       - persist_to_workspace:
           root: tmp
@@ -80,7 +80,6 @@ jobs:
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
                               $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-            chmod +x ./tmp/cc-test-reporter
             ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
       - store_test_results:
           path: ~/rspec
