@@ -2,10 +2,10 @@ class UserFavourite < ApplicationRecord
   include PushUpdatesMinimal
 
   LIMIT_PER_TABLE = 20
-  
+
   belongs_to :favourite, polymorphic: true
   belongs_to :user
-  
+
   after_create :apply_limit
 
   # Live update rules
@@ -14,10 +14,10 @@ class UserFavourite < ApplicationRecord
   push_targets do |user_favourite|
     Channel.private_channels_for(user_favourite.user, STOCK_APP)
   end
-  
+
   def apply_limit
     #
-    # Delete non-persistent favorites > 20 
+    # Delete non-persistent favorites > 20
     #
     UserFavourite
       .where(user_id: user_id, favourite_type: favourite_type, persistent: false)
@@ -25,24 +25,25 @@ class UserFavourite < ApplicationRecord
       .offset(LIMIT_PER_TABLE)
       .destroy_all
   end
-  
+
   class << self
     #
     # Mark a record as a favourite
     #
     def add_user_favourite(record, persistent: false, user: User.current_user)
       return unless user.present?
-      
+
       UserFavourite.where(
         user: user,
         favourite: record,
         persistent: persistent
       ).first_or_initialize do |fav|
+        fav.persistent = fav.persistent ? true : persistent
         fav.updated_at = Time.now
         fav.save
       end
     end
-    
+
     #
     # Removes a favourite
     #
