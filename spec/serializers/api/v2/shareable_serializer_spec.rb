@@ -21,6 +21,7 @@ describe Api::V2::ShareableSerializer do
       expect(attributes['resource_id']).to eq(shareable[:resource_id])
       expect(attributes['allow_listing']).to eq(shareable[:allow_listing])
       expect(attributes['created_by_id']).to eq(shareable[:created_by_id])
+      expect(attributes['public_uid']).to eq(shareable[:public_uid])
       expect(to_date_string(attributes['expires_at'])).to eq(to_date_string(shareable[:expires_at]))
       expect(to_date_string(attributes['created_at'])).to eq(to_date_string(shareable[:created_at]))
       expect(to_date_string(attributes['updated_at'])).to eq(to_date_string(shareable[:updated_at]))

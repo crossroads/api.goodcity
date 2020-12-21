@@ -6,6 +6,6 @@ module Api::V2
     #   Attributes
     # ----------------------------
 
-    attributes :id, :resource_type, :resource_id, :allow_listing, :expires_at, :created_by_id, :created_at, :updated_at
+    attributes :id, :resource_type, :resource_id, :allow_listing, :expires_at, :created_by_id, :created_at, :updated_at, :public_uid
   end
 end
