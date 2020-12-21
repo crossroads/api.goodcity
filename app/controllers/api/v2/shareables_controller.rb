@@ -112,7 +112,7 @@ module Api
 
       api :GET, "/v2/shareables", "Gets the shareables"
       description <<-EOS
-        Returns the shareable row
+      Gets the shareables
 
         ===Response status codes
         * 200 - success
@@ -130,7 +130,7 @@ module Api
 
       api :POST, "/v2/shareables", "Creates a shareable row by id"
       description <<-EOS
-        Returns the shareable row
+        Creates a shareable row by id
 
         ===Response status codes
         * 200 - success
@@ -162,7 +162,7 @@ module Api
 
       api :PUT, "/v2/shareables/:id", "Updates a shareable row by id"
       description <<-EOS
-        Returns the shareable row
+        Updates a shareable row by id
 
         ===Response status codes
         * 200 - success
@@ -179,6 +179,25 @@ module Api
         else
           invalid_params @shareable.errors.full_messages.first
         end
+      end
+
+      api :DELETE, "/v2/shareables/unshare", "Unshares a set of record"
+      description <<-EOS
+        Unshares a set of record
+
+        ===Response status codes
+        * 200 - success
+        * 404 - forbidden
+        * 422 - bad payload
+        * 409 - already exists
+      EOS
+      def unshare        
+        raise Goodcity::MissingParamError.new('resource_type/resource_id') if (
+          params[:resource_type].blank? || params[:resource_id].blank?
+        )
+
+        Shareable.unpublish_by_id(params[:resource_type], params[:resource_id].split(','))
+        render json: {}, status: 200
       end
 
       private
