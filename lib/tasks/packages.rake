@@ -97,4 +97,17 @@ namespace :goodcity do
   task :compute_quantities, [:param] => [:environment] do |_, args|
     Goodcity::PackageSetup.compute_quantities(rehearse: args[:param].eql?('rehearse'))
   end
+
+  # rails goodcity:set_offer_for_packages
+  desc "update offers for packages"
+  task set_offer_for_packages: :environment do
+    Item.find_in_batches(batch_size: 100).each do |items|
+      items.each do |item|
+        packages = item.packages.inventorized.received
+        packages.each do |package|
+          package.assign_offer
+        end
+      end
+    end
+  end
 end
