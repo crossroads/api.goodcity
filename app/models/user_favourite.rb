@@ -36,10 +36,9 @@ class UserFavourite < ApplicationRecord
       UserFavourite.where(
         user: user,
         favourite: record,
-        persistent: persistent
       ).first_or_initialize do |fav|
-        fav.persistent = fav.persistent ? true : persistent
-        fav.updated_at = Time.now
+        fav.persistent = fav.persistent || persistent
+        fav.updated_at = Time.current
         fav.save
       end
     end
