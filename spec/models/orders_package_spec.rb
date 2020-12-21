@@ -275,8 +275,6 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it "returns orders_packages as per searched package_types.name_en" do
-      orders_package1.package.package_type.update(name_en: 'A box of toy')
-
       orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: orders_package1.package.package_type.name_en})
       expect(orders_packages.size ).to eq(1)
       expect(orders_packages[0]["id"]).to eq(orders_package1.id)
