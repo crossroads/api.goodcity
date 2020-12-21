@@ -32,9 +32,9 @@ module Api
       def_param_group :shareable do
         param :resource_id, String, required: true, allow_nil: false, desc: "The resource id"
         param :resource_type, String, required: true, allow_nil: false, desc: "The resource type"
-        param :allow_listing, ['true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
+        param :allow_listing, [true, false, 'true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
         param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
-        param :overwrite, ['true', 'false'], allow_nil: true, desc: "If set, allows overwriting existing shareable records"
+        param :overwrite, [true, false, 'true', 'false'], allow_nil: true, desc: "If set, allows overwriting existing shareable records"
       end
 
       def_param_group :shareable_update do

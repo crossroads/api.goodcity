@@ -72,7 +72,7 @@ class PackageSet < ApplicationRecord
   # ---------------------
 
   def unlink_packages
-    Package.where(package_set_id: id).update_all(package_set_id: nil)
+    Package.unscoped.where(package_set_id: id).update_all(package_set_id: nil)
   end
 
   def ensure_type_integrity
