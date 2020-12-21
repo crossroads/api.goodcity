@@ -54,6 +54,28 @@ class Shareable < ApplicationRecord
         })
       end
     end
+
+    #
+    # Unpublishes the specified records
+    #
+    # @param [Model|Model[]] resource one more more records
+    #
+    def unpublish(resource)
+      resources = resource.is_a?(Array) ? resource : [resource]
+      ActiveRecord::Base.transaction do
+        resources.each { |record| Shareable.find_by(resource: record).try(:destroy!) }
+      end
+    end
+
+    #
+    # Unpublishes the specified records
+    #
+    # @param [String] resource_type
+    # @param [Integer|Integer[]] resource_id one or more ids to un publish
+    #
+    def unpublish_by_id(resource_type, resource_id)
+      Shareable.where(resource_type: resource_type, resource_id: resource_id).destroy_all
+    end
   end
 
   private

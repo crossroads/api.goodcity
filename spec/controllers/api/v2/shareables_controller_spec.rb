@@ -218,6 +218,49 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
     end
   end
 
+  describe "DELETE /shareables/unshare (#unshare)" do
+
+    context "as an unauthenticated user" do
+      it "returns a 401 " do
+        shareable = create(:shareable)
+
+        delete :unshare, params: { resource_type: shareable.resource_type, resource_id: shareable.resource_id }
+        expect(response.status).to eq(401)
+      end
+    end
+
+    {
+      :can_manage_offers    => :offer,
+      :can_manage_items     => :item,
+      :can_manage_packages  => :package
+    }.each do |permission, resource_type|
+      context "as staff with #{permission} permission" do
+        let(:user) { create(:user, :supervisor, "with_#{permission}_permission".to_sym) }
+
+        before { generate_and_set_token(user) }
+
+        it "deletes the shareable #{resource_type} records specified" do
+          shareables = [
+            create(:shareable, resource: create(resource_type)),
+            create(:shareable, resource: create(resource_type)),
+            create(:shareable, resource: create(resource_type)),
+          ]
+
+          ids = shareables[0..1].map(&:resource).map(&:id)
+
+          expect {
+            delete :unshare, params: { resource_type: resource_type.to_s.classify, resource_id: ids.join(',') }
+          }.to change(Shareable, :count).by(-2)
+
+          expect(response.status).to eq(200)
+          expect(Shareable.find_by(id: shareables[0])).to be_nil
+          expect(Shareable.find_by(id: shareables[1])).to be_nil
+          expect(Shareable.find_by(id: shareables[2].id)).not_to be_nil
+        end
+      end
+    end
+  end
+
   describe "POST /shareables (#create)" do
   
     context "as an unauthenticated user" do
@@ -418,7 +461,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
 
         context 'with a shared package' do
           before do
-            create(:package, item: item4 # another package which should not be included
+            create :package, item: item4 # another package which should not be included
             create :shareable, resource: package4
           end
 
