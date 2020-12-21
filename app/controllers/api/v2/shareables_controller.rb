@@ -38,7 +38,7 @@ module Api
       end
 
       def_param_group :shareable_update do
-        param :allow_listing, ['true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
+        param :allow_listing, [true, false, 'true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
         param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
       end
 
@@ -171,7 +171,7 @@ module Api
         * 409 - already exists
       EOS
       param_group :shareable_update
-      def update        
+      def update
         @shareable.assign_attributes(shareable_update_params)
 
         if  @shareable.save
