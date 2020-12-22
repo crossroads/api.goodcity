@@ -98,6 +98,15 @@ RSpec.describe Package, type: :model do
         }.to change(package, :received_at)
         expect(package.state).to eq("received")
       end
+
+      it "should set offer for package" do
+        package = create :package, :with_item, :with_inventory_number
+        expect{
+          package.mark_received
+        }.to change(package.offers_packages, :count).by(1)
+
+        expect(package.offers).to include(package.item.offer)
+      end
     end
 
     describe "#mark_missing" do
