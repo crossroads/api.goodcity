@@ -537,8 +537,7 @@ describe User, :type => :model do
 
       it "only returns users with active (non-expired) permission" do
         res = User.with_permissions(:can_manage_offers)
-        expect(res.count).to eq(1)
-        expect(res.first).to eq(user_with_role)
+        expect(res.pluck(:id)).to include(user_with_role.id)
       end
     end
   end
