@@ -83,7 +83,7 @@ module Api
 
         notification_ids = @messages
           .select("max(@messages.id) AS message_id")
-          .group("messageable_type, messageable_id, is_private")
+          .group("messageable_type, messageable_id, is_private, sender_id, recipient_id")
           .page(page).per(per_page)
           .order('message_id DESC')
 
