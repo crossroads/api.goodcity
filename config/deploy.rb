@@ -25,8 +25,12 @@ namespace :deploy do
   end
 
   task :clear_cache do
-    on roles(:app), in: :sequence do
-      execute :rake, 'tmp:cache:clear'
+    on roles(:app) do |host|
+      with rails_env: fetch(:rails_env) do
+        within current_path do
+          execute :rake, "tmp:cache:clear"
+        end
+      end
     end
   end
 
