@@ -29,7 +29,8 @@ module AutoFavourite
     relations.each do |name|
       rel = try(name)
       if rel.present?
-        UserFavourite.add_user_favourite(rel)
+        foreign_key = _reflections[name].foreign_key
+        UserFavourite.add_user_favourite(rel) if send("saved_change_to_#{foreign_key}?")
       end
     end
   end
