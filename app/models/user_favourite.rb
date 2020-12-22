@@ -33,10 +33,10 @@ class UserFavourite < ApplicationRecord
     def add_user_favourite(record, persistent: false, user: User.current_user)
       return unless user.present?
 
-      UserFavourite.where(
+      UserFavourite.find_or_initialize_by(
         user: user,
         favourite: record,
-      ).first_or_initialize do |fav|
+      ) do |fav|
         fav.persistent = fav.persistent || persistent
         fav.updated_at = Time.current
         fav.save
