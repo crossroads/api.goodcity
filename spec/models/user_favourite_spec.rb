@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UserFavourite, type: :model do
-  let(:user) { create :user }
+  let!(:user) { create :user }
 
   describe "Associations" do
     it { is_expected.to belong_to :favourite }
@@ -52,6 +52,15 @@ RSpec.describe UserFavourite, type: :model do
             UserFavourite.add_user_favourite(package, persistent: false)
           }.not_to change(UserFavourite, :count)
         end
+      end
+    end
+
+    context 'when package_type is updated for package' do
+      it 'should create new UserFavourite for that package' do
+        package = create :package, package_type: package_type, location_id: location.id
+        expect {
+          package.update(package_type: create(:package_type))
+        }.to change(UserFavourite, :count).by(1)
       end
     end
   end
