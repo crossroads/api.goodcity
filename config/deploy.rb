@@ -21,10 +21,17 @@ namespace :deploy do
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
       execute :touch, release_path.join('tmp/restart.txt')
+    end
+  end
+
+  task :clear_cache do
+    on roles(:app), in: :sequence do
       execute :rake, 'tmp:cache:clear'
     end
   end
+
   after :publishing, :restart
+  after :restart, :clear_cache
 end
 
 namespace :pg do
