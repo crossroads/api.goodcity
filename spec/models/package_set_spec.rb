@@ -38,7 +38,7 @@ RSpec.describe PackageSet, type: :model do
         it 'prevents changing the type of a set with packages' do
           expect {
             package_set.update!(package_type: other_package_type)
-          }.to raise_error(ActiveRecord::RecordInvalid).with_message(/Changing the set's type is not allowed/)
+          }.to raise_error(ActiveRecord::RecordInvalid)
         end
 
         it 'allows changing the type of a set with no packages' do
