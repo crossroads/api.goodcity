@@ -101,12 +101,10 @@ namespace :goodcity do
   # rails goodcity:set_offer_for_packages
   desc "update offers for packages"
   task set_offer_for_packages: :environment do
-    Item.find_in_batches(batch_size: 100).each do |items|
-      items.each do |item|
-        packages = item.packages.inventorized.received
-        packages.each do |package|
-          package.assign_offer
-        end
+    item_packages = Package.inventorized.received.where.not(item_id: nil)
+    item_packages.find_in_batches(batch_size: 100).each do |packages|
+      packages.each do |package|
+        package.assign_offer unless package.offers_packages.map(&:offer_id).include?(package.item.offer_id)
       end
     end
   end
