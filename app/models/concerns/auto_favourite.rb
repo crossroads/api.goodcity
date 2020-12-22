@@ -2,7 +2,7 @@ module AutoFavourite
   extend ActiveSupport::Concern
 
   included do
-    before_save   :mark_recent_usage
+    after_save    :mark_recent_usage
     after_destroy :remove_from_favourites
 
     scope :recently_used, -> (user_id) {
@@ -22,8 +22,6 @@ module AutoFavourite
   private
 
   def mark_recent_usage
-    return unless persisted?
-
     UserFavourite.add_user_favourite(self) if @@auto_favourite_enabled
 
     relations = @@auto_favourite_relations || []
@@ -31,8 +29,7 @@ module AutoFavourite
     relations.each do |name|
       rel = try(name)
       if rel.present?
-        foreign_key = _reflections[name].foreign_key
-        UserFavourite.add_user_favourite(rel) if new_record? || send("#{foreign_key}_changed?")
+        UserFavourite.add_user_favourite(rel)
       end
     end
   end
