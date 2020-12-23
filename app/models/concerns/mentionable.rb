@@ -46,4 +46,22 @@ module Mentionable
   def parse_id_from_decorated_ids(ids)
     ids.map { |id| id.match(/\d+/).to_s }
   end
+
+  included do
+    def self.mentionable_users(opts = {})
+      users = active.exclude_user(User.current_user.id)
+                    .with_roles(mentionable_roles(opts[:roles])).distinct.to_a
+      users << add_order_creator(users, opts[:order_id]) if opts[:order_id]
+      users.compact
+    end
+
+    def self.add_order_creator(users, order_id)
+      user = Order.find_by(id: order_id)&.created_by
+      user unless users.include? user
+    end
+
+    def self.mentionable_roles(roles)
+      (MENTIONABLE_ROLES & roles.split(',').map(&:strip).uniq)
+    end
+  end
 end

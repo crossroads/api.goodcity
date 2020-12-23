@@ -29,6 +29,8 @@ en:
     mobile_exists: Mobile number already exists.
     invalid_mobile: Sorry, your mobile number is invalid.
     invalid_pin: Invalid SMS code.
+  messages:
+    no_private_recipient: Private messages cannot have a recipient
   box_pallet:
     errors:
       invalid_quantity: Added quantity cannot be larger than available quantity.

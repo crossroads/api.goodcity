@@ -23,7 +23,19 @@ namespace :deploy do
       execute :touch, release_path.join('tmp/restart.txt')
     end
   end
+
+  task :clear_cache do
+    on roles(:app) do |host|
+      with rails_env: fetch(:rails_env) do
+        within current_path do
+          execute :rake, "tmp:cache:clear"
+        end
+      end
+    end
+  end
+
   after :publishing, :restart
+  after :restart, :clear_cache
 end
 
 namespace :pg do

@@ -4,6 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
@@ -41,6 +42,71 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(subject['messages'].length).to eq(6)
     end
 
+    describe 'Multiple users discussing a single record' do
+      let(:reviewer) { create(:user, :with_token, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
+      let(:donor) { create(:user) }
+      let(:charity_user) { create(:user, :charity) }
+      let(:charity_user2) { create(:user, :charity) }
+      let(:offer) { create(:offer, created_by: donor) }
+      let(:received_messages) { subject['messages'].map { |m| m['body'] } }
+
+      before do
+        create(:message, sender: donor, body: 'Hi do you like my offer?', messageable: offer)
+        create(:message, sender: reviewer, body: 'Yes we do', messageable: offer) # default recipient
+        create(:message, sender: reviewer, body: 'Thank you for your offer', messageable: offer, recipient: donor)
+        create(:message, sender: charity_user, body: 'Iteresting offer, can I have it ?', messageable: offer)
+        create(:message, sender: charity_user2, body: 'I also want it', messageable: offer)
+        create(:message, sender: reviewer, body: 'of course you can', messageable: offer, recipient: charity_user)
+      end
+
+      context 'as a donor discussing my offer' do
+        before { generate_and_set_token(donor) }
+
+        it "only return my messages and staff member's messages sent to me", :show_in_doc do
+          get :index
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(3)
+          expect(received_messages).to eq([
+            'Hi do you like my offer?',
+            'Yes we do',
+            'Thank you for your offer'
+          ])
+        end
+      end
+
+      context "as a charity user discussing someone else's offer"  do
+        before { generate_and_set_token(charity_user) }
+
+        it "only return my messages and staff member's messages", :show_in_doc do
+          get :index
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(2)
+          expect(received_messages).to eq([
+            'Iteresting offer, can I have it ?',
+            'of course you can'
+          ])
+        end
+      end
+
+      context "as a staff member managing an offer"  do
+        before { generate_and_set_token(reviewer) }
+
+        it "shows messages from everyone", :show_in_doc do
+          get :index
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(6)
+          expect(received_messages).to eq([
+            'Hi do you like my offer?',
+            'Yes we do',
+            'Thank you for your offer',
+            'Iteresting offer, can I have it ?',
+            'I also want it',
+            'of course you can'
+          ])
+        end
+      end
+    end
+
     describe 'filtering messages' do
       it "for one item" do
         3.times { create :message, messageable: item }
@@ -71,25 +137,25 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one order" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
-        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2) }
+        3.times { create :message, sender: reviewer, messageable: order }
+        3.times { create :message, sender: reviewer, messageable: order2 }
 
         get :index, params: { order_id: order.id }
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
-        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2) }
-
+        3.times { create :message, sender: reviewer, messageable: order }
+        3.times { create :message, sender: reviewer, messageable: order2 }
+        
         get :index, params: { order_id: "#{order.id},#{order2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for a certain state" do
-        3.times { create :message, messageable: offer }
+        3.times { create :message, messageable: offer, sender_id: reviewer.id }
         3.times { create :message, messageable: offer, sender_id: user.id }
-        3.times { create :message, messageable: offer2 }
+        3.times { create :message, messageable: offer2, sender_id: reviewer.id }
         get :index, params: { offer_id: "#{offer.id},#{offer2.id}", state: 'unread' }
         expect(subject['messages'].length).to eq(6)
       end

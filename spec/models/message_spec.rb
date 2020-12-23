@@ -8,6 +8,7 @@ describe Message, type: :model do
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
   let(:order) { create :order }
+  let(:other_user) { create :user }
 
   def create_message(options = {})
     options = { sender_id: donor.id, messageable: offer }.merge(options)
@@ -38,6 +39,58 @@ describe Message, type: :model do
     it { is_expected.to have_many :offers_subscription }
   end
 
+  describe "Lifecycle" do
+    context "on creation" do
+      it "ensures private messages don't have recipients" do
+        expect {
+          Message.create(messageable: offer, body: "hi", sender: reviewer, is_private: true, recipient: create(:user))
+        }.to raise_error(Goodcity::ValidationError).with_message('Private messages cannot have a recipient')
+      end
+
+      context "for a PUBLIC message on an offer" do
+        it "automatically sets the recipient to the donor if missing" do
+          m = Message.create(messageable: offer, body: "hi", sender: reviewer, is_private: false)
+          expect(m.recipient).to_not be_nil
+          expect(m.recipient).to eq(offer.created_by)
+        end
+
+        it "doesn't modify pre-set recipients" do
+          m = Message.create(messageable: offer, body: "hi", sender: reviewer, is_private: false, recipient: other_user)
+          expect(m.recipient).to_not be_nil
+          expect(m.recipient).to eq(other_user)
+        end
+      end
+
+      context "for a PUBLIC message on an item" do
+        it "automatically sets the recipient to the donor if missing" do
+          m = Message.create(messageable: item, body: "hi", sender: reviewer, is_private: false)
+          expect(m.recipient).to_not be_nil
+          expect(m.recipient).to eq(item.offer.created_by)
+        end
+
+        it "doesn't modify pre-set recipients" do
+          m = Message.create(messageable: item, body: "hi", sender: reviewer, is_private: false, recipient: other_user)
+          expect(m.recipient).to_not be_nil
+          expect(m.recipient).to eq(other_user)
+        end
+      end
+
+      context "for a PRIVATE message on an offer" do
+        it "doesn't default to any recipient" do
+          m = Message.create(messageable: offer, body: "hi", sender: reviewer, is_private: true)
+          expect(m.recipient).to eq(nil)
+        end
+      end
+
+      context "for a PRIVATE message on an item" do
+        it "doesn't default to any recipient" do
+          m = Message.create(messageable: item, body: "hi", sender: reviewer, is_private: true)
+          expect(m.recipient).to eq(nil)
+        end
+      end
+    end
+  end
+
   describe "subscribe_users_to_message" do
     it "sender subscription state is read" do
       message = create_message(sender_id: donor.id)
@@ -60,9 +113,9 @@ describe Message, type: :model do
   end
 
   context 'filtering by state' do
-    let!(:message) { create_message(sender_id: donor.id) }
-    let!(:message2) { create_message(sender_id: donor.id) }
-    let!(:message3) { create_message(sender_id: reviewer.id) }
+    let!(:message) { create_message(id: 1001, sender_id: donor.id) }
+    let!(:message2) { create_message(id: 1002, sender_id: donor.id) }
+    let!(:message3) { create_message(id: 1003, sender_id: reviewer.id) }
 
     it 'should only return unread messages' do
       expect(Message.with_state_for_user(reviewer, 'unread').count).to eq(2)
@@ -72,23 +125,6 @@ describe Message, type: :model do
     it 'should return all read messages' do
       expect(Message.with_state_for_user(reviewer, 'read').count).to eq(1)
       expect(Message.with_state_for_user(donor, 'read').count).to eq(2)
-    end
-  end
-
-  describe 'default scope' do
-    let!(:private_message) { create :message, :private }
-
-    it "should not allow donor to access private messages" do
-      User.current_user = donor
-      expect(Message.all).to_not include(private_message)
-      expect{
-        Message.find(private_message.id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should allow reviewer to access private messages" do
-      User.current_user = reviewer
-      expect(Message.all).to include(private_message)
     end
   end
 

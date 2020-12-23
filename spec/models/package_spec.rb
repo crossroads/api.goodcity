@@ -98,6 +98,15 @@ RSpec.describe Package, type: :model do
         }.to change(package, :received_at)
         expect(package.state).to eq("received")
       end
+
+      it "should set offer for package" do
+        package = create :package, :with_item, :with_inventory_number
+        expect{
+          package.mark_received
+        }.to change(package.offers_packages, :count).by(1)
+
+        expect(package.offers).to include(package.item.offer)
+      end
     end
 
     describe "#mark_missing" do
@@ -173,18 +182,22 @@ RSpec.describe Package, type: :model do
     end
 
     it "should send changes to the stock channel" do
-      expect(push_service).to receive(:send_update_store) do |channels, data|
-        expect(channels.length).to eq(1)
-        expect(channels).to eq([ Channel::STOCK_CHANNEL ])
+      expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
+        if data[:item].is_a?(Api::V1::PackageSerializer)
+          expect(channels.length).to eq(1)
+          expect(channels).to eq([ Channel::STOCK_CHANNEL ])
+        end
       end
       package.notes = "a note"
       package.save
     end
 
     it "should send changes to the staff if the package has an item" do
-      expect(push_service).to receive(:send_update_store) do |channels, data|
-        expect(channels.length).to eq(2)
-        expect(channels).to eq([ Channel::STOCK_CHANNEL, Channel::STAFF_CHANNEL ])
+      expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
+        if data[:item].is_a?(Api::V1::PackageSerializer)
+          expect(channels.length).to eq(2)
+          expect(channels).to eq([ Channel::STOCK_CHANNEL, Channel::STAFF_CHANNEL ])
+        end
       end
       package_with_item.notes = "a note"
       package_with_item.save
@@ -194,7 +207,7 @@ RSpec.describe Package, type: :model do
       let!(:package_unpublished) { create :package, :unpublished, received_quantity: 1  }
 
       it "should not be sent to the browse app" do
-        expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
           expect(channels).not_to include(Channel::BROWSE_CHANNEL)
         end
         package_unpublished.notes = "a note"
@@ -202,8 +215,10 @@ RSpec.describe Package, type: :model do
       end
 
       it "should be sent to the browse app if it gets published" do
-        expect(push_service).to receive(:send_update_store) do |channels, data|
-          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
+          if data[:item].is_a?(Api::V1::PackageSerializer)
+            expect(channels).to include(Channel::BROWSE_CHANNEL)
+          end
         end
         package_unpublished.allow_web_publish = true
         package_unpublished.save
@@ -214,16 +229,20 @@ RSpec.describe Package, type: :model do
       let!(:package_published) { create :package, :published, received_quantity: 1 }
 
       it "should be sent to the browse app" do
-        expect(push_service).to receive(:send_update_store) do |channels, data|
-          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
+          if data[:item].is_a?(Api::V1::PackageSerializer)
+            expect(channels).to include(Channel::BROWSE_CHANNEL)
+          end
         end
         package_published.allow_web_publish = true
         package_published.save
       end
 
       it "should be sent to the browse app if it gets unpublished" do
-        expect(push_service).to receive(:send_update_store) do |channels, data|
-          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        expect(push_service).to receive(:send_update_store).at_least(:once) do |channels, data|
+          if data[:item].is_a?(Api::V1::PackageSerializer)
+            expect(channels).to include(Channel::BROWSE_CHANNEL)
+          end
         end
         package_published.reload.allow_web_publish = false
         package_published.save
