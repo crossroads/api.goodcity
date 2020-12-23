@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_26_092838) do
+ActiveRecord::Schema.define(version: 2020_12_21_042717) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -779,6 +779,12 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
     t.index ["booking_type_id"], name: "index_process_checklists_on_booking_type_id"
   end
 
+  create_table "processing_destinations", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "purposes", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
@@ -952,8 +958,9 @@ ActiveRecord::Schema.define(version: 2020_11_26_092838) do
     t.boolean "persistent", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["favourite_type", "favourite_id"], name: "index_user_favourites_on_favourite_type_and_favourite_id", unique: true
     t.index ["favourite_type"], name: "index_user_favourites_on_favourite_type"
+    t.index ["updated_at"], name: "index_user_favourites_on_updated_at"
+    t.index ["user_id", "favourite_type", "favourite_id"], name: "index_user_and_favourites", unique: true
   end
 
   create_table "user_roles", id: :serial, force: :cascade do |t|

@@ -1,15 +1,15 @@
 module AutoFavourite
   extend ActiveSupport::Concern
-  
+
   included do
-    before_save   :mark_recent_usage
+    after_save    :mark_recent_usage
     after_destroy :remove_from_favourites
 
     scope :recently_used, -> (user_id) {
       UserFavourite.where(favourite_type: self.class.name, user_id: user_id).order('updated_at desc')
     }
   end
-  
+
   class_methods do
     @@auto_favourite_relations = false
 
@@ -18,23 +18,23 @@ module AutoFavourite
       @@auto_favourite_relations = relations
     end
   end
-  
+
   private
-  
-  def mark_recent_usage    
+
+  def mark_recent_usage
     UserFavourite.add_user_favourite(self) if @@auto_favourite_enabled
-    
+
     relations = @@auto_favourite_relations || []
-    
+
     relations.each do |name|
-      rel = self.try(name)
+      rel = try(name)
       if rel.present?
-        foreign_key = self._reflections[name].foreign_key
-        UserFavourite.add_user_favourite(rel) if self.new_record? || self.send("#{foreign_key}_changed?")
+        foreign_key = _reflections[name].foreign_key
+        UserFavourite.add_user_favourite(rel) if send("saved_change_to_#{foreign_key}?")
       end
     end
   end
-  
+
   def remove_from_favourites
     UserFavourite.remove_user_favourite(self)
   end
