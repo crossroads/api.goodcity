@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UserFavourite, type: :model do
-  let(:user) { create :user }
+  let!(:user) { create :user }
 
   describe "Associations" do
     it { is_expected.to belong_to :favourite }
@@ -15,30 +15,53 @@ RSpec.describe UserFavourite, type: :model do
   end
 
   describe '#add_user_favourite' do
+    let(:package_type) { create :package_type }
+    let(:location) { create :location }
 
-    before { 
-      User.current_user = user 
-    }
+    before { User.current_user = user }
 
     it 'creates user_favourites record for model and its associations' do
-      package_type = create :package_type 
-      package = create :package, package_type_id: package_type.id
-      expect(UserFavourite.count).to eq(2)
+      expect {
+        create :package, package_type_id: package_type.id
+      }.to change(UserFavourite, :count).by(2)
     end
 
     it 'creates user_favourites record for models relationships assigned to "auto_favourite_relations"' do
-      package_type = create :package_type 
-      package = create :package, package_type: package_type
-      expect(UserFavourite.count).to eq(2)
+      expect {
+        create :package, package_type: package_type
+      }.to change(UserFavourite, :count).by(2)
       expect(UserFavourite.pluck(:favourite_id)).to include(package_type.id)
     end
 
     it 'does not create user_favourites record for models relationships assigned to "auto_favourite_relations"' do
-      location = create :location 
-      package_type = create :package_type 
-      package = create :package, package_type: package_type, location_id: location.id
-      expect(UserFavourite.count).to eq(2)
+      expect {
+        create :package, package_type: package_type, location_id: location.id
+      }.to change(UserFavourite, :count).by(2)
       expect(UserFavourite.pluck(:favourite_id)).not_to include(location.id)
+    end
+
+    context 'when a persistent favourite already exists' do
+      let(:package) { create :package, package_type: package_type }
+      before do
+        UserFavourite.add_user_favourite(package, persistent: true)
+      end
+
+      context 'on creating a non persistent favourite for same record' do
+        it 'should not create new record' do
+          expect {
+            UserFavourite.add_user_favourite(package, persistent: false)
+          }.not_to change(UserFavourite, :count)
+        end
+      end
+    end
+
+    context 'when package_type is updated for package' do
+      it 'should create new UserFavourite for that package' do
+        package = create :package, package_type: package_type, location_id: location.id
+        expect {
+          package.update(package_type: create(:package_type))
+        }.to change(UserFavourite, :count).by(1)
+      end
     end
   end
 end
