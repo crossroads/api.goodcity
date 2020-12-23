@@ -34,11 +34,13 @@ module Api
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :package_id, String, desc: "Return messages for package id"
+      param :recipient_id, String, desc: "Specific user id to fetch the messages of"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.with_state_for_user(current_user, params[:state].split(",")) if params[:state].present?
+        @messages = @messages.where("recipient_id = (?) OR sender_id = (?)", params[:recipient_id], params[:recipient_id]) if params[:recipient_id].present?
         paginate_and_render(@messages, serializer)
       end
 
