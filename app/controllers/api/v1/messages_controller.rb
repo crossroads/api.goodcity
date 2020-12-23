@@ -83,9 +83,14 @@ module Api
 
         notification_ids = @messages
           .select("max(@messages.id) AS message_id")
-          .group("messageable_type, messageable_id, is_private, sender_id, recipient_id")
           .page(page).per(per_page)
           .order('message_id DESC')
+        
+        if bool_param(:is_private, false)
+          notification_ids = notification_ids.group("messageable_type, messageable_id, is_private")
+        else
+          notification_ids = notification_ids.group("messageable_type, messageable_id, is_private, sender_id, recipient_id")
+        end
 
         @messages = @messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
 
