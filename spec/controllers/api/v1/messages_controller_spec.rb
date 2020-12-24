@@ -176,23 +176,246 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
 
   describe "GET message" do
-    before { generate_and_set_token(user) }
-    it "returns 200 and payload", :show_in_doc do
-      get :show, params: { id: message.id }
-      expect(response.status).to eq(200)
-      expect(subject['message']['body']).to eql(message.body)
+    let(:donor) { create :user }
+    let(:charity) { create :user, :charity }
+    let(:staff) { reviewer }
+    let(:offer) { create :offer, created_by: donor }
+    let(:private_message_from_staff) { create :message, is_private: true, sender: staff, messageable: offer }
+    let(:public_message_from_staff_to_donor) { create :message, is_private: false, sender: staff, messageable: offer }
+    let(:public_message_from_staff_to_charity) { create :message, is_private: false, sender: staff, messageable: offer, recipient: charity }
+    let(:public_message_from_donor) { create :message, is_private: false, sender: donor, messageable: offer }
+    let(:public_message_from_charity) { create :message, is_private: false, sender: charity, messageable: offer }
+
+    before do
+      touch(donor, charity, staff, offer)
+    end
+
+    context 'as a normal user' do
+      before { generate_and_set_token(donor) }
+
+      context "viewing a message sent to me by staff member" do
+        let(:message) { public_message_from_staff_to_donor }
+
+        it 'shows the message' do
+          expect(message.recipient_id).to eq(donor.id)
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(200)
+          expect(subject['message']['id']).to eql(message.id)
+          expect(subject['message']['body']).to eql(message.body)
+        end
+      end
+
+      context "viewing a message sent by myself" do
+        let(:message) { public_message_from_donor }
+
+        it 'shows the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(200)
+          expect(subject['message']['id']).to eql(message.id)
+          expect(subject['message']['body']).to eql(message.body)
+        end
+      end
+
+      context "viewing a message sent by a charity regarding my offer" do
+        let(:message) { public_message_from_charity }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "viewing a message sent by a staff member to a charity regarding my offer" do
+        let(:message) { public_message_from_staff_to_charity }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "viewing a private message sent between staff  regarding my offer" do
+        let(:message) { private_message_from_staff }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+
+    context 'as a charity user' do
+      before { generate_and_set_token(charity) }
+
+      context "viewing a message by the staff member to the donor" do
+        let(:message) { public_message_from_staff_to_donor }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "viewing a message sent by the donor regarding his/her offer" do
+        let(:message) { public_message_from_donor }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "viewing a message sent by a me (a charity) regarding an offer" do
+        let(:message) { public_message_from_charity }
+
+        it 'shows the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(200)
+          expect(subject['message']['id']).to eql(message.id)
+          expect(subject['message']['body']).to eql(message.body)
+        end
+      end
+
+      context "viewing a message sent by a staff member to a myself (a charity) regarding an offer" do
+        let(:message) { public_message_from_staff_to_charity }
+
+        it 'shows the message' do
+          expect(message.recipient_id).to eq(charity.id)
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(200)
+          expect(subject['message']['id']).to eql(message.id)
+          expect(subject['message']['body']).to eql(message.body)
+        end
+      end
+
+      context "viewing a private message sent between staff  regarding my offer" do
+        let(:message) { private_message_from_staff }
+
+        it 'prevents me from seeing the message' do
+          get :show, params: { id: message.id }
+          expect(response.status).to eq(403)
+        end
+      end
     end
   end
 
   describe "POST message/1" do
-    before do
-      generate_and_set_token(user)
-    end
+    let(:donor) { create :user }
+    let(:charity) { create :user, :charity }
+    let(:staff) { reviewer }
+    let(:offer) { create :offer, created_by: donor }
 
-    it 'returns 201', :show_in_doc do
-      post :create, params: { message: message_params }, as: :json
-      expect(response.status).to eq(201)
-    end
+    context 'a public message about an offer' do
+      let(:message_params) { {
+        :body=> "Lorem Ipsum",
+        :is_private=>false,
+        :messageable_id=> offer.id,
+        :messageable_type=>"Offer"
+      } }
+
+      context 'as the donor' do
+        before { generate_and_set_token(donor) }
+
+        it 'succeeds' do
+          expect {
+            post :create, params: { message: message_params }, as: :json
+          }.to change(Message, :count).by(1)
+          expect(response.status).to eq(201)
+        end
+
+        it 'doesnt set a recipient' do
+          expect {
+            post :create, params: { message: message_params }, as: :json
+          }.to change(Message, :count).by(1)
+
+          expect(Message.last.recipient).to eq(nil)
+        end
+
+        it 'fails if a third user is specified as recipient' do
+          post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context 'as a charity about an offer' do
+        before { generate_and_set_token(charity) }
+
+        context 'that has NOT been shared' do
+          it 'fails with 403' do
+            post :create, params: { message: message_params }, as: :json
+            expect(response.status).to eq(403)
+          end
+        end
+
+        context 'that has been publicly shared' do
+          before { Shareable.publish(offer) }
+
+          it 'suceeds' do
+            expect {
+              post :create, params: { message: message_params }, as: :json
+            }.to change(Message, :count).by(1)
+            expect(response.status).to eq(201)
+          end
+
+          it 'doesnt set a recipient' do
+            expect {
+              post :create, params: { message: message_params }, as: :json
+            }.to change(Message, :count).by(1)
+            expect(Message.last.recipient).to eq(nil)
+          end
+
+          it 'fails if a third user is specified as recipient' do
+            post :create, params: { message: { **message_params, recipient_id: donor.id } }, as: :json
+            expect(response.status).to eq(403)
+          end
+        end
+      end
+
+      context 'to specific recipients' do  
+        context 'as a normal user' do
+          before { generate_and_set_token(donor) }
+  
+          it 'prevents me from setting a recipient_id' do
+            post :create, params: { message: { **message_params, recipient_id: charity.id } }, as: :json
+            expect(response.status).to eq(403)
+          end
+        end
+  
+        context 'as an entitled staff member' do
+          before { generate_and_set_token(staff) }
+  
+          it 'allows to set a recipient_id' do
+            post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
+            expect(response.status).to eq(201)
+            mid = subject['message']['id']
+            new_message = Message.find_by(id: mid)
+            expect(new_message).not_to be_nil
+            expect(new_message.recipient).to eq(charity)
+          end
+  
+          it 'defaults the recipient_id to the donor if missing' do
+            post :create, params: { message: message_params }, as: :json
+            expect(response.status).to eq(201)
+            mid = subject['message']['id']
+            new_message = Message.find_by(id: mid)
+            expect(new_message).not_to be_nil
+            expect(new_message.recipient).to eq(donor)
+          end
+  
+          context 'if the message is private' do
+            let(:message_params) {
+              FactoryBot.attributes_for(:message, is_private: true, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer')
+            }
+  
+            it 'prevents me from setting a recipient_id' do
+              post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
+              expect(response.status).to eq(422)
+              expect(subject['error']).to eq('Private messages cannot have a recipient')
+            end
+          end
+        end
+      end
+    end 
 
     context 'backward compatibility' do
       let(:offer) { create(:offer, :with_messages, created_by: user) }
@@ -301,20 +524,42 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe "GET messages/notifications" do
     let(:user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
     let(:package) { create :package }
+
     before { generate_and_set_token(user) }
 
-    it "return serialized message notifications", :show_in_doc do
-      2.times do
-        message = create :message, :private, messageable: package
-        message.subscriptions
-          .where(user: user, state: "unread", subscribable: package).first_or_create
+    context "for private messages" do
+      it "returns one notification per record (one thread)", :show_in_doc do
+        2.times do
+          message = create :message, :private, messageable: package
+          message.subscriptions
+            .where(user: user, state: "unread", subscribable: package).first_or_create
+        end
+
+        get :notifications, params: { messageable_type: ["package"], is_private: "true" }
+
+        expect(response.status).to eq(200)
+        expect(subject['messages'].length).to eq(1)
+        expect(subject['messages'][0]["unread_count"]).to eq(2)
       end
+    end
 
-      get :notifications, params: { messageable_type: ["package"], is_private: "true" }
+    context "for public messages" do
+      let(:charity1) { create :user, :charity }
+      let(:charity2) { create :user, :charity }
 
-      expect(response.status).to eq(200)
-      expect(subject['messages'].length).to eq(1)
-      expect(subject['messages'][0]["unread_count"]).to eq(2)
+      it "returns one notification per conversation with user", :show_in_doc do
+        [charity1, charity2].each do |sender|
+          message = create :message, sender: sender, is_private: false, messageable: package
+          message.subscriptions
+            .where(user: user, state: "unread", subscribable: package).first_or_create
+        end
+
+        get :notifications, params: { messageable_type: ["package"], is_private: "false" }
+
+        expect(response.status).to eq(200)
+        expect(subject['messages'].length).to eq(2)
+        expect(subject['messages'][0]["unread_count"]).to eq(2)
+      end
     end
   end
 end

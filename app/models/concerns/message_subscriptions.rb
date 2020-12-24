@@ -34,14 +34,14 @@ module MessageSubscriptions
     end
   end
 
-  private
-
   def managed_by?(user)
     return false unless user.present? && messageable_type.present?
 
     perm = required_staff_permission(messageable_type)
     user.user_permissions_names.include?(perm)
   end
+
+  private
 
   def required_staff_permission(klass)
     if ['Offer', 'Item'].include?(klass)

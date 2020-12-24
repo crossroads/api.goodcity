@@ -80,7 +80,10 @@ module Api
 
       api :GET, '/v1/offers/1', "List an offer"
       def show
-        render json: offer_serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
+        render json: offer_serializer.new(@offer, {
+          include_organisations_users: params["include_organisations_users"] == "true",
+          exclude_messages: params["exclude_messages"] == "true"
+        }).as_json
       end
 
       api :PUT, '/v1/offers/1', "Update an offer"

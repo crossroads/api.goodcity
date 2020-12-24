@@ -4,6 +4,7 @@ class Item < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include ShareSupport
 
   belongs_to :offer, inverse_of: :items
   belongs_to :package_type, inverse_of: :items
