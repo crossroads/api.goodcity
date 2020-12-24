@@ -16,6 +16,15 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
+      
+      resources :shareables, only: [:show, :index, :create, :destroy, :update] do
+        collection do
+          delete :unshare
+        end
+      end
+
+      get "shared/:model",              to: "shareables#resource_index"
+      get "shared/:model/:public_uid",  to: "shareables#resource_show"
     end
 
     namespace "v1", defaults: { format: "json" } do

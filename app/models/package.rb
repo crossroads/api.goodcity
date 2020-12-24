@@ -4,6 +4,7 @@ class Package < ApplicationRecord
   include StateMachineScope
   include PushUpdatesMinimal
   include AutoFavourite
+  include ShareSupport
 
   include PackageFiltering
   include LocationOperations

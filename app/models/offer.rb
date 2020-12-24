@@ -3,7 +3,7 @@ class Offer < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdates
-
+  include ShareSupport
   include OfferSearch
   include OfferFiltering
 
@@ -23,18 +23,26 @@ class Offer < ApplicationRecord
   has_many :subscriptions, as: :subscribable, dependent: :destroy
 
   has_many :items, inverse_of: :offer, dependent: :destroy
+  has_many :images, through: :items
   has_many :submitted_items, -> { where(state: 'submitted') }, class_name: 'Item'
   has_many :accepted_items, -> { where(state: 'accepted') }, class_name: 'Item'
   has_many :rejected_items, -> { where(state: 'rejected') }, class_name: 'Item'
   has_many :expecting_packages, class_name: 'Package', through: :items, source: :expecting_packages
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
-  has_many :images, through: :items
   has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
   has_many :messages, as: :messageable, dependent: :destroy
+
+  #
+  # Sharing support
+  #
+  public_context do
+    has_many :packages, -> { publicly_shared }, through: :items
+    has_many :images, -> { publicly_shared(:packages) }, through: :packages
+  end
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
 

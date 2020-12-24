@@ -3,6 +3,7 @@ class Image < ApplicationRecord
   include CloudinaryHelper
   include Paranoid
   include PushUpdatesMinimal
+  include ShareSupport
 
   has_one :user, inverse_of: :image
   belongs_to :imageable, polymorphic: true, touch: true

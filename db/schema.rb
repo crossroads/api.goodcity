@@ -845,6 +845,22 @@ ActiveRecord::Schema.define(version: 2020_12_21_042717) do
     t.datetime "updated_at"
   end
 
+  create_table "shareables", force: :cascade do |t|
+    t.string "resource_type", null: false
+    t.integer "resource_id", null: false
+    t.string "public_uid", null: false
+    t.boolean "allow_listing", default: false, null: false
+    t.datetime "expires_at"
+    t.integer "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_shareables_on_created_by_id"
+    t.index ["expires_at"], name: "index_shareables_on_expires_at"
+    t.index ["resource_id", "resource_type"], name: "index_shareables_on_resource_id_and_resource_type", unique: true
+    t.index ["resource_type", "resource_id"], name: "index_shareables_on_resource_type_and_resource_id", unique: true
+    t.index ["resource_type"], name: "index_shareables_on_resource_type"
+  end
+
   create_table "stockit_activities", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "stockit_id"
