@@ -2,10 +2,10 @@
 module Mentionable
   extend ActiveSupport::Concern
   module Messageables
-    ALLOWED_MESSAGEABLES                                = %w[Offer Order Item Package].freeze
-    MENTIONABLE_ROLES                                   = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment',
-                                                           'Stock administrator', 'Stock fulfilment'].freeze
-    ORDER_CREATOR_MENTIONABLE_ROLES                     = ['Order administrator', 'Order fulfilment'].freeze
+    ALLOWED_MESSAGEABLES                          = %w[Offer Order Item Package].freeze
+    MENTIONABLE_ROLES                             = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment',
+                                                     'Stock administrator', 'Stock fulfilment'].freeze
+    CREATOR_MENTIONABLE_ROLES                     = ['Order administrator', 'Order fulfilment'].freeze
   end
 
   def set_mentioned_users
@@ -59,16 +59,16 @@ module Mentionable
       messageable = construct_messageable(messageable_type, messageable_id) unless [messageable_id, messageable_type].all?(&:nil?)
       users = User.active.exclude_user(User.current_user.id)
                   .with_roles(mentionable_roles(roles)).distinct.to_a
-      users << add_order_creator(users, messageable) unless bool_cast(is_private)
+      creator = add_creator(messageable) unless bool_cast(is_private)
+      users << creator unless users.include? creator
       users.compact
     end
 
-    def self.add_order_creator(users, messageable)
-      valid_roles = User.current_user.roles.pluck(:name) & Messageables::ORDER_CREATOR_MENTIONABLE_ROLES
+    def self.add_creator(messageable)
+      valid_roles = User.current_user.roles.pluck(:name) & Messageables::CREATOR_MENTIONABLE_ROLES
       return unless valid_roles.present?
 
-      user = messageable&.created_by
-      user unless users.include? user
+      messageable&.created_by
     end
 
     def self.construct_messageable(type, id)
