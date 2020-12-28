@@ -309,7 +309,9 @@ class Order < ApplicationRecord
 
   def send_appointment_confirmation_email
     return unless booking_type.appointment? && created_by.present?
-    SendgridService.new(created_by).send_appointment_confirmation_email(self)
+
+    # SendgridService.new(created_by).send_appointment_confirmation_email(self)
+    SystemMailer.with(user: created_by, order: self).send_appointment_confirmation_email.deliver_later
   end
 
   def send_online_order_confirmation_email

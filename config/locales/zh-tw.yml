@@ -197,3 +197,6 @@ zh-tw:
       invalid_detail_type: Invalid detail type
       shipment_date: Shipment date cannot be less than today's date
       invalid_code_format: Invalid order code format
+  email:
+    appointment:
+      confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
