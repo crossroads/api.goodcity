@@ -204,8 +204,6 @@ en:
       appointment:
         confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
       order:
-        submission_pickup: 'Crossroads Order Confirmation %{code}'
-        submission_delivery: 'Next steps for %{booking_type} %{code}'
-        confirmation_pickup: 'Crossroads Order Confirmation %{code}'
-        confirmation_delivery: 'Next steps for %{booking_type} %{order_code}'
+        submission_pickup_delivery: 'Next steps for %{booking_type} %{order_code}'
+        confirmation_pickup: 'Crossroads Order Confirmation (%{ order_code })'
       login: GoodCity.HK pin code

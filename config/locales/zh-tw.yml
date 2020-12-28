@@ -202,4 +202,5 @@ zh-tw:
       appointment:
         confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
       order:
-        confirmation_delivery: '感謝您通過GoodCity提交%{booking_type_zh} %{order_code}。'
+        submission_pickup_delivery: '跟進 %{booking_type_zh} 事宜 %{order_code}'
+        confirmation_pickup: 'Crossroads Order Confirmation (%{ order_code })'
