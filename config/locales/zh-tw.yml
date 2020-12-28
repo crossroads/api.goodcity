@@ -198,5 +198,8 @@ zh-tw:
       shipment_date: Shipment date cannot be less than today's date
       invalid_code_format: Invalid order code format
   email:
-    appointment:
-      confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
+    subject:
+      appointment:
+        confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
+      order:
+        confirmation_delivery: '感謝您通過GoodCity提交%{booking_type_zh} %{order_code}。'
