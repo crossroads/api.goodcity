@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  Attention: {{contact_name}}
+{{contact_organisation_name}}
+Our Ref#: {{order_code}}
+{{#if client}}
+Client Name: {{client.name}}
+Client contact: {{client.phone}}
+{{client.id_type}}:  ***{{client.id_no}}(*)
+{{/if}}
+
+Dear {{contact_name}},
+
+RE: RECEIVING GOODS FROM CROSSROADS
+
+Thank you for your enquiry.  We would be delighted to help in any way we can.
+
+This email is to confirm an appointment for {{scheduled_at}}
+
+{{#if client}}
+Please ask your client to:
+bring this confirmation letter and their identity document.
+arrive on time.  We have many people to care for each day so, if your client arrives more than 30 minutes late, we may need to reschedule the appointment.
+let us know if he/she cannot make it. It is sad for us to be turning down others in need, only to find a scheduled appointment is not kept.
+respect our volunteer staff.
+read the guidelines below.  Please give your client a copy of the guidelines and, if he or she cannot read, explain it to them.
+
+We look forward to receiving your client and hope we may help!
+
+{{else}}
+Please ensure you:
+bring this confirmation letter (or note your reference number {{order_code}})
+arrive on time or let us know if you are delayed. We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
+read the guidelines below
+
+We look forward to receiving your client and hope we may help!
+{{/if}}
+
+Yours sincerely,
+
+{{staff_member_name}}
+Hong Kong Distribution
+Office Tel: 2272 9343
+Email: local@crossroads.org.hk
+
+
+CROSSROADS’ GUIDELINES
+
+We look forward to serving you at Crossroads. Here are some guidelines for your visit.
+
+WHERE IS CROSSROADS?
+Crossroads Village, 2 Castle Peak Road, Tuen Mun (opposite Gold Coast Phase 1). The Hong Kong Distribution office is located in Block 30
+A map and transport directions can be found on our website: www.crossroads.org.hk/contact/
+
+HOW ARE THE ITEMS SELECTED?
+One of our team will help you choose from our available stock. We will supply items based on the request list in your application (shown below), and the availability of stock at the time of your appointment.
+
+Please note that items donated by Crossroads for personal use are not to be sold under any circumstances.
+
+DOES CROSSROADS HAVE ALL ITEMS IN STOCK?
+We love to help wherever possible. However, as we rely on donations from the public, we cannot guarantee the availability of all requested items. In particular, our supply of electrical items is usually very low, due to large demand. We would be glad for you to collect these items, if we have appropriate stock on the day, but cannot promise we will have everything available.
+
+ARE THE ITEMS GOOD QUALITY?
+Many of the goods available are used, but normally of good quality. We test all electrical products but, unlike a retail shop selling new items, Crossroads cannot issue guarantees or be held liable for any faults in these donated items.
+</body>
+</html>

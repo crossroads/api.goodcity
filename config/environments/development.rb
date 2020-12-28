@@ -36,4 +36,25 @@ Rails.application.configure do
     Bullet.raise = false
     Bullet.rails_logger = true
   end
+
+  # Since we are now using ActionMailer, we can even test email on Dev envionment
+  # Steps:
+  # 1. Uncomment the below config
+  # 2. Add the user_name and password
+  # 3. Go to https://www.google.com/settings/security/lesssecureapps and turn off "Allow less secure apps"
+  #
+  # Its advisible to turn off 2 Face Auth if using Gmail
+  # In case if any other SMPT services are need to be used,
+  # replace only 'smtp.gmail.com' with any available SMTP
+  #
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address:              'smtp.gmail.com',
+  #   port:                 587,
+  #   domain:               'example.com',
+  #   user_name:            '<email>',
+  #   password:             '<password>',
+  #   authentication:       'plain',
+  #   enable_starttls_auto: true
+  # }
 end
