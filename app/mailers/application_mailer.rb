@@ -24,6 +24,6 @@ class ApplicationMailer < ActionMailer::Base
   end
 
   def restrict_mail_ability
-    return false unless Rails.env.production? || Rails.env.staging?
+    throw(:abort) unless Rails.env.production? || Rails.env.staging?
   end
 end

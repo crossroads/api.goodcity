@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  Attention: {{contact_name}}
+{{contact_organisation_name}}
+Our Ref#: {{order_code}}
+{{#if client}}
+Client Name: {{client.name}}
+Client contact: {{client.phone}}
+{{client.id_type}}:  ***{{client.id_no}}(*)
+{{/if}}
+
+Dear {{contact_name}},
+
+Thank you for ordering items from Crossroads. We are delighted to help in any way that we can.
+This email is to confirm that the goods can be collected on the {{scheduled_at}}
+
+Note: You cannot modify confirmed appointments online. Please email or phone our staff (2272-9343) for assistance if changes are required.
+{{#if client}}
+Please ask your client to:
+bring this confirmation letter and their identity document (or note your reference number {{order_code}})
+arrive on time. We have many orders to process each day and cannot usually process an order outside its allotted time.
+let us know if he/she cannot make it.
+respect our volunteer staff.
+read the guidelines below. Please give your client a copy of the guidelines and, if he or she cannot read, explain it to them.
+{{else}}
+Please ensure you:
+bring this confirmation letter (or note your reference number {{order_code}})
+arrive on time or let us know if you are delayed. We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
+read the guidelines below
+{{/if}}
+{{#if client}}
+We look forward to receiving your client and hope we may help!
+{{else}}
+We look forward to receiving you and hope we may help!
+{{/if}}
+</body>
+</html>
