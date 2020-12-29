@@ -1,0 +1,36 @@
+---
+-
+  name: "GOGOX"
+  logo: "https://s3-ap-northeast-1.amazonaws.com/wp-gogovan.com/wp-content/uploads/sites/5/2019/09/19111727/GOGOX_logo_white_24px.png"
+  description: "A 24/7 van hailing platform."
+  metadata: {
+    transport_types: [
+      "van",
+      "truck"
+    ],
+    supports_quotes: true,
+    includes_road_fees: true,
+    provides_helping_hand: false,
+    working_hours: [
+      "00:00",
+      "23:59"
+    ]
+  }
+-
+  name: "LALAMOVE"
+  logo: "https://s3-ap-northeast-1.amazonaws.com/wp-gogovan.com/wp-content/uploads/sites/5/2019/09/19111727/GOGOX_logo_white_24px.png"
+  description: "A 24/7 van hailing platform."
+  metadata: {
+    transport_types: [
+      "van",
+      "truck"
+    ],
+    supports_quotes: true,
+    includes_road_fees: true,
+    provides_helping_hand: false,
+    working_hours: [
+      "00:00",
+      "23:59"
+    ]
+  }
+
