@@ -73,11 +73,17 @@ module Api
         render json: Order.counts_for(params[:id])
       end
 
+      api :GET, '/v1/users/mentionable_users', 'Get mentionable users based on messageable context and roles'
+      param :roles, String, desc: 'String of roles that needs to be mentioned'
+      param :messageable_type, String, desc: 'Type of messageable. Offer, Item, Package etc.', allow_nil: true
+      param :messageable_id, String, desc: 'Id of any messageable type for Offer, Item, Package etc.', allow_nil: true
       def mentionable_users
         return render json: { users: [] } if params['roles'].nil?
 
-        @users = User.mentionable_users({ roles: params[:roles],
-                                          order_id: params[:order_id] })
+        @users = User.mentionable_users(roles: params[:roles],
+                                        messageable_type: params[:messageable_type],
+                                        messageable_id: params[:messageable_id],
+                                        is_private: params[:is_private])
 
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
@@ -113,9 +119,9 @@ module Api
         ids = params[:ids]
         return nil if ids.nil?
         return ids.split(',') if ids.is_a?(String)
+
         ids.map(&:to_i)
       end
-
     end
   end
 end
