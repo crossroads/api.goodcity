@@ -293,12 +293,12 @@ class Order < ApplicationRecord
   end
 
   def send_order_submission_email
-    return if created_by.nil? || !state.eql?("submitted")
-    sendgrid = SendgridService.new(created_by)
+    return if created_by.nil? || !state.eql?('submitted')
+
     if send_submission_pickup_email?
-      sendgrid.send_order_submission_pickup_email self
+      mailer.send_order_submission_pickup_email.deliver_later
     else
-      sendgrid.send_order_submission_delivery_email self
+      mailer.send_order_submission_delivery_email.deliver_later
     end
   end
 
@@ -310,16 +310,18 @@ class Order < ApplicationRecord
   def send_appointment_confirmation_email
     return unless booking_type.appointment? && created_by.present?
 
-    # SendgridService.new(created_by).send_appointment_confirmation_email(self)
-    SystemMailer.with(user: created_by, order: self).send_appointment_confirmation_email.deliver_later
+    GoodcityMailer.with(user_id: created_by.id, order_id: id)
+                  .send_appointment_confirmation_email.deliver_later
   end
 
   def send_online_order_confirmation_email
     return unless booking_type.online_order? && created_by.present?
-    sendgrid = SendgridService.new(created_by)
-    order_transport.pickup? ?
-      sendgrid.send_order_confirmation_pickup_email(self) :
-      sendgrid.send_order_confirmation_delivery_email(self)
+
+    if order_transport.pickup?
+      mailer.send_order_confirmation_pickup_email.deliver_later
+    else
+      mailer.send_order_confirmation_delivery_email.deliver_later
+    end
   end
 
   def send_new_order_notification
@@ -468,6 +470,10 @@ class Order < ApplicationRecord
     return if code.present?
 
     self.code = Order.generate_next_code_for(detail_type) if valid_detail_type?
+  end
+
+  def mailer
+    GoodcityMailer.with(order_id: id, user_id: created_by_id)
   end
 
   #to satisfy push_updates

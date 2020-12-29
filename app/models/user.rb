@@ -5,7 +5,6 @@ class User < ApplicationRecord
   include ManageUserRoles
   include FuzzySearch
   include Mentionable
-  include Mailable
   # --------------------
   # Configuration
   # --------------------
@@ -160,7 +159,7 @@ class User < ApplicationRecord
     SlackPinService.new(self).send_otp(app_name)
     return send_sms(app_name) if mobile
 
-    send_pin_email(self) if email
+    GoodcityMailer.with(user_id: id).send_pin_email.deliver_later if email
   end
 
   def set_verified_flag(pin_for)
