@@ -2,7 +2,7 @@
 
 # Base class to be inherited by all Mailer class
 class ApplicationMailer < ActionMailer::Base
-  before_action :restrict_mail_ability
+  # before_action :restrict_mail_ability
   # TODO: get the correct from email address
   default from: "#{I18n.t('email_from_name')} <notifications@example.com>"
   layout 'mailer'
@@ -17,8 +17,7 @@ class ApplicationMailer < ActionMailer::Base
 
   SMTP_ERRORS = [SMTP_SERVER_ERRORS, SMTP_CLIENT_ERRORS].flatten
 
-  # TODO: Create an exception class for it
-  # Perform any exception logging
+  # Log Rollbar warning for any errors
   rescue_from *SMTP_ERRORS do |exception|
     Rollbar.warning(exception)
   end
