@@ -380,6 +380,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
 
+      it 'does not allow to mention people whose roles are expired' do
+        expired_role_user = create(:user, :with_order_administrator_role)
+        UserRole.find_by(user: expired_role_user, role: expired_role_user.roles.first).update(expires_at: 5.days.ago)
+        get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
+        ids = parsed_body['users'].map{ |u| u['id'] }
+        expect(ids).not_to include(expired_role_user.id)
+      end
+
       context 'admin app' do
         it 'returns supervisors and reviewers' do
           generate_and_set_token(supervisor)

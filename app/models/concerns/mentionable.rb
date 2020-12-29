@@ -58,7 +58,9 @@ module Mentionable
     def self.mentionable_users(roles:, messageable_id:, messageable_type:, is_private: false)
       messageable = construct_messageable(messageable_type, messageable_id) unless [messageable_id, messageable_type].all?(&:nil?)
       users = User.active.exclude_user(User.current_user.id)
-                  .with_roles(mentionable_roles(roles)).distinct.to_a
+                  .with_roles(mentionable_roles(roles))
+                  .joins(:active_roles)
+                  .distinct.to_a
       creator = add_creator(messageable) unless bool_cast(is_private)
       users << creator unless users.include? creator
       users.compact
