@@ -33,7 +33,7 @@ class GoodcityMailer < ApplicationMailer
   end
 
   def send_order_confirmation_delivery_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.confirmation_delivery',
+    @params = create_order_email_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
                                                         code: @order.code, booking_type: booking_type))
     mail(params)
   end
@@ -56,7 +56,6 @@ class GoodcityMailer < ApplicationMailer
   def initialize_mailer_attributes
     @user  =  User.find(params[:user_id])
     @order =  Order.find(params[:order_id])
-    @pin   =  params[:pin]
   end
 
   def create_order_email_params(subject:, user: @user)

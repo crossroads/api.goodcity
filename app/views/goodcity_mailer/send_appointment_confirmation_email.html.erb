@@ -4,20 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
-  <style>
-    .header {
-      display: flex;
-      justify-content: center;
-    }
-  </style>
+
   <body>
     <b>Attention: </b> <%= @params[:contact_name]%> <br/>
     <%= @params[:contact_organisation_name_en]%> <br/>
     <b>Our Ref#:</b> <%= @params[:order_code]%> <br/>
     <% if @params[:client]%>
       <b>Client Name:</b> <%= params[:client][:name]%> <br/>
-      <b>Client contact:</b> <%= params[:client][:name]%> <br/>
-      <b> <%= params[:client][:id_type]%> </b>  *** <%= params[:client][:id_no]%> {{client.id_no}}(*) <br/>
+      <b>Client contact:</b> <%= params[:client][:phone]%> <br/>
+      <b> <%= params[:client][:id_type]%> </b>  *** <%= params[:client][:id_no]%>(*) <br/>
     <% end %>
 <br /> <br/>
 Dear <%= params[:contact_name]%>, <br/>
