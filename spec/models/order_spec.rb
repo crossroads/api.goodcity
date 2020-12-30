@@ -933,6 +933,8 @@ RSpec.describe Order, type: :model do
       end
 
       it "should NOT send a confirmation email before an #{type} is finished processing" do
+        order.submit
+        order.start_processing
         expect(mailer).not_to receive(email_service_method)
       end
 
