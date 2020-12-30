@@ -343,24 +343,56 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
 
-      context 'if no messageable id is passed in params' do
-        it 'return empty array' do
-          get :mentionable_users, params: { offer_id: nil, is_private: false }
-          expect(parsed_body['users']).to be_empty
+      context 'if invalid messageable_type is provided' do
+        it 'returns error' do
+          get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: offer.id,
+                                            messageable_type: 'SomethingElse' }
+
+          expect(response).to have_http_status(422)
+          expect(parsed_body['error']).to eq('Invalid or missing messageable')
         end
       end
 
-      context 'if no roles are provided in params' do
-        it 'returns empty array' do
-          get :mentionable_users, params: { offer_id: offer.id, is_private: false }
-          expect(parsed_body['users']).to be_empty
+      context 'if messageable_id is not found' do
+        it 'returns error' do
+          get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: 0,
+                                            messageable_type: 'Offer' }
+          expect(response).to have_http_status(422)
+          expect(parsed_body['error']).to eq('Invalid or missing messageable')
         end
+      end
+
+      context 'if messageable_type is provided and messageable_id is not provided' do
+        it 'returns error' do
+          get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
+                                            messageable_type: 'Offer' }
+          expect(response).to have_http_status(422)
+          expect(parsed_body['error']).to eq('Invalid or missing messageable')
+        end
+      end
+
+      context 'if messageable_id is provided and messageable_type is not provided' do
+        it 'returns error' do
+          get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
+                                            messageable_id: offer.id }
+          expect(response).to have_http_status(422)
+          expect(parsed_body['error']).to eq('Invalid or missing messageable')
+        end
+      end
+
+      it 'does not allow to mention people whose roles are expired' do
+        expired_role_user = create(:user, :with_order_administrator_role)
+        UserRole.find_by(user: expired_role_user, role: expired_role_user.roles.first).update(expires_at: 5.days.ago)
+        get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
+        ids = parsed_body['users'].map{ |u| u['id'] }
+        expect(ids).not_to include(expired_role_user.id)
       end
 
       context 'admin app' do
         it 'returns supervisors and reviewers' do
           generate_and_set_token(supervisor)
-          get :mentionable_users, params: { offer_id: offer.id, roles: 'Supervisor, Reviewer' }
+          get :mentionable_users, params: { messageable_id: offer.id, messageable_type: 'Offer',
+                                            roles: 'Supervisor, Reviewer' }
           users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
@@ -377,20 +409,69 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           expect(parsed_body['users']).to match_array(users)
         end
 
-        context 'when order_id params is not present' do
-          it 'returns stock_administrator and stock_fulfilment users' do
-            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        it 'returns stock_administrator,stock_fulfilment users' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
+          users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+          expect(parsed_body['users']).to match_array(users)
+        end
+
+        context 'when is_private is true' do
+          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                              is_private: true, messageable_id: order.id,
+                                              messageable_type: 'Order' }
+
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
             expect(parsed_body['users']).to match_array(users)
+          end
+
+          it 'does not return order owner' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: true, order_id: order.id }
+
+            expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
           end
         end
 
-
-        context 'when order_id params is present' do
-          it 'returns user who created the order and the users belonging to the role' do
-            get :mentionable_users, params: {order_id: order.id, roles: 'Stock administrator, Stock fulfilment' }
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), charity.id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        context 'when is_private is false' do
+          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                              messageable_id: order.id,
+                                              messageable_type: 'Order',
+                                              is_private: false }
+            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id), order.created_by_id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
             expect(parsed_body['users']).to match_array(users)
+          end
+
+          it 'returns order owner' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                              messageable_type: 'Order',
+                                              messageable_id: order.id,
+                                              is_private: false }
+
+            expect(parsed_body['users'].map { |u| u['id'] }).to include(order.created_by_id)
+          end
+        end
+
+        context 'when stock admin / stock fulfilment users try to mention client' do
+          before { generate_and_set_token(stock_administrator) }
+          context 'when is_private is true' do
+            it 'does not allow them to mention client' do
+              get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                                messageable_type: 'Order',
+                                                messageable_id: order.id,
+                                                is_private: true }
+              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
+            end
+          end
+
+          context 'when is_private is false' do
+            it 'does not allow them to mention client' do
+              get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment',
+                                                messageable_type: 'Order',
+                                                messageable_id: order.id,
+                                                is_private: true }
+              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
+            end
           end
         end
       end

@@ -11,8 +11,8 @@ module PushUpdatesForMessage
   def update_client_store
     user_ids = []
     obj = self.related_object
-    # Send update to creator (donor or charity)
-    user_ids << obj.try(:created_by_id)
+    # Send update to recipient (donor or charity)
+    user_ids << self.recipient_id unless is_private || obj.try(:cancelled?)
     user_ids << self.sender_id
 
     # All admin users with permission to view messages on that object
@@ -20,15 +20,16 @@ module PushUpdatesForMessage
     # Don't send updates to system users
     # Don't send to donor/charity if is private message or offer/order is cancelled
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
-    user_ids -= [obj.try(:created_by_id)] if is_private or obj.try(:cancelled?)
 
     # Group all the channels by state
     state_groups = {}
     user_ids.flatten.compact.uniq.each do |user_id|
       state = state_for_user(user_id)
-      app_name = app_name_for_user(user_id)
-      channel = Channel.private_channels_for(user_id, app_name)
-      state_groups[state] = ((state_groups[state] || []) + channel)
+      app_names = app_names_for_user(user_id) || []
+      app_names.each do |app_name|
+        channel = Channel.private_channels_for(user_id, app_name)
+        state_groups[state] = ((state_groups[state] || []) + channel)
+      end
     end
 
     # For each message state (read/unread/never-subscribed) send
@@ -90,16 +91,21 @@ module PushUpdatesForMessage
     end
   end
 
-  def app_name_for_user(user_id)
+  def app_names_for_user(user_id)
     obj = self.related_object
-    created_by_id = obj.try(:created_by_id) || obj.try(:offer).try(:created_by_id)
+    owner_id = messageable_owner_id
 
     if object_class == "Order"
-      (created_by_id == user_id) ? BROWSE_APP : STOCK_APP
-    elsif ["Offer", "Item"].include?(object_class)
-      (created_by_id == user_id) ? DONOR_APP : ADMIN_APP
-    elsif object_class == "Package"
-      STOCK_APP
+      return [owner_id == user_id ? BROWSE_APP : STOCK_APP]
+    end
+
+    return [STOCK_APP] if object_class == "Package"
+
+    if ["Offer", "Item"].include?(object_class)
+      to = []
+      to << DONOR_APP if owner_id == user_id
+      to << (user_id == recipient_id ? BROWSE_APP : ADMIN_APP)
+      return to.flatten.uniq
     end
   end
 

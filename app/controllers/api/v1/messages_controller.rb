@@ -23,6 +23,7 @@ module Api
           param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
           param :state, String, desc: "Current User's Subscription State e.g. unread, read "
           param :order_id, String, desc: "Order id on which message is created", allow_nil: true
+          param :recipient_id, String, desc: "Specific user id to subscribe the message to", allow_nil: true
         end
       end
 
@@ -33,11 +34,13 @@ module Api
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :package_id, String, desc: "Return messages for package id"
+      param :recipient_id, String, desc: "Specific user id to fetch the messages of"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.with_state_for_user(current_user, params[:state].split(",")) if params[:state].present?
+        @messages = @messages.where("recipient_id = (?) OR sender_id = (?)", params[:recipient_id], params[:recipient_id]) if params[:recipient_id].present?
         paginate_and_render(@messages, serializer)
       end
 
@@ -82,9 +85,14 @@ module Api
 
         notification_ids = @messages
           .select("max(@messages.id) AS message_id")
-          .group("messageable_type, messageable_id, is_private")
           .page(page).per(per_page)
           .order('message_id DESC')
+        
+        if bool_param(:is_private, false)
+          notification_ids = notification_ids.group("messageable_type, messageable_id, is_private")
+        else
+          notification_ids = notification_ids.group("messageable_type, messageable_id, is_private, sender_id, recipient_id")
+        end
 
         @messages = @messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
 
@@ -154,7 +162,8 @@ module Api
         params.require(:message).permit(
           :body, :is_private,
           :messageable_type,
-          :messageable_id
+          :messageable_id,
+          :recipient_id
         )
       end
     end

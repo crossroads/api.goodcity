@@ -38,6 +38,10 @@ module Goodcity
 
   class ExternalServiceError < BaseError; end
 
+  class UnsupportedError < BaseError; end
+
+  class UnknownError < BaseError; end
+
   # ----------------------------
   # Generic
   # ----------------------------
@@ -114,7 +118,7 @@ module Goodcity
   MissingQuantityforDispatchError = factory(OperationsError, 'operations.dispatch.missing_quantity_for_dispatch')
   BadUndispatchQuantityError      = factory(OperationsError, 'operations.undispatch.missing_dispatched_quantity')
   ActionNotAllowedError           = factory(OperationsError, 'operations.generic.action_not_allowed')
-  DetailTypeNotAllowed            = factory(BaseError, 'order.errors..invalid_detail_type', status: 422)
+  DetailTypeNotAllowed            = factory(BaseError, 'order.errors.invalid_detail_type', status: 422)
 
   # ----------------------------
   # Custom errors (unique params)

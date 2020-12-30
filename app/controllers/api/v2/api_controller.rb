@@ -43,9 +43,9 @@ module Api
       # Helpers
       # ------------------------
 
-      def serializer_options(model)
+      def serializer_options(model, opts = {})
         return {} unless params[:include].present?
-        GoodcitySerializer.parse_include_paths(model, params[:include])
+        GoodcitySerializer.parse_include_paths(model, params[:include], opts)
       end
 
       def render_error(error_message, code: 422)
@@ -54,16 +54,27 @@ module Api
 
       # nil.to_i = 0
       def page
-        @page = params["page"].to_i
-        @page.zero? ? 1 : @page
+        _page = params["page"].to_i
+        _page.zero? ? 1 : _page
       end
 
       # max limit is 50, default is 25
       def per_page
-        @per_page = params["per_page"].to_i
-        return DEFAULT_SEARCH_COUNT if @per_page < 1
-        return MAX_SEARCH_COUNT if @per_page > MAX_SEARCH_COUNT
-        @per_page
+        _per_page = params["per_page"].to_i
+        return DEFAULT_SEARCH_COUNT if _per_page.nil? || _per_page < 1
+        return MAX_SEARCH_COUNT if _per_page > MAX_SEARCH_COUNT
+        _per_page
+      end
+
+      def paginate(query)
+        query.page(page).per(per_page)
+      end
+
+      def pagination_meta
+        @pagination_meta ||= {
+          page: page,
+          per_page: per_page
+        }
       end
 
       private

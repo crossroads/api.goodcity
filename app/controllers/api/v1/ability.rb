@@ -196,11 +196,18 @@ module Api
 
         can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
-
-        # Normal users can create non private messages on objects they own
+ 
         can :create, Message do |message|
-          next false if message.recipient_id && message.recipient_id != @user_id # e.g donor is trying to contact another donor
-          @user_id != nil && !message.is_private && message.messageable_owner_id == @user_id
+          next false if (
+            (message.is_private) || # e.g donor trying to talk in the staff channel
+            (message.recipient_id && message.recipient_id != @user_id) # e.g donor is trying to contact another donor
+          )
+
+          #
+          # Normal users can talk about a resource if:
+          #   - he/she owns the related object
+          #   - the resource has been publicly shared
+          message.messageable_owner_id == @user_id || Shareable.shared_resource?(message.messageable)
         end
       end
 
