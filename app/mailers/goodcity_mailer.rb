@@ -27,7 +27,7 @@ class GoodcityMailer < ApplicationMailer
   end
 
   def send_order_confirmation_pickup_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
+    @params = create_order_email_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
                                                         code: @order.code, booking_type: booking_type))
     mail(@params)
   end
