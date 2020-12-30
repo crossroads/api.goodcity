@@ -39,7 +39,7 @@ class GoodcityMailer < ApplicationMailer
   end
 
   def send_pin_email
-    @pin = params[:pin]
+    @pin = @user.most_recent_token.otp_code
     mail(to: @user.email, subject: I18n.t('email.subject.login'))
   end
 
