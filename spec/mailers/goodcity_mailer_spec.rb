@@ -116,6 +116,10 @@ RSpec.describe GoodcityMailer, type: :mailer do
         expect(mailer['contact-organisation-name-en'].value).to eq(user.organisations.first.name_en)
       end
 
+      it 'sets proper order_code params' do
+        expect(mailer['order-code'].value).to eq(order.code)
+      end
+
       context 'when there are no beneficiary' do
         it 'does not have client details in params' do
           order.update(beneficiary: nil)
@@ -151,6 +155,61 @@ RSpec.describe GoodcityMailer, type: :mailer do
           expect(values['quantity']).to eq(order.goodcity_requests.count)
           expect(values['type_en']).to eq(order.goodcity_requests.first.package_type.name_en)
           expect(values['description']).to eq(order.goodcity_requests.first.description)
+        end
+      end
+    end
+
+    describe 'send_order_confirmation_delivery_email' do
+      let(:order) { create(:order, created_by: user, order_transport: create(:order_transport)) }
+      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id).send_order_confirmation_delivery_email }
+
+      it 'sets proper to and subject' do
+        expect(mailer.subject).to eq(I18n.t('email.subject.order.confirmation_pickup_delivery', code: order.code))
+        expect(mailer.to[0]).to eq(user.email)
+      end
+
+      it 'sets proper contact params' do
+        expect(mailer['contact-name'].value).to eq("#{user.first_name} #{user.last_name}")
+        expect(mailer['contact-organisation-name-en'].value).to eq(user.organisations.first.name_en)
+      end
+
+      it 'sets proper order_code params' do
+        expect(mailer['order-code'].value).to eq(order.code)
+      end
+
+      it 'sets proper scheduled_at params' do
+        expect(mailer['scheduled_at'].value).to eq(order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %H:%M%p'))
+      end
+
+      context 'if order has beneficiary' do
+        let(:order) { create(:order, created_by: user, beneficiary: create(:beneficiary)) }
+
+        it 'has client details in the params' do
+          expect(mailer['client']).not_to be_nil
+        end
+
+        it 'has client name, phone and id_type details' do
+          values = eval(mailer['client'].value)
+          expect(values['name']).to eq("#{order.beneficiary.first_name} #{order.beneficiary.last_name}")
+          expect(values['phone']).to eq(order.beneficiary.phone_number)
+          expect(values['id_type']).to eq(order.beneficiary.identity_type.name_en)
+          expect(values['id_no']).to eq(order.beneficiary.identity_number)
+        end
+      end
+
+      context 'if order has no beneficiary' do
+        it 'has empty client params' do
+          order.update(beneficiary: nil)
+          expect(mailer['client']).to be_nil
+        end
+      end
+    end
+
+    describe 'send_pin_email' do
+      let(:mailer) { GoodcityMailer.with(user_id: user.id).send_pin_email }
+      %w[en zh-tw].each do |locale|
+        it "sets subject in #{locale} locale" do
+          mailer.subject.to eq(I18n.t('email.subject.login'))
         end
       end
     end

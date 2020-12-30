@@ -56,7 +56,7 @@ class AuthenticationService
       if user.mobile.present?
         TwilioService.new(user).sms_verification_pin(app_name, pin: pin)
       elsif user.email.present?
-        GoodcityMailer.with(pin: pin).send_pin_email.deliver_later
+        GoodcityMailer.with(user_id: user.id).send_pin_email.deliver_later
       end
 
       otp_auth_key_for(user)
