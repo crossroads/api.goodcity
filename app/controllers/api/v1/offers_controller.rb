@@ -81,7 +81,7 @@ module Api
       api :GET, '/v1/offers/1', "List an offer"
       def show
         render json: offer_serializer.new(@offer, {
-          include_organisations_users: params["include_organisations_users"] == "true",
+          include_organisations_users: (staff? && params["include_organisations_users"] == "true"),
           exclude_messages: params["exclude_messages"] == "true"
         }).as_json
       end
@@ -168,6 +168,10 @@ module Api
       end
 
       private
+
+      def staff?
+        current_user.has_permission?("can_manage_offers")
+      end
 
       def filter_created_by(offers)
         if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
