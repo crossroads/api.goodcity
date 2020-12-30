@@ -54,8 +54,8 @@ class GoodcityMailer < ApplicationMailer
   # Always use id here instead of passing ActiveRecord object as param,
   # since things will run under sidekiq
   def initialize_mailer_attributes
-    @user  =  User.find(params[:user_id])
-    @order =  Order.find(params[:order_id])
+    @user  =  User.find_by(id: params[:user_id])
+    @order =  Order.find_by(id: params[:order_id])
   end
 
   def create_order_email_params(subject:, user: @user)

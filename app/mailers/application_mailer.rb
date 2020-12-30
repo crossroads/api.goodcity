@@ -2,7 +2,7 @@
 
 # Base class to be inherited by all Mailer class
 class ApplicationMailer < ActionMailer::Base
-  # before_action :restrict_mail_ability
+  include ActiveSupport::Rescuable
   # TODO: get the correct from email address
   default from: "#{I18n.t('email_from_name')} <notifications@example.com>"
   layout 'mailer'
@@ -17,12 +17,10 @@ class ApplicationMailer < ActionMailer::Base
 
   SMTP_ERRORS = [SMTP_SERVER_ERRORS, SMTP_CLIENT_ERRORS].flatten
 
-  # Log Rollbar warning for any errors
-  rescue_from *SMTP_ERRORS do |exception|
-    Rollbar.warning(exception)
-  end
+  rescue_from(*SMTP_ERRORS, with: :capture_smptp_errors)
 
-  def restrict_mail_ability
-    throw(:abort) unless Rails.env.production? || Rails.env.staging?
+  # Log Rollbar warning for any errors
+  def capture_smptp_errors(exception)
+    Rollbar.warning(exception)
   end
 end

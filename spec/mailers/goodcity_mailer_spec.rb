@@ -209,7 +209,7 @@ RSpec.describe GoodcityMailer, type: :mailer do
       let(:mailer) { GoodcityMailer.with(user_id: user.id).send_pin_email }
       %w[en zh-tw].each do |locale|
         it "sets subject in #{locale} locale" do
-          mailer.subject.to eq(I18n.t('email.subject.login'))
+          expect(mailer.subject).to eq(I18n.t('email.subject.login'))
         end
       end
     end
