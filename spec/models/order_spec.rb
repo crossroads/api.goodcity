@@ -525,15 +525,16 @@ RSpec.describe Order, type: :model do
     end
 
     describe '#finish_processing' do
-      let(:sendgrid) { SendgridService.new(user) }
+      let(:message_delivery) { instance_double(ActionMailer::MessageDelivery) }
+      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id) }
       let(:order) do
-        order_transport = create(:order_transport, transport_type: "ggv")
-        create(:order, :with_state_submitted, :with_created_by, order_transport: order_transport
-        )
+        order_transport = create(:order_transport, transport_type: 'ggv')
+        create(:order, :with_state_submitted, :with_created_by, order_transport: order_transport)
       end
       before(:each) do
         User.current_user = user
-        allow(SendgridService).to receive(:new).and_return(sendgrid)
+        allow(message_delivery).to receive(:deliver_later)
+        allow(GoodcityMailer).to receive(:with).and_return(mailer)
         allow(order).to receive(:send_new_order_notification).and_return(true)
       end
 
@@ -555,8 +556,8 @@ RSpec.describe Order, type: :model do
         it 'does not send any confirmation mail' do
           order.start_processing
           order.finish_processing
-          expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
-          expect(sendgrid).not_to receive(:send_order_confirmation_delivery_email)
+          expect(mailer).not_to receive(:send_appointment_confirmation_email)
+          expect(mailer).not_to receive(:send_order_confirmation_delivery_email)
         end
       end
 
@@ -565,10 +566,7 @@ RSpec.describe Order, type: :model do
           it 'sends online order confirmation email' do
             order.start_processing
             order.update(booking_type: online_type)
-            expect(sendgrid).to receive(:send_order_confirmation_delivery_email) do |o|
-              expect(o).to eq(order)
-            end
-            expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
+            expect(mailer).to receive(:send_order_confirmation_delivery_email).and_return(message_delivery)
             order.finish_processing
           end
         end
@@ -577,10 +575,7 @@ RSpec.describe Order, type: :model do
           it 'sends appointment order confirmation email' do
             order.update(booking_type: appointment_type, order_transport: nil)
             order.start_processing
-            expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
-              expect(o).to eq(order)
-            end
-            expect(sendgrid).not_to receive(:send_order_confirmation_delivery_email)
+            expect(mailer).to receive(:send_appointment_confirmation_email).and_return(message_delivery)
             order.finish_processing
           end
         end
@@ -898,7 +893,8 @@ RSpec.describe Order, type: :model do
     )
 
     describe "#{type} confirmation emails" do
-      let(:sendgrid) { SendgridService.new(user) }
+      let(:message_delivery) { instance_double(ActionMailer::MessageDelivery) }
+      let(:mailer) { GoodcityMailer.with(order_id: order.id, user_id: user.id) }
       let(:order) do
         order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
         create(:order, :with_state_draft, :with_created_by, order_transport: order_transport,
@@ -907,7 +903,8 @@ RSpec.describe Order, type: :model do
 
       before(:each) do
         User.current_user = user
-        allow(SendgridService).to receive(:new).and_return(sendgrid)
+        allow(GoodcityMailer).to receive(:with).and_return(mailer)
+        allow(message_delivery).to receive(:deliver_later)
         [
           :send_new_order_notification,
           :send_new_order_confirmed_sms_to_charity
@@ -920,9 +917,7 @@ RSpec.describe Order, type: :model do
       it "should send a confirmation email if an #{type} finishes processing" do
         order.submit
         order.start_processing
-        expect(sendgrid).to receive(email_service_method) do |o|
-          expect(o).to eq(order)
-        end
+        expect(mailer).to receive(email_service_method).and_return(message_delivery)
         order.finish_processing
       end
 
@@ -933,29 +928,25 @@ RSpec.describe Order, type: :model do
         order.restart_process # restart
         order.start_processing
 
-        expect(sendgrid).to receive(email_service_method) do |o|
-          expect(o).to eq(order)
-        end
+        expect(mailer).to receive(email_service_method).and_return(message_delivery)
         order.finish_processing # finish again, should re-trigger an email
       end
 
       it "should NOT send a confirmation email before an #{type} is finished processing" do
-        expect(sendgrid).not_to receive(email_service_method)
-        order.submit
-        order.start_processing
+        expect(mailer).not_to receive(email_service_method)
       end
 
       it "should NOT send a confirmation email after an #{type} is finished processing" do
         order.submit
         order.start_processing
         order.finish_processing
-        expect(sendgrid).not_to receive(email_service_method)
+        expect(mailer).not_to receive(email_service_method)
         order.start_dispatching
         order.close
       end
 
       it "should NOT send a confirmation email when an #{type} is cancelled" do
-        expect(sendgrid).not_to receive(email_service_method)
+        expect(mailer).not_to receive(email_service_method)
         order.submit
         order.cancel
       end
@@ -963,7 +954,6 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Submission Emails' do
-    let(:sendgrid) { SendgridService.new(user) }
     let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: appointment_type )}
     let(:online_order1) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
     let(:online_order2) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
@@ -972,7 +962,6 @@ RSpec.describe Order, type: :model do
 
     before(:each) do
       User.current_user = user
-      allow(SendgridService).to receive(:new).and_return(sendgrid)
       [
         :send_new_order_notification,
         :send_new_order_confirmed_sms_to_charity
