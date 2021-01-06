@@ -1,6 +1,6 @@
 module Api::V2
   class OfferSerializer < GoodcitySerializer
-    include Api::V2::Concerns::PublicAttributes
+    include Api::V2::Concerns::Formats
     
     # ----------------------------
     #   Attributes
@@ -13,8 +13,11 @@ module Api::V2
       :delivered_by, :closed_by_id, :cancelled_at, :received_by_id,
       :company_id, :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
-    public_attribute :district_id do |offer|
-      offer.try(:created_by).try(:address).try(:district_id)
+    format :public do
+      attribute(:public_uid) { |o| Shareable.public_uid_of(o) }
+      attribute(:district_id) { |o| o.try(:created_by).try(:address).try(:district_id) }
+      attribute(:public_notes) { |o| Shareable.find_by(resource: o).try(:notes) }
+      attribute(:public_notes_zh_tw) { |o| Shareable.find_by(resource: o).try(:notes_zh_tw) }
     end
     
     # ----------------------------
