@@ -44,6 +44,7 @@ module Api::V2::Concerns
         def format(fmt)
           scoped_formats.push(fmt)
           yield
+        ensure
           scoped_formats.pop
         end
 
