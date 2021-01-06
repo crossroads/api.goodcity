@@ -1,6 +1,6 @@
 module Api::V2
   class PackageSerializer < GoodcitySerializer
-    include Api::V2::Concerns::PublicAttributes
+    include Api::V2::Concerns::Formats
 
     # ----------------------------
     #   Attributes
@@ -15,9 +15,15 @@ module Api::V2
       :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id,
       :on_hand_boxed_quantity, :on_hand_palletized_quantity,
       :notes_zh_tw
-    
-    public_attribute :offer_id do |object|
-      object.try(:item).try(:offer_id)
+
+    format :public do
+      attribute :public_uid do |p|
+        Shareable.public_uid_of(p)
+      end
+      
+      attribute :offer_id do |p|
+        p.try(:item).try(:offer_id)
+      end
     end
 
     # ----------------------------
