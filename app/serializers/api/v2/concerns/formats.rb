@@ -14,11 +14,6 @@ module Api::V2::Concerns
         #
         # Override the attribute method to support contexts
         #
-        # @param [<Type>] *attributes_list <description>
-        # @param [<Type>] &block <description>
-        #
-        # @return [<Type>] <description>
-        #
         def attributes(*attributes_list, &block)
           formats = [*scoped_formats]
 
