@@ -196,7 +196,7 @@ module Api
 
         can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
- 
+
         can :create, Message do |message|
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
@@ -224,7 +224,7 @@ module Api
             :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer, :resume_receiving], Offer
         end
 
-        can [:search], Offer if can_search_offers?
+        can [:search, :index, :show], Offer if can_search_offers?
       end
 
       def offers_package_abilities
