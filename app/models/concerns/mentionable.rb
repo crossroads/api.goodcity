@@ -1,5 +1,12 @@
+# frozen_string_literal: true
 module Mentionable
   extend ActiveSupport::Concern
+  module Messageables
+    ALLOWED_MESSAGEABLES                          = %w[Offer Order Item Package].freeze
+    MENTIONABLE_ROLES                             = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment',
+                                                     'Stock administrator', 'Stock fulfilment'].freeze
+    CREATOR_MENTIONABLE_ROLES                     = ['Order administrator', 'Order fulfilment'].freeze
+  end
 
   def set_mentioned_users
     user_ids = extract_user_ids_from_message_body
@@ -48,20 +55,39 @@ module Mentionable
   end
 
   included do
-    def self.mentionable_users(opts = {})
-      users = active.exclude_user(User.current_user.id)
-                    .with_roles(mentionable_roles(opts[:roles])).distinct.to_a
-      users << add_order_creator(users, opts[:order_id]) if opts[:order_id]
+    def self.mentionable_users(roles:, messageable_id:, messageable_type:, is_private: false)
+      messageable = construct_messageable(messageable_type, messageable_id) unless [messageable_id, messageable_type].all?(&:nil?)
+      users = User.active.exclude_user(User.current_user.id)
+                  .with_roles(mentionable_roles(roles))
+                  .joins(:active_roles)
+                  .distinct.to_a
+      creator = add_creator(messageable) unless bool_cast(is_private)
+      users << creator unless users.include? creator
       users.compact
     end
 
-    def self.add_order_creator(users, order_id)
-      user = Order.find_by(id: order_id)&.created_by
-      user unless users.include? user
+    def self.add_creator(messageable)
+      valid_roles = User.current_user.roles.pluck(:name) & Messageables::CREATOR_MENTIONABLE_ROLES
+      return unless valid_roles.present?
+
+      messageable&.created_by
+    end
+
+    def self.construct_messageable(type, id)
+      raise Goodcity::BadOrMissingRecord.new(:messageable) unless Messageables::ALLOWED_MESSAGEABLES.include?(type)
+
+      record = type&.classify&.constantize&.find_by(id: id)
+      raise Goodcity::BadOrMissingRecord.new(:messageable) if record.nil?
+
+      record
     end
 
     def self.mentionable_roles(roles)
-      (MENTIONABLE_ROLES & roles.split(',').map(&:strip).uniq)
+      Messageables::MENTIONABLE_ROLES & roles.split(',').map(&:strip).uniq
+    end
+
+    def self.bool_cast(val)
+      ActiveModel::Type::Boolean.new.cast(val)
     end
   end
 end
