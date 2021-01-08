@@ -2,7 +2,7 @@
 
 # goodcity mailer for orders
 class GoodcityOrderMailer < ApplicationMailer
-  before_action :configure_order_email_properties
+  before_action :configure_order_email_properties, :initialize_mailer_attributes
 
   def send_appointment_confirmation_email
     @params = create_order_email_params(subject: I18n.t('email.subject.appointment.confirmation', code: @order.code))

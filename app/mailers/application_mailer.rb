@@ -23,11 +23,4 @@ class ApplicationMailer < ActionMailer::Base
   def capture_smtp_errors(exception)
     Rollbar.warning(exception)
   end
-
-  # Always use id here instead of passing ActiveRecord object as param,
-  # since things will run under sidekiq
-  def initialize_mailer_attributes
-    @user  =  User.find_by(id: params[:user_id])
-    @order =  Order.find_by(id: params[:order_id])
-  end
 end
