@@ -78,7 +78,8 @@ module Api
                include_packages_locations: true,
                include_package_set: true,
                include_images: true,
-               include_allowed_actions: true).as_json
+               include_allowed_actions: true,
+               include_offer_id: true,).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
