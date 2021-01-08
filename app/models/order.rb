@@ -310,8 +310,7 @@ class Order < ApplicationRecord
   def send_appointment_confirmation_email
     return unless booking_type.appointment? && created_by.present?
 
-    GoodcityMailer.with(user_id: created_by.id, order_id: id)
-                  .send_appointment_confirmation_email.deliver_later
+    mailer.send_appointment_confirmation_email.deliver_later
   end
 
   def send_online_order_confirmation_email
@@ -473,7 +472,7 @@ class Order < ApplicationRecord
   end
 
   def mailer
-    GoodcityMailer.with(order_id: id, user_id: created_by_id)
+    GoodcityOrderMailer.with(order_id: id, user_id: created_by_id)
   end
 
   #to satisfy push_updates
