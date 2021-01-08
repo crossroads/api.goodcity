@@ -526,7 +526,7 @@ RSpec.describe Order, type: :model do
 
     describe '#finish_processing' do
       let(:message_delivery) { instance_double(ActionMailer::MessageDelivery) }
-      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id) }
+      let(:mailer) { GoodcityOrderMailer.with(user_id: user.id, order_id: order.id) }
       let(:order) do
         order_transport = create(:order_transport, transport_type: 'ggv')
         create(:order, :with_state_submitted, :with_created_by, order_transport: order_transport)
@@ -534,7 +534,7 @@ RSpec.describe Order, type: :model do
       before(:each) do
         User.current_user = user
         allow(message_delivery).to receive(:deliver_later)
-        allow(GoodcityMailer).to receive(:with).and_return(mailer)
+        allow(GoodcityOrderMailer).to receive(:with).and_return(mailer)
         allow(order).to receive(:send_new_order_notification).and_return(true)
       end
 
@@ -894,7 +894,7 @@ RSpec.describe Order, type: :model do
 
     describe "#{type} confirmation emails" do
       let(:message_delivery) { instance_double(ActionMailer::MessageDelivery) }
-      let(:mailer) { GoodcityMailer.with(order_id: order.id, user_id: user.id) }
+      let(:mailer) { GoodcityOrderMailer.with(order_id: order.id, user_id: user.id) }
       let(:order) do
         order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
         create(:order, :with_state_draft, :with_created_by, order_transport: order_transport,
@@ -903,7 +903,7 @@ RSpec.describe Order, type: :model do
 
       before(:each) do
         User.current_user = user
-        allow(GoodcityMailer).to receive(:with).and_return(mailer)
+        allow(GoodcityOrderMailer).to receive(:with).and_return(mailer)
         allow(message_delivery).to receive(:deliver_later)
         [
           :send_new_order_notification,
