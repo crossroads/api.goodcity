@@ -4,9 +4,9 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
   describe 'Order emails' do
     let(:user) { create(:user, :charity) }
     let(:order) { create(:order, created_by: user) }
-
+    subject(:subject) { GoodcityOrderMailer.with(user_id: user.id, order_id: order.id) }
     describe 'send_appointment_confirmation_email' do
-      let(:mailer) { GoodcityOrderMailer.with(user_id: user.id, order_id: order.id).send_appointment_confirmation_email }
+      let(:mailer) { subject.send_appointment_confirmation_email }
 
       it 'sets proper to and subject' do
         expect(mailer.subject).to eq(I18n.t('email.subject.appointment.confirmation', code: order.code))
@@ -58,7 +58,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     end
 
     describe 'send_order_submission_pickup_email' do
-      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id).send_order_submission_pickup_email }
+      let(:mailer) { subject.send_order_submission_pickup_email }
 
       %w[en zh-tw].each do |locale|
         it "sets proper subject according to the locale #{locale}" do
@@ -81,7 +81,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     end
 
     describe 'send_order_submission_delivery_email' do
-      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id).send_order_submission_delivery_email }
+      let(:mailer) { subject.send_order_submission_delivery_email }
 
       %w[en zh-tw].each do |locale|
         it "sets proper subject according to the locale #{locale}" do
@@ -104,7 +104,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     end
 
     describe 'send_order_confirmation_pickup_email' do
-      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id).send_order_confirmation_pickup_email }
+      let(:mailer) { subject.send_order_confirmation_pickup_email }
 
       it 'sets proper to and subject' do
         expect(mailer.subject).to eq(I18n.t('email.subject.order.confirmation_pickup_delivery', code: order.code))
@@ -161,7 +161,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
 
     describe 'send_order_confirmation_delivery_email' do
       let(:order) { create(:order, created_by: user, order_transport: create(:order_transport)) }
-      let(:mailer) { GoodcityMailer.with(user_id: user.id, order_id: order.id).send_order_confirmation_delivery_email }
+      let(:mailer) { subject.send_order_confirmation_delivery_email }
 
       it 'sets proper to and subject' do
         expect(mailer.subject).to eq(I18n.t('email.subject.order.confirmation_pickup_delivery', code: order.code))
