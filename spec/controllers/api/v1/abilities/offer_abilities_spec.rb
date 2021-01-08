@@ -62,8 +62,8 @@ describe "Offer abilities" do
   context "Order Fulfilment User" do
     let(:user) { create(:user, :with_token, :with_can_search_offers_permission, role_name: 'Order Fulfilment') }
     let(:offer)     { create :offer, state: 'received' }
-    let(:can)       { [:search,:index, :show] }
-    let(:cannot)    { [:update, :destroy] }
+    let(:can)       { [:search] }
+    let(:cannot)    { [:index, :show, :update, :destroy] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, offer)
     end}
@@ -75,8 +75,8 @@ describe "Offer abilities" do
   context "Stock Fulfilment User" do
     let(:user) { create(:user, :with_token, :with_can_search_offers_permission, role_name: 'Stock Fulfilment') }
     let(:offer)     { create :offer, state: 'received' }
-    let(:can)       { [:search, :index, :show] }
-    let(:cannot)    { [:update, :destroy] }
+    let(:can)       { [:search] }
+    let(:cannot)    { [:index, :show, :update, :destroy] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, offer)
     end}

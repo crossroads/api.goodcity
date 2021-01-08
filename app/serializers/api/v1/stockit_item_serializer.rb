@@ -12,9 +12,10 @@ module Api::V1
     has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
     has_one :package_set, serializer: PackageSetSerializer::StockFormat
+    # has_many :company, serializer: CompanySerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
-               :inventory_number, :created_at, :updated_at, :item_id, :is_set,
+               :inventory_number, :created_at, :updated_at, :item_id, :is_set, :offer_id,
                :grade, :designation_name, :designation_id, :sent_on, :code_id,
                :image_id, :donor_condition_id, :package_set_id, :state,
                :case_number, :allow_web_publish, :received_quantity,
@@ -36,6 +37,10 @@ module Api::V1
 
     def include_images?
       @options[:include_images]
+    end
+
+    def include_offer_id?
+      @options[:include_offer_id]
     end
 
     def include_order?
