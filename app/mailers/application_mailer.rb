@@ -2,9 +2,7 @@
 
 # Base class to be inherited by all Mailer class
 class ApplicationMailer < ActionMailer::Base
-  include ActiveSupport::Rescuable
-  # TODO: get the correct from email address
-  default from: "#{I18n.t('email_from_name')} <notifications@example.com>"
+  default from: 'GoodCity <contact@goodcity.hk>'
   layout 'mailer'
 
   SMTP_SERVER_ERRORS = [IOError,
@@ -17,10 +15,19 @@ class ApplicationMailer < ActionMailer::Base
 
   SMTP_ERRORS = [SMTP_SERVER_ERRORS, SMTP_CLIENT_ERRORS].flatten
 
-  rescue_from(*SMTP_ERRORS, with: :capture_smptp_errors)
+  rescue_from(*SMTP_ERRORS, with: :capture_smtp_errors)
+
+  before_action :initialize_mailer_attributes
 
   # Log Rollbar warning for any errors
-  def capture_smptp_errors(exception)
+  def capture_smtp_errors(exception)
     Rollbar.warning(exception)
+  end
+
+  # Always use id here instead of passing ActiveRecord object as param,
+  # since things will run under sidekiq
+  def initialize_mailer_attributes
+    @user  =  User.find_by(id: params[:user_id])
+    @order =  Order.find_by(id: params[:order_id])
   end
 end
