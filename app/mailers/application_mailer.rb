@@ -17,8 +17,6 @@ class ApplicationMailer < ActionMailer::Base
 
   rescue_from(*SMTP_ERRORS, with: :capture_smtp_errors)
 
-  before_action :initialize_mailer_attributes
-
   # Log Rollbar warning for any errors
   def capture_smtp_errors(exception)
     Rollbar.warning(exception)
