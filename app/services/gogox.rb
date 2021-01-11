@@ -6,7 +6,7 @@ class Gogox
 
   def initialize(options = {})
     @params        = options
-    @time         = parse_pickup_time(options[:pickup_scheduled_at])
+    @time         = parse_pickup_time(options[:scheduled_at])
     @vehicle      = options[:vehicle]
     @district_id  = options[:district_id]
   end
@@ -45,7 +45,7 @@ class Gogox
   #   "price_breakdown" => [{"key" => "fee", "amount" => 15000}]
   # }
   def book
-    GogoxApi::Transport.new(params: order_attributes).order
+    GogoxApi::Transport.new(order_attributes).order
   end
 
   # Response:
@@ -55,7 +55,7 @@ class Gogox
   #   "estimated_price_breakdown" => [{"key" => "fee", "amount" => 15000}]
   # }
   def quotation
-    GogoxApi::Transport.new(params: quotation_attributes).quotation
+    GogoxApi::Transport.new(quotation_attributes).quotation
   end
 
   class << self
@@ -67,7 +67,13 @@ class Gogox
     # Response
     # Response is nil on successful cancellation of GOGOX transport
     def cancel_order(booking_id)
-      GogoxApi::Transport.new.cancel(booking_id)
+      response = GogoxApi::Transport.new.cancel(booking_id)
+      if !response
+        {
+          order_uuid: booking_id,
+          status: "cancelled"
+        }
+      end
     end
 
   end
@@ -77,48 +83,25 @@ class Gogox
   def order_attributes
     {
       'vehicle_type': vehicle_type,
-      "pickup_location": pickup_location,
+      "pickup_location": params[:pickup_location],
       "pickup_street_address": params[:pickup_street_address],
-      "pickup_scheduled_at": parse_time,
+      "scheduled_at": parse_time,
       "pickup_contact_name": params[:pickup_contact_name],
       "pickup_contact_phone": params[:pickup_contact_phone],
-      "destination_location": destination_location,
-      "destination_street_address": destination_street_address,
-      "destination_contact_name": destination_contact_name,
-      "destination_contact_phone": destination_contact_phone
+      "destination_location": params[:destination_location],
+      "destination_street_address": params[:destination_street_address],
+      "destination_contact_name": params[:destination_contact_name],
+      "destination_contact_phone": params[:destination_contact_phone]
     }
   end
 
   def quotation_attributes
     {
       'vehicle_type': vehicle_type,
-      "pickup_scheduled_at": parse_time,
-      "pickup_location": pickup_location,
-      "destination_location": destination_location
+      "scheduled_at": parse_time,
+      "pickup_location": params[:pickup_location],
+      "destination_location": params[:destination_location]
     }
-  end
-
-  def destination_location
-    [22.3748365, 113.9931416]
-  end
-
-  def destination_street_address
-    "Castle Peak Rd (So Kwun Wat)"
-  end
-
-  def destination_contact_name
-    "Steve Kenworthy"
-  end
-
-  def destination_contact_phone
-    "+85251111111"
-  end
-
-  def pickup_location
-    raise(ValueError, "Provide valid district_id") if @district_id.nil?
-
-    pickup_district = District.find(@district_id)
-    [pickup_district.latitude, pickup_district.longitude]
   end
 
   def vehicle_type

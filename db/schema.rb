@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_21_042717) do
+ActiveRecord::Schema.define(version: 2021_01_11_115250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -975,6 +975,17 @@ ActiveRecord::Schema.define(version: 2020_12_21_042717) do
     t.string "name_zh_tw"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "transport_provider_orders", force: :cascade do |t|
+    t.integer "transport_provider_id"
+    t.string "order_uuid"
+    t.string "status"
+    t.datetime "scheduled_at"
+    t.jsonb "metadata"
+    t.integer "offer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "transport_providers", force: :cascade do |t|

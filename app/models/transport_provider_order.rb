@@ -1,0 +1,2 @@
+class TransportProviderOrder < ApplicationRecord
+end

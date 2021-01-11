@@ -19,8 +19,10 @@ describe Gogox do
     {
       district_id: district.id,
       vehicle: vehicle,
-      pickup_scheduled_at: pickupTime,
-      params: params
+      scheduled_at: pickupTime,
+      params: params,
+      destination_location: [22.3748365, 113.9931416],
+      pickup_location: [22.5029632, 114.1277213],
     }
   }
 
@@ -48,7 +50,7 @@ describe Gogox do
     let(:quotation_attributes) {
       {
         'vehicle_type': vehicle,
-        "pickup_scheduled_at": 1609312208,
+        "scheduled_at": 1609312208,
         "pickup_location": [district.latitude, district.longitude],
         "destination_location": [22.3748365, 113.9931416]
       }
@@ -56,7 +58,7 @@ describe Gogox do
 
     it 'should trigger Gogox API' do
       mock_object = instance_double(GogoxApi::Transport, quotation: response)
-      allow(GogoxApi::Transport).to receive(:new).with(params: quotation_attributes)
+      allow(GogoxApi::Transport).to receive(:new).with(quotation_attributes)
           .and_return(mock_object)
       expect(gogovan.quotation).to eq(response)
     end
@@ -67,7 +69,7 @@ describe Gogox do
       Gogox.new({
         district_id: district.id,
         vehicle: vehicle,
-        pickup_scheduled_at: pickupTime,
+        scheduled_at: pickupTime,
         params: params,
         pickup_contact_name: "David",
         pickup_contact_phone: "+85251111112",
@@ -89,9 +91,8 @@ describe Gogox do
     let(:order_attributes) {
       {
         'vehicle_type': vehicle,
-        "pickup_scheduled_at": 1609312208,
+        "scheduled_at": 1609312208,
         "pickup_location": [district.latitude, district.longitude],
-        "destination_location": [22.3748365, 113.9931416],
         "destination_contact_name": "Steve Kenworthy",
         "destination_contact_phone": "+85251111111",
         "destination_location": [22.3748365, 113.9931416],
@@ -99,12 +100,15 @@ describe Gogox do
         "pickup_contact_name": "David",
         "pickup_contact_phone": "+85251111112",
         "pickup_street_address": "Street",
+        "destination_contact_name": "Steve Kenworthy",
+        "destination_contact_phone": "+85251111111",
+        "destination_street_address": "Castle Peak Rd (So Kwun Wat)",
       }
     }
 
     it 'should trigger Gogox API' do
       mock_object = instance_double(GogoxApi::Transport, order: response)
-      allow(GogoxApi::Transport).to receive(:new).with(params: order_attributes)
+      allow(GogoxApi::Transport).to receive(:new).with(order_attributes)
           .and_return(mock_object)
       expect(gogovan.book).to eq(response)
     end
