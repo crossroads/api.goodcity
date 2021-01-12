@@ -38,10 +38,6 @@ module Api::V1
       @options[:include_images]
     end
 
-    def include_offer_id?
-      @options[:include_offer_id]
-    end
-
     def include_order?
       @options[:include_order]
     end
