@@ -204,3 +204,4 @@ zh-tw:
       order:
         submission_pickup_delivery: '跟進 %{booking_type} 事宜 %{code}'
         confirmation_pickup_delivery: 'Crossroads Order Confirmation (%{code})'
+      login: 好人好市一次性登入密碼

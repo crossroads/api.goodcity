@@ -3,6 +3,9 @@ require "rails_helper"
 RSpec.describe GoodcityMailer, type: :mailer do
   let(:user) { create(:user, :charity) }
   let(:order) { create(:order, created_by: user) }
+  before(:each) do
+    I18n.locale = 'en'
+  end
 
   describe 'send_pin_email' do
     let(:mailer) { GoodcityMailer.with(user_id: user.id).send_pin_email }
