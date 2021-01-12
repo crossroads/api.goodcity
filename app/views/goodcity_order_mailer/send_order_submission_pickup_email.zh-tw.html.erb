@@ -6,15 +6,15 @@
   <title>Document</title>
 </head>
 <body>
-  親愛的 <%=@params[:contact_name]%>，<br/>
+  親愛的 <%=@email_property[:contact_name]%>，<br/>
 <p>
-  感謝您通過GoodCity提交 <%=@params[:booking_type_zh]%> <%=@params[:order_code]%>。
+  感謝您通過GoodCity提交 <%=@email_property[:booking_type_zh]%> <%=@email_property[:order_code]%>。
 </p>
 <p>
-  我們的團隊將會開始審核，如有任何疑問，我們會與您聯絡。確認 <%= @params[:booking_type_zh]%>後，您將收到另一封電子郵件。由於義工人手有限，若我們無法提供部份物資或確認您的首選時段，我們對此深表歉意。
+  我們的團隊將會開始審核，如有任何疑問，我們會與您聯絡。確認 <%= @email_property[:booking_type_zh]%>後，您將收到另一封電子郵件。由於義工人手有限，若我們無法提供部份物資或確認您的首選時段，我們對此深表歉意。
 </p>
 <p>
-  需要修改您的{{booking_type_zh}}？ 請登入 <a href="https://<%= @params[:domain]%>.goodcity.hk">https://<%= @params[:domain]%>.goodcity.hk</a> 及按下"控制板面" 以更新您的紀錄。
+  需要修改您的{{booking_type_zh}}？ 請登入 <a href="https://<%= @email_property[:domain]%>.goodcity.hk">https://<%= @email_property[:domain]%>.goodcity.hk</a> 及按下"控制板面" 以更新您的紀錄。
   如有任何疑問，請隨時回覆此郵件。
 </p>
 <p>

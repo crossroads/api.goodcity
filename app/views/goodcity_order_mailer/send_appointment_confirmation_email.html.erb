@@ -6,23 +6,23 @@
   </head>
 
   <body>
-    <b>Attention: </b> <%= @params[:contact_name]%> <br/>
-    <%= @params[:contact_organisation_name_en]%> <br/>
-    <b>Our Ref#:</b> <%= @params[:order_code]%> <br/>
-    <% if @params[:client]%>
-      <b>Client Name:</b> <%= params[:client][:name]%> <br/>
-      <b>Client contact:</b> <%= params[:client][:phone]%> <br/>
-      <b> <%= params[:client][:id_type]%> </b>  *** <%= params[:client][:id_no]%>(*) <br/>
+    <b>Attention: </b> <%= @email_property[:contact_name]%> <br/>
+    <%= @email_property[:contact_organisation_name_en]%> <br/>
+    <b>Our Ref#:</b> <%= @email_property[:order_code]%> <br/>
+    <% if @email_property[:client]%>
+      <b>Client Name:</b> <%= @email_property[:client][:name]%> <br/>
+      <b>Client contact:</b> <%= @email_property[:client][:phone]%> <br/>
+      <b> <%= @email_property[:client][:id_type]%> </b>  *** <%= @email_property[:client][:id_no]%>(*) <br/>
     <% end %>
 <br /> <br/>
-Dear <%= params[:contact_name]%>, <br/>
+Dear <%= @email_property[:contact_name]%>, <br/>
 
 <h4>RE: RECEIVING GOODS FROM CROSSROADS</h4>
 
 Thank you for your enquiry.  We would be delighted to help in any way we can. <br/> <br/>
 
-This email is to confirm an appointment for <%= params[:scheduled_at]%><br/> <br/>
-<% if @params[:client] %>
+This email is to confirm an appointment for <%= @email_property[:scheduled_at]%><br/> <br/>
+<% if @email_property[:client] %>
 
   Please ask your client to:
   <ul>
@@ -54,7 +54,7 @@ This email is to confirm an appointment for <%= params[:scheduled_at]%><br/> <br
   Please ensure you:
   <ul>
     <li>
-      <b>bring this confirmation letter</b> (or note your reference number <%= params[:order_code]%>
+      <b>bring this confirmation letter</b> (or note your reference number <%= @email_property[:order_code]%>)
     </li>
     <li>
       arrive on time or let us know if you are delayed. We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
@@ -71,14 +71,14 @@ This email is to confirm an appointment for <%= params[:scheduled_at]%><br/> <br
 <br/>
 Yours sincerely, <br/>
 
-<%= params[:staff_member_name]%> <br/>
+<%= @email_property[:staff_member_name]%> <br/>
 Hong Kong Distribution <br/>
 Office Tel: 2272 9343 <br/>
 Email: local@crossroads.org.hk<br/>
 
 <br/>
 
-<div class="header"><h3>CROSSROADS’ GUIDELINES</h3></div>
+<div class="header"><h3>CROSSROAD'S GUIDELINES</h3></div>
 
 
 We look forward to serving you at Crossroads. Here are some guidelines for your visit. <br/>
@@ -101,8 +101,8 @@ Many of the goods available are used, but normally of good quality. We test all 
 <div><strong>REQUESTED ITEMS:</strong> Your application included requests for the following. </div>
 
 <ul>
-<% if params[:requests]%>
-  <% params[:requests].each do |request| %>
+<% if @email_property[:requests]%>
+  <% @email_property[:requests].each do |request| %>
   	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
   <% end %>
 <% end %>

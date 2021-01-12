@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <b>Attention: </b> <%= @params[:contact_name]%> <br/>
-  <%= @params[:contact_organisation_name_en]%> <br/>
-  <b>Our Ref#:</b> <%= @params[:order_code]%> <br/>
+  <b>Attention: </b> <%= @email_property[:contact_name]%> <br/>
+  <%= @email_property[:contact_organisation_name_en]%> <br/>
+  <b>Our Ref#:</b> <%= @email_property[:order_code]%> <br/>
 <p>
-  Dear <%= @params[:contact_name] %>,
+  Dear <%= @email_property[:contact_name] %>,
 </p>
 
 <h3>
-  RE: Confirming order <%= @params[:order_code]%> to be delivered on <%= @params[:scheduled_at]%>
+  RE: Confirming order <%= @email_property[:order_code]%> to be delivered on <%= @email_property[:scheduled_at]%>
 </h3>
 
 <p>
   Thank you for ordering items from Crossroads. We are delighted to help in any way that we can.
 </p>
 
-<% if @params[:client] %>
+<% if @email_property[:client] %>
   <p>
     Please take careful note of the steps below and contact us if you have any questions.
   </p>
