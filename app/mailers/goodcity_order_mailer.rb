@@ -58,6 +58,6 @@ class GoodcityOrderMailer < ApplicationMailer
   end
 
   def booking_type
-    I18n.locale == 'en' ? @order.booking_type.name_en : @order.booking_type.name_zh_tw
+    @order.booking_type.name
   end
 end
