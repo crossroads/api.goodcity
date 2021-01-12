@@ -20,7 +20,7 @@ module Api
         render json: order_price.to_json
       end
 
-      api :POST, '/v1/transports/quotation', "Book transport"
+      api :POST, '/v1/transports/book', "Book transport"
       param :provider, String, desc: "Provider selected for transport"
       param :vehicle_type, String, desc: "Transport vehicle-type"
       param :offer_id, String, desc: "Id of the offer"
@@ -28,7 +28,7 @@ module Api
       param :district_id, String, desc: "Id of the district"
       param :pickup_contact_name, String, desc: "Contact Person Name"
       param :pickup_contact_phone, String, desc: "Contact Person Mobile"
-      param :pickup_street_address, Hash, desc: "Pickup Address"
+      param :pickup_street_address, String, desc: "Pickup Address"
       def book
         order_info = TransportService.new(transport_params.to_h).book
         render json: order_info.to_json

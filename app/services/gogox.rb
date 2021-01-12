@@ -7,7 +7,7 @@ class Gogox
   def initialize(options = {})
     @params        = options
     @time         = parse_pickup_time(options[:scheduled_at])
-    @vehicle      = options[:vehicle]
+    @vehicle      = options[:vehicle_type]
     @district_id  = options[:district_id]
   end
 

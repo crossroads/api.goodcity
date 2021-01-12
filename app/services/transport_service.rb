@@ -13,11 +13,11 @@ class TransportService
   end
 
   def quotation
-    @provider.new(params).quotation
+    @provider.new(quotation_attributes).quotation
   end
 
   def book
-    response = @provider.new(params).book
+    response = @provider.new(order_attributes).book
     storeOrderDetails(response)
   end
 
@@ -96,7 +96,7 @@ class TransportService
 
   def order_attributes
     {
-      'vehicle_type': vehicle_type,
+      'vehicle_type': @params["vehicle_type"],
       "pickup_location": pickup_location,
       "pickup_street_address": params[:pickup_street_address],
       "scheduled_at": params[:schedule_at],

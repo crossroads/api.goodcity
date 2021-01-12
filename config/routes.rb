@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -214,6 +214,13 @@ Rails.application.routes.draw do
       resources :packages_inventories, only: [:index]
       resources :printers_users, only: [:create, :update]
       resources :processing_destinations, only: :index
+
+      get "transports/providers", to: "transports#providers"
+      post "transports/quotation", to: "transports#quotation"
+      post "transports/book", to: "transports#book"
+      get "transports/:id/order_details", to: "transports#order_details"
+      post "transports/:id/cancel_order", to: "transports#cancel_order"
+      post "transports/update_gogox_order", to: "transports#update_gogox_order"
 
       # routes used in stock app
       get "designations", to: "orders#index"
