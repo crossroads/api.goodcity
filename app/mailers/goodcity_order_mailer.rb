@@ -6,32 +6,32 @@ class GoodcityOrderMailer < ApplicationMailer
   before_action :configure_order_email_properties
 
   def send_appointment_confirmation_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.appointment.confirmation', code: @order.code))
-    mail(@params)
+    params = create_params(subject: I18n.t('email.subject.appointment.confirmation', code: @order.code))
+    mail(params)
   end
 
   def send_order_submission_pickup_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
-                                                        code: @order.code, booking_type: booking_type))
-    mail(@params)
+    params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
+                                           code: @order.code, booking_type: booking_type))
+    mail(params)
   end
 
   def send_order_submission_delivery_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
-                                                        code: @order.code, booking_type: booking_type))
-    mail(@params)
+    params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
+                                           code: @order.code, booking_type: booking_type))
+    mail(params)
   end
 
   def send_order_confirmation_pickup_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
-                                                        code: @order.code, booking_type: booking_type))
-    mail(@params)
+    params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
+                                           code: @order.code, booking_type: booking_type))
+    mail(params)
   end
 
   def send_order_confirmation_delivery_email
-    @params = create_order_email_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
-                                                        code: @order.code, booking_type: booking_type))
-    mail(@params)
+    params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
+                                           code: @order.code, booking_type: booking_type))
+    mail(params)
   end
 
   private
@@ -46,13 +46,15 @@ class GoodcityOrderMailer < ApplicationMailer
   def configure_order_email_properties
     throw(:abort) unless @user.email.present?
 
-    @order_email_config = @user.email_properties.merge(@order.email_properties)
+    @email_property = @user.email_properties
+                           .merge(@order.email_properties)
+                           .with_indifferent_access
   end
 
-  def create_order_email_params(subject:, user: @user)
-    params = { to: user.email, subject: subject }.merge(@order_email_config)
+  def create_params(subject:, user: @user)
+    params = { to: user.email, subject: subject }
     params[:bcc] = ["#{I18n.t('email_from_name')} <#{ENV['BCC_EMAIL']}>"] if ENV['BCC_EMAIL'].present?
-    params.with_indifferent_access
+    params
   end
 
   def booking_type

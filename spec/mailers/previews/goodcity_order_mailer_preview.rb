@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Preview all emails at http://localhost:3000/rails/mailers/goodcity_mailer
+# Preview all emails at http://localhost:3000/rails/mailers/goodcity_order_mailer
 # ** Example: **
 #
 # 1. To check the preview for "appointment_confirmation_email" email, define the method with some dummy attibutes
@@ -10,6 +10,6 @@
 #   GoodcityMailer.with(user_id: order.created_by_id, order_id: order.id).send_appointment_confirmation_email
 # end
 #
-# 2. Visit http://localhost:3000/rails/mailers/goodcity_mailer/appointment_confirmation_email
-class GoodcityMailerPreview < ActionMailer::Preview
+# 2. Visit http://localhost:3000/rails/mailers/goodcity_order_mailer/appointment_confirmation_email
+class GoodcityOrderMailerPreview < ActionMailer::Preview
 end

@@ -6,34 +6,34 @@
 </head>
 <body>
   <p>
-    <strong>Attention:</strong> <%= @params[:contact_name]%> <br/>
-    <%= @params[:contact_organisation_name_en]%>   <br/>
-    <strong>Our Ref#: </strong> <%= @params[:order_code]%> <br/>
-    <% if @params[:client]%>
-      <strong>Client Name: </strong><%= params[:client][:name]%> <br/>
-      <strong>Client contact: </strong> <%= params[:client][:phone]%> <br/>
-      <strong><%= params[:client][:id_type]%>: </strong>  ***<%= params[:client][:id_no]%>(*) <br/>
+    <strong>Attention:</strong> <%= @email_property[:contact_name]%> <br/>
+    <%= @email_property[:contact_organisation_name_en]%>   <br/>
+    <strong>Our Ref#: </strong> <%= @email_property[:order_code]%> <br/>
+    <% if @email_property[:client]%>
+      <strong>Client Name: </strong><%= @email_property[:client][:name]%> <br/>
+      <strong>Client contact: </strong> <%= @email_property[:client][:phone]%> <br/>
+      <strong><%= @email_property[:client][:id_type]%>: </strong>  ***<%= @email_property[:client][:id_no]%>(*) <br/>
     <% end %>
   </p>
 
   <p>
-    Dear <%= @params[:contact_name]%>,
+    Dear <%= @email_property[:contact_name]%>,
   </p>
 
   <p>
     Thank you for ordering items from Crossroads. We are delighted to help in any way that we can. <br/>
-    This email is to <b>confirm that the goods can be collected on the <%= params[:scheduled_at]%></b>
+    This email is to <b>confirm that the goods can be collected on the <%= @email_property[:scheduled_at]%></b>
   </p>
 
   <p>
     Note: You cannot modify confirmed appointments online. Please email or phone our staff (2272-9343) for assistance if changes are required.
   </p>
-  <% if @params[:client] %>
+  <% if @email_property[:client] %>
     <p>
       Please ask your client to:
       <ul>
         <li>
-          <strong>bring this confirmation letter and their identity document</strong> (or note your reference number <%= params[:order_code]%>)
+          <strong>bring this confirmation letter and their identity document</strong> (or note your reference number <%= @email_property[:order_code]%>)
         </li>
         <li>
           <strong>arrive on time.</strong> We have many orders to process each day and cannot usually process an order outside its allotted time.
@@ -54,7 +54,7 @@
     Please ensure you:
     <ul>
       <li>
-        <strong>bring this confirmation letter</strong> (or note your reference number <%= params[:order_code]%>)
+        <strong>bring this confirmation letter</strong> (or note your reference number <%= @email_property[:order_code]%>)
       </li>
       <li>
         <strong>arrive on time or let us know if you are delayed.</strong> We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
@@ -65,7 +65,7 @@
     </ul>
   </p>
 <% end %>
-<% if @params[:client] %>
+<% if @email_property[:client] %>
   <p>
     We look forward to receiving your client and hope we may help!
   </p>
@@ -79,9 +79,9 @@
 <div><strong>ITEMS TO BE COLLECTED:</strong></div>
 
 <ul>
-<% if params[:goods]%>
-  <% params[:goods].each do |goods| %>
-  	<li> <%= goods[:quantity]%> x <%= goods[:type_en]%>. <%= goods[:description] %>. </li>
+<% if @email_property[:requests]%>
+  <% @email_property[:requests].each do |request| %>
+  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
   <% end %>
 <% end %>
 </ul>
