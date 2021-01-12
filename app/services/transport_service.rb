@@ -76,17 +76,17 @@ class TransportService
 
   # TODO: Update crossroads geolocation values
   def destination_location
-    [22.3748365, 113.9931416]
+    [32.3790365, 120.9001416]
   end
 
   # TODO: Change
   def destination_street_address
-    "Castle Peak Rd (So Kwun Wat)"
+    "Santa Peak Road"
   end
 
   # TODO: Change
   def destination_contact_name
-    "Steve Kenworthy"
+    "GCAdmin User"
   end
 
   # TODO: Change

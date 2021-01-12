@@ -21,7 +21,7 @@ describe Gogox do
       vehicle: vehicle,
       scheduled_at: pickupTime,
       params: params,
-      destination_location: [22.3748365, 113.9931416],
+      destination_location: [56.8766894, 120.9891416],
       pickup_location: [22.5029632, 114.1277213],
     }
   }
@@ -51,8 +51,8 @@ describe Gogox do
       {
         'vehicle_type': vehicle,
         "scheduled_at": 1609312208,
-        "pickup_location": [district.latitude, district.longitude],
-        "destination_location": [22.3748365, 113.9931416]
+        "pickup_location": [22.5029632, 114.1277213],
+        "destination_location": [56.8766894, 120.9891416]
       }
     }
 
@@ -92,15 +92,15 @@ describe Gogox do
       {
         'vehicle_type': vehicle,
         "scheduled_at": 1609312208,
-        "pickup_location": [district.latitude, district.longitude],
-        "destination_contact_name": "Steve Kenworthy",
+        "pickup_location": [22.5029632, 114.1277213],
+        "destination_contact_name": "Admin User",
         "destination_contact_phone": "+85251111111",
-        "destination_location": [22.3748365, 113.9931416],
+        "destination_location": [56.8766894, 120.9891416],
         "destination_street_address": "Castle Peak Rd (So Kwun Wat)",
         "pickup_contact_name": "David",
         "pickup_contact_phone": "+85251111112",
         "pickup_street_address": "Street",
-        "destination_contact_name": "Steve Kenworthy",
+        "destination_contact_name": "Admin User",
         "destination_contact_phone": "+85251111111",
         "destination_street_address": "Castle Peak Rd (So Kwun Wat)",
       }

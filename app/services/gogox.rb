@@ -31,12 +31,12 @@ class Gogox
   #     }
   #   },
   #   "destinations" => [{
-  #     "name" => "Steve Kenworthy",
-  #     "street_address" => "Castle Peak Rd (So Kwun Wat)",
+  #     "name" => "GCAdmin User",
+  #     "street_address" => "Santa Peak Road",
   #     "floor_or_unit_number" => nil,
-  #     "location" => {"lat" => 22.3748365, "lng" => 113.9931416},
+  #     "location" => {"lat" => 32.3700365, "lng" => 120.9930016},
   #     "contact" => {
-  #       "name" => "Steve Kenworthy",
+  #       "name" => "GCAdmin User",
   #       "phone_number" => "+85251111111"
   #     }
   #   }],
