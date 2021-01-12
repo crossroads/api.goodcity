@@ -1,7 +1,7 @@
 GIT
   remote: git@github.com:crossroads/go_go_van_api.git
-  revision: 7c0794f1c9eebcf0d44b8a4341f26ea8bdf259c9
-  branch: GCW-3407
+  revision: 9e50b4261aef81edbfbebcd333b513d94b115b41
+  branch: master
   specs:
     go_go_van_api (0.0.1)
       nestful (~> 1)

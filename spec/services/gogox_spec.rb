@@ -23,6 +23,9 @@ describe Gogox do
       params: params,
       destination_location: [56.8766894, 120.9891416],
       pickup_location: [22.5029632, 114.1277213],
+      destination_contact_name: "Admin User",
+      destination_contact_phone: "+85251111111",
+      destination_street_address: "Castle Peak Rd (So Kwun Wat)",
     }
   }
 
@@ -73,7 +76,12 @@ describe Gogox do
         params: params,
         pickup_contact_name: "David",
         pickup_contact_phone: "+85251111112",
-        pickup_street_address: "Street"
+        pickup_street_address: "Street",
+        destination_location: [56.8766894, 120.9891416],
+        pickup_location: [22.5029632, 114.1277213],
+        destination_contact_name: "Admin User",
+        destination_contact_phone: "+85251111111",
+        destination_street_address: "Castle Peak Rd (So Kwun Wat)",
       })
     }
 
@@ -99,10 +107,7 @@ describe Gogox do
         "destination_street_address": "Castle Peak Rd (So Kwun Wat)",
         "pickup_contact_name": "David",
         "pickup_contact_phone": "+85251111112",
-        "pickup_street_address": "Street",
-        "destination_contact_name": "Admin User",
-        "destination_contact_phone": "+85251111111",
-        "destination_street_address": "Castle Peak Rd (So Kwun Wat)",
+        "pickup_street_address": "Street"
       }
     }
 
