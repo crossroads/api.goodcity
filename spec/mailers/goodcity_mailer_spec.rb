@@ -5,7 +5,7 @@ RSpec.describe GoodcityMailer, type: :mailer do
   let(:order) { create(:order, created_by: user) }
 
   after(:each) do
-    I18n.locale = :en
+    I18n.locale = 'en'
   end
 
   describe 'send_pin_email' do
