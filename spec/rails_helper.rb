@@ -75,14 +75,6 @@ RSpec.configure do |config|
     RequestStore.clear!
   end
 
-  config.before(:each) do
-    I18n.locale = 'en'
-  end
-
-  config.after(:each) do
-    I18n.locale = 'en'
-  end
-
   config.before(:suite) do
     Time.zone = 'Hong Kong'
   end

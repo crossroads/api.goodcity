@@ -170,7 +170,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
         post :send_pin, params: { mobile: '123' }
 
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql("Mobile #{I18n.t('activerecord.errors.models.user.attributes.mobile.invalid')}")
+        expect(parsed_body["error"]).to eq("Mobile is invalid")
         expect(parsed_body['otp_auth_key']).to eql( nil )
       end
 
@@ -180,7 +180,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
         post :send_pin, params: { mobile: '+9101234567' }
 
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql("Mobile #{I18n.t('activerecord.errors.models.user.attributes.mobile.invalid')}")
+        expect(parsed_body["error"]).to eq("Mobile is invalid")
         expect(parsed_body['otp_auth_key']).to eql( nil )
       end
     end
