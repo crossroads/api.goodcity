@@ -10,8 +10,8 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     let(:order) { create(:order, created_by: user) }
     subject(:subject) { described_class.with(user_id: user.id, order_id: order.id) }
 
-    before(:each) do
-      I18n.locale = 'en'
+    after(:each) do
+      I18n.locale = :en
     end
 
     describe 'send_appointment_confirmation_email' do
