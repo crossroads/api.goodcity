@@ -122,7 +122,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     context "with unsucessful authentication" do
       it 'should return unprocessable entity' do
         expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(nil)
-        
+
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -195,9 +195,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(User).to_not receive(:find_by_mobile)
         expect(user).to_not receive(:send_verification_pin)
         expect(controller).to_not receive(:otp_auth_key_for)
-        post :send_pin, params: { mobile: "" }
+        post :send_pin, params: { mobile: '' }
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body['errors']).to eql("Mobile #{I18n.t('activerecord.errors.models.user.attributes.mobile.invalid')}")
       end
 
       it "not +852..." do
@@ -206,7 +206,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(controller).to_not receive(:otp_auth_key_for)
         post :send_pin, params: { mobile: "+9101234567" }
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body['errors']).to eql("Mobile #{I18n.t('activerecord.errors.models.user.attributes.mobile.invalid')}")
       end
     end
   end
