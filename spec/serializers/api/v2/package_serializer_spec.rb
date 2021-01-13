@@ -52,7 +52,7 @@ describe Api::V2::PackageSerializer do
     end
 
     context 'with public params' do
-      let(:params) { { include_public_attributes: true } }
+      let(:params) { { format: [:public] } }
 
       it 'includes an offer_id' do
         expect(attributes['offer_id']).to eq(package.item.offer_id)

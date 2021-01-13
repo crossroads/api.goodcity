@@ -17,8 +17,12 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
     end
 
     it "returns all stock enabled package_types" do
-      stock_package_types = create_list :base_package_type, 3, allow_stock: true
-      package_type = create :base_package_type
+      stock_package_types = [
+        create(:base_package_type, allow_stock: true, code: "AFO"),
+        create(:base_package_type, allow_stock: true, code: "BBC"),
+        create(:base_package_type, allow_stock: true, code: "BBM")
+      ]
+      package_type = create :base_package_type, code: "BCS"
 
       get :index, params: { stock: true }, format: 'json'
 
