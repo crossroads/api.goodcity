@@ -14,12 +14,22 @@ module Api
 
       api :GET, "/v1/stocktakes", "List all stocktakes"
       def index
-        render json: @stocktakes, each_serializer: serializer, include_packages_locations: true
+        render(
+          json: @stocktakes,
+          each_serializer: serializer,
+          include_packages_locations: true,
+          include_revisions: bool_param(:include_revisions, true)
+        )
       end
 
       api :GET, "/v1/stocktakes/:id", "Get a stocktake by id"
       def show
-        render json: @stocktake, serializer: serializer, include_packages_locations: true
+        render(
+          json: @stocktake,
+          serializer: serializer,
+          include_packages_locations: true,
+          include_revisions: bool_param(:include_revisions, true)
+        )
       end
 
       api :POST, "/v1/stocktakes", "Create a stocktake"
@@ -69,6 +79,11 @@ module Api
 
       def serializer
         Api::V1::StocktakeSerializer
+      end
+
+      def bool_param(key, default_val)
+        return default_val unless params.include?(key)
+        params[key].to_s == "true"
       end
     end
   end
