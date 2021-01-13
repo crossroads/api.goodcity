@@ -10,6 +10,7 @@ require 'rspec/rails'
 require 'ffaker'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
+
 require_relative "support/controller_macros"
 
 WebMock.disable_net_connect!(:allow => "codeclimate.com")
@@ -72,6 +73,10 @@ RSpec.configure do |config|
   # Keep RequestStore clean between specs
   config.before(:each) do
     RequestStore.clear!
+  end
+
+  config.after(:each) do
+    I18n.locale = 'en'
   end
 
   config.before(:suite) do
