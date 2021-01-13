@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :transport_provider_order do
+  factory :transport_order do
     transport_provider_id { 1 }
     order_uuid { "MyString" }
     status { "MyString" }

@@ -50,7 +50,7 @@ class TransportService
   private
 
   def store_order_details(response)
-    TransportProviderOrder.create(
+    TransportOrder.create(
       transport_provider_id: TransportProvider.find_by(name: provider_name.upcase).try(:id),
       order_uuid: response["uuid"],
       status: response["status"],
@@ -61,7 +61,7 @@ class TransportService
   end
 
   def update_order_details(response)
-    order = TransportProviderOrder.find_by(order_uuid: response["order_uuid"])
+    order = TransportOrder.find_by(order_uuid: response["order_uuid"])
     order.update_attributes(response)
   end
 

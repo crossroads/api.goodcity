@@ -55,7 +55,7 @@ module Api
       private
 
       def transport_provider
-        order = TransportProviderOrder.find_by(order_uuid: params[:id])
+        order = TransportOrder.find_by(order_uuid: params[:id])
         order.try(:transport_provider).try(:name)
       end
 

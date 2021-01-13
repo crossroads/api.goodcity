@@ -977,7 +977,7 @@ ActiveRecord::Schema.define(version: 2021_01_11_115250) do
     t.datetime "updated_at"
   end
 
-  create_table "transport_provider_orders", force: :cascade do |t|
+  create_table "transport_orders", force: :cascade do |t|
     t.integer "transport_provider_id"
     t.string "order_uuid"
     t.string "status"
