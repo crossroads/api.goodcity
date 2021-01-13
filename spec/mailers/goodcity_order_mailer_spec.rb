@@ -61,7 +61,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     describe 'send_order_submission_pickup_email' do
       let(:mailer) { subject.send_order_submission_pickup_email }
 
-      %w[en zh-tw].each do |locale|
+      %w[zh-tw en].each do |locale|
         it "sets proper subject according to the locale #{locale}" do
           I18n.locale = locale
           expect(mailer).to have_subject(I18n.t('email.subject.order.submission_pickup_delivery', code: order.code, booking_type: order.booking_type.name_en))
@@ -80,7 +80,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
     describe 'send_order_submission_delivery_email' do
       let(:mailer) { subject.send_order_submission_delivery_email }
 
-      %w[en zh-tw].each do |locale|
+      %w[zh-tw en].each do |locale|
         it "sets proper subject according to the locale #{locale}" do
           I18n.locale = locale
           expect(mailer).to have_subject(I18n.t('email.subject.order.submission_pickup_delivery', code: order.code, booking_type: order.booking_type.name_en))
