@@ -6,6 +6,8 @@ RSpec.describe Shareable, type: :model do
 
   describe 'Database columns' do
     it { is_expected.to have_db_column(:public_uid).of_type(:string) }
+    it { is_expected.to have_db_column(:notes).of_type(:text) }
+    it { is_expected.to have_db_column(:notes_zh_tw).of_type(:text) }
     it { is_expected.to have_db_column(:resource_id).of_type(:integer) }
     it { is_expected.to have_db_column(:resource_type).of_type(:string) }
     it { is_expected.to have_db_column(:allow_listing).of_type(:boolean) }

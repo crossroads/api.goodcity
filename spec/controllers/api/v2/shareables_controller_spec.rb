@@ -374,6 +374,17 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(response.status).to eq(200)
         end
 
+        it "allows editing the notes fields of a shareable record of type #{resource_type}" do
+          resource  = create(resource_type)
+          shareable = create(:shareable, resource: resource, notes: "note", notes_zh_tw: "note zh")
+
+          put :update, params: { id: shareable.id, notes: "foo", notes_zh_tw: "bar" }
+ 
+          expect(response.status).to eq(200)
+          expect(shareable.reload.notes).to eq("foo")
+          expect(shareable.reload.notes_zh_tw).to eq("bar")
+        end
+
         it "allows editing the 'expires_at' field of a shareable record of type #{resource_type}" do
           resource  = create(resource_type)
           shareable = create(:shareable, resource: resource, expires_at: nil)
