@@ -216,11 +216,11 @@ Rails.application.routes.draw do
       resources :processing_destinations, only: :index
 
       get "transports/providers", to: "transports#providers"
-      post "transports/quotation", to: "transports#quotation"
+      post "transports/quote", to: "transports#quote"
       post "transports/book", to: "transports#book"
-      get "transports/:id/order_details", to: "transports#order_details"
-      post "transports/:id/cancel_order", to: "transports#cancel_order"
-      post "transports/update_gogox_order", to: "transports#update_gogox_order"
+      get "transports/:id", to: "transports#show"
+      post "transports/:id/cancel", to: "transports#cancel"
+      post "transports/update_hook", to: "transports#update_hook"
 
       # routes used in stock app
       get "designations", to: "orders#index"

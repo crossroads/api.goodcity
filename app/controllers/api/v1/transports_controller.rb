@@ -9,13 +9,13 @@ module Api
         render json: TransportProvider.all.cached_json
       end
 
-      api :POST, '/v1/transports/quotation', "Get provider quotation"
+      api :POST, '/v1/transports/quote', "Get provider quote"
       param :provider, String, desc: "Provider selected for transport"
       param :vehicle_type, String, desc: "Transport vehicle-type"
       param :offer_id, String, desc: "Id of the offer"
       param :schedule_at, String, desc: "Scheduled time for delivery"
       param :district_id, String, desc: "Id of the district"
-      def quotation
+      def quote
         order_price = TransportService.new(transport_params.to_h).quotation
         render json: order_price.to_json
       end
@@ -34,25 +34,30 @@ module Api
         render json: order_info.to_json
       end
 
-      api :GET, '/v1/transports/:id/order_details', "Get GoodCity Tranport order details."
-      def order_details
-        order_info = TransportService.new({booking_id: params[:id]}).status
+      api :GET, '/v1/transports/:id', "Get GoodCity Tranport order details."
+      def show
+        order_info = TransportService.new({booking_id: params[:id], provider: transport_provider}).status
         render json: order_info.to_json
       end
 
-      api :POST, '/v1/transports/:id/cancel_order', "Cancel GoodCity Tranport order."
-      def cancel_order
-        order_info = TransportService.new({booking_id: params[:id]}).cancel
+      api :POST, '/v1/transports/:id/cancel', "Cancel GoodCity Tranport order."
+      def cancel
+        order_info = TransportService.new({booking_id: params[:id], provider: transport_provider}).cancel
         render json: order_info.to_json
       end
 
-      api :POST, '/v1/transports/update_gogox_order', "Webhook to update GOGOX order status"
-      def update_gogox_order
+      api :POST, '/v1/transports/update_hook', "Webhook to update transport status"
+      def update_hook
         # setup ngrok and inspect response
         # response details are not yet available from Gogox Provider
       end
 
       private
+
+      def transport_provider
+        order = TransportProviderOrder.find_by(order_uuid: params[:id])
+        order.try(:transport_provider).try(:name)
+      end
 
       def transport_params
         set_district_id unless params["district_id"].presence

@@ -4,9 +4,10 @@ class TransportService
 
   def initialize(options={})
     @params = options
-    @provider_name = options && options["provider"]
+    @provider_name = options && options[:provider]
     @provider ||= Object::const_get(provider_name)
-    @booking_id = options && options["booking_id"]
+    @booking_id = options && options[:booking_id]
+    @transport_constants = Rails.application.secrets.transport
 
     fetch_user
     fetch_district_id
@@ -18,13 +19,17 @@ class TransportService
 
   def book
     response = @provider.new(order_attributes).book
-    storeOrderDetails(response)
+    if response[:error]
+      response[:error]
+    else
+      store_order_details(response)
+    end
   end
 
   def cancel
     response = @provider.cancel_order(booking_id)
     if response
-      updateOrderDetails({
+      update_order_details({
         status: "cancelled",
         order_uuid: booking_id
       })
@@ -34,7 +39,7 @@ class TransportService
   def status
     response = @provider.transport_status(booking_id)
     if response
-      updateOrderDetails({
+      update_order_details({
         status: response["status"],
         order_uuid: booking_id,
         metadata: response
@@ -44,28 +49,28 @@ class TransportService
 
   private
 
-  def storeOrderDetails(response)
+  def store_order_details(response)
     TransportProviderOrder.create(
-      transport_provider_id: TransportProvider.find_by(name: provider_name).try(:id),
+      transport_provider_id: TransportProvider.find_by(name: provider_name.upcase).try(:id),
       order_uuid: response["uuid"],
       status: response["status"],
-      schedule_at: response["pickup"]["schedule_at"],
+      scheduled_at: response["pickup"]["schedule_at"],
       metadata: response,
-      offer_id: @params["offer_id"]
+      offer_id: @params[:offer_id]
     )
   end
 
-  def updateOrderDetails(response)
+  def update_order_details(response)
     order = TransportProviderOrder.find_by(order_uuid: response["order_uuid"])
     order.update_attributes(response)
   end
 
   def quotation_attributes
     {
-      'vehicle_type': @params["vehicle_type"],
-      "scheduled_at": @params["scheduled_at"],
+      'vehicle_type': @params[:vehicle_type],
+      "scheduled_at": @params[:scheduled_at],
       "pickup_location": pickup_location,
-      "destination_location": destination_location
+      "destination_location": @transport_constants[:crossroads_geolocation]
     }
   end
 
@@ -74,51 +79,31 @@ class TransportService
     [pickup_district.latitude, pickup_district.longitude]
   end
 
-  # TODO: Update crossroads geolocation values
-  def destination_location
-    [32.3790365, 120.9001416]
-  end
-
-  # TODO: Change
-  def destination_street_address
-    "Santa Peak Road"
-  end
-
-  # TODO: Change
-  def destination_contact_name
-    "GCAdmin User"
-  end
-
-  # TODO: Change
-  def destination_contact_phone
-    "+85251111111"
-  end
-
   def order_attributes
     {
-      'vehicle_type': @params["vehicle_type"],
+      'vehicle_type': @params[:vehicle_type],
       "pickup_location": pickup_location,
       "pickup_street_address": params[:pickup_street_address],
       "scheduled_at": params[:schedule_at],
       "pickup_contact_name": params[:pickup_contact_name] || @user.full_name,
       "pickup_contact_phone": params[:pickup_contact_phone] || @user.mobile,
-      "destination_location": destination_location,
-      "destination_street_address": destination_street_address,
-      "destination_contact_name": destination_contact_name,
-      "destination_contact_phone": destination_contact_phone
+      "destination_location": @transport_constants[:crossroads_geolocation],
+      "destination_street_address": @transport_constants[:crossroads_street_address],
+      "destination_contact_name": @transport_constants[:crossroads_contact_name],
+      "destination_contact_phone": @transport_constants[:crossroads_contact_phone]
     }
   end
 
   def fetch_user
-    @user ||= if @params["user_id"].present?
-      User.find_by(id: @params["user_id"])
+    @user ||= if @params[:user_id].present?
+      User.find_by(id: @params[:user_id])
     else
       User.current_user
     end
   end
 
   def fetch_district_id
-    @district_id ||= @params["district_id"].presence || @user.address.district_id
+    @district_id ||= @params[:district_id].presence || @user.address.district_id
   end
 
 end

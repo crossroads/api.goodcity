@@ -120,7 +120,9 @@ class Gogox
   end
 
   def parse_time
-    DateTime.parse(@time.to_s).to_i
+    @time = DateTime.parse(@time.to_s)
+    @time = @time.zone == "HKT" ? @time : @time.in_time_zone("Asia/Hong_Kong")
+    @time.to_i
   end
 
   class ValueError < StandardError; end
