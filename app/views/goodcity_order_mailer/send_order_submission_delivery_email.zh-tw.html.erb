@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+
+  <body>
+    <div>
+      <p>
+        親愛的 <%= @email_property[:contact_name] %>，
+      </p>
+
+      <p>
+        感謝您通過GoodCity提交
+          <%= @email_property[:booking_type_zh]%> <br/>
+          <%= @email_property[:order_code]%>。
+      </p>
+
+      <p>
+        請提供詳細的地址。<br />
+        請回覆此電子郵件，並提供有關物品交付地點的詳細地址。在收到有關資料之前，我們無法進一步處理訂單。
+      </p>
+
+      <p>
+        確認郵件<br />
+        收到地址信息後，我們的團隊將會開始審核，如有任何疑問，我們會與您聯絡。確認 <%= @email_property[:booking_type_zh]%>後，您將收到另一封電子郵件。由於義工人手有限，若我們無法提供部份物資或確認您的首選時段，我們對此深表歉意。
+      </p>
+
+      <p>
+        需要修改您的 <%= @email_property[:booking_type_zh]%>？ 請登入&nbsp;
+        <a href="https://<%= @email_property[:domain]%>.goodcity.hk">https://<%= @email_property[:domain]%>.goodcity.hk</a>
+        &nbsp;及按下"控制板面" 以更新您的紀錄
+        >
+      </p>
+
+      <p>
+        如有任何疑問，請隨時回覆此郵件。
+      </p>
+
+      <p>
+        我們期待為您提供協助！
+      </p>
+
+      <p>
+        香港分派中心<br />
+        國際十字路會
+      </p>
+
+      <p>
+        聯絡電話: 2272 9343<br />
+        聯絡電郵: local@crossroads.org.hk
+      </p>
+    </div>
+  </body>
+</html>

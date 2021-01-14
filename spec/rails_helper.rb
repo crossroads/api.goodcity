@@ -10,6 +10,7 @@ require 'rspec/rails'
 require 'ffaker'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
+
 require_relative "support/controller_macros"
 
 WebMock.disable_net_connect!(:allow => "codeclimate.com")

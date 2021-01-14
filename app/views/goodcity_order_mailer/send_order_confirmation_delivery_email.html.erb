@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <b>Attention: </b> <%= @email_property[:contact_name]%> <br/>
+  <%= @email_property[:contact_organisation_name_en]%> <br/>
+  <b>Our Ref#:</b> <%= @email_property[:order_code]%> <br/>
+<p>
+  Dear <%= @email_property[:contact_name] %>,
+</p>
+
+<h3>
+  RE: Confirming order <%= @email_property[:order_code]%> to be delivered on <%= @email_property[:scheduled_at]%>
+</h3>
+
+<p>
+  Thank you for ordering items from Crossroads. We are delighted to help in any way that we can.
+</p>
+
+<% if @email_property[:client] %>
+  <p>
+    Please take careful note of the steps below and contact us if you have any questions.
+  </p>
+  <ol>
+    <li>
+      Our staff will call your beneficiary just before ordering the van to re-confirm that everything is in place for receiving the goods.
+    </li>
+    <ul>
+      <li>
+        To avoid unnecessary van costs we will not usually proceed until we have successfully made contact.
+      </li>
+      <li>
+        If we cannot reach your beneficiary we may need to cancel the order.
+      </li>
+    </ul>
+    <li>
+      We will usually call a second time when the van leaves our site to flag that the goods are on their way and provide you with the driver’s contact number.
+    </li>
+    <li>
+      The driver will be given your beneficiary’s number so they are able to make contact directly if they have difficulty finding the exact location.
+    </li>
+  </ol>
+
+<% else %>
+  <p>
+    Please take careful note of the steps below and contact us if you have any questions.
+    <ol>
+      <li>
+        Our staff will call you just before ordering the van to re-confirm that everything is in place for receiving the goods.
+      </li>
+      <ul>
+        <li>
+          To avoid unnecessary van costs we will not usually proceed until we have successfully made contact.
+        </li>
+        <li>
+          If we cannot reach you we may need to cancel the order.
+        </li>
+      </ul>
+      <li>
+        We will usually call a second time when the van leaves our site to flag that the goods are on their way and provide you with the driver’s contact number.
+      </li>
+      <li>
+        The driver will be given your number so they are able to make contact directly if they have difficulty finding the exact location.
+      </li>
+    </ol>
+  </p>
+<% end %>
+
+</body>
+</html>
