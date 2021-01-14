@@ -236,11 +236,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body["meta"]["search"]).to eql("iphone")
         end
 
-        ["appointment", "online_orders", "shipment", "other"].each do |type|
+        ["appointment", "online_orders", "shipment", "carry_out", "other"].each do |type|
           it "can return a single order of type #{type}" do
             create :appointment, :with_state_submitted, description: "IPhone 100s"
             create :online_order, :awaiting_dispatch, description: "IPhone 100s", order_transport: ggv_transport
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "Shipment", code: "S1234"
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "CarryOut", code: "C2234"
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other" , code: "2345"
 
             get :index, params: { searchText: "iphone", type: type }
@@ -250,6 +251,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(parsed_body["meta"]["search"]).to eql("iphone")
           end
         end
+
+        # it "does not return valid order type when type is other" do
+        #   create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
+        #   get :index, params: { type: "other" }
+        #   expect(response.status).to eq(200)
+        #   expect(parsed_body["designations"].count).to eq(0)
+        #   expect(parsed_body["meta"]["total_pages"]).to eql(0)
+        # end
 
         it "returns records with multiple specified types" do
           create :appointment, :with_state_submitted, description: "IPhone 100s", order_transport: order_transport
