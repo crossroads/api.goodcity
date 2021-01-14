@@ -32,3 +32,4 @@ APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
 PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
 MENTIONABLE_ROLES = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment', 'Stock administrator', 'Stock fulfilment'].freeze
 DEFAULT_COUNTRY = 'China - Hong Kong (Special Administrative Region)'
+DEFAULT_FROM_EMAIL = 'GoodCity <contact@goodcity.hk>'

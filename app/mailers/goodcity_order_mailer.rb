@@ -44,7 +44,7 @@ class GoodcityOrderMailer < ApplicationMailer
   end
 
   def configure_order_email_properties
-    throw(:abort) unless @user.email.present?
+    throw(:abort) if @user.email.blank?
 
     @email_property = @user.email_properties
                            .merge(@order.email_properties)

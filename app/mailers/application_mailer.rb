@@ -2,7 +2,7 @@
 
 # Base class to be inherited by all Mailer class
 class ApplicationMailer < ActionMailer::Base
-  default from: 'GoodCity <contact@goodcity.hk>'
+  default from: DEFAULT_FROM_EMAIL
   layout 'mailer'
 
   SMTP_SERVER_ERRORS = [IOError,
