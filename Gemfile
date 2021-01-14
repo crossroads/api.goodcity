@@ -86,6 +86,7 @@ end
 group :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'email_spec'
   gem 'rails-controller-testing'
   gem 'rspec_junit_formatter'
   gem 'shoulda-callback-matchers'

@@ -122,7 +122,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     context "with unsucessful authentication" do
       it 'should return unprocessable entity' do
         expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(nil)
-        
+
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
