@@ -1,3 +1,22 @@
+# Watcher concern
+#
+# Uses model hooks internally to detect changes on one more more models (and call the ruby block)
+# It is useful when listening to a change on another model, as we don't want to modify that model class with extra hooks
+#
+# e.g
+#
+# class ModelA
+#  ...
+# end
+#
+# class ModelB
+#   include Watcher
+#
+#   watch ModelA do |record|
+#     // do something, maybe update model B
+#   end
+# end
+#
 module Watcher
   extend ActiveSupport::Concern
 
