@@ -57,4 +57,9 @@ Rails.application.configure do
   #   authentication:       'plain',
   #   enable_starttls_auto: true
   # }
+  # This config will save the mails in the temp folder
+  # If you need to test the delivery to SMTP, comment the below lines
+  # and make use of above config
+  ActionMailer::Base.delivery_method = :file
+  ActionMailer::Base.file_settings = { :location => Rails.root.join('tmp/mail') }
 end
