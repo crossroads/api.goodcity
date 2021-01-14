@@ -80,11 +80,6 @@ module Api
       def serializer
         Api::V1::StocktakeSerializer
       end
-
-      def bool_param(key, default_val)
-        return default_val unless params.include?(key)
-        params[key].to_s == "true"
-      end
     end
   end
 end

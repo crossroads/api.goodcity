@@ -65,6 +65,9 @@ class Stocktake < ApplicationRecord
       .pluck(:package_id)
 
     Stocktake.watcher_off do
+      # We disable the watch module during this operation to
+      # avoid automatically recomputing counter caches on revision creation
+
       ActiveRecord::Base.transaction do
         package_ids.map do |pid|
           StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
