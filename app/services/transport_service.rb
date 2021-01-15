@@ -61,8 +61,9 @@ class TransportService
   end
 
   def update_order_details(response)
-    order = TransportOrder.find_by(order_uuid: response["order_uuid"])
+    order = TransportOrder.find_by(order_uuid: response[:order_uuid])
     order.update_attributes(response)
+    order
   end
 
   def quotation_attributes

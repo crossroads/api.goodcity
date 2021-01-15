@@ -117,6 +117,59 @@ describe Gogox do
     end
   end
 
+  context "status" do
+    let(:response) {
+      {
+        "uuid" => "2f859363-5c43-4fe2-9b91-6c6c43d610d2",
+        "status" => "pending",
+        "vehicle_type" => "van",
+        "payment_method" => "prepaid_wallet",
+        "price" => {"amount" => 15000, "currency" => "HKD"},
+        "price_breakdown" => [{"key" => "fee", "amount" => 15000}]
+      }
+    }
+
+    it 'should trigger Gogox API' do
+      mock_object = instance_double(GogoxApi::Transport, status: response)
+      allow(GogoxApi::Transport).to receive(:new).and_return(mock_object)
+      expect(Gogox.transport_status("2f859363-5c43-4fe2-9b91-6c6c43d610d2")).to eq(response)
+    end
+  end
+
+  context "transport_status" do
+    let(:response) {
+      {
+        "uuid" => "2f859363-5c43-4fe2-9b91-6c6c43d610d2",
+        "status" => "pending",
+        "vehicle_type" => "van",
+        "payment_method" => "prepaid_wallet",
+        "price" => {"amount" => 15000, "currency" => "HKD"},
+        "price_breakdown" => [{"key" => "fee", "amount" => 15000}]
+      }
+    }
+
+    it 'should trigger Gogox API' do
+      mock_object = instance_double(GogoxApi::Transport, status: response)
+      allow(GogoxApi::Transport).to receive(:new).and_return(mock_object)
+      expect(Gogox.transport_status("2f859363-5c43-4fe2-9b91-6c6c43d610d2")).to eq(response)
+    end
+  end
+
+  context "cancel_order" do
+    let(:response) {
+      {
+        order_uuid: "2f859363-5c43-4fe2-9b91-6c6c43d610d2",
+        status: "cancelled"
+      }
+    }
+
+    it 'should trigger Gogox API' do
+      mock_object = instance_double(GogoxApi::Transport, cancel: nil)
+      allow(GogoxApi::Transport).to receive(:new).and_return(mock_object)
+      expect(Gogox.cancel_order("2f859363-5c43-4fe2-9b91-6c6c43d610d2")).to eq(response)
+    end
+  end
+
   describe 'parse_pickup_time' do
     context 'when pickup date is not specified' do
       it 'expects time to be in HKT' do
