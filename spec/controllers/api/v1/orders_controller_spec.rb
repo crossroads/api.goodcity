@@ -252,12 +252,35 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
 
-        it "does not return valid order type when type is other" do
-          create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
-          get :index, params: { type: "other" }
-          expect(response.status).to eq(200)
-          expect(parsed_body["designations"].count).to eq(0)
-          expect(parsed_body["meta"]["total_pages"]).to eql(0)
+        context "when order_type is carryout" do
+          it"returns response with order having detail_type as carryout" do
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "CarryOut", code: "C2234"
+            get :index, params: { type: "carry_out" }
+            expect(response.status).to eq(200)
+            order_types = parsed_body["designations"].map { |res| res["detail_type"] }
+            expect(order_types.uniq).to match_array(["CarryOut"])
+            expect(parsed_body["designations"].count).to eq(1)
+          end
+        end
+
+        context "when order_type is other" do
+          it "returns response with order having invalid detail_type" do
+            create :order, :with_state_processing, detail_type: "other" , code: "2345"
+            create :order, :with_state_processing, detail_type: "xyz" , code: "23845"
+            get :index, params: { type: "other" }
+            order_types = parsed_body["designations"].map { |res| res["detail_type"] }
+            expect(response.status).to eq(200)
+            expect(order_types.uniq).to match_array(["other", "xyz"])
+            expect(parsed_body["designations"].count).to eq(2)
+          end
+
+          it 'response will not have order with valid detail_type' do
+            create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
+            get :index, params: { type: "other" }
+            expect(response.status).to eq(200)
+            expect(parsed_body["designations"].count).to eq(0)
+            expect(parsed_body["meta"]["total_pages"]).to eql(0)
+          end
         end
 
         it "returns records with multiple specified types" do
