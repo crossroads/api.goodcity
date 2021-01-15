@@ -252,13 +252,13 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
 
-        # it "does not return valid order type when type is other" do
-        #   create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
-        #   get :index, params: { type: "other" }
-        #   expect(response.status).to eq(200)
-        #   expect(parsed_body["designations"].count).to eq(0)
-        #   expect(parsed_body["meta"]["total_pages"]).to eql(0)
-        # end
+        it "does not return valid order type when type is other" do
+          create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
+          get :index, params: { type: "other" }
+          expect(response.status).to eq(200)
+          expect(parsed_body["designations"].count).to eq(0)
+          expect(parsed_body["meta"]["total_pages"]).to eql(0)
+        end
 
         it "returns records with multiple specified types" do
           create :appointment, :with_state_submitted, description: "IPhone 100s", order_transport: order_transport
