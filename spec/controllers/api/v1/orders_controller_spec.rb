@@ -264,22 +264,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         context "when order_type is other" do
-          it "returns response with order having invalid detail_type" do
+          before do
             create :order, :with_state_processing, detail_type: "other" , code: "2345"
             create :order, :with_state_processing, detail_type: "xyz" , code: "23845"
+          end
+
+          it "returns response with order having invalid detail_type" do
             get :index, params: { type: "other" }
             order_types = parsed_body["designations"].map { |res| res["detail_type"] }
             expect(response.status).to eq(200)
             expect(order_types.uniq).to match_array(["other", "xyz"])
             expect(parsed_body["designations"].count).to eq(2)
-          end
-
-          it 'response will not have order with valid detail_type' do
-            create :online_order, :awaiting_dispatch, description: "Testing", order_transport: ggv_transport
-            get :index, params: { type: "other" }
-            expect(response.status).to eq(200)
-            expect(parsed_body["designations"].count).to eq(0)
-            expect(parsed_body["meta"]["total_pages"]).to eql(0)
           end
         end
 
