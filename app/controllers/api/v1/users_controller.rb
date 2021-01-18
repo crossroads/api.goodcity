@@ -88,6 +88,19 @@ module Api
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
+      def sync_user
+        user = AuthenticationService.authenticate(params, strategy: :pin)
+        
+        # Assuming its just a case for nil nil, and no orders have been created
+        similar_user = User.find(params[:similar_user_id]).attributes.except('id')
+        similar_user.destroy
+        
+        user.update_attributes!(similar_user)
+
+        render json: { message: 'success', status: 200 }
+        
+      end
+
       private
 
       def serializer

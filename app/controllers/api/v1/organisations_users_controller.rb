@@ -33,7 +33,11 @@ module Api
       param_group :organisations_user
       def create
         record = OrganisationsUserBuilder.create(organisations_user_params.to_hash)
-        render json: record, serializer: serializer, status: 201
+        if record.is_a? User
+          return render json: { otp_auth_key: otp_auth_key_for(@user) }
+        else
+          render json: record, serializer: serializer, status: 201
+        end
       end
 
       api :POST, "/v1/organisations_user/:id", "Update an organisations_user"

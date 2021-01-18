@@ -29,7 +29,7 @@ class OrganisationsUserBuilder
   # Implementation
   # ------------------------
 
-  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user)
+  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user, force_replace: false)
     @change_author            = change_author
     @organisation_id          = organisation_id.to_i
     @position                 = position
@@ -38,6 +38,7 @@ class OrganisationsUserBuilder
     @user_attributes          = user_attributes&.symbolize_keys
     @user                     = strict_find!(User, user_id)
     @organisation             = strict_find!(Organisation, organisation_id)
+    @force_replace            = force_replace
   end
 
   def create!
@@ -155,6 +156,16 @@ class OrganisationsUserBuilder
       .where("lower(email) = (?) OR mobile = (?)", email&.downcase, mobile)
       .count.positive?
 
-    raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
+    similar_user = User.where.not(id: @user.id)
+                       .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)
+    
+    if similar_user.present?
+      if @force_replace
+        similar_user.refresh_auth_token!
+        return similar_user.most_recent_token.otp_auth_key if @force_replace
+      end
+      raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
+    end                   
+
   end
 end
