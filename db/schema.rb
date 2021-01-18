@@ -857,6 +857,8 @@ ActiveRecord::Schema.define(version: 2021_01_11_115250) do
     t.integer "created_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.text "notes_zh_tw"
     t.index ["created_by_id"], name: "index_shareables_on_created_by_id"
     t.index ["expires_at"], name: "index_shareables_on_expires_at"
     t.index ["public_uid"], name: "index_shareables_on_public_uid"

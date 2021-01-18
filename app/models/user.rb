@@ -5,7 +5,6 @@ class User < ApplicationRecord
   include ManageUserRoles
   include FuzzySearch
   include Mentionable
-
   # --------------------
   # Configuration
   # --------------------
@@ -156,18 +155,11 @@ class User < ApplicationRecord
     end
   end
 
-  def send_pin_email
-    begin
-      SendgridService.new(self).send_pin_email
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid pin email")
-    end
-  end
-
   def send_verification_pin(app_name, mobile, email = nil)
     SlackPinService.new(self).send_otp(app_name)
     return send_sms(app_name) if mobile
-    send_pin_email if email
+
+    GoodcityMailer.with(user_id: id).send_pin_email.deliver_later if email
   end
 
   def set_verified_flag(pin_for)

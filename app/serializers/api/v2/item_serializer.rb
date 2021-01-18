@@ -1,7 +1,5 @@
 module Api::V2
   class ItemSerializer < GoodcitySerializer
-    include Api::V2::Concerns::PublicAttributes
-
     # ----------------------------
     #   Attributes
     # ----------------------------

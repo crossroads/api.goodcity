@@ -807,7 +807,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   with_versioning do
     describe "GET package/1/versions" do
       let(:electrical) { create :electrical }
-      let(:package) { create :package, detail: electrical }
+      let(:package) { create :package, :dispatched, detail: electrical}
 
       before do
         generate_and_set_token(user)
@@ -819,17 +819,21 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it "returns versions of packages" do
-        # FAIL
         get :versions, params: { id: package.id }
-        expect(parsed_body['versions'].size).to eq(package.versions.size + electrical.versions.size)
+        expect(parsed_body['versions'].size).to eq(package.versions.size + electrical.versions.size + package.orders_packages.first.versions.size)
         expect(parsed_body["versions"].first["id"]).to eq(package.versions.first.id)
       end
 
       it "returns versions of detail along with package versions" do
-        # FAIL
         get :versions, params: { id: package.id }
         expect(parsed_body["versions"].map { |version| version["id"] }).to include(electrical.versions.first.id)
       end
+
+      it "returns versions of orders_package along with package & details versions" do
+        get :versions, params: { id: package.id }
+        expect(parsed_body["versions"].map { |version| version["id"] }).to include(package.orders_packages.first.versions.first.id)
+      end
+
     end
   end
 

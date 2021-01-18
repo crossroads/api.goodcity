@@ -14,7 +14,7 @@ module Api::V1
     has_one :package_set, serializer: PackageSetSerializer::StockFormat
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
-               :inventory_number, :created_at, :updated_at, :item_id, :is_set,
+               :inventory_number, :created_at, :updated_at, :item_id, :is_set, :offer_id,
                :grade, :designation_name, :designation_id, :sent_on, :code_id,
                :image_id, :donor_condition_id, :package_set_id, :state,
                :case_number, :allow_web_publish, :received_quantity,

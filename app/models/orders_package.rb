@@ -1,5 +1,5 @@
 class OrdersPackage < ApplicationRecord
-
+  has_paper_trail versions: { class_name: "Version" }
   include OrdersPackageActions
   include HookControls
   include Watcher
