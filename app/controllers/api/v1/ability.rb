@@ -55,6 +55,7 @@ module Api
         offers_package_abilities
         canned_response_abilities
         processing_destination_abilities
+        transport_order_abilities
       end
 
       def processing_destination_abilities
@@ -196,7 +197,7 @@ module Api
 
         can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
- 
+
         can :create, Message do |message|
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
@@ -395,6 +396,12 @@ module Api
         can [:create, :availableTimeSlots], Schedule
         can [:index, :show], Schedule, deliveries: { offer_id: @user_offer_ids }
         can [:index, :show], Schedule if can_read_schedule?
+      end
+
+      def transport_order_abilities
+        can [:providers, :quote, :book], TransportOrder
+        can [:show, :cancel], TransportOrder, offer_id: @user_offer_ids
+        can [:show, :cancel], TransportOrder if can_manage_transport_orders?
       end
 
       def location_abilities

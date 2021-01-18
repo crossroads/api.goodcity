@@ -2,7 +2,8 @@ module Api
   module V1
     class TransportsController < Api::V1::ApiController
 
-      skip_authorization_check
+      skip_authorization_check only: :update_hook
+      load_and_authorize_resource :transport_order, parent: false, except: [:update_hook]
 
       api :GET, '/v1/transports/providers', "List all GoodCity Tranports Options."
       def providers
@@ -17,7 +18,7 @@ module Api
       param :district_id, String, desc: "Id of the district"
       def quote
         order_price = TransportService.new(transport_params.to_h).quotation
-        render json: order_price.to_json
+        render json: order_price
       end
 
       api :POST, '/v1/transports/book', "Book transport"
@@ -31,19 +32,19 @@ module Api
       param :pickup_street_address, String, desc: "Pickup Address"
       def book
         order_info = TransportService.new(transport_params.to_h).book
-        render json: order_info.to_json
+        render json: order_info
       end
 
-      api :GET, '/v1/transports/:id', "Get GoodCity Tranport order details."
+      api :GET, '/v1/transports/:order_uuid', "Get GoodCity Tranport order details."
       def show
-        order_info = TransportService.new({booking_id: params[:id], provider: transport_provider}).status
-        render json: order_info.to_json
+        order_info = TransportService.new({booking_id: params[:order_uuid], provider: transport_provider}).status
+        render json: order_info
       end
 
-      api :POST, '/v1/transports/:id/cancel', "Cancel GoodCity Tranport order."
+      api :POST, '/v1/transports/:order_uuid/cancel', "Cancel GoodCity Tranport order."
       def cancel
-        order_info = TransportService.new({booking_id: params[:id], provider: transport_provider}).cancel
-        render json: order_info.to_json
+        order_info = TransportService.new({booking_id: params[:order_uuid], provider: transport_provider}).cancel
+        render json: order_info
       end
 
       api :POST, '/v1/transports/update_hook', "Webhook to update transport status"
@@ -55,7 +56,7 @@ module Api
       private
 
       def transport_provider
-        order = TransportOrder.find_by(order_uuid: params[:id])
+        order = TransportOrder.find_by(order_uuid: params[:order_uuid])
         order.try(:transport_provider).try(:name)
       end
 
