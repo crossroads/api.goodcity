@@ -128,7 +128,9 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :show, :update, :create] do
         member do
           get :orders_count
-          post :sync_user
+        end
+        collection do
+          post :resync
         end
       end
       resources :addresses, only: [:create, :show]

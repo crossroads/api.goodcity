@@ -46,7 +46,8 @@ class OrganisationsUserBuilder
 
     assert_non_existing!
     assert_permissions!
-    assert_no_conflicts!
+    val =  assert_no_conflicts!
+    return val if val.present?
 
     organisations_user = ActiveRecord::Base.transaction do
       apply_user_attributes!(@user, @user_attributes) if @user_attributes.present?
@@ -157,15 +158,22 @@ class OrganisationsUserBuilder
       .count.positive?
 
     similar_user = User.where.not(id: @user.id)
-                       .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)
-    
+                       .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)&.first
+
     if similar_user.present?
       if @force_replace
         similar_user.refresh_auth_token!
-        return similar_user.most_recent_token.otp_auth_key if @force_replace
-      end
-      raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
-    end                   
+        auth_key = similar_user.most_recent_token.otp_auth_key
+        similar_user.send_verification_pin(nil, similar_user.mobile, similar_user.email)
 
+        data = { reverify: true, 
+                 otp_auth_key: auth_key, 
+                 similar_user_id: similar_user.id,
+                 message: "The user already exists. Please enter the OTP sent to #{similar_user.email.present? ? similar_user.email : similar_user.mobile}"}
+        return data
+      else
+        raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
+      end
+    end
   end
 end

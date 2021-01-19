@@ -33,8 +33,8 @@ module Api
       param_group :organisations_user
       def create
         record = OrganisationsUserBuilder.create(organisations_user_params.to_hash)
-        if record.is_a? User
-          return render json: { otp_auth_key: otp_auth_key_for(@user) }
+        if !record.is_a? OrganisationsUser
+          return render json: record, status: 206
         else
           render json: record, serializer: serializer, status: 201
         end
@@ -55,6 +55,7 @@ module Api
 
       def organisations_user_params
         params.require(:organisations_user).permit(
+          :force_replace,
           :organisation_id,
           :user_id,
           :position,

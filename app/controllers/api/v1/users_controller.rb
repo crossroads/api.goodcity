@@ -1,7 +1,9 @@
 module Api
   module V1
     class UsersController < Api::V1::ApiController
-      load_and_authorize_resource :user, parent: false
+      skip_before_action :validate_token, only: :resync
+      skip_authorization_check only: [:resync]
+      load_and_authorize_resource :user, parent: false, except: [:resync]
       skip_load_resource :user, :only => [:orders_count]
 
       resource_description do
@@ -88,14 +90,15 @@ module Api
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
-      def sync_user
+      def resync
         user = AuthenticationService.authenticate(params, strategy: :pin)
         
         # Assuming its just a case for nil nil, and no orders have been created
-        similar_user = User.find(params[:similar_user_id]).attributes.except('id')
+        similar_user = User.find(params[:similar_user_id])
+        similar_user_attrs = similar_user.attributes.except('id')
         similar_user.destroy
         
-        user.update_attributes!(similar_user)
+        user.update_attributes!(similar_user_attrs)
 
         render json: { message: 'success', status: 200 }
         
