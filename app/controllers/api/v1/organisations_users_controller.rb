@@ -32,12 +32,10 @@ module Api
       api :POST, "/v1/organisations_user", "Create an organisations_user"
       param_group :organisations_user
       def create
-        record = OrganisationsUserBuilder.create(organisations_user_params.to_hash)
-        if !record.is_a? OrganisationsUser
-          return render json: record, status: 206
-        else
-          render json: record, serializer: serializer, status: 201
-        end
+        res = OrganisationsUserBuilder.create(organisations_user_params.to_hash)
+        return render json: record, status: 206 unless res.is_a? OrganisationsUser
+
+        render json: record, serializer: serializer, status: 201
       end
 
       api :POST, "/v1/organisations_user/:id", "Update an organisations_user"
@@ -55,19 +53,14 @@ module Api
 
       def organisations_user_params
         params.require(:organisations_user).permit(
-          :force_replace,
+          :use_merge,
           :organisation_id,
           :user_id,
           :position,
           :status,
           :preferred_contact_number,
-          user_attributes: [
-            :first_name,
-            :last_name,
-            :mobile,
-            :email,
-            :title
-          ])
+          user_attributes: %i[first_name last_name mobile email title]
+        )
       end
 
       def serializer

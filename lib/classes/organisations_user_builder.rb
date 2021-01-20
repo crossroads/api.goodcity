@@ -29,7 +29,7 @@ class OrganisationsUserBuilder
   # Implementation
   # ------------------------
 
-  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user, force_replace: false)
+  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user, use_merge: false)
     @change_author            = change_author
     @organisation_id          = organisation_id.to_i
     @position                 = position
@@ -38,7 +38,7 @@ class OrganisationsUserBuilder
     @user_attributes          = user_attributes&.symbolize_keys
     @user                     = strict_find!(User, user_id)
     @organisation             = strict_find!(Organisation, organisation_id)
-    @force_replace            = force_replace
+    @use_merge                = use_merge
   end
 
   def create!
@@ -46,8 +46,9 @@ class OrganisationsUserBuilder
 
     assert_non_existing!
     assert_permissions!
-    val =  assert_no_conflicts!
-    return val if val.present?
+    return dissolve_conflict_response if @use_merge
+
+    assert_no_conflicts!
 
     organisations_user = ActiveRecord::Base.transaction do
       apply_user_attributes!(@user, @user_attributes) if @user_attributes.present?
@@ -147,33 +148,33 @@ class OrganisationsUserBuilder
     end
   end
 
+  def dissolve_conflict_response
+    email, mobile = @user_attributes&.values_at(:email, :mobile)
+    similar_user = User.where.not(id: @user.id)
+                       .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)&.first
+    return unless similar_user
+
+    handle_user_conflict(similar_user)
+  end
+
+  def handle_user_conflict(user)
+    user.refresh_auth_token!
+    auth_key = user.most_recent_token.otp_auth_key
+    email_or_phone = user.email.present? ? user.email : user.mobile
+    text = "The user with #{email_or_phone} is already present. We have sent a 4 digit pin to #{email_or_phone}"
+    user.send_verification_pin(nil, similar_user.mobile, similar_user.email)
+    { otp_auth_key: auth_key, similar_user_id: similar_user.id, message: text }
+  end
+
   def assert_no_conflicts!
     email, mobile = @user_attributes&.values_at(:email, :mobile)
 
     return if email.blank? && mobile.blank?
 
-    conflicts = User
-      .where.not(id: @user.id)
-      .where("lower(email) = (?) OR mobile = (?)", email&.downcase, mobile)
-      .count.positive?
+    conflicts = User.where.not(id: @user.id)
+                    .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)
+                    .count.positive?
 
-    similar_user = User.where.not(id: @user.id)
-                       .where('lower(email) = (?) OR mobile = (?)', email&.downcase, mobile)&.first
-
-    if similar_user.present?
-      if @force_replace
-        similar_user.refresh_auth_token!
-        auth_key = similar_user.most_recent_token.otp_auth_key
-        similar_user.send_verification_pin(nil, similar_user.mobile, similar_user.email)
-
-        data = { reverify: true, 
-                 otp_auth_key: auth_key, 
-                 similar_user_id: similar_user.id,
-                 message: "The user already exists. Please enter the OTP sent to #{similar_user.email.present? ? similar_user.email : similar_user.mobile}"}
-        return data
-      else
-        raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
-      end
-    end
+    raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
   end
 end
