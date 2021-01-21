@@ -2,6 +2,8 @@
 
 # GoodcityMailer - to send system wide email
 class GoodcityMailer < ApplicationMailer
+  default from: 'GoodCity <contact@goodcity.hk>'
+
   def send_pin_email
     @user = User.find_by(id: params[:user_id])
     @pin = @user.most_recent_token.otp_code
