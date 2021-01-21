@@ -4,9 +4,9 @@ class TransportService
 
   def initialize(options={})
     @params = options
-    @provider_name = options && options[:provider]
+    @provider_name = options.dig(:provider)
     @provider ||= Object::const_get(provider_name)
-    @booking_id = options && options[:booking_id]
+    @booking_id = options.dig(:booking_id)
     @transport_constants = Rails.application.secrets.transport
 
     fetch_user
