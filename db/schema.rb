@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_06_021558) do
+ActiveRecord::Schema.define(version: 2021_01_12_024003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -937,6 +937,10 @@ ActiveRecord::Schema.define(version: 2021_01_06_021558) do
     t.integer "location_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "counts", default: 0
+    t.integer "gains", default: 0
+    t.integer "losses", default: 0
+    t.integer "warnings", default: 0
     t.index ["location_id"], name: "index_stocktakes_on_location_id"
     t.index ["name"], name: "index_stocktakes_on_name", unique: true
   end

@@ -1,4 +1,5 @@
 class Stocktake < ApplicationRecord
+  include Watcher
   include StocktakeProcessor
   include PushUpdatesMinimal
 
@@ -40,6 +41,14 @@ class Stocktake < ApplicationRecord
   end
 
   # ---------------------
+  # Computed Properties
+  # ---------------------
+
+  watch [StocktakeRevision] do |rev|
+    rev.stocktake.compute_counters! if rev.stocktake.open?
+  end
+
+  # ---------------------
   # Methdos
   # ---------------------
 
@@ -55,15 +64,46 @@ class Stocktake < ApplicationRecord
       .having('SUM(quantity) > 0')
       .pluck(:package_id)
 
-    ActiveRecord::Base.transaction do
-      package_ids.map do |pid|
-        StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
-          revision.quantity       = 0
-          revision.dirty          = true
-          revision.state          = 'pending'
-          revision.created_by_id  = User.current_user&.id || User.system_user.id
+    Stocktake.watcher_off do
+      # We disable the watch module during this operation to
+      # avoid automatically recomputing counter caches on revision creation
+
+      ActiveRecord::Base.transaction do
+        package_ids.map do |pid|
+          StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
+            revision.quantity       = 0
+            revision.dirty          = true
+            revision.state          = 'pending'
+            revision.created_by_id  = User.current_user&.id || User.system_user.id
+          end
         end
+
+        compute_counters!
       end
     end
+  end
+
+  def clear_counters!
+    self.counts = 0
+    self.gains = 0
+    self.losses = 0
+    self.warnings = 0
+  end
+
+  def compute_counters!
+    clear_counters!
+
+    StocktakeRevision.where(stocktake_id: id).each do |rev|
+      if rev.dirty
+        self.warnings += 1
+      else
+        delta = rev.computed_diff
+        self.losses += 1    if delta < 0
+        self.gains  += 1    if delta > 0
+        self.warnings += 1  if rev.warning.present?
+        self.counts += 1 
+      end
+    end
+    self.save!
   end
 end

@@ -84,10 +84,6 @@ module Api
       def checkout_order
         Order.find_by(id: params[:order_id]) if params[:order_id].present?
       end
-
-      def bool_param(key)
-        params[key].to_s == "true"
-      end
     end
   end
 end

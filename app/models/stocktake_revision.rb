@@ -43,14 +43,13 @@ class StocktakeRevision < ApplicationRecord
       .update_all(dirty: true)
   end
 
-
   # ---------------------
   # Hook methods
   # ---------------------
 
   def unset_dirty_and_warning
-    self.dirty = false unless self.dirty_changed?
-    self.warning = '' if self.quantity_changed? && !self.warning_changed?
+    self.dirty    = false unless self.dirty_changed?
+    self.warning  = '' if self.quantity_changed? && !self.warning_changed?
     true
   end
 
@@ -68,5 +67,35 @@ class StocktakeRevision < ApplicationRecord
     event :cancel do
       transition pending: :cancelled
     end
+  end
+
+  # ---------------------
+  # Helpers
+  # ---------------------
+
+  def expected_quantity
+    PackagesInventory::Computer.package_quantity(
+      package,
+      location: stocktake.location_id
+    )
+  end
+
+  def computed_diff
+    return 0                if cancelled?
+    return processed_delta  if processed?
+
+    quantity - expected_quantity
+  end
+
+  def loss?
+    computed_diff < 0
+  end
+
+  def gain?
+    computed_diff > 0
+  end
+
+  def has_variance?
+    computed_diff != 0
   end
 end
