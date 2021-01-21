@@ -2,7 +2,7 @@
 
 # GoodcityMailer - to send system wide email
 class GoodcityMailer < ApplicationMailer
-  default from: 'GoodCity <contact@goodcity.hk>'
+  default from: GOODCITY_FROM_EMAIL
 
   def send_pin_email
     @user = User.find_by(id: params[:user_id])
