@@ -2,6 +2,8 @@
 
 # goodcity mailer for orders
 class GoodcityOrderMailer < ApplicationMailer
+  default from: GOODCITY_ORDER_FROM_EMAIL
+
   before_action :initialize_mailer_attributes
   before_action :configure_order_email_properties
 
