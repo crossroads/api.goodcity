@@ -72,15 +72,17 @@ module Api
 
       def update_offer_state(offer)
         offer.items.reload
-        if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all? { |i| i.state_name == :rejected }
-          offer.re_review!
-        end
+        return unless %i[reviewed scheduled].include?(offer.state_name)
+        return unless offer.items.all? { |i| i.state_name == :rejected }
+
+        offer.re_review!
       end
 
       def item_params
-        params.require(:item).permit(:donor_description, :donor_condition_id, :state,
-          :state_event, :offer_id, :package_type_id, :rejection_reason_id,
-          :reject_reason, :rejection_comments)
+        params.require(:item).permit(:donor_description,
+                                     :donor_condition_id, :state,
+                                     :state_event, :offer_id, :package_type_id,
+                                     :rejection_reason_id, :reject_reason, :rejection_comments)
       end
 
       def serializer
@@ -95,14 +97,14 @@ module Api
 
       def rejecting_last_item_having_confirmed_ggv(offer)
         item_params[:state_event] == 'reject' &&
-        offer.items.all?{ |i| i.state_name == :rejected || i.id == @item.id } &&
-        offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
+          offer.items.all? { |i| i.state_name == :rejected || i.id == @item.id } &&
+          offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
       end
 
       def render_require_ggv_cancel_error
-        render json: { errors: [{ requires_gogovan_cancellation:
-          'Cannot reject last item if there\'s a confirmed gogovan booking' }]
-          }.to_json, status: 422
+        render json: {
+          errors: [{ requires_gogovan_cancellation: I18n.t('gogovan.error.item.confirmed_item_present') }]
+        }.to_json, status: 422
       end
     end
   end
