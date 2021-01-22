@@ -8,66 +8,128 @@
   <b>Attention: </b> <%= @email_property[:contact_name]%> <br/>
   <%= @email_property[:contact_organisation_name_en]%> <br/>
   <b>Our Ref#:</b> <%= @email_property[:order_code]%> <br/>
-<p>
-  Dear <%= @email_property[:contact_name] %>,
-</p>
-
-<h3>
-  RE: Confirming order <%= @email_property[:order_code]%> to be delivered on <%= @email_property[:scheduled_at]%>
-</h3>
-
-<p>
-  Thank you for ordering items from Crossroads. We are delighted to help in any way that we can.
-</p>
-
-<% if @email_property[:client] %>
   <p>
-    Please take careful note of the steps below and contact us if you have any questions.
+    Dear <%= @email_property[:contact_name] %>,
   </p>
-  <ol>
-    <li>
-      Our staff will call your beneficiary just before ordering the van to re-confirm that everything is in place for receiving the goods.
-    </li>
-    <ul>
-      <li>
-        To avoid unnecessary van costs we will not usually proceed until we have successfully made contact.
-      </li>
-      <li>
-        If we cannot reach your beneficiary we may need to cancel the order.
-      </li>
-    </ul>
-    <li>
-      We will usually call a second time when the van leaves our site to flag that the goods are on their way and provide you with the driver’s contact number.
-    </li>
-    <li>
-      The driver will be given your beneficiary’s number so they are able to make contact directly if they have difficulty finding the exact location.
-    </li>
-  </ol>
 
-<% else %>
+  <h3>
+    RE: Confirming order <%= @email_property[:order_code]%> to be delivered on <%= @email_property[:scheduled_at]%>
+  </h3>
+
   <p>
-    Please take careful note of the steps below and contact us if you have any questions.
+    Thank you for ordering items from Crossroads. We are delighted to help in any way that we can.
+  </p>
+
+  <% if @email_property[:client] %>
+    <p>
+      Please take careful note of the steps below and contact us if you have any questions.
+    </p>
     <ol>
       <li>
-        Our staff will call you just before ordering the van to re-confirm that everything is in place for receiving the goods.
+        Our staff will call your beneficiary just before ordering the van to re-confirm that everything is in place for receiving the goods.
       </li>
       <ul>
         <li>
           To avoid unnecessary van costs we will not usually proceed until we have successfully made contact.
         </li>
         <li>
-          If we cannot reach you we may need to cancel the order.
+          If we cannot reach your beneficiary we may need to cancel the order.
         </li>
       </ul>
       <li>
         We will usually call a second time when the van leaves our site to flag that the goods are on their way and provide you with the driver’s contact number.
       </li>
       <li>
-        The driver will be given your number so they are able to make contact directly if they have difficulty finding the exact location.
+        The driver will be given your beneficiary’s number so they are able to make contact directly if they have difficulty finding the exact location.
       </li>
     </ol>
-  </p>
-<% end %>
 
-</body>
+  <% else %>
+    <p>
+      Please take careful note of the steps below and contact us if you have any questions.
+      <ol>
+        <li>
+          Our staff will call you just before ordering the van to re-confirm that everything is in place for receiving the goods.
+        </li>
+        <ul>
+          <li>
+            To avoid unnecessary van costs we will not usually proceed until we have successfully made contact.
+          </li>
+          <li>
+            If we cannot reach you we may need to cancel the order.
+          </li>
+        </ul>
+        <li>
+          We will usually call a second time when the van leaves our site to flag that the goods are on their way and provide you with the driver’s contact number.
+        </li>
+        <li>
+          The driver will be given your number so they are able to make contact directly if they have difficulty finding the exact location.
+        </li>
+      </ol>
+    </p>
+  <% end %>
+
+  <p>
+    <strong>ITEMS:</strong> Your delivery includes the following items
+    <% if @email_property[:goods]%>
+      <% @email_property[:goods].each do |good| %>
+        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%>. </li>
+      <% end %>
+    <% end %>
+  </p>
+
+  <p>
+    We look forward to a successful delivery and hope these items will be helpful! <br/>
+    Yours sincerely,<br/>
+    Hong Kong Distribution <br/>
+    Office Tel: 2272 9343 <br/>
+    Email: local@crossroads.org.hk<br/>
+  </p>
+
+  <h4>
+    CROSSROADS’ GUIDELINES
+  </h4>
+   <p>
+    We look forward to serving with goods from Crossroads. Here are some general guidelines related to goods being delivered.
+   </p>
+
+   <h4>
+    RESTRICTIONS ON USE OF ITEMS
+   </h4>
+   <p>
+    Items donated by Crossroads for personal use are not to be sold under any circumstances.
+    Items donated for organisational use cannot be sold unless an exception is agreed in advance.
+   </p>
+
+   <h4>
+    ARE THE ITEMS GOOD QUALITY?
+   </h4>
+    <p>
+      Many of the goods available are used, but normally of good quality. We test all electrical products but, unlike a retail shop selling new items, Crossroads cannot issue guarantees or be held liable for any faults in these donated items.
+    </p>
+
+    <h4>
+      SHOULD I RETURN BROKEN ELECTRICAL ITEMS?
+    </h4>
+    <p>
+      Due to the high value of electrical donations, to be eligible to apply for the same item again, we request that any faulty electrical items should be returned for testing.
+    </p>
+
+    <p>
+      <strong>TRANSPORTATION:</strong>
+      Crossroads can assist in arranging transportation of goods, but regret we cannot assist with transport costs.
+    </p>
+
+    <p>
+      <strong>LABOUR:</strong>
+       Our volunteers will load the van but we will not travel with the goods. We sincerely advise <you / beneficiary> to make arrangement for sufficient labour to unload the goods. The truck driver may be willing, but will charge extra for lifting.
+    </p>
+
+    <h4>
+      WHAT IF YOU NEED TO CANCEL OR MODIFY YOUR ORDER?
+    </h4>
+    <p>
+      Please phone us on 2272-9343 and we will try our best to assist. We usually have other people waiting for goods deliveries so we regret that we cannot guarantee that the same items will remain available or that we will be able to accommodate your preferred alternative date.
+    </p>
+  </body>
 </html>
