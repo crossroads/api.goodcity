@@ -5,6 +5,8 @@ class BookingType < ApplicationRecord
 
   validates :identifier, :name_en, :name_zh_tw, uniqueness: true
 
+  translates :name
+
   def appointment?
     identifier == "appointment"
   end

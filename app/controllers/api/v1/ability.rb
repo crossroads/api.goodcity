@@ -196,7 +196,7 @@ module Api
 
         can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
- 
+
         can :create, Message do |message|
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel

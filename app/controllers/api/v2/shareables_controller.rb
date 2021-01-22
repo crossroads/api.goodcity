@@ -32,6 +32,8 @@ module Api
       def_param_group :shareable do
         param :resource_id, String, required: true, allow_nil: false, desc: "The resource id"
         param :resource_type, String, required: true, allow_nil: false, desc: "The resource type"
+        param :notes, String, required: false, allow_nil: true, desc: "Staff notes"
+        param :notes_zh_tw, String, required: false, allow_nil: true, desc: "Staff notes"
         param :allow_listing, [true, false, 'true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
         param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
         param :overwrite, [true, false, 'true', 'false'], allow_nil: true, desc: "If set, allows overwriting existing shareable records"
@@ -40,6 +42,8 @@ module Api
       def_param_group :shareable_update do
         param :allow_listing, [true, false, 'true', 'false'], allow_nil: true, default: false, desc: "Whether we allow this item to be publicly listed"
         param :expires_at, String, allow_nil: true, desc: "If set, adds an expiration to this shareable record"
+        param :notes, String, required: false, allow_nil: true, desc: "Staff notes"
+        param :notes_zh_tw, String, required: false, allow_nil: true, desc: "Staff notes"
       end
 
       api :GET, "/v2/shared/:model", "Lists publicly available models"
@@ -57,7 +61,7 @@ module Api
         render json: serialize_resource(records, {
           meta: pagination_meta,
           params: {
-            include_public_attributes: true
+            format: [:public]
           }
         });
       end
@@ -76,7 +80,7 @@ module Api
         
         render json: serialize_resource(record, {
           params: {
-            include_public_attributes: true
+            format: [:public]
           }
         });
       end
@@ -203,11 +207,11 @@ module Api
       private
 
       def shareable_params
-        params.permit(:resource_id, :resource_type, :allow_listing, :expires_at)
+        params.permit(:resource_id, :resource_type, :allow_listing, :expires_at, :notes, :notes_zh_tw)
       end
 
       def shareable_update_params
-        params.permit(:allow_listing, :expires_at)
+        params.permit(:allow_listing, :expires_at, :notes, :notes_zh_tw)
       end
 
       def allow_overwrite?

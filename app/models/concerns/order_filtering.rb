@@ -114,8 +114,12 @@ module OrderFiltering
       "lower(detail_type) LIKE 'shipment'"
     end
 
+    def carry_out_sql
+      "lower(detail_type) LIKE 'carryout'"
+    end
+
     def other_sql
-      "lower(detail_type) NOT IN ('goodcity', 'shipment', 'stockitlocalorder')"
+      "lower(detail_type) NOT IN ('goodcity', 'shipment', 'carryout')"
     end
 
     # HELPERS

@@ -236,11 +236,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body["meta"]["search"]).to eql("iphone")
         end
 
-        ["appointment", "online_orders", "shipment", "other"].each do |type|
+        ["appointment", "online_orders", "shipment", "carry_out", "other"].each do |type|
           it "can return a single order of type #{type}" do
             create :appointment, :with_state_submitted, description: "IPhone 100s"
             create :online_order, :awaiting_dispatch, description: "IPhone 100s", order_transport: ggv_transport
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "Shipment", code: "S1234"
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "CarryOut", code: "C2234"
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other" , code: "2345"
 
             get :index, params: { searchText: "iphone", type: type }
@@ -248,6 +249,32 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(parsed_body["designations"].count).to eq(1)
             expect(parsed_body["meta"]["total_pages"]).to eql(1)
             expect(parsed_body["meta"]["search"]).to eql("iphone")
+          end
+        end
+
+        context "when order_type is carryout" do
+          it"returns response with order having detail_type as carryout" do
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "CarryOut", code: "C2234"
+            get :index, params: { type: "carry_out" }
+            expect(response.status).to eq(200)
+            order_types = parsed_body["designations"].map { |res| res["detail_type"] }
+            expect(order_types.uniq).to match_array(["CarryOut"])
+            expect(parsed_body["designations"].count).to eq(1)
+          end
+        end
+
+        context "when order_type is other" do
+          before do
+            create :order, :with_state_processing, detail_type: "other" , code: "2345"
+            create :order, :with_state_processing, detail_type: "xyz" , code: "23845"
+          end
+
+          it "returns response with order having invalid detail_type" do
+            get :index, params: { type: "other" }
+            order_types = parsed_body["designations"].map { |res| res["detail_type"] }
+            expect(response.status).to eq(200)
+            expect(order_types.uniq).to match_array(["other", "xyz"])
+            expect(parsed_body["designations"].count).to eq(2)
           end
         end
 

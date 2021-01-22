@@ -361,7 +361,8 @@ module Api
       api :GET, '/v1/packages/:id/versions', "List all versions associated with package"
       def versions
         subform_versions = @package.detail&.versions || []
-        all_versions = @package.versions + subform_versions
+        orders_package_versions = @package.orders_packages.reduce([]) { |op_versions, op| op_versions.concat(op.versions) }
+        all_versions = @package.versions + subform_versions + orders_package_versions
         render json: all_versions, each_serializer: version_serializer, root: "versions"
       end
 

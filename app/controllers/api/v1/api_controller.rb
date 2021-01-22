@@ -1,6 +1,8 @@
 module Api
   module V1
     class ApiController < ApplicationController
+      include ParamReader
+
       skip_before_action :validate_token, only: [:error]
 
       resource_description do
@@ -75,15 +77,6 @@ module Api
         return DEFAULT_SEARCH_COUNT if @per_page < 1
         return MAX_SEARCH_COUNT if @per_page > MAX_SEARCH_COUNT
         @per_page
-      end
-
-      def array_param(key)
-        params.fetch(key, "").strip.split(",")
-      end
-
-      def bool_param(key, default)
-        return default if params[key].nil?
-        params[key].to_s == "true"
       end
 
       def time_epoch_param(key)

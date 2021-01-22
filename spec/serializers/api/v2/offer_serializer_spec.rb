@@ -27,6 +27,13 @@ describe Api::V2::OfferSerializer do
       expect(to_date_string(attributes['created_at'])).to eq(to_date_string(offer[:created_at]))
       expect(to_date_string(attributes['updated_at'])).to eq(to_date_string(offer[:updated_at]))
     end
+
+    it "doesn't include the public attributes" do
+      expect(attributes.keys).not_to include('public_uid')
+      expect(attributes.keys).not_to include('district_id')
+      expect(attributes.keys).not_to include('public_notes')
+      expect(attributes.keys).not_to include('public_notes_zh_tw')
+    end
   end
 
   describe "Relationships" do
@@ -63,6 +70,26 @@ describe Api::V2::OfferSerializer do
         expected_ids  = offer.try(rel).map(&:id).map(&:to_s)
 
         expect(received_ids).to match_array(expected_ids)
+      end
+    end
+  end
+
+  describe 'Formats' do
+    describe 'Public format' do
+      let(:json) { Api::V2::OfferSerializer.new(offer, { params: { format: :public } }).as_json }
+      let!(:shareable) { create :shareable, resource: offer }
+
+      it 'includes the public_uid' do
+        expect(attributes['public_uid']).to eq(shareable.public_uid)
+      end
+
+      it 'includes the district_id' do
+        expect(attributes['district_id']).to eq(offer.created_by.address.district_id)
+      end
+
+      it 'includes the shareable notes' do
+        expect(attributes['public_notes']).to eq(shareable.notes)
+        expect(attributes['public_notes_zh_tw']).to eq(shareable.notes_zh_tw)
       end
     end
   end

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <p>
+    <strong>Attention:</strong> <%= @email_property[:contact_name]%> <br/>
+    <%= @email_property[:contact_organisation_name_en]%>   <br/>
+    <strong>Our Ref#: </strong> <%= @email_property[:order_code]%> <br/>
+    <% if @email_property[:client]%>
+      <strong>Client Name: </strong><%= @email_property[:client][:name]%> <br/>
+      <strong>Client contact: </strong> <%= @email_property[:client][:phone]%> <br/>
+      <strong><%= @email_property[:client][:id_type]%>: </strong>  ***<%= @email_property[:client][:id_no]%>(*) <br/>
+    <% end %>
+  </p>
+
+  <p>
+    Dear <%= @email_property[:contact_name]%>,
+  </p>
+
+  <p>
+    Thank you for ordering items from Crossroads. We are delighted to help in any way that we can. <br/>
+    This email is to <b>confirm that the goods can be collected on the <%= @email_property[:scheduled_at]%></b>
+  </p>
+
+  <p>
+    Note: You cannot modify confirmed appointments online. Please email or phone our staff (2272-9343) for assistance if changes are required.
+  </p>
+  <% if @email_property[:client] %>
+    <p>
+      Please ask your client to:
+      <ul>
+        <li>
+          <strong>bring this confirmation letter and their identity document</strong> (or note your reference number <%= @email_property[:order_code]%>)
+        </li>
+        <li>
+          <strong>arrive on time.</strong> We have many orders to process each day and cannot usually process an order outside its allotted time.
+        </li>
+        <li>
+          let us know if he/she cannot make it.
+        </li>
+        <li>
+          respect our volunteer staff.
+        </li>
+        <li>
+          <strong>read the guidelines below.</strong> Please give your client a copy of the guidelines and, if he or she cannot read, explain it to them.
+        </li>
+      </ul>
+    </p>
+  <% else %>
+  <p>
+    Please ensure you:
+    <ul>
+      <li>
+        <strong>bring this confirmation letter</strong> (or note your reference number <%= @email_property[:order_code]%>)
+      </li>
+      <li>
+        <strong>arrive on time or let us know if you are delayed.</strong> We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
+      </li>
+      <li>
+        <strong>read the guidelines below</strong>
+      </li>
+    </ul>
+  </p>
+<% end %>
+<% if @email_property[:client] %>
+  <p>
+    We look forward to receiving your client and hope we may help!
+  </p>
+  <% else %>
+  <p>
+    We look forward to receiving you and hope we may help!
+  </p>
+<% end %>
+<br/> <br/>
+
+<div><strong>ITEMS TO BE COLLECTED:</strong></div>
+
+<ul>
+<% if @email_property[:requests]%>
+  <% @email_property[:requests].each do |request| %>
+  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
+  <% end %>
+<% end %>
+</ul>
+<p>
+  Yours sincerely, <br/>
+  Hong Kong Distribution <br/>
+  Office Tel: 2272 9343 <br/>
+  Email: local@crossroads.org.hk <br/>
+  CROSSROADS’ GUIDELINES <br/>
+</p>
+We look forward to serving you at Crossroads. Here are some guidelines for your visit. <br/>
+<br/>
+
+<h4>
+  WHERE IS CROSSROADS?
+</h4>
+<p>
+  Crossroads Village, 2 Castle Peak Road, Tuen Mun (opposite Gold Coast Phase 1). The Hong Kong Distribution office is located in Block 30
+  A map and transport directions can be found on our website: <a href="https://www.crossroads.org.hk/contact/">www.crossroads.org.hk/contact/</a>
+</p>
+
+<h4>
+  CAN I SELECT OTHER ITEMS WHEN COLLECTING THIS ORDER?
+</h4>
+<p>
+  No. When collecting items ordered online there is no opportunity to also browse other stock in our warehouse. <br/>
+  Social workers and charity staff may make an appointment to browse the warehouse for their organisation or their clients at https://browse.goodcity.hk <br/>
+  Please note that items donated by Crossroads for personal use are not to be sold under any circumstances.
+</p>
+
+<h4>
+  ARE THE ITEMS GOOD QUALITY?
+</h4>
+<p>
+  Many of the goods available are used, but normally of good quality. We test all electrical products but, unlike a retail shop selling new items, Crossroads cannot issue guarantees or be held liable for any faults in these donated items.
+</p>
+
+<h4>
+  SHOULD I RETURN BROKEN ELECTRICAL ITEMS?
+</h4>
+<p>
+  Due to the high value of electrical donations, to be eligible to apply for the same item again, we request that any faulty electrical items should be returned for testing.
+</p>
+<p>
+  <strong>TRANSPORTATION:</strong>
+   Crossroads sadly cannot assist with transport costs. Please ensure you are aware of the likely costs to hire a vehicle to transport your requested goods.
+</p>
+
+<p>
+  <strong>EXTRA HELP:</strong> We sincerely advise you to bring 2-3 other people to assist in moving any big items. The truck driver may be willing, but will charge you extra for lifting.
+</p>
+
+<h4>
+  WHAT IF YOU ARE RUNNING LATE, OR CANNOT MAKE YOUR APPOINTMENT?
+</h4>
+<p>
+  Please phone us on 2272-9343. We usually have other people waiting for the next appointment slots so it is best that you call and see if our team can still fit you in, to avoid disappointment. If not, they can make a new appointment but this may, regrettably, take two months as we are heavily booked.
+</p>
+</body>
+</html>

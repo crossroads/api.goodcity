@@ -2,9 +2,10 @@ require 'rails_helper'
 
 describe Api::V1::StocktakeSerializer do
 
+  let(:options) { {} }
   let(:package) { create(:package, :with_inventory_record, received_quantity: 10) }
   let(:record) { build(:stocktake) }
-  let(:serializer) { Api::V1::StocktakeSerializer.new(record).as_json }
+  let(:serializer) { Api::V1::StocktakeSerializer.new(record, options).as_json }
   let(:json) { JSON.parse( serializer.to_json ) }
   let(:revision) { create(:stocktake_revision, stocktake: record, package: package, quantity: 12) }
 
@@ -22,5 +23,15 @@ describe Api::V1::StocktakeSerializer do
     expect(json['stocktake_revisions'][0]['id']).to eq(revision.id)
     expect(json['packages'].length).to eq(1)
     expect(json['packages'][0]['id']).to eq(revision.package.id)
+  end
+
+  describe "Option" do
+    describe ":include_revisions" do
+      let(:options) { { include_revisions: false } }
+
+      it "excludes revisions if set to false" do
+        expect(json['stocktake_revisions']).to be_nil
+      end
+    end
   end
 end
