@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 2021_01_12_024003) do
-=======
 ActiveRecord::Schema.define(version: 2021_01_18_111336) do
->>>>>>> migration added for orders_transport order_id uniqueness
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
