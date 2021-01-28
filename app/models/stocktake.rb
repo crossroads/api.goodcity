@@ -66,7 +66,7 @@ class Stocktake < ApplicationRecord
 
     ActiveRecord::Base.connection.execute <<-SQL
       INSERT INTO stocktake_revisions (package_id, stocktake_id, quantity, dirty, state, created_by_id, created_at, updated_at)
-        SELECT pinv.package_id, #{stocktake_id}, #{quantity}, #{dirty}, #{state}, #{created_by_id}, NOW(), NOW()
+        SELECT pinv.package_id, #{stocktake_id}, #{quantity}, #{dirty}, '#{state}', #{created_by_id}, NOW(), NOW()
         FROM packages_inventories AS pinv
         WHERE location_id = #{location_id} AND package_id NOT IN (
           SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{stocktake_id} 
