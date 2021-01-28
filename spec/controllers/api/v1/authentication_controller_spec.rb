@@ -219,6 +219,25 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    context 'when preferred_language is not set for the user' do
+      before { user.update(preferred_language: nil) }
+      it 'updates preferred language based on the locale' do
+        request.headers.merge!({ 'Accept-Language': 'zh-tw' })
+        get :current_user_profile
+        expect(user.reload.preferred_language).to eq('zh-tw')
+      end
+    end
+
+    context 'when preferred_language is set for the user' do
+      before { user.update(preferred_language: 'en') }
+      it 'does not affect the field' do
+        request.headers.merge!({ 'Accept-Language': 'zh-tw' })
+        expect {
+          get :current_user_profile
+        }.to_not change{ user.reload.preferred_language }
+      end
+    end
+
     context 'donor app' do
       before do
         set_donor_app_header
