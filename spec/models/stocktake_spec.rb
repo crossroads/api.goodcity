@@ -128,11 +128,6 @@ RSpec.describe Stocktake, type: :model do
       expect(stocktake.warnings).to eq(3)
     end
 
-    it "turns off computed properties during process" do
-      expect(Stocktake).to receive(:watcher_off).once
-      stocktake.populate_revisions!
-    end
-
     it "doesn't modify an existing revision for a package" do
       create(:stocktake_revision, package: packages.first, stocktake: stocktake, quantity: 5, dirty: false, state: 'processed')
 

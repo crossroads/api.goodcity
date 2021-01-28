@@ -58,29 +58,24 @@ class Stocktake < ApplicationRecord
   # @return [Array<StocktakeRevision>] The newly created revisions
   #
   def populate_revisions!
-    package_ids = PackagesInventory
-      .where(location_id: location_id)
-      .group(:package_id)
-      .having('SUM(quantity) > 0')
-      .pluck(:package_id)
+    created_by_id = User.current_user&.id || User.system_user.id
+    state         = 'pending'
+    dirty         = true
+    stocktake_id  = id
+    quantity      = 0
 
-    Stocktake.watcher_off do
-      # We disable the watch module during this operation to
-      # avoid automatically recomputing counter caches on revision creation
+    ActiveRecord::Base.connection.execute <<-SQL
+      INSERT INTO stocktake_revisions (package_id, stocktake_id, quantity, dirty, state, created_by_id, created_at, updated_at)
+        SELECT pinv.package_id, #{stocktake_id}, #{quantity}, #{dirty}, #{state}, #{created_by_id}, NOW(), NOW()
+        FROM packages_inventories AS pinv
+        WHERE location_id = #{location_id} AND package_id NOT IN (
+          SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{stocktake_id} 
+        )
+        GROUP BY package_id
+        HAVING SUM(quantity) > 0
+    SQL
 
-      ActiveRecord::Base.transaction do
-        package_ids.map do |pid|
-          StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
-            revision.quantity       = 0
-            revision.dirty          = true
-            revision.state          = 'pending'
-            revision.created_by_id  = User.current_user&.id || User.system_user.id
-          end
-        end
-
-        compute_counters!
-      end
-    end
+    compute_counters!
   end
 
   def clear_counters!
