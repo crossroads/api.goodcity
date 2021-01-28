@@ -24,14 +24,4 @@ describe Watcher do
       Sample.calls
     }.by(1)
   end
-
-  describe "Disabling the watcher" do
-    it "doesn't trigger on changes made in a #watcher_off block" do
-      expect {
-        Sample.watcher_off do 
-          create(:package)
-        end
-      }.not_to change(Sample, :calls)
-    end
-  end
 end
