@@ -82,14 +82,6 @@ RSpec.describe Stocktake, type: :model do
       revision.update!(dirty: true)
       expect(stocktake.reload.gains).to eq(0)
     end
-
-    it "can be disabled by turning off the watcher module" do
-      expect {
-        Stocktake.watcher_off do
-          create :stocktake_revision, stocktake: stocktake, package: package, quantity: 6
-        end
-      }.not_to change(stocktake, :gains)
-    end
   end
 
   describe 'Populating revisions' do
