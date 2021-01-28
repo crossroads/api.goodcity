@@ -58,18 +58,20 @@ class Stocktake < ApplicationRecord
   # @return [Array<StocktakeRevision>] The newly created revisions
   #
   def populate_revisions!
-    created_by_id = User.current_user&.id || User.system_user.id
-    state         = 'pending'
-    dirty         = true
-    stocktake_id  = id
-    quantity      = 0
+    attrs = {
+      created_by_id: User.current_user&.id || User.system_user.id,
+      state: "'pending'",
+      dirty: true,
+      stocktake_id: id,
+      quantity: 0,
+    }
 
     ActiveRecord::Base.connection.execute <<-SQL
-      INSERT INTO stocktake_revisions (package_id, stocktake_id, quantity, dirty, state, created_by_id, created_at, updated_at)
-        SELECT pinv.package_id, #{stocktake_id}, #{quantity}, #{dirty}, '#{state}', #{created_by_id}, NOW(), NOW()
+      INSERT INTO stocktake_revisions (package_id, created_at, updated_at, #{attrs.keys.join(',')})
+        SELECT pinv.package_id, NOW(), NOW(), #{attrs.values.join(',')}
         FROM packages_inventories AS pinv
         WHERE location_id = #{location_id} AND package_id NOT IN (
-          SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{stocktake_id} 
+          SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{id} 
         )
         GROUP BY package_id
         HAVING SUM(quantity) > 0
