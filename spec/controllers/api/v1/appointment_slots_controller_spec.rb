@@ -70,14 +70,13 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it 'specifies the number of remaining slots (/calendar)' do
-        appointment_order = FactoryBot.create(:order, booking_type: appointment_type)
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 10:30:00+08:00'), quota: 5 # Monday
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 10:30:00+08:00'), quota: 5 # Tuesday
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 14:00:00+08:00'), quota: 5 # Tuesday
 
-        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('29-10-2018'), timeslot: '10:30AM-11:30PM', order: appointment_order }
-        (1..3).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '10:30AM-11:30PM', order: appointment_order }
-        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '2PM-3PM', order: appointment_order }
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('29-10-2018'), timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
+        (1..3).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '2PM-3PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
 
         get :calendar, params: { from: '2018-10-29', to: '2018-10-30' }
         results = parsed_body['appointment_calendar_dates']
