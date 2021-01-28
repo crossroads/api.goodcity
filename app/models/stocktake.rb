@@ -66,7 +66,7 @@ class Stocktake < ApplicationRecord
       quantity: 0,
     }
 
-    ActiveRecord::Base.connection.execute <<-SQL
+    sql = ActiveRecord::Base.sanitize_sql <<-SQL
       INSERT INTO stocktake_revisions (package_id, created_at, updated_at, #{attrs.keys.join(',')})
         SELECT pinv.package_id, NOW(), NOW(), #{attrs.values.join(',')}
         FROM packages_inventories AS pinv
@@ -76,6 +76,8 @@ class Stocktake < ApplicationRecord
         GROUP BY package_id
         HAVING SUM(quantity) > 0
     SQL
+
+    ActiveRecord::Base.connection.execute(sql)
 
     compute_counters!
   end
