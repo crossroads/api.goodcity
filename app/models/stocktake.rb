@@ -66,9 +66,12 @@ class Stocktake < ApplicationRecord
       quantity: 0,
     }
 
-    sql = ActiveRecord::Base.sanitize_sql <<-SQL
-      INSERT INTO stocktake_revisions (package_id, created_at, updated_at, #{attrs.keys.join(',')})
-        SELECT pinv.package_id, NOW(), NOW(), #{attrs.values.join(',')}
+    keys = ActiveRecord::Base.sanitize_sql(attrs.keys.join(','))
+    values = ActiveRecord::Base.sanitize_sql(attrs.values.join(','))
+
+    ActiveRecord::Base.connection.execute <<-SQL
+      INSERT INTO stocktake_revisions (package_id, created_at, updated_at, #{keys})
+        SELECT pinv.package_id, NOW(), NOW(), #{values}
         FROM packages_inventories AS pinv
         WHERE location_id = #{location_id} AND package_id NOT IN (
           SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{id} 
@@ -76,8 +79,6 @@ class Stocktake < ApplicationRecord
         GROUP BY package_id
         HAVING SUM(quantity) > 0
     SQL
-
-    ActiveRecord::Base.connection.execute(sql)
 
     compute_counters!
   end
