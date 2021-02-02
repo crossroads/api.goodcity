@@ -29,6 +29,7 @@ jobs:
             echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
             source $BASH_ENV
             gem install bundler
+            gem update --system
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
