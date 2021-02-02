@@ -195,6 +195,7 @@ module Api
         offers.filter({
           state_names: array_param(:state),
           priority: bool_param(:priority, false),
+          shareable: bool_param(:shareable, false),
           self_reviewer: bool_param(:selfReview, false),
           recent_offers: bool_param(:recent_offers, false),
           before: time_epoch_param(:before),
