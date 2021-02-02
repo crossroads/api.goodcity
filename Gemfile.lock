@@ -1,4 +1,12 @@
 GIT
+  remote: git@github.com:crossroads/go_go_van_api.git
+  revision: 169d3a639cecd3615ebffb6f42571c7c319f2bd6
+  branch: master
+  specs:
+    go_go_van_api (0.0.1)
+      nestful (~> 1)
+
+GIT
   remote: https://github.com/Apipie/apipie-rails.git
   revision: cdff4ec654ee70dd222c7d75f64e20b167b44fce
   branch: master
@@ -559,6 +567,7 @@ DEPENDENCIES
   fake_email_validator
   ffaker
   foreman
+  go_go_van_api!
   grape-swagger-rails
   guard-rspec
   guid
