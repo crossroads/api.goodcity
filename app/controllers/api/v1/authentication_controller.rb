@@ -160,10 +160,12 @@ module Api
 
         # If the preferred_langugage is not set for the user, then
         # Set the current_user.preferred_langugage to the locale which is used by the user in browser
+        # Or if the user changes his preferred language in the UI, this will update it to
+        # the selected language
         # NOTE: This is done in this request because
         #  For setting the preferred_langugage in other endpoints of authentication_controller,
         #  the user needs to be logged out
-        current_user.update(preferred_language: I18n.locale) unless current_user.preferred_language.present?
+        current_user.update(preferred_language: I18n.locale)
 
         # include printers, only if its not donor or browse app
         render json: current_user,
