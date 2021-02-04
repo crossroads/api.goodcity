@@ -72,7 +72,9 @@ jobs:
       - run: bundle exec rails db:create:all db:migrate
       - run:
           name: Cucumber tests
-          command: bundle exec cucumber
+          command: |
+            rails db:test:load_schema
+            bundle exec cucumber
       - run:
           name: Rspec tests
           command: |
