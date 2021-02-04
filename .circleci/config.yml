@@ -7,7 +7,6 @@ version: 2
 defaults: &defaults
   docker:
     - image: circleci/ruby:2.5.1-node
-
   working_directory: ~/api.goodcity
 
 jobs:
@@ -16,7 +15,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: v2-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/api.goodcity
 
@@ -24,20 +23,14 @@ jobs:
     <<: *defaults
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Configure Bundler
-          command: |
-            sudo gem update --system
-            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
-            source $BASH_ENV
-            gem install bundler
+      - run: gem install bundler
       - restore_cache:
-          key: v2-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-         key: v2-bundle-{{ checksum "Gemfile.lock" }}
+         key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle check --path=vendor/bundle || bundle install --deployment --jobs=4 --retry=3
       - save_cache:
-          key: v2-bundle-{{ checksum "Gemfile.lock" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
       - run:
@@ -67,9 +60,9 @@ jobs:
             sudo apt update
             sudo apt-get install postgresql-client-9.6
       - restore_cache:
-          key: v2-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v2-bundle-{{ checksum "Gemfile.lock" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - attach_workspace:
           at: ~/api.goodcity/tmp
       - run: bundle install --path vendor/bundle
@@ -118,9 +111,9 @@ jobs:
     <<: *defaults
     steps:
       - restore_cache:
-          key: v2-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v2-bundle-{{ checksum "Gemfile.lock" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
           ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
