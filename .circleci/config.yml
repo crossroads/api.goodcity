@@ -73,7 +73,7 @@ jobs:
       - run:
           name: Cucumber tests
           command: |
-            rails db:test:load_schema
+            bundle exec rails db:test:load_schema
             bundle exec cucumber
       - run:
           name: Rspec tests
