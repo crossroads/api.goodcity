@@ -270,6 +270,17 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           expect(created_offer.created_by).to eq(nil)
         end
 
+        it "returns previously added empty offer" do
+          admin_offer_params = { created_by_id: nil,
+            state: "under_review", reviewed_by_id: supervisor.id.to_s  }
+          old_offer = create :offer, admin_offer_params
+
+          post :create, params: { offer: admin_offer_params }, as: :json
+
+          expect(response.status).to eq(200)
+          expect(created_offer.id).to eq(old_offer.id)
+        end
+
         it "sets all the properties correctly" do
           post :create, params: { offer: {
             reviewed_by_id: reviewer.id,

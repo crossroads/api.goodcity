@@ -65,6 +65,12 @@ class Offer < ApplicationRecord
     ])
   }
 
+  scope :without_items, -> {
+    joins("LEFT OUTER JOIN items ON offers.id = items.offer_id")
+      .group("offers.id")
+      .having("count(items.id) = ?", 0)
+  }
+
   scope :active_from_past_fortnight, -> {
     where("id IN (?)", Version.active_offer_ids_in_past_fortnight)
   }
@@ -254,6 +260,14 @@ class Offer < ApplicationRecord
 
     def offers_count_per_state(offer)
       offer.each { |key, value| offer[key] = value.count }
+    end
+
+    def empty_offer_by_admin
+      in_states("under_review")
+        .where("created_by_id IS NULL")
+        .without_items
+        .order("id desc")
+        .first
     end
   end
 

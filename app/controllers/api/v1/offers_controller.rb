@@ -40,6 +40,9 @@ module Api
       param_group :offer
       def create
         @offer.created_by_id = current_user.id unless offer_params.has_key?(:created_by_id)
+        if @offer.created_by_id.blank? && @offer.under_review?
+          @offer = current_user.reviewed_offers.empty_offer_by_admin || @offer
+        end
         save_and_render_object(@offer)
       end
 

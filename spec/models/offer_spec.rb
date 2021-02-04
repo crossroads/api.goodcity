@@ -189,6 +189,16 @@ RSpec.describe Offer, type: :model do
       end
     end
 
+    describe 'without_items' do
+      it "should return offers without items" do
+        empty_offer = create :offer
+        offer = create :offer, :with_items
+
+        expect(Offer.without_items).to include(empty_offer)
+        expect(Offer.without_items).to_not include(offer)
+      end
+    end
+
     context "in_states" do
       it "matches submitted offers" do
         expect(Offer.in_states(["submitted"])).to include(submitted_offer)
@@ -213,6 +223,13 @@ RSpec.describe Offer, type: :model do
       end
     end
 
+  end
+
+  describe "empty_offer_by_admin" do
+    it "should return latest empty offer created by admin" do
+      offer = create :offer, state: "under_review", created_by_id: nil
+      expect(Offer.empty_offer_by_admin).to eq(offer)
+    end
   end
 
   describe "#send_thank_you_message" do
