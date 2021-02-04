@@ -11,10 +11,12 @@ module ActiveRecord
         false
       end
 
-      NATIVE_DATABASE_TYPES.merge!(
-        datetime:  { name: "TIMESTAMP(6) WITH TIME ZONE" },
-        timestamp: { name: "TIMESTAMP(6) WITH TIME ZONE" }
-      )
+      if !Rails.env.test?
+        NATIVE_DATABASE_TYPES.merge!(
+          datetime:  { name: "TIMESTAMP(6) WITH TIME ZONE" }
+          timestamp: { name: "TIMESTAMP(6) WITH TIME ZONE" }
+        )
+      end
     end
   end
 end
