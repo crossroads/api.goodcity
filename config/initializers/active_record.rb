@@ -7,7 +7,7 @@ module ActiveRecord
 
       # override default rails 6 behavior so we can add precision to the
       # correct part of the data type (see below)
-      def supports_datetime_with_precision?=
+      def supports_datetime_with_precision?
         false
       end
 
