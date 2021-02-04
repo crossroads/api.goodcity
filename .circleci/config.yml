@@ -76,6 +76,7 @@ jobs:
       - run:
           name: Rspec tests
           command: |
+            bundle exec rails db:migrate
             bundle exec rspec --format progress \
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
