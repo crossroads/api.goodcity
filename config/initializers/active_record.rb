@@ -11,10 +11,10 @@ module ActiveRecord
         false
       end
 
-      if !Rails.env.test?
+      unless Rake.application.top_level_tasks.include? "db:test:load_schema"
         NATIVE_DATABASE_TYPES.merge!(
+          timestamp: { name: "TIMESTAMP(6) WITH TIME ZONE" },
           datetime:  { name: "TIMESTAMP(6) WITH TIME ZONE" }
-          timestamp: { name: "TIMESTAMP(6) WITH TIME ZONE" }
         )
       end
     end
