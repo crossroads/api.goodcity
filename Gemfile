@@ -52,6 +52,7 @@ gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'slack-ruby-client'
 gem 'state_machine'
+gem 'stripe', '~> 5.29.0'
 gem 'traco'
 gem 'twilio-ruby', '~> 5.11.0'
 gem 'whenever', '~>  0.9.5', require: false

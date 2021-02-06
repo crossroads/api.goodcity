@@ -385,6 +385,7 @@ module Api
         can [:index, :show], UserRole
         can [:index, :show], CancellationReason
         can [:names], Organisation
+        can [:fetch_public_key, :create_setupintent, :save_payment_method], :stripe
 
         if can_add_or_remove_inventory_number? || @api_user
           can [:create, :remove_number], InventoryNumber

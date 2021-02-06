@@ -486,6 +486,7 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     state_machine (1.2.0)
+    stripe (5.29.0)
     sys-uname (1.2.1)
       ffi (>= 1.0.0)
     thor (1.0.1)
@@ -598,6 +599,7 @@ DEPENDENCIES
   spring
   spring-commands-rspec
   state_machine
+  stripe (~> 5.29.0)
   timecop
   traco
   twilio-ruby (~> 5.11.0)
