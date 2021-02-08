@@ -30,7 +30,7 @@ module Api
 
       api :PUT, '/v1/printers_users/1', "Update printers_users"
       def update
-        @printers_user.update_attributes(printers_user_params)
+        @printers_user.update(printers_user_params)
         render json: @printers_user, serializer: serializer
       end
 
