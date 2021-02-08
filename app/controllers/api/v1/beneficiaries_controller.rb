@@ -52,7 +52,7 @@ module Api
       api :PUT, '/v1/beneficiaries/1', "Update user"
       param_group :beneficiary
       def update
-        if @beneficiary.update_attributes(beneficiary_params)
+        if @beneficiary.update(beneficiary_params)
           render json: @beneficiary, serializer: serializer
         else
           render json: { errors: @beneficiary.errors.full_messages }, status: 422

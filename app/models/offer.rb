@@ -258,7 +258,7 @@ class Offer < ApplicationRecord
   end
 
   def start_receiving
-    update_attributes({ state_event: 'start_receiving' })
+    update({ state_event: 'start_receiving' })
   end
 
   def gogovan_order
@@ -287,7 +287,7 @@ class Offer < ApplicationRecord
   end
 
   def assign_reviewer(reviewer)
-    update_attributes(
+    update(
       reviewed_by_id: reviewer.id,
       state_event: 'start_review')
   end
