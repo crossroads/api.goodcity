@@ -54,9 +54,10 @@ class TransportService
       transport_provider_id: TransportProvider.find_by(name: provider_name.upcase).try(:id),
       order_uuid: response["uuid"],
       status: response["status"],
-      scheduled_at: response["pickup"]["schedule_at"],
+      scheduled_at: Time.at(response["pickup"]["schedule_at"]).in_time_zone,
       metadata: response,
-      offer_id: @params[:offer_id]
+      source_id: @params[:source_id],
+      source_type: @params[:source_type]
     )
   end
 
@@ -68,8 +69,8 @@ class TransportService
 
   def quotation_attributes
     {
-      'vehicle_type': @params[:vehicle_type],
-      "scheduled_at": @params[:scheduled_at],
+      'vehicle_type': params[:vehicle_type],
+      "schedule_at": params[:schedule_at],
       "pickup_location": pickup_location,
       "destination_location": @transport_constants[:crossroads_geolocation]
     }
@@ -82,10 +83,10 @@ class TransportService
 
   def order_attributes
     {
-      'vehicle_type': @params[:vehicle_type],
+      'vehicle_type': params[:vehicle_type],
       "pickup_location": pickup_location,
       "pickup_street_address": params[:pickup_street_address],
-      "scheduled_at": params[:schedule_at],
+      "schedule_at": params[:schedule_at],
       "pickup_contact_name": params[:pickup_contact_name] || @user.full_name,
       "pickup_contact_phone": params[:pickup_contact_phone] || @user.mobile,
       "destination_location": @transport_constants[:crossroads_geolocation],

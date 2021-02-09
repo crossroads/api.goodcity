@@ -31,6 +31,7 @@ class Offer < ApplicationRecord
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
   has_one  :delivery, dependent: :destroy
+  has_one  :transport_order, as: :source, dependent: :destroy
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages

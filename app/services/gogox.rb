@@ -1,14 +1,13 @@
 class Gogox
 
-  attr_accessor :params, :time, :vehicle, :district_id
+  attr_accessor :params, :time, :vehicle
 
   VEHICLE_TYPES = ["van", "mudou", "mudou9"]
 
   def initialize(options = {})
     @params        = options
-    @time         = parse_pickup_time(options[:scheduled_at])
+    @time         = parse_pickup_time(options[:schedule_at])
     @vehicle      = options[:vehicle_type]
-    @district_id  = options[:district_id]
   end
 
   # Rsponse
@@ -26,7 +25,7 @@ class Gogox
   #     "location" => {"lat" => 22.5029632, "lng" => 114.1277213},
   #     "contact" => {
   #       "name" => "Swati J",
-  #       "phone_number" => "+85251111113",
+  #       "phone_number" => "51111113",
   #       "phone_extension" => nil
   #     }
   #   },
@@ -37,7 +36,7 @@ class Gogox
   #     "location" => {"lat" => 32.3700365, "lng" => 120.9930016},
   #     "contact" => {
   #       "name" => "GCAdmin User",
-  #       "phone_number" => "+85251111111"
+  #       "phone_number" => "51111111"
   #     }
   #   }],
   #   "note_to_courier" => nil,
@@ -85,7 +84,7 @@ class Gogox
       'vehicle_type': vehicle_type,
       "pickup_location": params[:pickup_location],
       "pickup_street_address": params[:pickup_street_address],
-      "scheduled_at": parse_time,
+      "schedule_at": parse_time,
       "pickup_contact_name": params[:pickup_contact_name],
       "pickup_contact_phone": params[:pickup_contact_phone],
       "destination_location": params[:destination_location],
@@ -98,7 +97,7 @@ class Gogox
   def quotation_attributes
     {
       'vehicle_type': vehicle_type,
-      "scheduled_at": parse_time,
+      "schedule_at": parse_time,
       "pickup_location": params[:pickup_location],
       "destination_location": params[:destination_location]
     }

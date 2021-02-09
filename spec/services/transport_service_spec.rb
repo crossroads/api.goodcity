@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe TransportService do
 
-  let(:scheduled_at)   { "Wed, 30 Dec 2020 15:10:08.000000000 +0800" }
+  let(:schedule_at)   { "Wed, 30 Dec 2020 15:10:08.000000000 +0800" }
   let(:district)     { (create :district) }
   let(:vehicle)      { "van" }
   let(:user)         { (create :user) }
@@ -31,7 +31,7 @@ describe TransportService do
       provider: "Gogox",
       district_id: district.id,
       vehicle_type: vehicle,
-      scheduled_at: scheduled_at,
+      schedule_at: schedule_at,
       user_id: user.id,
       booking_id: gogox_booking_id
     }
@@ -66,7 +66,7 @@ describe TransportService do
     let(:quotation_attributes) {
       {
         'vehicle_type': vehicle,
-        "scheduled_at": scheduled_at,
+        "schedule_at": schedule_at,
         "pickup_location": [22.5029632, 114.1277213],
         "destination_location": [56.8766894, 120.9891416]
       }
@@ -86,7 +86,7 @@ describe TransportService do
         provider: "Gogox",
         district_id: district.id,
         vehicle_type: vehicle,
-        scheduled_at: scheduled_at,
+        schedule_at: schedule_at,
         user_id: user.id,
         pickup_street_address: 'Road',
         pickup_contact_name: 'Swati',
@@ -104,7 +104,7 @@ describe TransportService do
         pickup_contact_phone: "+85251111118",
         pickup_location: [22.5029632, 114.1277213],
         pickup_street_address: "Road",
-        scheduled_at: nil,
+        schedule_at: "Wed, 30 Dec 2020 15:10:08.000000000 +0800",
         vehicle_type: "van"
       }
     }

@@ -5,6 +5,7 @@ FactoryBot.define do
     status { "MyString" }
     scheduled_at { "2021-01-11 17:22:50" }
     metadata { "" }
-    offer_id { 1 }
+    source_id { 1 }
+    source_type { 'Offer' }
   end
 end

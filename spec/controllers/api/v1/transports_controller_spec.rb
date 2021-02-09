@@ -4,7 +4,7 @@ RSpec.describe Api::V1::TransportsController, type: :controller do
 
   let(:user) { create(:user, :with_token) }
   let(:district) { create :district }
-  let(:offer) { create :offer }
+  let(:offer) { create :offer, created_by_id: user.id }
   let(:scheduled_at)   { "Wed, 30 Dec 2020 15:10:08.000000000 +0800" }
   let!(:provider) { create(:transport_provider) }
 
@@ -38,9 +38,10 @@ RSpec.describe Api::V1::TransportsController, type: :controller do
       {
         "provider": "GOGOX",
         'vehicle_type': 'van',
-        "scheduled_at": scheduled_at,
+        "schedule_at": scheduled_at,
         "district_id": district.id.to_s,
-        "offer_id": offer.id.to_s
+        "source_id": offer.id.to_s,
+        "source_type": 'Offer'
       }
     }
 
@@ -70,9 +71,10 @@ RSpec.describe Api::V1::TransportsController, type: :controller do
       {
         "provider": "GOGOX",
         'vehicle_type': "van",
-        "scheduled_at": scheduled_at,
+        "schedule_at": scheduled_at,
         "district_id": district.id.to_s,
-        "offer_id": offer.id.to_s,
+        "source_id": offer.id.to_s,
+        "source_type": "Offer",
         "pickup_contact_name": "Sarah",
         "pickup_contact_phone": "+85251111117",
         "pickup_street_address": "Street"

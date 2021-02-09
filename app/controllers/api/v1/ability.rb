@@ -6,6 +6,7 @@ module Api
         if user.present?
           @api_user = user.api_user?
           @user_offer_ids = user.offers.pluck(:id)
+          @user_order_ids = user.created_orders.pluck(:id)
         end
 
         super(user)
@@ -399,9 +400,13 @@ module Api
       end
 
       def transport_order_abilities
-        can [:providers, :quote, :book], TransportOrder
-        can [:show, :cancel], TransportOrder, offer_id: @user_offer_ids
-        can [:show, :cancel], TransportOrder if can_manage_transport_orders?
+        can [:providers], TransportOrder
+        can [:quote, :book, :show, :cancel], TransportOrder, source_type: "Offer", source_id: @user_offer_ids
+        can [:quote, :book, :show, :cancel], TransportOrder, source_type: "Order", source_id: @user_order_ids
+
+        if can_manage_transport_orders?
+          can [:show, :cancel, :quote, :book], TransportOrder
+        end
       end
 
       def location_abilities
