@@ -42,6 +42,18 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
         expect(parsed_body["stocktakes"].length).to eq(1)
         expect(parsed_body["stocktakes"].first["id"]).to eq(stocktake.id)
       end
+
+      it "includes stocktake revisions" do
+        get :index
+        expect(parsed_body["stocktake_revisions"].length).to eq(3)
+      end
+
+      context "with ?include_revisions set to false" do
+        it "does not include stocktake revisions" do
+          get :index, params: { include_revisions: false }
+          expect(parsed_body["stocktake_revisions"]).to be_nil
+        end
+      end
     end
   end
 
@@ -66,6 +78,18 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
       it "returns the requested stocktake" do
         get :show, params: { id: stocktake.id }
         expect(parsed_body["stocktake"]["id"]).to eq(stocktake.id)
+      end
+
+      it "includes stocktake revisions" do
+        get :show, params: { id: stocktake.id }
+        expect(parsed_body["stocktake_revisions"].length).to eq(3)
+      end
+
+      context "with ?include_revisions set to false" do
+        it "does not include stocktake revisions" do
+          get :show, params: { id: stocktake.id, include_revisions: false }
+          expect(parsed_body["stocktake_revisions"]).to be_nil
+        end
       end
     end
   end

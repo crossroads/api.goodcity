@@ -1,6 +1,5 @@
 require 'rails_helper'
 
-
 RSpec.describe GoodcityOrderMailer, type: :mailer do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
@@ -20,6 +19,10 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
       it 'sets proper to and subject' do
         expect(mailer).to have_subject(I18n.t('email.subject.appointment.confirmation', code: order.code))
         expect(mailer).to deliver_to(user.email)
+      end
+
+      it 'sets proper from address' do
+        expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
       end
 
       it 'sets proper params' do
@@ -72,6 +75,10 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
         expect(mailer).to have_body_text("Dear #{user.first_name} #{user.last_name}")
       end
 
+      it 'sets proper from address' do
+        expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
+      end
+
       it 'sets proper booking_type and order_code' do
         expect(mailer).to have_body_text("Thank you for submitting #{order.booking_type.name_en} #{order.code}")
       end
@@ -85,6 +92,10 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
           I18n.locale = locale
           expect(mailer).to have_subject(I18n.t('email.subject.order.submission_pickup_delivery', code: order.code, booking_type: order.booking_type.name_en))
         end
+      end
+
+      it 'sets proper from address' do
+        expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
       end
 
       it 'sets proper contact_name' do
@@ -112,6 +123,10 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
 
       it 'sets proper order_code' do
         expect(mailer).to have_body_text("<strong>Our Ref#: </strong> #{order.code}")
+      end
+
+      it 'sets proper from address' do
+        expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
       end
 
       it 'sets proper scheduled_at' do
@@ -162,6 +177,10 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
       it 'sets proper contact params' do
         expect(mailer).to have_body_text("<b>Attention: </b> #{user.first_name} #{user.last_name}")
         expect(mailer).to have_body_text(user.organisations.first.name_en)
+      end
+
+      it 'sets proper from address' do
+        expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
       end
 
       it 'sets proper order_code params' do

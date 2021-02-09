@@ -31,4 +31,5 @@ APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
 }
 PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
 DEFAULT_COUNTRY = 'China - Hong Kong (Special Administrative Region)'
-DEFAULT_FROM_EMAIL = 'GoodCity <contact@goodcity.hk>'
+GOODCITY_FROM_EMAIL = 'GoodCity <contact@goodcity.hk>'
+GOODCITY_ORDER_FROM_EMAIL = 'GoodCity <local@crossroads.org.hk>'

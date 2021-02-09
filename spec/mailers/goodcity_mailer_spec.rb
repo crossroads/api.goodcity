@@ -1,15 +1,24 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe GoodcityMailer, type: :mailer do
+  include EmailSpec::Helpers
+  include EmailSpec::Matchers
+
   let(:user) { create(:user, :charity) }
-  let(:order) { create(:order, created_by: user) }
+  subject(:subject) { described_class.with(user_id: user.id) }
 
   after(:each) do
     I18n.locale = :en
   end
 
   describe 'send_pin_email' do
-    let(:mailer) { GoodcityMailer.with(user_id: user.id).send_pin_email }
+    let(:mailer) { subject.send_pin_email }
+
+    it 'sets proper from and to address' do
+      expect(mailer).to deliver_from(GOODCITY_FROM_EMAIL)
+      expect(mailer).to deliver_to(user.email)
+    end
+
     %w[zh-tw en].each do |locale|
       I18n.locale = locale
       it "sets subject in #{locale} locale" do

@@ -116,4 +116,19 @@ RSpec.describe OrderTransport, type: :model do
       expect(order_transport2.pickup?).to be_falsey
     end
   end
+
+  describe "Unique to order" do
+    let!(:order) { create(:order, :with_state_submitted) }
+    let!(:order2) { create(:order, :with_state_submitted) }
+    let!(:order_transport) { create(:order_transport, transport_type: "self", order_id: order.id) }
+    let (:order_transport2) { create(:order_transport, transport_type: "self") }
+
+    it "should throw uniqeness error if order_transport is assigned to same order" do
+      expect { order_transport2.update(order_id: order.id) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it "should not throw uniqeness error if order_transport is assigned to new order" do
+      expect(order_transport2.update(order_id: order2.id)).to be_truthy
+    end
+  end
 end

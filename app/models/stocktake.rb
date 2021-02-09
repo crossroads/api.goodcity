@@ -1,4 +1,5 @@
 class Stocktake < ApplicationRecord
+  include Watcher
   include StocktakeProcessor
   include PushUpdatesMinimal
 
@@ -40,6 +41,14 @@ class Stocktake < ApplicationRecord
   end
 
   # ---------------------
+  # Computed Properties
+  # ---------------------
+
+  watch [StocktakeRevision] do |rev|
+    rev.stocktake.compute_counters! if rev.stocktake.open?
+  end
+
+  # ---------------------
   # Methdos
   # ---------------------
 
@@ -49,21 +58,52 @@ class Stocktake < ApplicationRecord
   # @return [Array<StocktakeRevision>] The newly created revisions
   #
   def populate_revisions!
-    package_ids = PackagesInventory
-      .where(location_id: location_id)
-      .group(:package_id)
-      .having('SUM(quantity) > 0')
-      .pluck(:package_id)
+    attrs = {
+      created_by_id: User.current_user&.id || User.system_user.id,
+      state: "'pending'",
+      dirty: true,
+      stocktake_id: id,
+      quantity: 0,
+    }
 
-    ActiveRecord::Base.transaction do
-      package_ids.map do |pid|
-        StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
-          revision.quantity       = 0
-          revision.dirty          = true
-          revision.state          = 'pending'
-          revision.created_by_id  = User.current_user&.id || User.system_user.id
-        end
+    keys = ActiveRecord::Base.sanitize_sql(attrs.keys.join(','))
+    values = ActiveRecord::Base.sanitize_sql(attrs.values.join(','))
+
+    ActiveRecord::Base.connection.execute <<-SQL
+      INSERT INTO stocktake_revisions (package_id, created_at, updated_at, #{keys})
+        SELECT pinv.package_id, NOW(), NOW(), #{values}
+        FROM packages_inventories AS pinv
+        WHERE location_id = #{location_id} AND package_id NOT IN (
+          SELECT package_id FROM stocktake_revisions WHERE stocktake_id = #{id} 
+        )
+        GROUP BY package_id
+        HAVING SUM(quantity) > 0
+    SQL
+
+    compute_counters!
+  end
+
+  def clear_counters!
+    self.counts = 0
+    self.gains = 0
+    self.losses = 0
+    self.warnings = 0
+  end
+
+  def compute_counters!
+    clear_counters!
+
+    StocktakeRevision.where(stocktake_id: id).each do |rev|
+      if rev.dirty
+        self.warnings += 1
+      else
+        delta = rev.computed_diff
+        self.losses += 1    if delta < 0
+        self.gains  += 1    if delta > 0
+        self.warnings += 1  if rev.warning.present?
+        self.counts += 1 
       end
     end
+    self.save!
   end
 end
