@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe Gogox do
 
-  let(:scheduled_at)   { "Wed, 30 Dec 2020 15:10:08.000000000 +0800" }
+  let(:schedule_at)   { "Wed, 30 Dec 2020 15:10:08.000000000 +0800" }
   let(:district)     { (create :district) }
   let(:vehicle)      { "van" }
   let(:params)       {
@@ -17,7 +17,7 @@ describe Gogox do
     {
       district_id: district.id,
       vehicle_type: vehicle,
-      scheduled_at: scheduled_at,
+      schedule_at: schedule_at,
       params: params,
       destination_location: [56.8766894, 120.9891416],
       pickup_location: [22.5029632, 114.1277213],
@@ -29,10 +29,7 @@ describe Gogox do
 
   context "initialization" do
     it "time" do
-      expect(gogovan.time).to eql(scheduled_at)
-    end
-    it "district_id" do
-      expect(gogovan.district_id).to eql(district.id)
+      expect(gogovan.time).to eql(schedule_at)
     end
     it "vehicle" do
       expect(gogovan.vehicle).to eql(vehicle)
@@ -51,7 +48,7 @@ describe Gogox do
     let(:quotation_attributes) {
       {
         'vehicle_type': vehicle,
-        "scheduled_at": 1609312208,
+        "schedule_at": 1609312208,
         "pickup_location": [22.5029632, 114.1277213],
         "destination_location": [56.8766894, 120.9891416]
       }
@@ -70,7 +67,7 @@ describe Gogox do
       Gogox.new({
         district_id: district.id,
         vehicle_type: vehicle,
-        scheduled_at: scheduled_at,
+        schedule_at: schedule_at,
         params: params,
         pickup_contact_name: "David",
         pickup_contact_phone: "+85251111112",
@@ -97,7 +94,7 @@ describe Gogox do
     let(:order_attributes) {
       {
         'vehicle_type': vehicle,
-        "scheduled_at": 1609312208,
+        "schedule_at": 1609312208,
         "pickup_location": [22.5029632, 114.1277213],
         "destination_contact_name": "Admin User",
         "destination_contact_phone": "+85251111111",
@@ -183,11 +180,11 @@ describe Gogox do
 
     context 'when pickup date is specified' do
       it 'expects time to be in HKT' do
-        expect(Gogox.new({ scheduled_at: Time.current.to_s }).send(:parse_pickup_time).zone).to eq('HKT')
+        expect(Gogox.new({ schedule_at: Time.current.to_s }).send(:parse_pickup_time).zone).to eq('HKT')
       end
 
       it 'parse time to a DateTime object' do
-        expect(Gogox.new({ scheduled_at: Time.current.to_s }).send(:parse_time).class).to eq(Integer)
+        expect(Gogox.new({ schedule_at: Time.current.to_s }).send(:parse_time).class).to eq(Integer)
       end
     end
   end
