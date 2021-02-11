@@ -96,7 +96,7 @@ module Api
       end
 
       def canned_response_abilities
-        can :index, CannedResponse if can_manage_canned_response?
+        can [:index, :create, :update, :delete], CannedResponse if can_manage_canned_response?
       end
 
       def computer_abilities
