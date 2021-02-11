@@ -20,7 +20,7 @@ module Api::V2
       attribute :public_uid do |p|
         Shareable.public_uid_of(p)
       end
-      
+
       attribute :offer_id do |p|
         p.try(:item).try(:offer_id)
       end
