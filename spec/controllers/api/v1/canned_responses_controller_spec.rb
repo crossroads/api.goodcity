@@ -61,4 +61,35 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       end
     end
   end
+
+  describe "POST canned_response" do
+    before { generate_and_set_token(user) }
+
+    it "creates new canned_response" do
+      expect{
+        post :create, params: { canned_response: { name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM' } }
+      }.to change(CannedResponse, :count).by(1)
+      expect(response.status).to eq(201)
+    end
+  end
+
+  describe "UPDATE canned_response" do
+    before {generate_and_set_token(user)}
+
+    it "update existing canned_response" do
+      canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
+      put :update, params: { id: canned_response.id, canned_response: { name_en: "When is the weeko off?" } }
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe "DELETE canned_response" do
+    before {generate_and_set_token(user)}
+
+    it "destroy canned_response" do
+      canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
+      delete :destroy, params:{ id: canned_response.id }
+      expect(response.status).to eq(200)
+    end
+  end
 end
