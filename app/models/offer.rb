@@ -229,7 +229,7 @@ class Offer < ApplicationRecord
     end
 
     def offer_active_states_counter(offer_filter_param)
-      grouped_offers = filter(offer_filter_param).group_by(&:state)
+      grouped_offers = filter_offers(offer_filter_param).group_by(&:state)
       offers_count = offers_count_per_state(grouped_offers)
       offers_count["offers_total_count"] = offers_count_sum(offers_count) unless offer_filter_param[:priority]
       offers_count = prepend_offer_key_with("priority", offers_count) if offer_filter_param[:priority]
@@ -270,7 +270,7 @@ class Offer < ApplicationRecord
   end
 
   def clear_logistics_details
-    update_attributes(crossroads_transport_id: nil, gogovan_transport_id: nil)
+    update(crossroads_transport_id: nil, gogovan_transport_id: nil)
   end
 
   def send_thank_you_message

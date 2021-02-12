@@ -2,14 +2,14 @@ module OfferFiltering
   extend ActiveSupport::Concern
 
   included do
-    # filter method expects any of the following options in params:
+    # filter_offers method expects any of the following options in params:
     #   -[:state_names] = ['submitted', 'reviewed'...]
     #   -[:priority] = boolean true or false
     #   -[:self_reviewer] = boolean  true or false
     #   -[:before] = timestamp
     #   -[:after] = timestamp
 
-    scope :filter, -> (options = {}) do
+    scope :filter_offers, -> (options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
       res = res.select('offers.*, schedules.scheduled_at')
