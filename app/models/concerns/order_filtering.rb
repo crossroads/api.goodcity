@@ -26,7 +26,7 @@ module OrderFiltering
     #     "detail_type = 'shipment'"
     #   end
     #
-    def filter(
+    def apply_filter(
       states: [],
       types: [],
       priority: false,
