@@ -13,7 +13,7 @@ module Api
       end
 
       api :POST, '/v1/transports/quote', "Get provider quote"
-      param :provider, String, required: true, desc: "Provider selected for transport"
+      param :provider, TRANSPORT_PROVIDERS, required: true, desc: "Provider selected for transport"
       param :vehicle_type, String, required: true, desc: "Transport vehicle-type"
       param :source_id, [Integer, String], required: true, desc: "Id of the source (offer/order)"
       param :source_type, String, required: true, desc: "Type of the source (offer/order)"
@@ -25,7 +25,7 @@ module Api
       end
 
       api :POST, '/v1/transports/book', "Book transport"
-      param :provider, String, required: true, desc: "Provider selected for transport"
+      param :provider, TRANSPORT_PROVIDERS, required: true, desc: "Provider selected for transport"
       param :vehicle_type, String, required: true, desc: "Transport vehicle-type"
       param :source_id, String, required: true, desc: "Id of the source (offer/order)"
       param :source_type, String, required: true, desc: "Type of the source (offer/order)"

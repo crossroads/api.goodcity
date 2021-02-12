@@ -4,7 +4,7 @@ class TransportService
 
   def initialize(options={})
     @params = options
-    @provider_name = options.dig(:provider)
+    @provider_name = ([options.dig(:provider)] & TRANSPORT_PROVIDERS)[0]
     @provider ||= Object::const_get(provider_name)
     @booking_id = options.dig(:booking_id)
     @transport_constants = Rails.application.secrets.transport
@@ -97,11 +97,7 @@ class TransportService
   end
 
   def fetch_user
-    @user ||= if @params[:user_id].present?
-      User.find_by(id: @params[:user_id])
-    else
-      User.current_user
-    end
+    @user ||= User.current_user
   end
 
   def fetch_district_id
