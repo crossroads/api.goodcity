@@ -459,11 +459,10 @@ GEM
       activesupport (>= 3)
     shoulda-matchers (4.5.1)
       activesupport (>= 4.2.0)
-    sidekiq (6.0.7)
+    sidekiq (6.1.3)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
-      rack-protection (>= 2.0.0)
-      redis (>= 4.1.0)
+      redis (>= 4.2.0)
     sidekiq-scheduler (3.0.1)
       e2mmap
       redis (>= 3, < 5)
@@ -609,7 +608,7 @@ DEPENDENCIES
   sendgrid-ruby
   shoulda-callback-matchers
   shoulda-matchers
-  sidekiq (~> 6.0.2)
+  sidekiq (~> 6.1.1)
   sidekiq-scheduler
   sidekiq-statistic
   simplecov (~> 0.16.1)
