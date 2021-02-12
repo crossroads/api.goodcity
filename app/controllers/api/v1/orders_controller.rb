@@ -148,7 +148,7 @@ module Api
       end
 
       def apply_filters(records)
-        records.filter(
+        records.apply_filter(
           states: array_param(:state),
           types: array_param(:type),
           priority: bool_param(:priority, false),

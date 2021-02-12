@@ -192,7 +192,7 @@ module Api
       end
 
       def apply_filters(offers)
-        offers.filter({
+        offers.filter_offers({
           state_names: array_param(:state),
           priority: bool_param(:priority, false),
           self_reviewer: bool_param(:selfReview, false),
