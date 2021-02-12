@@ -46,7 +46,7 @@ gem 'rollbar'
 gem 'rotp', '~> 3.3.1'
 gem 'rubyXL'
 gem 'sendgrid-ruby'
-gem 'sidekiq', '~> 6.0.2'
+gem 'sidekiq', '~> 6.1.1'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
