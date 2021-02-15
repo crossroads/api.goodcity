@@ -46,8 +46,6 @@ module Api
           else
             render_error @stocktake.errors.full_messages.join(". ")
           end
-
-          render_error @stocktake.errors.full_messages.join('. ')
         end
       end
 
