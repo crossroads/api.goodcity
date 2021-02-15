@@ -9,7 +9,7 @@ module OfferFiltering
     #   -[:before] = timestamp
     #   -[:after] = timestamp
 
-    scope :filter, -> (options = {}) do
+    scope :filter, ->(options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
       res = res.shareable if options[:shareable].present?
@@ -74,8 +74,7 @@ module OfferFiltering
     end
 
     def self.shareable
-      res = joins("INNER JOIN shareables ON shareables.resource_id=offers.id")
-      res
+      joins("INNER JOIN shareables ON shareables.resource_id=offers.id")
     end
 
     def self.assoicate_delivery_and_schedule

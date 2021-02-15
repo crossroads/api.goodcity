@@ -477,16 +477,12 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     let(:schedule1) { create :schedule, scheduled_at: Time.now + 1.days }
     let(:delivery) { create :delivery, offer: scheduled_offer, schedule: schedule }
     let(:delivery1) { create :delivery, offer: scheduled_offer1, schedule: schedule1 }
-    let(:shareable1) {create :shareable, resource: reviewing_offer}
-    let(:shareable2) {create :shareable, resource: submitted_offer}
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
 
     context "Shareable Offers/Published offers filter" do
-      before(:each){
-        shareable1
-        shareable2
-      }
+      let!(:shareable1) {create :shareable, resource: reviewing_offer}
+      let!(:shareable2) {create :shareable, resource: submitted_offer}
 
       it "returns offers published on charity site" do
         get :search, params: { shareable: true }
