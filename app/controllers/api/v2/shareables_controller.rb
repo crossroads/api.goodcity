@@ -8,9 +8,9 @@ module Api
       rescue_from PG::UniqueViolation, with: :raise_duplicate!
 
       SERIALIZER_ALLOWED_FIELDS = {
-        :offers => [:id, :state, :notes, :created_at, :submitted_at, :district_id],
-        :packages => [:id, :notes, :notes_zh_tw, :package_type_id, :grade, :donor_condition_id, :offer_id, :received_quantity, :length, :width, :height, :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id],
-        :images => [:id, :favourite, :cloudinary_id, :angle, :imageable_type, :imageable_id]
+        :offers => %i[id state notes created_at submitted_at district_id],
+        :packages => %i[id notes notes_zh_tw package_type_id grade donor_condition_id offer_id received_quantity length width height favourite_image_id saleable value_hk_dollar package_set_id],
+        :images => %i[id favourite cloudinary_id angle imageable_type imageable_id]
       }.with_indifferent_access
 
       SERIALIZER_ALLOWED_RELATIONSHIPS = {
