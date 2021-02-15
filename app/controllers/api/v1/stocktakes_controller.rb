@@ -41,7 +41,11 @@ module Api
           success = @stocktake.save
           @stocktake.populate_revisions! if success
 
-          return render json: @stocktake, serializer: serializer, status: 201 if success
+          if success
+            render json: @stocktake, serializer: serializer, status: 201
+          else
+            render_error @stocktake.errors.full_messages.join(". ")
+          end
 
           render_error @stocktake.errors.full_messages.join('. ')
         end
