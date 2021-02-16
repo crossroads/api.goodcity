@@ -480,7 +480,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
 
-    context "Shareable Offers/Published offers filter" do
+    context "When a filter is applied" do
       let!(:shareable1) {create :shareable, resource: reviewing_offer}
       let!(:shareable2) {create :shareable, resource: submitted_offer}
 
@@ -488,12 +488,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         get :search, params: { shareable: true }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable1.resource_id, shareable2.resource_id])
       end
 
       it "returns offers published on charity site of particular state" do
         get :search, params: { shareable: true, state: "submitted" }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable2.resource_id])
       end
     end
 
