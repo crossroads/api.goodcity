@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '2.5.1'
 
 gem 'pg'
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 6.1.3'
 gem 'rake'
 
 gem 'active_model_otp'
