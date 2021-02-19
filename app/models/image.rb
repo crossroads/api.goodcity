@@ -6,7 +6,10 @@ class Image < ApplicationRecord
   include ShareSupport
 
   has_one :user, inverse_of: :image
-  belongs_to :imageable, polymorphic: true, touch: true
+  belongs_to :item
+  belongs_to :offer
+
+  belongs_to :imageable, polymorphic: true
 
   before_save :handle_heic_image
   before_destroy :delete_image_from_cloudinary, unless: :has_multiple_items
