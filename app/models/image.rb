@@ -47,7 +47,7 @@ class Image < ApplicationRecord
 
   def reset_favourite
     favourite && imageable &&
-    imageable.images.where.not(id: id).each{ |img| img.update_attributes(favourite: false) }
+    imageable.images.where.not(id: id).each{ |img| img.update(favourite: false) }
   end
 
   private

@@ -138,14 +138,14 @@ module Api
 
       api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
       def mark_inactive
-        @offer.update_attributes({ state_event: 'mark_inactive' })
+        @offer.update({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/reopen_offer', "Reopen closed/cancelled offer"
       def reopen_offer
-        @offer.update_attributes({ state_event: 'reopen' })
+        @offer.update({ state_event: 'reopen' })
         render json: @offer, serializer: offer_serializer
       end
 
