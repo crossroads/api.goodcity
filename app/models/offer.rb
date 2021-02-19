@@ -270,7 +270,7 @@ class Offer < ApplicationRecord
   end
 
   def clear_logistics_details
-    update_attributes(crossroads_transport_id: nil, gogovan_transport_id: nil)
+    update(crossroads_transport_id: nil, gogovan_transport_id: nil)
   end
 
   def send_thank_you_message
