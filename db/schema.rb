@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_111336) do
+ActiveRecord::Schema.define(version: 2021_02_22_065627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.string "respondable_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "message_type", default: "canned"
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|
@@ -437,7 +438,7 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.index ["contact_id"], name: "index_order_transports_on_contact_id"
     t.index ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id"
     t.index ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id"
-    t.index ["order_id"], name: "index_order_transports_on_order_id", unique: true
+    t.index ["order_id"], name: "index_order_transports_on_order_id"
     t.index ["scheduled_at"], name: "index_order_transports_on_scheduled_at"
   end
 
