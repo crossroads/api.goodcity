@@ -58,7 +58,7 @@ module Api
       api :PUT, '/v1/images/1', "Update an image"
       param_group :image
       def update
-        if @image.update_attributes(image_params)
+        if @image.update(image_params)
           serialized_response
         else
           render json: @image.errors, status: 422
