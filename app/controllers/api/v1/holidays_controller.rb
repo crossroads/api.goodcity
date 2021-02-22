@@ -51,7 +51,7 @@ module Api
       api :PUT, '/v1/holidays/1', "Update holiday"
       param_group :holiday
       def update
-        @holiday.update_attributes(holiday_params)
+        @holiday.update(holiday_params)
         render json: @holiday, serializer: serializer
       end
 
