@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_111336) do
+ActiveRecord::Schema.define(version: 2021_02_17_163846) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -947,6 +947,20 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.integer "max_unit_quantity"
   end
 
+  create_table "stripe_payments", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "setup_intent_id"
+    t.string "payment_method_id"
+    t.string "payment_intent_id"
+    t.float "amount"
+    t.string "status"
+    t.string "receipt_url"
+    t.string "source_type"
+    t.integer "source_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "subpackage_types", id: :serial, force: :cascade do |t|
     t.integer "package_type_id"
     t.integer "subpackage_type_id"
@@ -989,7 +1003,8 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.string "status"
     t.datetime "scheduled_at"
     t.jsonb "metadata"
-    t.integer "offer_id"
+    t.integer "source_id"
+    t.string "source_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -1043,6 +1058,7 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.boolean "receive_email", default: false
     t.string "other_phone"
     t.string "preferred_language"
+    t.string "stripe_customer_id"
     t.index ["image_id"], name: "index_users_on_image_id"
     t.index ["mobile"], name: "index_users_on_mobile"
     t.index ["sms_reminder_sent_at"], name: "index_users_on_sms_reminder_sent_at"
