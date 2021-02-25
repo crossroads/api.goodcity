@@ -34,7 +34,6 @@ context "ValuationCalculator" do
     end
 
     it "returns correct value upto 2 decimal place" do
-      debugger
       value=543.21 * vm.multiplier.to_f
       expect(package.calculate_valuation).to eql(value.round(2))
     end
