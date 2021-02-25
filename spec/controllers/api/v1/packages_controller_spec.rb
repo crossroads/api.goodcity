@@ -449,12 +449,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
       end
 
-      it 'creates/updates package record with value_hk_dollar upto 2 decimals' do
-        package_params[:value_hk_dollar] = 14.446789
-        post :create, params: { package: package_params }
-        expect(parsed_body["package"]["value_hk_dollar"]).to eq(package_params[:value_hk_dollar].round(2).to_s)
-      end
-
       context 'if value_hk_dollar is nil' do
         it 'sets a default value' do
           package_params[:value_hk_dollar] = nil
@@ -855,6 +849,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       updated_params = { quantity: 30, width: 100 }
       put :update, params: { id: package.id, package: package_params.merge(updated_params) }
       expect(response.status).to eq(200)
+    end
+
+    it 'creates/updates package record with value_hk_dollar upto 2 decimals' do
+      package_params[:value_hk_dollar] = 14.446789
+      post :create, params: { package: package_params }
+      expect(parsed_body["package"]["value_hk_dollar"]).to eq(package_params[:value_hk_dollar].round(2).to_s)
     end
 
     context "by setting an inventory_number for the first time" do
