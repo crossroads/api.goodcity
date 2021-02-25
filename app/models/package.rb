@@ -285,7 +285,7 @@ class Package < ApplicationRecord
   end
 
   def reset_value_hk_dollar
-    self.value_hk_dollar = value_hk_dollar.round(2)
+    self.value_hk_dollar = value_hk_dollar && value_hk_dollar.round(2)
   end
 
   def save_inventory_number
