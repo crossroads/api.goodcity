@@ -452,7 +452,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it 'creates/updates package record with value_hk_dollar upto 2 decimals' do
         package_params[:value_hk_dollar] = 14.446789
         post :create, params: { package: package_params }
-        debugger
         expect(parsed_body["package"]["value_hk_dollar"]).to eq(package_params[:value_hk_dollar].round(2).to_s)
       end
 
