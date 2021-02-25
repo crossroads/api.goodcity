@@ -11,7 +11,7 @@ context "ValuationCalculator" do
 
     it "should not apply a default value if value_hk_dollar already has a value" do
       package = create(:package, value_hk_dollar: 10.2121)
-      expect(package.value_hk_dollar).to eql(10.2121)
+      expect(package.value_hk_dollar).to eql(10.21)
     end
 
   end
@@ -33,8 +33,9 @@ context "ValuationCalculator" do
       it { expect(package.calculate_valuation).to eql(0.0) }
     end
 
-    it "returns correct value" do
-      expect(package.calculate_valuation).to eql(543.21 * vm.multiplier.to_f)
+    it "returns correct value upto 2 decimal place" do
+      value=543.21 * vm.multiplier.to_f
+      expect(package.calculate_valuation).to eql(value.round(2))
     end
   end
 end
