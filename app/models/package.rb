@@ -45,7 +45,7 @@ class Package < ApplicationRecord
 
   before_destroy :remove_inventory_number, if: :inventory_number
   before_create :set_default_values
-  before_save :save_value_hk_dollar_upto_2_decimal_places, if: :value_hk_dollar_changed?
+  before_save :reset_value_hk_dollar, if: :value_hk_dollar_changed?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
 
@@ -284,8 +284,8 @@ class Package < ApplicationRecord
     true
   end
 
-  def save_value_hk_dollar_upto_2_decimal_places
-    self.value_hk_dollar=self.value_hk_dollar.round(2)
+  def reset_value_hk_dollar
+    self.value_hk_dollar = value_hk_dollar.round(2)
   end
 
   def save_inventory_number
