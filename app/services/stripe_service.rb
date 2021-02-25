@@ -43,13 +43,13 @@ class StripeService
       payment_method_id: details[:payment_method]
     )
 
-    if @authorize_amount.downcase.to_s == 'true'
-      charge_saved_card(amount_for_source, @customer_id, details[:payment_method])
+    if @authorize_amount.to_s.downcase == 'true'
+      authorize_amount_on_saved_card(amount_for_source, @customer_id, details[:payment_method])
     end
   end
 
   # STEP 5
-  def charge_saved_card(amount, customer_id, payment_method_id)
+  def authorize_amount_on_saved_card(amount, customer_id, payment_method_id)
     begin
       intent = Stripe::PaymentIntent.create({
         amount: amount,
@@ -58,7 +58,7 @@ class StripeService
         payment_method: payment_method_id,
         off_session: true,
         confirm: true,
-        capture_method: 'manual', # https://stripe.com/docs/payments/capture-later
+        capture_method: 'manual', # Ref: https://stripe.com/docs/payments/capture-later
       })
 
       # Update payment-intent details for customer's service.
@@ -72,7 +72,6 @@ class StripeService
       payment_intent = Stripe::PaymentIntent.retrieve(payment_intent_id)
       puts payment_intent.id
     end
-
   end
 
   # STEP 6
