@@ -7,10 +7,8 @@ module Api
       load_and_authorize_resource :canned_response, parent: false
 
       def index
-        type = params["type"] ? params["type"] : "canned"
-        canned_responses = CannedResponse.where(message_type: type)
-        return search_and_render_canned_message(canned_responses) if params['searchText'].present?
-        render json: canned_responses, each_serializer: serializer
+        return search_and_render_canned_message(@canned_responses) if params['searchText'].present?
+        render json: @canned_responses, each_serializer: serializer
       end
 
       def create
