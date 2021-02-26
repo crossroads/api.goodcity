@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -225,6 +225,12 @@ Rails.application.routes.draw do
       get "stockit_items/:id", to: "packages#stockit_item_details"
       put "orders_packages/:id/actions/:action_name", to: "orders_packages#exec_action"
       put "packages/:id/actions/:action_name", to: "packages#register_quantity_change"
+
+      get "stripe/fetch_public_key", to: "stripe#fetch_public_key"
+      post "stripe/create_setupintent", to: "stripe#create_setupintent"
+      post "stripe/save_payment_method", to: "stripe#save_payment_method"
+
+
     end
   end
 end

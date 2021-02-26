@@ -86,6 +86,10 @@ FactoryBot.define do
       is_mobile_verified { false }
     end
 
+    trait :stripe_user do
+      stripe_customer_id { 'cus_IzVEJhwLTIZg1F' }
+    end
+
     trait :stockit_user do
       first_name { 'Stockit' }
       last_name { 'User' }
