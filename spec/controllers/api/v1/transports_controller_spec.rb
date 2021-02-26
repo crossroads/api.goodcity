@@ -36,7 +36,7 @@ RSpec.describe Api::V1::TransportsController, type: :controller do
 
     let(:quotation_attributes) {
       {
-        "provider": "GOGOX",
+        "provider": "Gogox",
         'vehicle_type': 'van',
         "schedule_at": scheduled_at,
         "district_id": district.id.to_s,
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::TransportsController, type: :controller do
 
     let(:order_attributes) {
       {
-        "provider": "GOGOX",
+        "provider": "Gogox",
         'vehicle_type': "van",
         "schedule_at": scheduled_at,
         "district_id": district.id.to_s,
