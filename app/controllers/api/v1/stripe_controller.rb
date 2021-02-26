@@ -20,21 +20,29 @@ module Api
       param :source_type, String, required: true, desc: "Type of the source (transport_order)"
       param :authorize_amount, [true, false, 'true', 'false'], allow_nil: true, default: false, desc: 'Amount should be authorized from card for given source'
       def save_payment_method
-        # stripe_response = {
-        #   "id"=>"seti_1ILLMvJG1rVU4bz1HIM6tijG",
-        #   "object"=>"setup_intent",
-        #   "cancellation_reason"=>"",
-        #   "client_secret"=>
-        #     "seti_1ILLMvJG1rVU4bz1HIM6tijG_secret_IxFs70kJjXmCk2UaIm8DqvB5C3iHod0",
-        #   "created"=>"1613450461",
-        #   "description"=>"",
-        #   "last_setup_error"=>"",
-        #   "livemode"=>"false",
-        #   "next_action"=>"",
-        #   "payment_method"=>"pm_1ILLjYJG1rVU4bz1ElxLd5Mj", # <----
-        #   "payment_method_types"=>["card"],
-        #   "status"=>"succeeded",
-        #   "usage"=>"off_session"
+
+        # PARAMS:
+        # {
+        #   "stripe_response": {
+        #     "id": "seti_1IOyT3JG1rVU4bz1mBbHH6Yu",
+        #     "object": "setup_intent",
+        #     "cancellation_reason": "",
+        #     "client_secret": "seti_1IOyT3JG1rVU4bz1mBbHH6Yu_secret_J10Uje2R9PSUp74wN3S3TfwaDyCMMG8",
+        #     "created": "1614315741",
+        #     "description": "",
+        #     "last_setup_error": "",
+        #     "livemode": "false",
+        #     "next_action": "",
+        #     "payment_method": "pm_1IOyTrJG1rVU4bz1wYJv9s5N", "payment_method_types": ["card"],
+        #     "status": "succeeded",
+        #     "usage": "off_session"
+        #   },
+        #   "source_id": "1",
+        #   "source_type": "transport_order",
+        #   "authorize_amount": "true",
+        #   "format": "json",
+        #   "controller": "api/v1/stripe",
+        #   "action": "save_payment_method"
         # }
 
         StripeService.new(
