@@ -7,7 +7,7 @@ module Api
       load_and_authorize_resource :canned_response, parent: false
 
       def index
-        return search_and_render_canned_message(@canned_responses) if params['searchText'].present?
+        return search_and_render_canned_message if params['searchText'].present?
         render json: @canned_responses, each_serializer: serializer
       end
 
@@ -31,8 +31,8 @@ module Api
         params.require(:canned_response).permit(:name_en,:name_zh_tw,:content_en,:content_zh_tw)
       end
 
-      def search_and_render_canned_message(canned_responses)
-        result = canned_responses.search(params['searchText'])
+      def search_and_render_canned_message
+        result = @canned_responses.search(params['searchText'])
         render json: result, each_serializer: serializer
       end
 
