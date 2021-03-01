@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_111336) do
+ActiveRecord::Schema.define(version: 2021_02_26_072406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -666,12 +666,12 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.integer "detail_id"
     t.string "detail_type"
     t.integer "storage_type_id"
-    t.decimal "value_hk_dollar"
     t.integer "available_quantity", default: 0
     t.integer "on_hand_quantity", default: 0
     t.integer "designated_quantity", default: 0
     t.integer "dispatched_quantity", default: 0
     t.date "expiry_date"
+    t.decimal "value_hk_dollar", null: false
     t.integer "package_set_id"
     t.integer "restriction_id"
     t.text "comment"
