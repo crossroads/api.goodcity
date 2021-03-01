@@ -437,7 +437,7 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.index ["contact_id"], name: "index_order_transports_on_contact_id"
     t.index ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id"
     t.index ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id"
-    t.index ["order_id"], name: "index_order_transports_on_order_id"
+    t.index ["order_id"], name: "index_order_transports_on_order_id", unique: true
     t.index ["scheduled_at"], name: "index_order_transports_on_scheduled_at"
   end
 
