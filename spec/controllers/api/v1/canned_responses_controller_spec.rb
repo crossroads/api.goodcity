@@ -4,9 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::CannedResponsesController, type: :controller do
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_canned_response_permission) }
-  let(:parsed_body) { JSON.parse(response.body) }
+  let!(:canned_response) { create(:canned_response) }
 
   before(:each) { generate_and_set_token(user) }
+
   before do
     create_list(:canned_response, 5)
   end
@@ -20,8 +21,8 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
 
       it 'returns all canned_responses' do
         get :index
-        expect(parsed_body['canned_responses'].length).to eq(5)
-        expect(parsed_body['canned_responses'].map { |res| res['id'] }).to eq(CannedResponse.pluck(:id))
+        expect(response_json['canned_responses'].length).to eq(6)
+        expect(response_json['canned_responses'].map { |res| res['id'] }).to eq(CannedResponse.pluck(:id))
       end
     end
 
@@ -43,111 +44,128 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
 
       it 'returns results based on the search parameter' do
         get :index, params: { searchText: 'opening hours' }
-        expect(parsed_body['canned_responses'].length).to eq(1)
+        expect(response_json['canned_responses'].length).to eq(1)
       end
 
       context 'when search parameter is empty' do
         it 'returns all canned_responses' do
           get :index, params: { searchText: '' }
-          expect(parsed_body['canned_responses'].length).to eq(CannedResponse.count)
+          expect(response_json['canned_responses'].length).to eq(CannedResponse.count)
         end
       end
 
       context 'when search parameter does not match with anything' do
         it 'returns empty' do
           get :index, params: { searchText: 'item location' }
-          expect(parsed_body['canned_responses']).to be_empty
+          expect(response_json['canned_responses']).to be_empty
         end
       end
     end
   end
 
-  describe "POST canned_response" do
+  describe 'POST canned_response' do
+    let(:canned_response_params) { FactoryBot.attributes_for(:canned_response) }
     before { generate_and_set_token(user) }
 
-    it "creates new canned_response" do
-      expect{
-        post :create, params: { canned_response: { name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM' } }
+    it 'creates new canned_response' do
+      expect {
+        post :create, params: { canned_response: canned_response_params }
       }.to change(CannedResponse, :count).by(1)
       expect(response.status).to eq(201)
     end
 
-    context 'when name_en is not passed' do
-      it "does not create new canned_response" do 
-        post :create, params: { canned_response: { content_en: 'We are open from 10AM to 10PM' } }
+    context 'when name_en is not present' do
+      it 'does not create new canned_response' do
+        canned_response_params[:name_en] = nil
+        expect {
+          post :create, params: { canned_response: canned_response_params }
+        }.to_not change { CannedResponse.count }
+
         expect(response.status).to eq(422)
       end
-    end      
+    end
 
-    context 'when content_en is not passed' do
-      it "does not create new canned_response" do 
-        post :create, params: { canned_response: { name_en: 'What are your opening hours?' } }
+    context 'when content_en is not present' do
+      it 'does not create new canned_response' do
+        canned_response_params[:content_en] = nil
+        expect {
+          post :create, params: { canned_response: canned_response_params }
+        }.to_not change { CannedResponse.count }
         expect(response.status).to eq(422)
       end
-    end      
+    end
 
-    context 'when name_zh_tw is not passed' do
-      it "creates new canned_response" do 
-        post :create, params: { canned_response: { name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM', content_zh_tw: 'We are open from 10AM to 10PM' } }
+    context 'when name_zh_tw is not present' do
+      it 'creates new canned_response' do
+        canned_response_params[:name_zh_tw] = nil
+        expect {
+          post :create, params: { canned_response: canned_response_params }
+        }.to change { CannedResponse.count }.by(1)
         expect(response.status).to eq(201)
       end
-    end            
+    end
 
     context 'when content_zh_tw is not passed' do
-      it "creates new canned_response" do 
-        post :create, params: { canned_response: { name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM', name_zh_tw: 'What are your opening hours?' } }
+      it 'creates new canned_response' do
+        canned_response_params[:content_zh_tw] = nil
+        expect {
+          post :create, params: { canned_response: canned_response_params }
+        }.to change { CannedResponse.count }.by(1)
         expect(response.status).to eq(201)
       end
-    end      
+    end
   end
 
   describe "UPDATE canned_response" do
-    before {generate_and_set_token(user)}
+    before { generate_and_set_token(user) }
 
-    it "update existing canned_response" do
-      canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
-      put :update, params: { id: canned_response.id, canned_response: { name_en: "When is the weeko off?" } }
+    it 'update existing canned_response' do
+      name_en = 'When is the weeko off?'
+      put :update, params: { id: canned_response.id, canned_response: { name_en: name_en } }
+
       expect(response.status).to eq(200)
+      expect(canned_response.reload.name_en).to eq(name_en)
     end
 
-    context 'when name_en is updated to blank' do
-      it "does not update canned_response" do 
-        canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
-        put :update, params: { id: canned_response.id, canned_response: { name_en: "" } }
+    context 'when name_en is updated to empty' do
+      it 'does not update canned_response' do
+        expect {
+          put :update, params: { id: canned_response.id, canned_response: { name_en: '' } }
+        }.to_not change { canned_response.reload }
         expect(response.status).to eq(422)
       end
-    end      
+    end
 
     context 'when content_en is updated to blank' do
-      it "does not update canned_response" do 
-        canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
-        put :update, params: { id: canned_response.id, canned_response: { content_en: "" } }
+      it 'does not update canned_response' do
+        expect {
+          put :update, params: { id: canned_response.id, canned_response: { content_en: '' } }
+        }.to_not change { canned_response.reload }
         expect(response.status).to eq(422)
       end
-    end      
+    end
 
     context 'when content_en is updated to blank' do
-      it "updates name_zh_tw to blank" do 
-        canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM', name_zh_tw: 'What are your opening hours?', content_zh_tw: 'We are open from 10AM to 10PM')
-        put :update, params: { id: canned_response.id, canned_response: { name_zh_tw: "" } }
+      it 'updates name_zh_tw to blank' do
+        put :update, params: { id: canned_response.id, canned_response: { name_zh_tw: '' } }
         expect(response.status).to eq(200)
+        expect(canned_response.reload.name_zh_tw).to be_empty
       end
-    end      
+    end
 
     context 'when content_en is updated to blank' do
-      it "updates content_zh_tw to blank" do 
-        canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM', name_zh_tw: 'What are your opening hours?', content_zh_tw: 'We are open from 10AM to 10PM')
-        put :update, params: { id: canned_response.id, canned_response: { content_zh_tw: "" } }
+      it 'updates content_zh_tw to blank' do
+        put :update, params: { id: canned_response.id, canned_response: { content_zh_tw: '' } }
         expect(response.status).to eq(200)
+        expect(canned_response.reload.content_zh_tw).to be_empty
       end
-    end      
+    end
   end
 
-  describe "DELETE canned_response" do
-    before {generate_and_set_token(user)}
+  describe 'DELETE canned_response' do
+    before { generate_and_set_token(user) }
 
-    it "destroy canned_response" do
-      canned_response = create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
+    it 'destroy canned_response' do
       delete :destroy, params:{ id: canned_response.id }
       expect(response.status).to eq(200)
     end
