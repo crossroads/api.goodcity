@@ -8,6 +8,7 @@ module Api
 
       def index
         return search_and_render_canned_message if params['searchText'].present?
+
         render json: @canned_responses, each_serializer: serializer
       end
 
@@ -28,7 +29,7 @@ module Api
       private
 
       def canned_response_params
-        params.require(:canned_response).permit(:name_en,:name_zh_tw,:content_en,:content_zh_tw)
+        params.require(:canned_response).permit(:name_en, :name_zh_tw, :content_en, :content_zh_tw)
       end
 
       def search_and_render_canned_message
