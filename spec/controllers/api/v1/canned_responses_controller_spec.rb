@@ -67,11 +67,22 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
     let(:canned_response_params) { FactoryBot.attributes_for(:canned_response) }
     before { generate_and_set_token(user) }
 
+    context 'for unauthorized user' do
+      it 'cannot create canned_messages' do
+        user = create(:user, :with_token)
+        generate_and_set_token(user)
+        expect {
+          post :create, params: { canned_response: canned_response_params }
+        }.to_not change { CannedResponse.count }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     it 'creates new canned_response' do
       expect {
         post :create, params: { canned_response: canned_response_params }
       }.to change(CannedResponse, :count).by(1)
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:success)
     end
 
     context 'when name_en is not present' do
@@ -81,7 +92,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
           post :create, params: { canned_response: canned_response_params }
         }.to_not change { CannedResponse.count }
 
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
@@ -91,7 +102,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect {
           post :create, params: { canned_response: canned_response_params }
         }.to_not change { CannedResponse.count }
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
@@ -101,7 +112,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect {
           post :create, params: { canned_response: canned_response_params }
         }.to change { CannedResponse.count }.by(1)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:success)
       end
     end
 
@@ -111,7 +122,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect {
           post :create, params: { canned_response: canned_response_params }
         }.to change { CannedResponse.count }.by(1)
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:success)
       end
     end
   end
@@ -119,11 +130,22 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
   describe "UPDATE canned_response" do
     before { generate_and_set_token(user) }
 
+    context 'for unauthorized user' do
+      it 'cannot update canned_messages' do
+        user = create(:user, :with_token)
+        generate_and_set_token(user)
+        expect {
+          put :update, params: { id: canned_response.id, canned_response: { name_en: 'abcd' } }
+        }.to_not change { canned_response.reload }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     it 'update existing canned_response' do
       name_en = 'When is the weeko off?'
       put :update, params: { id: canned_response.id, canned_response: { name_en: name_en } }
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(canned_response.reload.name_en).to eq(name_en)
     end
 
@@ -132,7 +154,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect {
           put :update, params: { id: canned_response.id, canned_response: { name_en: '' } }
         }.to_not change { canned_response.reload }
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
@@ -141,14 +163,14 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect {
           put :update, params: { id: canned_response.id, canned_response: { content_en: '' } }
         }.to_not change { canned_response.reload }
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
     context 'when content_en is updated to blank' do
       it 'updates name_zh_tw to blank' do
         put :update, params: { id: canned_response.id, canned_response: { name_zh_tw: '' } }
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
         expect(canned_response.reload.name_zh_tw).to be_empty
       end
     end
@@ -156,7 +178,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
     context 'when content_en is updated to blank' do
       it 'updates content_zh_tw to blank' do
         put :update, params: { id: canned_response.id, canned_response: { content_zh_tw: '' } }
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
         expect(canned_response.reload.content_zh_tw).to be_empty
       end
     end
@@ -165,9 +187,22 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
   describe 'DELETE canned_response' do
     before { generate_and_set_token(user) }
 
+    context 'for unauthorized user' do
+      it 'cannot destroy canned_messages' do
+        user = create(:user, :with_token)
+        generate_and_set_token(user)
+        expect {
+          delete :destroy, params: { id: canned_response.id }
+        }.to_not change { CannedResponse.count }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     it 'destroy canned_response' do
-      delete :destroy, params:{ id: canned_response.id }
-      expect(response.status).to eq(200)
+      expect {
+        delete :destroy, params: { id: canned_response.id }
+      }.to change { CannedResponse.count }.by(-1)
+      expect(response).to have_http_status(:success)
     end
   end
 end
