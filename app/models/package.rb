@@ -60,7 +60,8 @@ class Package < ApplicationRecord
   end
 
   validates :package_type_id, presence: true
-  validates :value_hk_dollar, presence: true, numericality: { greater_than: 0 }
+  validates :value_hk_dollar, presence: true, numericality: { greater_than: 0 },
+    if: lambda { !new_record? && !box_or_pallet? }
   validates :notes, presence: true
   validates :on_hand_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :available_quantity, numericality: { greater_than_or_equal_to: 0 }
