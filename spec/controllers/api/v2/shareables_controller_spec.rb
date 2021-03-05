@@ -32,7 +32,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             create(:shareable, resource_type),
             create(:shareable, resource_type)
           ]
-          
+
           get :index
           expect(response.status).to eq(200)
           expect(parsed_body['data'].length).to eq(3)
@@ -99,7 +99,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
         expect(parsed_body['data'].length).to eq(7)
         expect(parsed_body['data'].map { |r| r['id'] } ).to match_array(ids[0..6])
       end
-      
+
       it "fetches the second page" do
         get :index, params: { page: 2, per_page: 7 }
         expect(response.status).to eq(200)
@@ -262,7 +262,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
   end
 
   describe "POST /shareables (#create)" do
-  
+
     context "as an unauthenticated user" do
       let(:offer) { create(:offer) }
 
@@ -322,7 +322,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             expect {
               post :create, params: { resource_id: resource.id, resource_type: resource.class.name, allow_listing: true }
             }.not_to change(Shareable, :count)
-  
+
             expect(response.status).to eq(409)
           end
 
@@ -330,7 +330,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             expect {
               post :create, params: { resource_id: resource.id, resource_type: resource.class.name, allow_listing: true, overwrite: true }
             }.not_to change(Shareable, :count)
-            
+
             expect(Shareable.find_by(id: existing_shareable.id)).to eq(nil) # it's been deleted
 
             expect(response.status).to eq(201)
@@ -339,7 +339,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
       end
     end
   end
-  
+
   describe "PUT /shareables/:id (#update)" do
     context "as an unauthenticated user" do
       let(:shareable) { create(:shareable, allow_listing: false) }
@@ -379,7 +379,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           shareable = create(:shareable, resource: resource, notes: "note", notes_zh_tw: "note zh")
 
           put :update, params: { id: shareable.id, notes: "foo", notes_zh_tw: "bar" }
- 
+
           expect(response.status).to eq(200)
           expect(shareable.reload.notes).to eq("foo")
           expect(shareable.reload.notes_zh_tw).to eq("bar")
@@ -438,7 +438,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           shareable4
         )
       end
-      
+
       describe "fetching one public offer (#resource_show)" do
         it "suceeds with 200 for a record that has been shared but not listed" do
           get :resource_show, params: { model: 'offers', public_uid: shareable1.public_uid }
@@ -484,8 +484,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             expect(included_packages[0]['type']).to eq('package')
             expect(included_packages[0]['attributes']['offer_id']).to eq(offer4.id)
             expect(included_packages[0]['attributes'].keys).to match_array([
-              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'grade', 'offer_id',
-              'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
+              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'donor_condition_id', 'grade', 'offer_id', 'length', 'width', 'height', 'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
             ])
           end
 
@@ -513,13 +512,13 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
 
         it "only returns whitelisted fields and the public id" do
           get :resource_index, params: { model: 'offers' }
-          expect(response.status).to eq(200)  
+          expect(response.status).to eq(200)
           expect(parsed_body['data'][0]['attributes'].keys).to match_array([
-            'id', 'state', 'notes', 'created_at', 'public_uid', 'district_id'
+            'id', 'state', 'notes', 'submitted_at', 'created_at', 'public_uid', 'district_id', 'public_notes', "public_notes_zh_tw"
           ])
         end
 
-        context 'with shared relationships' do 
+        context 'with shared relationships' do
           before do
             create :shareable, resource: package4
           end
@@ -556,12 +555,11 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
             expect(response.status).to eq(200)
             expect(included_packages[0]['type']).to eq('package')
             expect(included_packages[0]['attributes'].keys).to match_array([
-              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'grade', 'offer_id',
-              'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
+              'id', 'notes', 'notes_zh_tw', 'package_type_id', 'donor_condition_id', 'grade', 'offer_id', 'length', 'width', 'height', 'received_quantity', 'favourite_image_id', 'saleable', 'value_hk_dollar', 'package_set_id', 'public_uid'
             ])
           end
         end
       end
     end
-  end 
+  end
 end

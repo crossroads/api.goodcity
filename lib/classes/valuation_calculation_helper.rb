@@ -12,6 +12,6 @@ class ValuationCalculationHelper
     multiplier = ValuationMatrix.where(grade: @grade,
                                        donor_condition_id: @donor_condition_id)
                                 .pluck(:multiplier).first.to_f
-    multiplier * @package_type&.default_value_hk_dollar.to_f
+    (multiplier * @package_type&.default_value_hk_dollar.to_f).round(2)
   end
 end

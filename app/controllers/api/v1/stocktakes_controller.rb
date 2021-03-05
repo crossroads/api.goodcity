@@ -35,11 +35,10 @@ module Api
       api :POST, "/v1/stocktakes", "Create a stocktake"
       def create
         raise Goodcity::DuplicateRecordError if Stocktake.find_by(name: stocktake_params['name']).present?
-        
+
         @stocktake.created_by = current_user
         ActiveRecord::Base.transaction do
           success = @stocktake.save
-
           @stocktake.populate_revisions! if success
 
           if success
@@ -71,7 +70,7 @@ module Api
       private
 
       def stocktake_params
-        attributes = [:location_id, :name, :comment]
+        attributes = %i[location_id name comment]
         { state: 'open' }.merge(
           params.require(:stocktake).permit(attributes)
         )
