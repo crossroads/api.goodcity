@@ -863,7 +863,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       put :update, params: { id: package.id, package: { value_hk_dollar: nil } }
 
       expect(response.status).to eq(422)
-      expect(parsed_body['errors']).to match_array(["Value hk dollar can't be blank", "Value hk dollar is not a number"])
+      expect(parsed_body['errors']).to match_array(["Value hk dollar can't be blank"])
     end
 
     context "by setting an inventory_number for the first time" do
