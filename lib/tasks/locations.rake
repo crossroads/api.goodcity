@@ -5,7 +5,7 @@ namespace :goodcity do
   task remove_unused_locations: :environment do
     Location.find_in_batches(batch_size: 100).each do |locations|
       locations.each do |location|
-        if is_empty_location?(location)
+        if ManageLocation.new(location.id).is_empty_location?
           location.destroy
           puts "Deleted location: #{location.id} #{location.building}-#{location.area}"
         end
@@ -27,27 +27,14 @@ namespace :goodcity do
     elsif destination_location.blank?
       puts "Destination Location does not exist"
     else
-      merge_location(source_location, destination_location)
+      ManageLocation.merge_location(source_location, destination_location)
       puts "Success!"
 
-      if is_empty_location?(source_location)
+      if ManageLocation.new(source_location.id).is_empty_location?
         source_location.destroy
       end
     end
   end
 
-  def merge_location(source_location, destination_location)
-    ['Printer', 'Stocktake', 'PackagesInventory', 'PackageType', 'PackagesLocation', 'Package'].each do |klass|
-      records = Object::const_get(klass).where(location_id: source_location.id)
-      records.update_all(location_id: destination_location.id)
-    end
-  end
 
-  def is_empty_location?(location)
-    location.packages_locations.count.zero? &&
-      location.package_types.count.zero? &&
-      PackagesInventory.where(location_id: location.id).count.zero? &&
-      Printer.where(location_id: location.id).count.zero? &&
-      Stocktake.where(location_id: location.id).count.zero?
-  end
 end
