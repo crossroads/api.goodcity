@@ -112,7 +112,8 @@ namespace :goodcity do
   # rails goodcity:update_package_value_hk_dollar
   desc "update value_hk_dollar of packages"
   task update_package_value_hk_dollar: :environment do
-    Package.where(value_hk_dollar: nil)
+    Package
+      .where(value_hk_dollar: nil)
       .or(Package.where(value_hk_dollar: 0.0))
       .find_in_batches(batch_size: 100).each do |packages|
         packages.each do |package|
