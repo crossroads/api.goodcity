@@ -10,15 +10,15 @@ describe ManageLocation do
     it { expect(manage_location.instance_variable_get("@location")).to eq(location) }
   end
 
-  context "is_empty_location?" do
+  context "empty_location?" do
     it "should return true when there is no associated data" do
-      expect(manage_location.is_empty_location?).to eq(true)
+      expect(manage_location.empty_location?).to eq(true)
     end
 
     it "should return false when it has package-locations" do
       create :packages_location, location: location
 
-      expect(manage_location.is_empty_location?).to eq(false)
+      expect(manage_location.empty_location?).to eq(false)
     end
 
     it "should return false when it has package-types" do
@@ -26,22 +26,22 @@ describe ManageLocation do
       package_type.location = location
       package_type.save
 
-      expect(manage_location.is_empty_location?).to eq(false)
+      expect(manage_location.empty_location?).to eq(false)
     end
 
     it "should return false when package-invenotry refers same location" do
       create :packages_inventory, location: location
-      expect(manage_location.is_empty_location?).to eq(false)
+      expect(manage_location.empty_location?).to eq(false)
     end
 
     it "should return false when printers refers same location" do
       create :printer, location: location
-      expect(manage_location.is_empty_location?).to eq(false)
+      expect(manage_location.empty_location?).to eq(false)
     end
 
     it "should return false when printers refers same location" do
       create :stocktake, location: location
-      expect(manage_location.is_empty_location?).to eq(false)
+      expect(manage_location.empty_location?).to eq(false)
     end
   end
 

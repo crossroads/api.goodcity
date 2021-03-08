@@ -1,10 +1,9 @@
 class ManageLocation
-
   def initialize(location_id)
     @location = Location.find_by(id: location_id)
   end
 
-  def is_empty_location?
+  def empty_location?
     @location.packages_locations.count.zero? &&
       @location.package_types.count.zero? &&
       PackagesInventory.where(location_id: @location.id).count.zero? &&
@@ -13,10 +12,9 @@ class ManageLocation
   end
 
   def self.merge_location(source_location, destination_location)
-    ['Printer', 'Stocktake', 'PackagesInventory', 'PackageType', 'PackagesLocation', 'Package'].each do |klass|
+    %w[Printer Stocktake PackagesInventory PackageType PackagesLocation Package].each do |klass|
       records = Object::const_get(klass).where(location_id: source_location.id)
       records.update_all(location_id: destination_location.id)
     end
   end
-
 end
