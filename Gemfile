@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '2.5.1'
 
 gem 'pg'
-gem 'rails', '~> 5.2.4.3'
+gem 'rails', '~> 6.1.3'
 gem 'rake'
 
 gem 'active_model_otp'
@@ -46,7 +46,7 @@ gem 'rollbar'
 gem 'rotp', '~> 3.3.1'
 gem 'rubyXL'
 gem 'sendgrid-ruby'
-gem 'sidekiq', '~> 5.2.8'
+gem 'sidekiq', '~> 6.1.1'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console

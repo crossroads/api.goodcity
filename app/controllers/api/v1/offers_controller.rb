@@ -90,7 +90,7 @@ module Api
       param_group :offer
       param :saleable, [true, false], desc: "Can these items be sold?"
       def update
-        @offer.update_attributes(offer_params)
+        @offer.update(offer_params)
         render json: @offer, serializer: offer_serializer
       end
 
@@ -117,35 +117,35 @@ module Api
         param :crossroads_transport_id, String, allow_nil: true
       end
       def complete_review
-        @offer.update_attributes(review_offer_params)
+        @offer.update(review_offer_params)
         @offer.send_message(params["complete_review_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
       def close_offer
-        @offer.update_attributes({ state_event: 'mark_unwanted' })
+        @offer.update({ state_event: 'mark_unwanted' })
         @offer.send_message(params["complete_review_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
       def receive_offer
-        @offer.update_attributes({ state_event: 'receive' })
+        @offer.update({ state_event: 'receive' })
         @offer.send_message(params["close_offer_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
       def mark_inactive
-        @offer.update_attributes({ state_event: 'mark_inactive' })
+        @offer.update({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/reopen_offer', "Reopen closed/cancelled offer"
       def reopen_offer
-        @offer.update_attributes({ state_event: 'reopen' })
+        @offer.update({ state_event: 'reopen' })
         render json: @offer, serializer: offer_serializer
       end
 

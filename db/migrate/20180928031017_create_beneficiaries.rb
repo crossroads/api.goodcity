@@ -1,5 +1,6 @@
 class CreateBeneficiaries < ActiveRecord::Migration[4.2]
   def change
+
     create_table :beneficiaries do |t|
       t.references :identity_type, index: true, foreign_key: true
       t.references :created_by
@@ -8,8 +9,6 @@ class CreateBeneficiaries < ActiveRecord::Migration[4.2]
       t.string :first_name
       t.string :last_name
       t.string :phone_number
-      t.datetime :created_at
-      t.datetime :updated_at
 
       t.timestamps null: false
     end

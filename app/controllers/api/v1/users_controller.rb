@@ -56,7 +56,7 @@ module Api
       end
 
       def update
-        @user.update_attributes(user_params)
+        @user.update(user_params)
         if @user.valid?
           render json: @user, serializer: serializer
         else
