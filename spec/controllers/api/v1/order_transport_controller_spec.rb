@@ -52,7 +52,7 @@ RSpec.describe Api::V1::OrderTransportsController, type: :controller do
       end
     end
 
-    context 'if an update is made on cancelled order by stock administrator' do
+    context 'if an update is made on cancelled order by supervisor' do
       before { generate_and_set_token(supervisor) }
       it 'does not allow to perform the operation' do
         order_transport = create(:order_transport, order: cancelled_order, timeslot: '2PM-3PM')
