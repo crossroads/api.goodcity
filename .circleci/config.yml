@@ -72,7 +72,8 @@ jobs:
       - run: bundle exec rails db:create:all db:migrate
       - run:
           name: Cucumber tests
-          command: bundle exec cucumber
+          command: |
+            bundle exec cucumber
       - run:
           name: Rspec tests
           command: |
@@ -142,4 +143,3 @@ workflows:
           filters:
             branches:
               only: /^(master|live|preview)$/
-

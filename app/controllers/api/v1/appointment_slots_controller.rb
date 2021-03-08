@@ -48,7 +48,7 @@ module Api
       api :PUT, '/v1/appointment_slots/1', "Update an appointment slot"
       param_group :appointment_slot
       def update
-        if @appointment_slot.update_attributes(appointment_slot_params)
+        if @appointment_slot.update(appointment_slot_params)
           render_with_timezone(@appointment_slot)
         else
           render json: @appointment_slot.errors, status: 422

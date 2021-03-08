@@ -19,7 +19,7 @@ class UserFavourite < ApplicationRecord
     #
     # Delete non-persistent favorites > 20
     #
-    UserFavourite
+    UserFavourite.default_scoped
       .where(user_id: user_id, favourite_type: favourite_type, persistent: false)
       .order('updated_at')
       .offset(LIMIT_PER_TABLE)

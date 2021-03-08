@@ -6,7 +6,7 @@ describe Offer do
     @package = create :package, :with_inventory_record, received_quantity: 10
     @package_quantity_validator = PackageQuantityValidator.new
     @order = create :order
-    @error_message = ["cannot be greater than package quantity"]
+    @error_message = 'cannot be greater than package quantity'
   end
 
   it 'validate record when quantity is less than package received_quantity' do
@@ -18,7 +18,7 @@ describe Offer do
   it 'invalidate record when quantity is not less than package received_quantity' do
     @package.packages_locations.first.update(quantity: 5)
     packages_location = build :packages_location, quantity: 10, package: @package
-    expect(@package_quantity_validator.validate(packages_location)).to eq(@error_message)
+    expect(@package_quantity_validator.validate(packages_location).full_message).to include(@error_message)
   end
 
   it 'validate record when quantity is less than package received_quantity and there is no record' do
@@ -34,6 +34,6 @@ describe Offer do
       @package.orders_packages << orders_package
     end
     orders_package = build :orders_package, quantity: 3, package: @package, order: @order
-    expect(@package_quantity_validator.validate(orders_package)).to eq(@error_message)
+    expect(@package_quantity_validator.validate(orders_package).full_message).to include(@error_message)
   end
 end

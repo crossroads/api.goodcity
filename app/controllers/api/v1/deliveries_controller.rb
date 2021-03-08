@@ -50,7 +50,7 @@ module Api
       api :PUT, '/v1/deliveries/1', "Update a delivery"
       param_group :delivery
       def update
-        if @delivery.update_attributes(delivery_params)
+        if @delivery.update(delivery_params)
           render json: @delivery, serializer: serializer
         else
           render_errors
