@@ -19,6 +19,7 @@ engines:
     enabled: true
   rubocop:
     enabled: true
+    channel: rubocop-0-79
     checks:
       Rubocop/Metrics/ClassLength:
         enabled: false
