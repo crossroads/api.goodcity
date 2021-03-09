@@ -39,7 +39,7 @@ module PackageFiltering
     #     (building_name)-(area_name)
     #     28-(All areas)
     #     28-Room1
-    def filter(options={})
+    def apply_filter(options={})
       states = (options['state'] || '').strip.split(',') || []
       location = options['location']
       storage_type_name = options['storage_type_name']
