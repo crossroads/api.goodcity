@@ -228,7 +228,7 @@ module Api
           )
         end
         params_for_filter = %w[state location associated_package_types_for storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
-        records = records.filter(params_for_filter)
+        records = records.apply_filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
                                                     each_serializer: stock_serializer,

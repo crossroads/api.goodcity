@@ -13,12 +13,12 @@ describe Package do
       create(:package, :dispatched, :with_inventory_record, state: 'received', received_quantity: 1) # Dispatched
     end
 
-    subject { Package.filter('state' => state).count }
+    subject { Package.apply_filter('state' => state).count }
 
     it 'does not filter out anything if no explicit arguments are provided' do
       expect(Package.count).to eq(5)
       expect(Package.count).to eq(5)
-      expect(Package.filter.count).to eq(5)
+      expect(Package.apply_filter.count).to eq(5)
     end
 
     context 'returns in stock items where state is received and quantity > 0' do
@@ -66,8 +66,8 @@ describe Package do
     end
 
     it 'filters out only designated packages' do
-      expect(Package.filter.count).to eq(2)
-      expect(Package.filter('state' => 'designated').count).to eq(1)
+      expect(Package.apply_filter.count).to eq(2)
+      expect(Package.apply_filter('state' => 'designated').count).to eq(1)
     end
   end
 
@@ -82,9 +82,9 @@ describe Package do
     end
 
     it 'filters out only associated package-types packages' do
-      expect(Package.filter.count).to eq(3)
+      expect(Package.apply_filter.count).to eq(3)
 
-      packages = Package.filter('associated_package_types_for' => ["VCL"])
+      packages = Package.apply_filter('associated_package_types_for' => ["VCL"])
       expect(packages.count).to eq(2)
       expect(packages).to match_array([@parent_package, @child_package])
       expect(packages).to_not include(@other_package)
@@ -100,8 +100,8 @@ describe Package do
     end
 
     it 'filters out only dispatched packages' do
-      expect(Package.filter.count).to eq(2)
-      expect(Package.filter('state' => 'dispatched').count).to eq(1)
+      expect(Package.apply_filter.count).to eq(2)
+      expect(Package.apply_filter('state' => 'dispatched').count).to eq(1)
     end
   end
 
@@ -117,7 +117,7 @@ describe Package do
 
 
       it 'filters out only processed packages' do
-        expect(Package.filter('state' => 'process').count).to eq(1)
+        expect(Package.apply_filter('state' => 'process').count).to eq(1)
       end
     end
 
@@ -132,7 +132,7 @@ describe Package do
 
 
       it 'filters out only lost packages' do
-        expect(Package.filter('state' => 'loss').count).to eq(1)
+        expect(Package.apply_filter('state' => 'loss').count).to eq(1)
       end
     end
 
@@ -147,7 +147,7 @@ describe Package do
 
 
       it 'filters out only packed packages' do
-        expect(Package.filter('state' => 'pack').count).to eq(1)
+        expect(Package.apply_filter('state' => 'pack').count).to eq(1)
       end
     end
 
@@ -162,7 +162,7 @@ describe Package do
 
 
       it 'filters out only trashed packages' do
-        expect(Package.filter('state' => 'trash').count).to eq(1)
+        expect(Package.apply_filter('state' => 'trash').count).to eq(1)
       end
     end
 
@@ -177,7 +177,7 @@ describe Package do
 
 
       it 'filters out only recyled packages' do
-        expect(Package.filter('state' => 'recycle').count).to eq(1)
+        expect(Package.apply_filter('state' => 'recycle').count).to eq(1)
       end
     end
   end
@@ -200,8 +200,8 @@ describe Package do
 
     it 'filters out item based on location' do
       pkg_location_name = "#{location_b.building}-#{location_b.area}"
-      expect(Package.filter.count).to eq(3)
-      expect(Package.filter('location' => pkg_location_name).count).to eq(1)
+      expect(Package.apply_filter.count).to eq(3)
+      expect(Package.apply_filter('location' => pkg_location_name).count).to eq(1)
     end
   end
 
