@@ -57,6 +57,7 @@ gem 'twilio-ruby', '~> 5.11.0'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
+gem 'jsonapi-serializer-formats'
 
 group :development, :staging do
   gem 'grape-swagger-rails'
