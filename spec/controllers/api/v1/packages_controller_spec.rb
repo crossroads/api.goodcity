@@ -449,6 +449,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
       end
 
+      it 'creates package record with value_hk_dollar upto 2 decimals' do
+        package_params[:value_hk_dollar] = 10.8923
+        post :create, params: { package: package_params }
+        expect(parsed_body["package"]["value_hk_dollar"]).to eq(package_params[:value_hk_dollar].round(2).to_s)
+      end
+
       context 'if value_hk_dollar is nil' do
         it 'sets a default value' do
           package_params[:value_hk_dollar] = nil
@@ -851,6 +857,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+
     context "by setting an inventory_number for the first time" do
       before { package_params[:inventory_number] = '98767' }
 
@@ -869,6 +876,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(PackagesInventory.last.quantity).to eq(updated_package.received_quantity)
           expect(PackagesInventory.last.location_id).to eq(location.id)
           expect(PackagesInventory.last.action).to eq('inventory')
+        end
+
+        it 'updates package record with value_hk_dollar upto 2 decimals' do
+          package_params[:value_hk_dollar]= 15.6784
+          put :update, params: { id: package.id, package: package_params}
+          expect(parsed_body["package"]["value_hk_dollar"]).to eq(package_params[:value_hk_dollar].round(2).to_s)
         end
 
         it "creates the packages_locations relation (through packages_inventory sync)" do

@@ -12,6 +12,7 @@ module OfferFiltering
     scope :filter_offers, -> (options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
+      res = res.shareable if options[:shareable].present?
       res = res.select('offers.*, schedules.scheduled_at')
       res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
@@ -70,6 +71,10 @@ module OfferFiltering
       t = now.change(hour: 18, min: 0, sec: 0)
       t -= 24.hours if now < t
       t
+    end
+
+    def self.shareable
+      joins("INNER JOIN shareables ON shareables.resource_id=offers.id")
     end
 
     def self.assoicate_delivery_and_schedule
