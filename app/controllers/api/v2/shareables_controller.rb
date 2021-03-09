@@ -8,9 +8,9 @@ module Api
       rescue_from PG::UniqueViolation, with: :raise_duplicate!
 
       SERIALIZER_ALLOWED_FIELDS = {
-        :offers => [:id, :state, :notes, :created_at, :district_id],
-        :packages => [:id, :notes, :notes_zh_tw, :package_type_id, :grade, :offer_id, :received_quantity, :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id],
-        :images => [:id, :favourite, :cloudinary_id, :angle, :imageable_type, :imageable_id]
+        :offers => %i[id state notes created_at submitted_at district_id public_notes public_notes_zh_tw],
+        :packages => %i[id notes notes_zh_tw package_type_id grade donor_condition_id offer_id received_quantity length width height favourite_image_id saleable value_hk_dollar package_set_id],
+        :images => %i[id favourite cloudinary_id angle imageable_type imageable_id]
       }.with_indifferent_access
 
       SERIALIZER_ALLOWED_RELATIONSHIPS = {
@@ -77,7 +77,7 @@ module Api
       EOS
       def resource_show
         record = find_shared_record!(params[:public_uid], model_klass)
-        
+
         render json: serialize_resource(record, {
           params: {
             format: [:public]
@@ -143,7 +143,7 @@ module Api
         * 409 - already exists
       EOS
       param_group :shareable
-      def create        
+      def create
         existing = Shareable.find_by(
           resource_id:    @shareable.resource_id,
           resource_type:  @shareable.resource_type,
@@ -195,7 +195,7 @@ module Api
         * 422 - bad payload
         * 409 - already exists
       EOS
-      def unshare        
+      def unshare
         raise Goodcity::MissingParamError.new('resource_type/resource_id') if (
           params[:resource_type].blank? || params[:resource_id].blank?
         )
@@ -273,7 +273,7 @@ module Api
       #
       def serializer_options(model)
         model = model.downcase.to_sym
-        
+
         raise_unsupported! unless model.in?(ALLOWED_MODELS)
 
         relations = SERIALIZER_ALLOWED_RELATIONSHIPS[model] || []
@@ -288,7 +288,7 @@ module Api
         }
       end
 
-      def raise_unsupported!        
+      def raise_unsupported!
         raise Goodcity::UnsupportedError.new(
           I18n.t('errors.unsupported_type', type: params[:model])
         )

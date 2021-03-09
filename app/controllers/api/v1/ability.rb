@@ -96,7 +96,7 @@ module Api
       end
 
       def canned_response_abilities
-        can :index, CannedResponse if can_manage_canned_response?
+        can %I[index create update destroy], CannedResponse if can_manage_canned_response?
       end
 
       def computer_abilities
@@ -257,7 +257,7 @@ module Api
         can :create, OrderTransport
         if can_manage_order_transport?
           can %i[create index show], OrderTransport
-          can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch] }
+          can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch closed cancelled] }
         else
           can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
             transport.order.created_by_id == @user_id
