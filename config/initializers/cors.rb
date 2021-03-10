@@ -2,21 +2,12 @@
 # Handle Cross-Origin Resource Sharing (CORS) in order to accept cross-origin AJAX requests.
 
 # Read more: https://github.com/cyu/rack-cors
-Rails.application.config.hosts << '.goodcity.hk'
-Rails.application.config.hosts << 'example.org'
-
-Rails.application.config.middleware.insert_before 0, Rack::Cors, debug: true, logger: (-> { Rails.logger }) do
+Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins '*'
 
-    resource '/cors',
-      :headers => :any,
-      :methods => [:post],
-      :max_age => 0
-
     resource '*',
-      :headers => :any,
-      :methods => [:get, :post, :delete, :put, :patch, :options, :head],
-      :max_age => 0
+      headers: :any,
+      methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
 end
