@@ -45,5 +45,6 @@ module GoodCityServer
     config.active_job.queue_adapter = :sidekiq
 
     config.hosts << /.*\.goodcity\.hk/
+    config.hosts << "example.org"
   end
 end
