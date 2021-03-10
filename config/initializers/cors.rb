@@ -18,5 +18,3 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors, debug: true, lo
       :max_age => 0
   end
 end
-
-Rails.application.config.hosts << /.*/
