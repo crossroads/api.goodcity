@@ -3,6 +3,7 @@
 
 # Read more: https://github.com/cyu/rack-cors
 Rails.application.config.hosts << '.goodcity.hk'
+Rails.application.config.hosts << 'example.com'
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors, debug: true, logger: (-> { Rails.logger }) do
   allow do
