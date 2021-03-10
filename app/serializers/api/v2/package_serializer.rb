@@ -1,6 +1,5 @@
 module Api::V2
   class PackageSerializer < GoodcitySerializer
-    include Api::V2::Concerns::Formats
 
     # ----------------------------
     #   Attributes

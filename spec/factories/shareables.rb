@@ -6,7 +6,7 @@ FactoryBot.define do
     notes_zh_tw { FFaker::Lorem.paragraph }
     association :created_by, factory: :user
     association :resource, factory: :offer
-
+    
     trait :offer do
       association :resource, factory: :offer
     end
