@@ -8,7 +8,7 @@ set :deploy_to, '/opt/rails/goodcity_server'
 set :linked_files, %w{ config/database.yml .env }
 set :linked_dirs, %w{log tmp/pids tmp/cache}
 set :bundle_binstubs, nil
-set :rvm_ruby_version, '2.6.1'
+set :rvm_ruby_version, '2.5.1'
 set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
 set :rollbar_env, Proc.new { fetch :stage }
 set :rollbar_role, Proc.new { :app }

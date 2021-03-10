@@ -43,8 +43,5 @@ module GoodCityServer
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
-
-    config.hosts << /.*\.goodcity\.hk/
-    config.hosts << "example.org"
   end
 end
