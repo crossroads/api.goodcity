@@ -33,7 +33,7 @@ module Api
       api :PUT, "/v1/companies/1", "Update a company"
       param_group :company
       def update
-        if @company.update_attributes(company_params)
+        if @company.update(company_params)
           render json: @company, serializer: serializer
         else
           render_error(@company.errors.full_messages.join('. '))
