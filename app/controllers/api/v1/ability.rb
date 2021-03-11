@@ -256,8 +256,7 @@ module Api
       def order_transport_abilities
         can :create, OrderTransport
         if can_manage_order_transport?
-          can %i[create index show], OrderTransport
-          can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch closed cancelled] }
+          can %i[create update index show], OrderTransport
         else
           can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
             transport.order.created_by_id == @user_id
