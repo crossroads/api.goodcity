@@ -5,7 +5,7 @@ namespace :goodcity do
     districts = YAML.load_file("#{Rails.root}/db/districts.yml")
     districts.each do |name_en, value|
       district = District.unscoped.where(name_en: name_en).first_or_create
-      district.update_attributes(
+      district.update(
         latitude:  value[:latitude],
         longitude: value[:longitude]
       )
@@ -26,7 +26,7 @@ namespace :goodcity do
           if (results.first)
             location = results.first.data["geometry"]["location"]
 
-            district.update_attributes(
+            district.update(
               latitude:  location["lat"],
               longitude: location["lng"]
             )
@@ -56,4 +56,3 @@ namespace :goodcity do
     end
   end
 end
-

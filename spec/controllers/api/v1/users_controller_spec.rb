@@ -116,12 +116,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     it "returns users of any role if role_name isn't specified" do
-      get :index, params: { searchText: "doe"  }
+      get :index, params: { searchText: "doe" }
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(3)
-      expect(parsed_body['users'][0]['id']).to eq(user_1.id)
-      expect(parsed_body['users'][1]['id']).to eq(user_2.id)
-      expect(parsed_body['users'][2]['id']).to eq(user_3.id)
+
+      ids = parsed_body['users'].map { |u| u['id'] }
+      expect(ids).to match_array([user_1.id, user_2.id, user_3.id])
     end
 
     it "is tolerant to typos" do
