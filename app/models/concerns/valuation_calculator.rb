@@ -5,7 +5,7 @@ module ValuationCalculator
   extend ActiveSupport::Concern
 
   included do
-    before_create do
+    before_validation on: :create do
       if value_hk_dollar.blank?
         self.value_hk_dollar = calculate_valuation
       end
