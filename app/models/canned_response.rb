@@ -14,4 +14,15 @@ class CannedResponse < ApplicationRecord
 
   validates_presence_of :name_en
   validates_presence_of :content_en
+  validates_uniqueness_of :guid
+
+  before_destroy :validate_for_private_messages
+
+  scope :by_private, ->(is_private) { where(is_private: is_private) }
+
+  private
+
+  def validate_for_private_messages
+    throw(:abort) if is_private
+  end
 end

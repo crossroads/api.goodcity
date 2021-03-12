@@ -62,4 +62,8 @@ class ApplicationController < ActionController::API
     payload[:app_name] = app_name # calling app: donor, admin, stock, browse
     payload[:app_version] = app_version # calling app version
   end
+
+  def bool_cast(val)
+    ActiveModel::Type::Boolean.new.cast(val)
+  end
 end

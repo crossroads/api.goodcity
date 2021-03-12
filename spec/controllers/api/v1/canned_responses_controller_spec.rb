@@ -10,6 +10,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
 
   before do
     create_list(:canned_response, 5)
+    create_list(:canned_response, 3, is_private: true)
   end
 
   describe 'GET /index' do
@@ -17,12 +18,6 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       it 'returns success' do
         get :index
         expect(response).to have_http_status(:success)
-      end
-
-      it 'returns all canned_responses' do
-        get :index
-        expect(response_json['canned_responses'].length).to eq(6)
-        expect(response_json['canned_responses'].map { |res| res['id'] }).to eq(CannedResponse.pluck(:id))
       end
     end
 
@@ -50,7 +45,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       context 'when search parameter is empty' do
         it 'returns all canned_responses' do
           get :index, params: { searchText: '' }
-          expect(response_json['canned_responses'].length).to eq(CannedResponse.count)
+          expect(response_json['canned_responses'].length).to eq(CannedResponse.by_private(false).count)
         end
       end
 
@@ -59,6 +54,51 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
           get :index, params: { searchText: 'item location' }
           expect(response_json['canned_responses']).to be_empty
         end
+      end
+    end
+
+    context 'when is_private is true' do
+      it 'returns private messages in response' do
+        get :index, params: { isPrivate: 'true' }
+        expect(response_json['canned_responses'].length).to eq(3)
+      end
+
+      it 'response do not have non private message' do
+        get :index, params: { isPrivate: 'true' }
+        res = response_json['canned_responses'].map { |c| c['is_private'] }
+        expect(res.uniq).to match_array([true])
+      end
+
+      context 'when search parameter is present' do
+        before do
+          create(:canned_response, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM', is_private: true)
+          create(:canned_response, name_en: 'How should I get to the office?', content_en: 'Get a cab!!', is_private: true)
+          create(:canned_response, name_en: 'I need to donate items', content_en: 'Go ahead and submit with a good picture.', is_private: true)
+        end
+
+        it 'returns messages based on the search parameter' do
+          get :index, params: { searchText: 'opening hours', isPrivate: true }
+          expect(response_json['canned_responses'].length).to eq(1)
+        end
+
+        it 'returns the private messages only' do
+          get :index, params: { searchText: 'opening hours', isPrivate: true }
+          res = response_json['canned_responses'].map { |c| c['is_private'] }
+          expect(res.uniq).to match_array([true])
+        end
+      end
+    end
+
+    context 'when is_private params is not present' do
+      it 'returns non private messages in response' do
+        get :index
+        expect(response_json['canned_responses'].length).to eq(6)
+      end
+
+      it 'response do not have private message' do
+        get :index, params: { isPrivate: 'false' }
+        res = response_json['canned_responses'].map { |c| c['is_private'] }
+        expect(res.uniq).to match_array([false])
       end
     end
   end
@@ -203,6 +243,20 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         delete :destroy, params: { id: canned_response.id }
       }.to change { CannedResponse.count }.by(-1)
       expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe 'GET canned_response' do
+    it 'returns canned response identified by guid params' do
+      get :show, params: { guid: canned_response.guid }
+      expect(response_json['canned_response']['id']).to eq(canned_response.id)
+    end
+
+    context 'if guid params is invalid' do
+      it 'throws error' do
+        get :show, params: { guid: 'abc' }
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

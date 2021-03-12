@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_18_111336) do
+ActiveRecord::Schema.define(version: 2021_03_11_092644) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -107,6 +107,9 @@ ActiveRecord::Schema.define(version: 2021_01_18_111336) do
     t.string "respondable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_private", default: false
+    t.string "guid"
+    t.index ["guid"], name: "index_canned_responses_on_guid"
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|
