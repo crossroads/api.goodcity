@@ -32,6 +32,12 @@ RSpec.describe CannedResponse, type: :model do
           canned_response.update(content_en: 'Changed')
         }.to change { canned_response.content_en }
       end
+
+      it 'allows to create guid with nil values' do
+        expect {
+          create_list(:canned_response, 2, guid: nil)
+        }.to change { CannedResponse.count }.by(2)
+      end
     end
   end
 

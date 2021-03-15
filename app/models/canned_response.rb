@@ -14,7 +14,7 @@ class CannedResponse < ApplicationRecord
 
   validates_presence_of :name_en
   validates_presence_of :content_en
-  validates_uniqueness_of :guid
+  validates :guid, uniqueness: true, allow_nil: true
 
   before_destroy :validate_for_private_messages
 
