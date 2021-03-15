@@ -560,6 +560,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
       let(:package_params){
         stockit_item_params.merge({
+          value_hk_dollar: 1000,
           quantity: 1,
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
@@ -709,6 +710,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
       let(:package_params_with_details){
         stockit_item_params.merge({
+          value_hk_dollar: 1000,
           quantity: 1,
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
@@ -857,6 +859,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it "fails if the value_hk_dollar is invalid" do
+      put :update, params: { id: package.id, package: { value_hk_dollar: nil } }
+
+      expect(response.status).to eq(422)
+      expect(parsed_body['errors']).to match_array(["Value hk dollar can't be blank"])
+    end
 
     context "by setting an inventory_number for the first time" do
       before { package_params[:inventory_number] = '98767' }

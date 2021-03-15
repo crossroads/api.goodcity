@@ -675,12 +675,12 @@ ActiveRecord::Schema.define(version: 2021_03_11_092644) do
     t.string "detail_type"
     t.integer "detail_id"
     t.integer "storage_type_id"
-    t.decimal "value_hk_dollar"
     t.integer "available_quantity", default: 0
     t.integer "on_hand_quantity", default: 0
     t.integer "designated_quantity", default: 0
     t.integer "dispatched_quantity", default: 0
     t.date "expiry_date"
+    t.decimal "value_hk_dollar", null: false
     t.integer "package_set_id"
     t.integer "restriction_id"
     t.text "comment"
