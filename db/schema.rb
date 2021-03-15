@@ -109,7 +109,7 @@ ActiveRecord::Schema.define(version: 2021_03_11_092644) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "is_private", default: false
     t.string "guid"
-    t.index ["guid"], name: "index_canned_responses_on_guid"
+    t.index ["guid"], name: "index_canned_responses_on_guid", unique: true
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|
