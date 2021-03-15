@@ -33,7 +33,6 @@ module Api
       end
 
       api :PUT, '/v1/canned_responses/:id', 'Updates canned_responses for the id'
-      param_group :canned_response
       def update
         @canned_response.assign_attributes(canned_response_params)
         update_and_render_object_with_errors(@canned_response)
@@ -72,7 +71,6 @@ module Api
 
       def strict_find(guid)
         record = CannedResponse.find_by(guid: guid)
-
         raise Goodcity::NotFoundError if record.nil?
 
         record

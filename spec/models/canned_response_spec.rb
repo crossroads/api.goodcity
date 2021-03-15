@@ -50,11 +50,13 @@ RSpec.describe CannedResponse, type: :model do
     it 'returns all private canned_responses for truthy argument' do
       result = CannedResponse.by_private(true)
       expect(result.pluck(:is_private).uniq).to match_array([true])
+      expect(result.length).to eq(3)
     end
 
     it 'returns all public canned_responses for falsy argument' do
       result = CannedResponse.by_private(false)
       expect(result.pluck(:is_private).uniq).to match_array([false])
+      expect(result.length).to eq(5)
     end
   end
 end

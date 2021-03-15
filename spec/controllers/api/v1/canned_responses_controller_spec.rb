@@ -184,7 +184,6 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
     it 'update existing canned_response' do
       name_en = 'When is the weeko off?'
       put :update, params: { id: canned_response.id, canned_response: { name_en: name_en } }
-
       expect(response).to have_http_status(:success)
       expect(canned_response.reload.name_en).to eq(name_en)
     end
