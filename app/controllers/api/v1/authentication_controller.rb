@@ -65,19 +65,27 @@ module Api
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
       def send_pin
-        @mobile = Mobile.new(params[:mobile])
-        unless @mobile.valid?
-          return render_error(@mobile.errors.full_messages.join(". "))
-        end
+        # @mobile = Mobile.new(params[:mobile])
+        # unless @mobile.valid?
+        #   return render_error(@mobile.errors.full_messages.join(". "))
+        # end
 
-        @user = User.find_by_mobile(@mobile.mobile)
+        # @user = User.find_by_mobile(@mobile.mobile)
 
-        if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name, params[:mobile])
-        elsif @user
-          return render json: {error: "You are not authorized."}, status: 401
-        end
-        render json: {otp_auth_key: otp_auth_key_for(@user)}
+        # if @user && @user.allowed_login?(app_name)
+        #   @user.send_verification_pin(app_name, params[:mobile])
+        # elsif @user
+        #   return render json: {error: "You are not authorized."}, status: 401
+        # end
+        # render json: {otp_auth_key: otp_auth_key_for(@user)}
+        # The user might change the mobile number. The new mobile number needs to be verified
+        # with a pin. This new number is not present in the system, so an OTP needs to be generated
+        # for the logged_in (i.e. current_user) context for the new mobile number
+        #
+
+        auth_key = PinManager.formulate_auth_key(params[:mobile], params[:user_id], app_name)
+
+        render json: { otp_auth_key: auth_key }
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"

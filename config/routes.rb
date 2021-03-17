@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
+      put '/users/:user_id/update_mobile_number', to: 'users#update_phone_number'
 
       resources :districts, only: [:index, :show]
       resources :identity_types, only: [:index, :show]
