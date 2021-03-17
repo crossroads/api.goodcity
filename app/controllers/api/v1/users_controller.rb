@@ -64,6 +64,15 @@ module Api
         end
       end
 
+      api :PUT, '/v1/users/1/update_mobile_number', 'Update '
+      def update_phone_number
+        @user = AuthenticationService.authenticate(params, strategy: :pin)
+        return render_error({ pin: I18n.t('auth.invalid_pin') }) if @user.nil?
+
+        @user.update!(mobile: params[:mobile])
+        render json: @user, serializer: serializer
+      end
+
       def recent_users
         @users = User.recent_orders_created_for(User.current_user.id)
         render json: @users, each_serializer: serializer
