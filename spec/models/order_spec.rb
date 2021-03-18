@@ -78,6 +78,36 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
+  describe '.check_orders_packages' do
+    context "online orders" do
+      context 'if orders_packages are present' do
+        it 'creates order' do
+          order = build(:order, :with_orders_packages, booking_type: online_type)
+          expect{ order.save }.to raise_error(Goodcity::InvalidStateError)
+        end
+      end
+
+      context 'if orders_packages are not present' do
+        it 'does not creates order' do
+          order = build(:order, booking_type: online_type)
+          expect{ order.save }.to raise_error(Goodcity::InvalidStateError)
+        end
+      end
+    end
+
+    context "appointment orders" do
+      context 'if orders_packages are present' do
+        it 'creates order' do
+        end
+      end
+
+      context 'if orders_packages are not present' do
+        it 'creates order' do
+        end
+      end
+    end  
+  end
+
   describe '.counts_for' do
     let(:user) { create :user }
     let(:user1) { create :user }
