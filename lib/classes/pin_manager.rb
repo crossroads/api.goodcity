@@ -24,7 +24,7 @@ class PinManager
   def send_pin_for_new_mobile_number
     validate!
     mobiles = User.where(mobile: @mobile_raw)
-    raise Goodcity::InvalidParamsError.with_text(I18n.t('errors.already_exists')) if mobiles.exists?
+    raise Goodcity::InvalidParamsError.with_text(I18n.t('errors.mobile.already_exists')) if mobiles.exists?
 
     @user.send_verification_pin(@app_name, @mobile_raw)
     @user.most_recent_token.otp_auth_key
