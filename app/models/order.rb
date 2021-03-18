@@ -6,6 +6,7 @@ class Order < ApplicationRecord
   include OrderFiltering
   include OrderCodeGenerator
 
+  before_save :check_orders_packages
   # Live update rules
   after_save :push_changes
   after_destroy :push_changes
@@ -103,6 +104,11 @@ class Order < ApplicationRecord
 
   scope :goodcity_orders, -> { where(detail_type: Order::DetailType::GOODCITY) }
   scope :shipments, -> { where(detail_type: Order::DetailType::SHIPMENT) }
+
+  def check_orders_packages
+    raise Goodcity::InvalidStateError.new(I18n.t('order.orders_package_should_exist')) if booking_type.online_order? && orders_packages.length.zero?
+    self
+  end
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
