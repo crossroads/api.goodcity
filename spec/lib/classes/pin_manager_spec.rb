@@ -67,8 +67,8 @@ describe PinManager do
     context 'if user is not allowed to login' do
       let(:app) { STOCK_APP }
 
-      it 'raises AccessDeniedError' do
-        expect { pin_manager.send_pin_for_login }.to raise_error(Goodcity::AccessDeniedError)
+      it 'raises Goodcity::UnauthorizedError' do
+        expect { pin_manager.send_pin_for_login }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
   end
@@ -107,8 +107,8 @@ describe PinManager do
     context 'if user is not allowed to login' do
       let(:app) { STOCK_APP }
 
-      it 'raises AccessDeniedError' do
-        expect { pin_manager.send_pin_for_new_mobile_number }.to raise_error(Goodcity::AccessDeniedError)
+      it 'raises Goodcity::UnauthorizedError' do
+        expect { pin_manager.send_pin_for_new_mobile_number }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
   end
