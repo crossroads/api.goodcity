@@ -130,36 +130,83 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
   end
 
-  context "send_pin" do
-    it 'should find user by mobile', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-      expect(controller).to receive(:app_name).and_return(DONOR_APP).at_least(:once)
-      post :send_pin, params: { mobile: mobile }
-      expect(response.status).to eq(200)
-      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+  describe '/auth/send_pin' do
+    context 'when user requests pin for login' do
+      it 'sends otp_auth_key in the response' do
+        allow(PinManager).to receive(:formulate_auth_key).with(supervisor.mobile, nil, ADMIN_APP).and_return(otp_auth_key)
+        post :send_pin, params: { mobile: supervisor.mobile }
+        expect(response_json['otp_auth_key']).to eq(otp_auth_key)
+      end
+
+      it 'sends verification pin' do
+        expect_any_instance_of(PinManager).to receive(:send_pin_for_login)
+        post :send_pin, params: { mobile: supervisor.mobile }
+        expect(response).to have_http_status(:success)
+      end
+
+      context 'for invalid mobile format' do
+        it 'sends error in the response' do
+          post :send_pin, params: { mobile: '4513' }
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response_json['error']).to eq(I18n.t('auth.invalid_mobile'))
+        end
+      end
+
+      context 'if user is not allowed to access the application' do
+        it 'sends error in the response' do
+          post :send_pin, params: { mobile: user.mobile }
+          expect(response).to have_http_status(:forbidden)
+          expect(response_json['error']).to eq(I18n.t('errors.forbidden'))
+        end
+      end
     end
 
-    it "where user does not exist" do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-      post :send_pin, params: { mobile: mobile }
-      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-    end
+    context 'when user requests pin for changing phone number' do
+      before do
+        set_browse_app_header
+      end
 
-    it 'do not send pin if donor login into admin', :show_in_doc do
-      set_admin_app_header
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(ADMIN_APP).at_least(:once)
-      post :send_pin, params: { mobile: mobile }
-      expect(response.status).to eq(401)
-      expect(parsed_body["error"]).to eq("You are not authorized.")
-      expect(parsed_body['otp_auth_key']).to eql( nil )
-    end
+      let(:new_mobile) { '+85290369036' }
 
+      it 'sends otp_auth_key in the response' do
+        allow(PinManager).to receive(:formulate_auth_key).with(new_mobile, user.id.to_s, BROWSE_APP).and_return(otp_auth_key)
+        post :send_pin, params: { mobile: new_mobile, user_id: user.id }
+        expect(response_json['otp_auth_key']).to eq(otp_auth_key)
+      end
+
+      it 'sends verification pin' do
+        expect_any_instance_of(PinManager).to receive(:send_pin_for_new_mobile_number)
+        post :send_pin, params: { mobile: '+85290369036', user_id: user.id }
+        expect(response).to have_http_status(:success)
+      end
+
+      context 'for invalid mobile format' do
+        it 'sends error in the response' do
+          post :send_pin, params: { mobile: '4513', user_id: user.id }
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response_json['error']).to eq(I18n.t('auth.invalid_mobile'))
+        end
+      end
+
+      context 'for invalid user_id' do
+        it 'sends error in the response' do
+          post :send_pin, params: { mobile: new_mobile, user_id: '0' }
+          expect(response).to have_http_status(:forbidden)
+          expect(response_json['error']).to eq(I18n.t('errors.forbidden'))
+        end
+      end
+
+      context 'if user enters an existing mobile number' do
+        it 'sends error in the response' do
+          post :send_pin, params: { mobile: user.mobile, user_id: user.id }
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response_json['error']).to eq(I18n.t('errors.already_exists'))
+        end
+      end
+    end
+  end
+
+  describe "/auth/signup" do
     context "signup for Browse app" do
       it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
@@ -187,26 +234,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(charity_user).to receive(:send_verification_pin)
         post :signup, params: { user_auth: { mobile: mobile, address_attributes: {district_id: district_id, address_type: 'Profile'} } }
         expect(response.status).to eq(200)
-      end
-    end
-
-    context "where mobile is" do
-      it 'empty' do
-        expect(User).to_not receive(:find_by_mobile)
-        expect(user).to_not receive(:send_verification_pin)
-        expect(controller).to_not receive(:otp_auth_key_for)
-        post :send_pin, params: { mobile: "" }
-        expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
-      end
-
-      it "not +852..." do
-        expect(User).to_not receive(:find_by_mobile)
-        expect(user).to_not receive(:send_verification_pin)
-        expect(controller).to_not receive(:otp_auth_key_for)
-        post :send_pin, params: { mobile: "+9101234567" }
-        expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
       end
     end
   end
