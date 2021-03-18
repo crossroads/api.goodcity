@@ -39,6 +39,6 @@ class PinManager
   def validate!
     raise Goodcity::InvalidMobileError unless @mobile.valid?
     raise Goodcity::AccessDeniedError if @user.nil?
-    raise Goodcity::AccessDeniedError unless allowed_to_login?
+    raise Goodcity::UnauthorizedError unless allowed_to_login?
   end
 end

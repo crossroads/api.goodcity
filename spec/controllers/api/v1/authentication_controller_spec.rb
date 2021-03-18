@@ -155,8 +155,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       context 'if user is not allowed to access the application' do
         it 'sends error in the response' do
           post :send_pin, params: { mobile: user.mobile }
-          expect(response).to have_http_status(:forbidden)
-          expect(response_json['error']).to eq(I18n.t('errors.forbidden'))
+          expect(response).to have_http_status(:unauthorized)
+          expect(response_json['error']).to eq(I18n.t('warden.unauthorized'))
         end
       end
     end
@@ -200,7 +200,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         it 'sends error in the response' do
           post :send_pin, params: { mobile: user.mobile, user_id: user.id }
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(response_json['error']).to eq(I18n.t('errors.already_exists'))
+          expect(response_json['error']).to eq(I18n.t('errors.mobile.already_exists'))
         end
       end
     end
