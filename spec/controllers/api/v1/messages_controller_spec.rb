@@ -66,7 +66,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           get :index
           expect(response.status).to eq(200)
           expect(received_messages.length).to eq(3)
-          expect(received_messages).to eq([
+          expect(received_messages).to match_array([
             'Hi do you like my offer?',
             'Yes we do',
             'Thank you for your offer'
@@ -147,7 +147,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       it "for multiple orders" do
         3.times { create :message, sender: reviewer, messageable: order }
         3.times { create :message, sender: reviewer, messageable: order2 }
-        
+
         get :index, params: { order_id: "#{order.id},#{order2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
@@ -371,19 +371,19 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         end
       end
 
-      context 'to specific recipients' do  
+      context 'to specific recipients' do
         context 'as a normal user' do
           before { generate_and_set_token(donor) }
-  
+
           it 'prevents me from setting a recipient_id' do
             post :create, params: { message: { **message_params, recipient_id: charity.id } }, as: :json
             expect(response.status).to eq(403)
           end
         end
-  
+
         context 'as an entitled staff member' do
           before { generate_and_set_token(staff) }
-  
+
           it 'allows to set a recipient_id' do
             post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
             expect(response.status).to eq(201)
@@ -392,7 +392,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             expect(new_message).not_to be_nil
             expect(new_message.recipient).to eq(charity)
           end
-  
+
           it 'defaults the recipient_id to the donor if missing' do
             post :create, params: { message: message_params }, as: :json
             expect(response.status).to eq(201)
@@ -401,12 +401,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             expect(new_message).not_to be_nil
             expect(new_message.recipient).to eq(donor)
           end
-  
+
           context 'if the message is private' do
             let(:message_params) {
               FactoryBot.attributes_for(:message, is_private: true, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer')
             }
-  
+
             it 'prevents me from setting a recipient_id' do
               post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
               expect(response.status).to eq(422)
@@ -415,7 +415,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           end
         end
       end
-    end 
+    end
 
     context 'backward compatibility' do
       let(:offer) { create(:offer, :with_messages, created_by: user) }
