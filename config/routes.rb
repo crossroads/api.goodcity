@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
-      put '/users/:id/update_mobile_number', to: 'users#update_phone_number'
+      put 'users/:id/update_mobile_number', to: 'users#update_phone_number'
 
       resources :districts, only: [:index, :show]
       resources :identity_types, only: [:index, :show]
