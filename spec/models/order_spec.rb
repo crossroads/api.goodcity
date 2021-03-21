@@ -82,15 +82,16 @@ RSpec.describe Order, type: :model do
     context "online orders" do
       context 'if orders_packages are present' do
         it 'creates order' do
-          order = build(:order, :with_orders_packages, booking_type: online_type)
-          expect{ order.save }.to raise_error(Goodcity::InvalidStateError)
+          order = create(:order, :with_orders_packages, :with_created_by, :with_state_draft, booking_type: online_type)
+          order.submit
+          expect(order.state).to eql('submitted')
         end
       end
 
       context 'if orders_packages are not present' do
         it 'does not creates order' do
-          order = build(:order, booking_type: online_type)
-          expect{ order.save }.to raise_error(Goodcity::InvalidStateError)
+          order = create(:order, :with_created_by, :with_state_draft, booking_type: online_type)
+          expect{ order.submit }.to raise_error(Goodcity::InvalidStateError)
         end
       end
     end
@@ -98,11 +99,17 @@ RSpec.describe Order, type: :model do
     context "appointment orders" do
       context 'if orders_packages are present' do
         it 'creates order' do
+          order = create(:order, :with_created_by, :with_state_draft, booking_type: appointment_type)
+          order.submit
+          expect(order.state).to eql('submitted')
         end
       end
 
       context 'if orders_packages are not present' do
         it 'creates order' do
+          order = create(:order, :with_created_by, :with_state_draft, booking_type: appointment_type)
+          order.submit
+          expect(order.state).to eql('submitted')
         end
       end
     end  
@@ -927,7 +934,7 @@ RSpec.describe Order, type: :model do
       let(:mailer) { GoodcityOrderMailer.with(order_id: order.id, user_id: user.id) }
       let(:order) do
         order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
-        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport,
+        create(:order, :with_state_draft, :with_created_by, :with_orders_packages, order_transport: order_transport,
                booking_type: type.eql?('online-order')?  online_type : appointment_type)
       end
 
@@ -970,6 +977,7 @@ RSpec.describe Order, type: :model do
 
       it "should NOT send a confirmation email after an #{type} is finished processing" do
         order.submit
+        order.orders_packages.each(&:dispatch)
         order.start_processing
         order.finish_processing
         expect(mailer).not_to receive(email_service_method)
@@ -987,8 +995,8 @@ RSpec.describe Order, type: :model do
 
   describe 'Submission Emails' do
     let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: appointment_type )}
-    let(:online_order1) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
-    let(:online_order2) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
+    let(:online_order1) { create(:order, :with_created_by, :with_orders_packages, booking_type: online_type, state: "draft" )}
+    let(:online_order2) { create(:order, :with_created_by, :with_orders_packages, booking_type: online_type, state: "draft" )}
     let(:order_transport1) { create(:order_transport, order: online_order1) }
     let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: 'ggv') }
 
