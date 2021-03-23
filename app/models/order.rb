@@ -183,7 +183,7 @@ class Order < ApplicationRecord
     end
 
     before_transition on: :submit do |order|
-      if order.booking_type&.online_order? && order.orders_packages.length.zero?
+      if order.booking_type&.online_order? && order.orders_packages.length.zero? && order.state != 'draft'
         raise Goodcity::InvalidStateError.new(I18n.t('order.orders_package_should_exist')) 
       end
       order.submitted_at = Time.now
