@@ -489,7 +489,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       generate_and_set_token(user)
     end
 
-    context 'if pin is invalid' do
+    context 'if pin is valid' do
       before { allow(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(user) }
 
       it 'updates a users mobile number' do
