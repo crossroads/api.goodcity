@@ -322,6 +322,20 @@ describe User, :type => :model do
     end
   end
 
+  describe '#locale' do
+    let(:user) { create(:user, preferred_language: 'zh-tw') }
+    it 'returns the users preferred language' do
+      expect(user.locale).to eq('zh-tw')
+    end
+
+    context 'if preferred_language is nil' do
+      let(:user) { create(:user, preferred_language: nil) }
+      it 'returns en as the locale' do
+        expect(user.locale).to eq('en')
+      end
+    end
+  end
+
   describe "#user_role_names" do
     it "returns role names for user" do
       user = create :user, :reviewer
