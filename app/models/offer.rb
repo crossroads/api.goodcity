@@ -274,7 +274,9 @@ class Offer < ApplicationRecord
   end
 
   def send_thank_you_message
-    send_message(I18n.t("offer.thank_message"), User.system_user)
+    I18n.with_locale(offer.created_by.locale) do
+      send_message(I18n.t('offer.thank_message'), User.system_user)
+    end
   end
 
   def send_item_add_message

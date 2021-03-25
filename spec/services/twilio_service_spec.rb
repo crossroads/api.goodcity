@@ -8,6 +8,8 @@ describe TwilioService do
   let(:twilio) { TwilioService.new(user) }
   let(:twilio_with_no_mobile_user) {  TwilioService.new(user_with_no_mobile) }
 
+  before { allow(twilio).to receive(:send_to_twilio?).and_return(true) }
+
   context "initialize" do
     it do
       expect(twilio.user).to equal(user)
@@ -26,7 +28,6 @@ describe TwilioService do
 
     context "based on app_name" do
       before(:each) do
-        allow(twilio).to receive(:send_to_twilio?).and_return(true)
         allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
         body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn't request this message, please ignore)\n"
         expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
@@ -45,21 +46,51 @@ describe TwilioService do
       end
     end
 
-    context "based on app_name" do
-      it "should send the SMS via Twilio for Browse App"  do
-        allow(twilio).to receive(:send_to_twilio?).and_return(true)
-        allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
-        body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy browsing quality goods.(If you didn't request this message, please ignore)\n"
-        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
-        twilio.sms_verification_pin(BROWSE_APP)
+    context 'Browse app' do
+      %w[zh-tw en].map do |locale|
+        context "for #{locale} language" do
+          it "should send the SMS via Twilio in #{locale} language" do
+            allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
+            body = I18n.t('twilio.browse_sms_verification_pin', pin: otp_code)
+            expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+            twilio.sms_verification_pin(BROWSE_APP)
+          end
+        end
+      end
+    end
+  end
+
+  describe '#welcome_sms_text' do
+    %w[zh-tw en].map do |locale|
+      context "for #{locale} language" do
+        let(:user) { create(:user, preferred_language: locale) }
+        it "should send the SMS via Twilio in #{locale} language" do
+          body = I18n.t('twilio.charity_user_welcome_sms', full_name: user.full_name, locale: locale)
+          expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+          twilio.send_welcome_msg
+        end
       end
     end
   end
 
   context "order_confirmed_sms_to_charity" do
-    let(:charity) { build(:user, :charity) }
-    let(:order) { build(:order, created_by: charity) }
+    let(:user) { create(:user, :charity) }
+    let(:order) { create(:order, created_by: user) }
     let(:order_for_charity_without_mobile) { build(:order, created_by: user_with_no_mobile) }
+
+    %w[zh-tw en].map do |locale|
+      context "for #{locale} language" do
+        let(:user) { create(:user, preferred_language: locale) }
+        let(:order) { create(:order, created_by: user) }
+
+        it "sends the SMS in #{locale} language" do
+          allow(twilio).to receive(:send_to_twilio?).and_return(true)
+          body = I18n.t('twilio.new_order_submitted_sms_to_charity', code: order.code, locale: locale)
+          expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+          twilio.order_confirmed_sms_to_charity(order)
+        end
+      end
+    end
 
     it "sends order submitted acknowledgement to charity who submitted order" do
       allow(twilio).to receive(:send_to_twilio?).and_return(true)
@@ -75,29 +106,36 @@ describe TwilioService do
     end
   end
 
-  context "order_submitted_sms_to_order_fulfilment_users" do
-    let(:order_fulfilment_user) { build(:user, :order_fulfilment) }
-    let(:charity) { build(:user, :charity) }
-    let(:order) { build(:order, created_by: charity, submitted_by: charity) }
+  ['zh-tw'].map do |locale|
+    context "order_submitted_sms_to_order_fulfilment_users in #{locale} language" do
+      let(:order_fulfilment_user) { build(:user, :order_fulfilment) }
+      let(:charity) { build(:user, :charity, preferred_language: locale) }
+      let(:order) { build(:order, created_by: charity, submitted_by: charity) }
 
-    it "sends order submitted alert to order_fulfilment_user" do
-      allow(twilio).to receive(:send_to_twilio?).and_return(true)
-      body = "#{charity.full_name} from #{order.organisation.name_en} has just placed an order #{order.code} on GoodCity.\n"
-      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
-      twilio.order_submitted_sms_to_order_fulfilment_users(order)
+      it "sends order submitted alert to order_fulfilment_user" do
+        allow(twilio).to receive(:send_to_twilio?).and_return(true)
+        body = "#{charity.full_name} from #{order.organisation.name_en} has just placed an order #{order.code} on GoodCity.\n"
+        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+        twilio.order_submitted_sms_to_order_fulfilment_users(order)
+      end
     end
   end
 
   context "send_unread_message_reminder" do
-    let(:donor) { create(:user, first_name: "John", last_name: "Lowe") }
     let(:url) { "#{Rails.application.secrets.base_urls[:app]}/offers" }
 
-    it "sends unread messages sms to donor " do
-      body = "You've got notifications in GoodCity, please check the latest updates. #{url}."
-      expect(twilio).to receive(:send_to_twilio?).and_return(true)
-      expect(twilio).to receive(:unread_message_reminder).and_return( body )
-      expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
-      twilio.send_unread_message_reminder(url)
+    %w[zh-tw en].map do |locale|
+      let(:donor) { create(:user, preferred_language: locale) }
+
+      context "for #{locale} language" do
+        it "sends SMS in #{locale} language" do
+          body = I18n.t('twilio.unread_message_sms', url: url)
+          expect(twilio).to receive(:send_to_twilio?).and_return(true)
+          expect(twilio).to receive(:unread_message_reminder).and_return( body )
+          expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
+          twilio.send_unread_message_reminder(url)
+        end
+      end
     end
   end
 
