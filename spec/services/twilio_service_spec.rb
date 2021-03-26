@@ -76,7 +76,6 @@ describe TwilioService do
   context "order_confirmed_sms_to_charity" do
     let(:user) { create(:user, :charity) }
     let(:order) { create(:order, created_by: user) }
-    let(:order_for_charity_without_mobile) { build(:order, created_by: user_with_no_mobile) }
 
     %w[zh-tw en].map do |locale|
       context "for #{locale} language" do
@@ -84,7 +83,6 @@ describe TwilioService do
         let(:order) { create(:order, created_by: user) }
 
         it "sends the SMS in #{locale} language" do
-          allow(twilio).to receive(:send_to_twilio?).and_return(true)
           body = I18n.t('twilio.new_order_submitted_sms_to_charity', code: order.code, locale: locale)
           expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
           twilio.order_confirmed_sms_to_charity(order)
@@ -93,16 +91,19 @@ describe TwilioService do
     end
 
     it "sends order submitted acknowledgement to charity who submitted order" do
-      allow(twilio).to receive(:send_to_twilio?).and_return(true)
       body = "Thank you for placing order #{order.code} on GoodCity. Our team will be in touch with you soon.\n"
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.order_confirmed_sms_to_charity(order)
     end
 
-    it "do not sends order submitted acknowledgement via sms to charity without mobile who submitted order" do
-      expect(twilio_with_no_mobile_user).not_to receive(:send_to_twilio?)
-      expect(TwilioJob).not_to receive(:perform_later)
-      twilio.order_confirmed_sms_to_charity(order_for_charity_without_mobile)
+    context 'when the mobile number is nil for the user' do
+      let(:user) { create(:user, mobile: nil, request_from_browse: true ) }
+      let(:order_for_charity_without_mobile) { build(:order, created_by: user_with_no_mobile) }
+      it "do not sends order submitted acknowledgement via sms to charity without mobile who submitted order" do
+        expect(twilio_with_no_mobile_user).not_to receive(:send_to_twilio?)
+        expect(TwilioJob).not_to receive(:perform_later)
+        twilio.order_confirmed_sms_to_charity(order_for_charity_without_mobile)
+      end
     end
   end
 
