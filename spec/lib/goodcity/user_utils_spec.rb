@@ -119,6 +119,212 @@ context Goodcity::UserUtils do
       end
     end
 
-  end
+    context "reassign_roles" do
+      it "reassign roles of other-user to master-user" do
+        other_user_role_1 = create :role
+        other_user_role_1.users << other_user
 
+        other_user_role_2 = create :role
+        other_user_role_2.users << [other_user, master_user]
+
+        Goodcity::UserUtils.reassign_roles(master_user, other_user)
+
+        expect(other_user.user_roles.count).to eq(0)
+        expect(master_user.user_roles.count).to eq(2)
+      end
+    end
+
+    context "reassign_user_favourites" do
+      it "reassign user-favourites of other-user to master-user" do
+        User.current_user = other_user
+        package = create :package
+        UserFavourite.add_user_favourite(package, persistent: false)
+        UserFavourite.add_user_favourite((create :package), persistent: false)
+
+        User.current_user = master_user
+        UserFavourite.add_user_favourite(package, persistent: false)
+
+        Goodcity::UserUtils.reassign_user_favourites(master_user, other_user)
+
+        expect(UserFavourite.where(user_id: other_user.id).count).to eq(0)
+        expect(UserFavourite.where(user_id: master_user.id).count).to eq(4)
+      end
+    end
+
+    context "reassign_other_records" do
+      it "reassign beneficiary of other-user to master-user" do
+        create_list :beneficiary, 5, created_by_id: other_user.id
+        create_list :beneficiary, 5, created_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(Beneficiary.where(created_by_id: master_user.id).count).to eq(10)
+        expect(Beneficiary.where(created_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign company of other-user to master-user" do
+        create_list :company, 5, created_by_id: other_user.id, updated_by_id: other_user.id
+        create_list :company, 5, created_by_id: master_user.id, updated_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(Company.where(created_by_id: master_user.id).count).to eq(10)
+        expect(Company.where(created_by_id: other_user.id).count).to eq(0)
+        expect(Company.where(updated_by_id: master_user.id).count).to eq(10)
+        expect(Company.where(updated_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign goodcity_request of other-user to master-user" do
+        create_list :goodcity_request, 5, created_by_id: other_user.id
+        create_list :goodcity_request, 5, created_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(GoodcityRequest.where(created_by_id: master_user.id).count).to eq(10)
+        expect(GoodcityRequest.where(created_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign shareable of other-user to master-user" do
+        create_list :shareable, 5, created_by_id: other_user.id
+        create_list :shareable, 5, created_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(Shareable.where(created_by_id: master_user.id).count).to eq(10)
+        expect(Shareable.where(created_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign stocktake of other-user to master-user" do
+        create_list :stocktake, 5, created_by_id: other_user.id
+        create_list :stocktake, 5, created_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(Stocktake.where(created_by_id: master_user.id).count).to eq(10)
+        expect(Stocktake.where(created_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign stocktake_revision of other-user to master-user" do
+        create_list :stocktake_revision, 5, created_by_id: other_user.id
+        create_list :stocktake_revision, 5, created_by_id: master_user.id
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+
+        expect(StocktakeRevision.where(created_by_id: master_user.id).count).to eq(10)
+        expect(StocktakeRevision.where(created_by_id: other_user.id).count).to eq(0)
+      end
+    end
+
+    describe "reassign updated_by on subform models" do
+      before do
+        User.current_user = other_user
+        create_list :computer_accessory, 5
+        create_list :computer, 5
+        create_list :electrical, 5
+        create_list :medical, 5
+
+        User.current_user = master_user
+        create_list :computer_accessory, 5
+        create_list :computer, 5
+        create_list :electrical, 5
+        create_list :medical, 5
+
+        Goodcity::UserUtils.reassign_other_records(master_user, other_user)
+      end
+
+      it "reassign computer_accessory of other-user to master-user" do
+        expect(ComputerAccessory.where(updated_by_id: master_user.id).count).to eq(10)
+        expect(ComputerAccessory.where(updated_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign computer of other-user to master-user" do
+        expect(Computer.where(updated_by_id: master_user.id).count).to eq(10)
+        expect(Computer.where(updated_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign Electrical of other-user to master-user" do
+        expect(Electrical.where(updated_by_id: master_user.id).count).to eq(10)
+        expect(Electrical.where(updated_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign Medical of other-user to master-user" do
+        expect(Medical.where(updated_by_id: master_user.id).count).to eq(10)
+        expect(Medical.where(updated_by_id: other_user.id).count).to eq(0)
+      end
+    end
+
+    context "reassign_orders" do
+      before do
+        merged_orders = create_list :order, 5, created_by: other_user,
+          processed_by_id: other_user.id, cancelled_by_id: other_user.id,
+          process_completed_by_id: other_user.id, dispatch_started_by_id: other_user.id,
+          closed_by_id: other_user.id, submitted_by_id: other_user.id
+        orders = create_list :order, 5, created_by: master_user,
+          processed_by_id: master_user.id, cancelled_by_id: master_user.id,
+          process_completed_by_id: master_user.id, dispatch_started_by_id: master_user.id,
+          closed_by_id: master_user.id, submitted_by_id: master_user.id
+      end
+
+      it "reassign created orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(other_user.created_orders.count).to eq(0)
+        expect(master_user.created_orders.count).to eq(10)
+      end
+
+      it "reassign processed orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(processed_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(processed_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign cancelled orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(cancelled_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(cancelled_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign process_completed orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(process_completed_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(process_completed_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign dispatch_started orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(dispatch_started_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(dispatch_started_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign closed orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(closed_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(closed_by_id: other_user.id).count).to eq(0)
+      end
+
+      it "reassign submitted orders of other-user to master-user" do
+        Goodcity::UserUtils.reassign_orders(master_user, other_user)
+
+        expect(Order.where(submitted_by_id: master_user.id).count).to eq(10)
+        expect(Order.where(submitted_by_id: other_user.id).count).to eq(0)
+      end
+    end
+
+    context "reassign_versions" do
+      it "reassign versions of other-user to master-user" do
+        create_list :version, 5, whodunnit: other_user.id
+        create_list :version, 5, whodunnit: master_user.id
+
+        Goodcity::UserUtils.reassign_versions(master_user, other_user)
+
+        expect(Version.where(whodunnit: other_user.id).count).to eq(0)
+        expect(Version.where(whodunnit: master_user.id).count).to eq(10)
+      end
+    end
+  end
 end

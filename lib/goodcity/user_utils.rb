@@ -17,7 +17,7 @@ module Goodcity
         self.reassign_printers_users(master_user, other_user)
         self.reassign_user_favourites(master_user, other_user)
 
-        self.reassign_other(master_user, other_user)
+        self.reassign_other_records(master_user, other_user)
 
         self.remove_unused_records(other_user)
         self.reassign_versions(master_user, other_user)
@@ -82,6 +82,8 @@ module Goodcity
             updated_at: Time.current
           )
         end
+
+        record.destroy
       end
     end
 
@@ -104,7 +106,7 @@ module Goodcity
       end
     end
 
-    def self.reassign_other(master_user, other_user)
+    def self.reassign_other_records(master_user, other_user)
       user_added_models = %w(Beneficiary Company GoodcityRequest Shareable StocktakeRevision Stocktake)
 
       # Update created_by
