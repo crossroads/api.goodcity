@@ -26,7 +26,7 @@ module Api
         Send an OTP code via SMS if the given mobile number has an account in the system.
 
         Each time a new OTP code is generated, the +otp_auth_key+ is cycled. The client is
-        responsible for sending back the newest +otp_auth_key+ with the OTP code.
+        responsible for sending back the newest +otp_auth_key+ with the OTP code
         If the user account doesn't exist, a random +otp_auth_key+ is returned.
 
         ===Response status codes
@@ -51,7 +51,7 @@ module Api
           AuthenticationService.otp_auth_key_for(user)
         end
 
-        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile) }
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: params[:mobile]) }
       end
 
       api :POST, "/v2/auth/signup", "Register a new user"
@@ -144,10 +144,11 @@ module Api
 
       private
 
-      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile)
+      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: nil)
         Token.new.generate_otp_token({
           pin_method:     pin_method,
-          otp_auth_key:   otp_auth_key
+          otp_auth_key:   otp_auth_key,
+          mobile: mobile
         })
       end
 

@@ -32,4 +32,65 @@ RSpec.describe Api::V2::UsersController, type: :controller do
       end
     end
   end
+
+  describe '/api/v2/:id/update_phone_number' do
+    let(:user) { create(:user, :with_token) }
+    let(:mobile) { '+85290369036' }
+    let(:jwt) { Token.new.generate_otp_token({
+      pin_method:     :mobile,
+      otp_auth_key:   AuthenticationService.otp_auth_key_for(user),
+      mobile: mobile
+    }) }
+    let(:otp_auth) { user.most_recent_token}
+    let(:otp_auth_key) { otp_auth.otp_auth_key }
+    let(:otp) { otp_auth.otp_code }
+
+    before do
+      generate_and_set_token(user)
+    end
+
+    context 'if pin is valid' do
+      before { allow(AuthenticationService).to receive(:authenticate!).with(anything, strategy: :pin_jwt).and_return(user) }
+
+      it 'updates a users mobile number' do
+        put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
+
+        expect(response).to have_http_status(:success)
+        expect(user.reload.mobile).to eq(mobile)
+      end
+    end
+
+    context 'if pin is invalid' do
+      before { allow(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin_jwt).and_return(nil) }
+
+      it 'throws invalid pin error' do
+        put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not updates the mobile number' do
+        expect {
+          put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
+        }.to_not change { user.reload }
+      end
+    end
+
+    context 'if mobile number is duplicate' do
+      let(:another_user) { create(:user, :with_token) }
+      let(:mobile) { another_user.mobile }
+
+      before { allow(AuthenticationService).to receive(:authenticate!).with(anything, strategy: :pin_jwt).and_return(user) }
+
+      it 'throws duplicate mobile number error' do
+        put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not update the mobile number' do
+        expect {
+          put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
+        }.to_not change { user.reload }
+      end
+    end
+  end
 end
