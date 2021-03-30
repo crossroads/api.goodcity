@@ -63,9 +63,11 @@ RSpec.describe Api::V2::UsersController, type: :controller do
     context 'if pin is invalid' do
       before { allow(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin_jwt).and_return(nil) }
 
-      it 'throws invalid pin error' do
+      it 'throws invalid params error' do
         put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_json['error']).to eq('Invalid or missing params')
+        expect(response_json['type']).to eq('InvalidParamsError')
       end
 
       it 'does not updates the mobile number' do
@@ -84,6 +86,7 @@ RSpec.describe Api::V2::UsersController, type: :controller do
       it 'throws duplicate mobile number error' do
         put :update_phone_number, params: { id: user.id, token: jwt, otp: otp }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_json['error']).to match('Mobile has already been taken')
       end
 
       it 'does not update the mobile number' do
