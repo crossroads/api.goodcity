@@ -194,7 +194,7 @@ module Api
         can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
         can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
-        can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
 
         can :create, Message do |message|
