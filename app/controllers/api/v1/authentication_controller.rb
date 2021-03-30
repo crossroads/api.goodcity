@@ -8,29 +8,22 @@ module Api
       resource_description do
         short "Handle user login and registration"
         description <<-EOS
-
         ==The login process (in brief):
-
         * User sends mobile number to <code>/auth/send_pin</code>
         * If the user exists, the server sends a 4-digit pin (<code>OTP code</code>) via SMS to the mobile number
         * Server responds with <code>otp_auth_key</code>
         * User calls <code>/auth/verify</code> with <code>OTP code</code> AND <code>otp_auth_key</code>
         * Server successfully authenticates and returns <code>jwt_token</code>
         * <code>jwt_token</code> is sent with all API requests requiring authorization
-
         ==Diagrams
         A fuller explanation of the user login / registration process is detailed in the following flowchart diagrams.
-
         * {Login flowchart}[link:/doc/login_flowchart.svg]
         * {Registration flowchart}[link:/doc/registration_flowchart.svg]
         * {Device registration}[link:/doc/azure_notification_hub.png]
-
         ==JWT Token
         When sending the JWT token to authenticate each request, place it in
         the request header using the "Authorization Bearer" scheme. Example:
-
         <code>Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTc1NzkwMTQsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxNzU4MDgxNH0.x-N_aUb3S5wcNy5i2w2WUZjEA2ud_81u8yQV0JfsT6A</code>
-
         EOS
         formats ["json"]
       end
@@ -50,11 +43,9 @@ module Api
       api :POST, "/v1/auth/send_pin", "Send SMS code to the registered mobile"
       description <<-EOS
       Send an OTP code via SMS if the given mobile number has an account in the system.
-
       Each time a new OTP code is generated, the +otp_auth_key+ is cycled. The client is
       responsible for sending back the newest +otp_auth_key+ with the OTP code.
       If the user account doesn't exist, a random +otp_auth_key+ is returned.
-
       ===Response status codes
       * 200 - returned regardless of whether mobile number exists or not
       * 422 - returned if the mobile number is invalid
@@ -65,38 +56,41 @@ module Api
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
       def send_pin
-        auth_key = PinManager.formulate_auth_key(params[:mobile], params[:user_id], app_name)
+        @mobile = Mobile.new(params[:mobile])
+        unless @mobile.valid?
+          return render_error(@mobile.errors.full_messages.join(". "))
+        end
 
-        render json: { otp_auth_key: auth_key }
+        @user = User.find_by_mobile(@mobile.mobile)
+
+        if @user && @user.allowed_login?(app_name)
+          @user.send_verification_pin(app_name, params[:mobile])
+        elsif @user
+          return render json: {error: "You are not authorized."}, status: 401
+        end
+        render json: {otp_auth_key: otp_auth_key_for(@user)}
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"
       description <<-EOS
       Create a new user and send an OTP token to the user's mobile.
-
       If the mobile number already exists, do not create a new user. Send an OTP
       code to the existing user's mobile and disregard any other signup params.
-
       ===If successful:
       * an OTP code will be sent via SMS to the user's mobile
       * an +otp_auth_key+ will be returned to the client
-
       ===Hong Kong mobile numbers
       * must begin with +8525, +8526, or +8529
       * must contain a further 7 digits.
-
       ====Valid examples:
       * +85251234567
       * +85261234567
       * +85291234567
-
       ====Invalid examples:
-
       * +11112345678  - must begin with +8525, +8526, or +8529
       * +85212345678  - must begin with +8525, +8526, or +8529
       * +8525234567   - too short
       * +852523456789 - too long
-
       To understand the registration process in detail please refer to the
       {attached Registration flowcharts}[/doc/registration_flowchart.svg]
       EOS
@@ -118,11 +112,9 @@ module Api
       Verify the OTP code (sent via SMS)
       * If verified, generate and send back an authenticated +jwt_token+ and +user+ object
       * If verification fails, return <code>422 (Unprocessable Entity)</code>
-
       ===If successful
       * a +jwt_token+ will be returned. This should be included in all subsequent requests as part of the AUTHORIZATION header to authenticate the API calls.
       * the +user+ object is returned.
-
       To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
       EOS
       param :pin, String, desc: "OTP code received via SMS"

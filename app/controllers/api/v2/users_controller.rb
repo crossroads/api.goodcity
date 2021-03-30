@@ -26,6 +26,23 @@ module Api
         render json: serialize(current_user)
       end
 
+      api :PUT, '/v2/users/:id/update_mobile_number', 'Update'
+      description <<-EOS
+        Updates the phone number
+
+        ===Params
+        * token - JWT token which encapsulates mobile number and otp_auth_key
+        * user_id - User
+      EOS
+      def update_phone_number
+        @user = AuthenticationService.authenticate!(params, strategy: :pin_jwt)
+        mobile = Token.new(bearer: params[:token]).read('mobile')
+        return render_error({ pin: I18n.t('auth.invalid_pin') }) if @user.nil?
+
+        @user.update!(mobile: mobile)
+        render json: serialize(@user)
+      end
+
       private
 
       def serialize(records)
