@@ -81,7 +81,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           get :index
           expect(response.status).to eq(200)
           expect(received_messages.length).to eq(2)
-          expect(received_messages).to eq([
+          expect(received_messages).to match_array([
             'Iteresting offer, can I have it ?',
             'of course you can'
           ])
@@ -95,7 +95,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           get :index
           expect(response.status).to eq(200)
           expect(received_messages.length).to eq(6)
-          expect(received_messages).to eq([
+          expect(received_messages).to match_array([
             'Hi do you like my offer?',
             'Yes we do',
             'Thank you for your offer',
