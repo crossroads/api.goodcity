@@ -19,8 +19,6 @@ en:
     foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
     foreign_key_mismatch_violation: A broken entity relationship has occurred
     unsupported_type: Unsupported type %{type}
-    mobile:
-      already_exists: Mobile already exists
   warden:
     token_invalid: Invalid token
     token_expired: Expired token

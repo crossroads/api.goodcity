@@ -26,7 +26,7 @@ module Api
         Send an OTP code via SMS if the given mobile number has an account in the system.
 
         Each time a new OTP code is generated, the +otp_auth_key+ is cycled. The client is
-        responsible for sending back the newest +otp_auth_key+ with the OTP code
+        responsible for sending back the newest +otp_auth_key+ with the OTP code.
         If the user account doesn't exist, a random +otp_auth_key+ is returned.
 
         ===Response status codes

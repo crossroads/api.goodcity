@@ -102,7 +102,6 @@ module Goodcity
   NotFoundError                   = factory(BaseError, 'errors.not_found', status: 404)
   ForeignKeyMismatchError         = factory(BaseError, 'errors.foreign_key_mismatch_violation', status: 409)
   ForeignKeyDeletionError         = factory(BaseError, 'errors.foreign_key_delete_violation', status: 409)
-  InvalidMobileError              = factory(BaseError, 'auth.invalid_mobile')
 
   AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
   UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)
