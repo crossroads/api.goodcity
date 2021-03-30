@@ -1,3 +1,5 @@
+require "goodcity/user_utils"
+
 module Api
   module V1
     class UsersController < Api::V1::ApiController
@@ -86,6 +88,19 @@ module Api
                                         is_private: params[:is_private])
 
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
+      end
+
+      api :PUT, '/v1/merge_users', "Merge one user details into another user"
+      param :master_user_id, String, desc: "Id of user in which other user will be merged"
+      param :merged_user_id, String, desc: "Id of user which needs to be merged and removed."
+      def merge_users
+        merge_response = Goodcity::UserUtils.merge_user!(params[:master_user_id], params[:merged_user_id])
+
+        if merge_response[:error]
+          render json: merge_response, status: 422
+        else
+          render json: merge_response[:user], serializer: serializer
+        end
       end
 
       private
