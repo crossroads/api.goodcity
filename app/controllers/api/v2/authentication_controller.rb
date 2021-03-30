@@ -145,11 +145,9 @@ module Api
       private
 
       def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: nil)
-        Token.new.generate_otp_token({
-          pin_method:     pin_method,
-          otp_auth_key:   otp_auth_key,
-          mobile: mobile
-        })
+        Token.new.generate_otp_token(pin_method: pin_method,
+                                     otp_auth_key: otp_auth_key,
+                                     mobile: mobile)
       end
 
       def auth_params

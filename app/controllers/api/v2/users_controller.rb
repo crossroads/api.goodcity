@@ -33,11 +33,14 @@ module Api
         ===Params
         * token - JWT token which encapsulates mobile number and otp_auth_key
         * user_id - User
+
+        ===Response status codes
+        * 200 - returned if phone number is updated
+        * 422 - returned in case of any error
       EOS
       def update_phone_number
         @user = AuthenticationService.authenticate!(params, strategy: :pin_jwt)
         mobile = Token.new(bearer: params[:token]).read('mobile')
-        return render_error({ pin: I18n.t('auth.invalid_pin') }) if @user.nil?
 
         @user.update!(mobile: mobile)
         render json: serialize(@user)
