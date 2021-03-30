@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -147,6 +147,7 @@ Rails.application.routes.draw do
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
+      put "merge_users", to: "users#merge_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]

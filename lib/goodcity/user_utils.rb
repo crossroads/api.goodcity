@@ -23,6 +23,12 @@ module Goodcity
         self.reassign_versions(master_user, other_user)
 
         other_user.destroy!
+
+        { user: master_user }
+      elsif master_user.blank?
+        { error: "User #{master_user_id} to be merged into does not exist" }
+      elsif other_user.blank?
+        { error: "User #{other_user_id} to be merged does not exist" }
       end
     end
 
