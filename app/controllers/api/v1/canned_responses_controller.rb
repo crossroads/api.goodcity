@@ -4,8 +4,7 @@ module Api
   module V1
     # Api::V1::CannedResponseController
     class CannedResponsesController < Api::V1::ApiController
-      load_and_authorize_resource :canned_response, parent: false, except: :show
-      skip_authorization_check only: :show
+      load_and_authorize_resource :canned_response, parent: false
 
       def_param_group :canned_response do
         param :canned_response, Hash, required: true do

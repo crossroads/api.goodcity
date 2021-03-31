@@ -257,5 +257,13 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'when non admin user try to GET canned_response' do
+      let(:user) { create(:user, :order_administrator) }
+      it 'throws error' do
+        get :show, params: { guid: 'abc' }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
   end
 end

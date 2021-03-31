@@ -16,13 +16,13 @@ class CannedResponse < ApplicationRecord
   validates_presence_of :content_en
   validates :guid, uniqueness: true, allow_nil: true
 
-  before_destroy :validate_for_private_messages
+  before_destroy :prevent_delete_for_private_message
 
   scope :by_private, ->(is_private) { where(is_private: is_private) }
 
   private
 
-  def validate_for_private_messages
+  def prevent_delete_for_private_message
     throw(:abort) if is_private
   end
 end
