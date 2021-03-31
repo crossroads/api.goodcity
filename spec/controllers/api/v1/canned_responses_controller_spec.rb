@@ -59,12 +59,12 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
 
     context 'when is_private is true' do
       it 'returns private messages in response' do
-        get :index, params: { isPrivate: 'true' }
+        get :index, params: { is_private: 'true' }
         expect(response_json['canned_responses'].length).to eq(3)
       end
 
       it 'response do not have non private message' do
-        get :index, params: { isPrivate: 'true' }
+        get :index, params: { is_private: 'true' }
         res = response_json['canned_responses'].map { |c| c['is_private'] }
         expect(res.uniq).to match_array([true])
       end
@@ -77,12 +77,12 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         end
 
         it 'returns messages based on the search parameter' do
-          get :index, params: { searchText: 'opening hours', isPrivate: true }
+          get :index, params: { searchText: 'opening hours', is_private: true }
           expect(response_json['canned_responses'].length).to eq(1)
         end
 
         it 'returns the private messages only' do
-          get :index, params: { searchText: 'opening hours', isPrivate: true }
+          get :index, params: { searchText: 'opening hours', is_private: true }
           res = response_json['canned_responses'].map { |c| c['is_private'] }
           expect(res.uniq).to match_array([true])
         end

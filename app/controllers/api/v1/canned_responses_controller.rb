@@ -16,9 +16,9 @@ module Api
       end
 
       api :GET, '/v1/canned_responses', 'List all private / non private canned_responses'
-      param :isPrivate, String, desc: 'Flag to indicate private / non private message'
+      param :is_private, String, desc: 'Flag to indicate private / non private message'
       def index
-        is_private = bool_param(:isPrivate)
+        is_private = bool_param(:is_private)
         @canned_responses = @canned_responses.by_private(is_private)
         return search_and_render_canned_message if params['searchText'].present?
 
