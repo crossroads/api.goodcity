@@ -45,7 +45,7 @@ module Api
       api :PUT, '/v1/appointment_slot_presets/1', "Update a preset appointment slot"
       param_group :appointment_slot_preset
       def update
-        if @appointment_slot_preset.update_attributes(appointment_slot_preset_params)
+        if @appointment_slot_preset.update(appointment_slot_preset_params)
           render json: @appointment_slot_preset, serializer: serializer
         else
           render json: { errors: @appointment_slot_preset.errors.full_messages }, status: 422

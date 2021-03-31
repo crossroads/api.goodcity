@@ -15,6 +15,8 @@ RSpec.describe Package, type: :model do
   let(:package) { create :package }
 
   describe "Associations" do
+    subject { build(:package) }
+
     it { is_expected.to belong_to :item }
     it { is_expected.to belong_to :package_type }
     it { is_expected.to belong_to :package_set }
@@ -22,6 +24,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe 'Database columns' do
+    subject { build(:package) }
+
     it{ is_expected.to have_db_column(:length).of_type(:integer)}
     it{ is_expected.to have_db_column(:width).of_type(:integer)}
     it{ is_expected.to have_db_column(:height).of_type(:integer)}
@@ -45,6 +49,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe "validations" do
+    subject { build(:package) }
+
     it { is_expected.to validate_presence_of(:package_type_id) }
     it { is_expected.to validate_presence_of(:notes) }
     it { is_expected.to_not allow_value(-1).for(:on_hand_quantity) }
