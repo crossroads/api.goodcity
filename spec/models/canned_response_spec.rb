@@ -47,7 +47,7 @@ RSpec.describe CannedResponse, type: :model do
       create_list(:canned_response, 3, :system)
     end
 
-    it 'returns all private canned_responses for truthy argument' do
+    it 'returns all system canned_responses for truthy argument' do
       result = CannedResponse.by_type(CannedResponse::Type::SYSTEM)
       expect(result.pluck(:message_type).uniq).to match_array([CannedResponse::Type::SYSTEM])
       expect(result.length).to eq(3)
