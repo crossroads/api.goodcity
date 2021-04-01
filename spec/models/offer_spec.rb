@@ -331,5 +331,4 @@ RSpec.describe Offer, type: :model do
       expect(donor_offer.messages.pluck(:id)).to include(*private_messages.pluck(:id))
     end
   end
-
 end
