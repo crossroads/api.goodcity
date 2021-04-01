@@ -53,7 +53,7 @@ namespace :goodcity do
 
     desc 'Remove all System Messages from CannedResponse'
     task delete_canned_system_messages: :environment do
-      CannedResponse.by_private(true).delete_all
+      CannedResponse.by_type(CannedResponse::Type::SYSTEM).delete_all
     end
   end
 end
