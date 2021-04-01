@@ -310,4 +310,26 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  context "messages association" do
+    let(:donor) { create :user }
+    let(:reviewer) { create :user, :reviewer }
+    let!(:donor_offer) { create :offer }
+    let!(:donor_messages)  { create_list :message, 3, is_private: false, messageable: donor_offer }
+    let!(:private_messages) { create_list :message, 3, is_private: true, messageable: donor_offer }
+
+    it "for donor fetch non-private messages" do
+      User.current_user = donor
+      expect(donor_offer.messages.count).to eq(3)
+      expect(donor_offer.messages.pluck(:id)).to match_array(donor_messages.pluck(:id))
+      expect(donor_offer.messages.pluck(:id)).to_not include(*private_messages.pluck(:id))
+    end
+
+    it "for reviewer fetch all messages" do
+      User.current_user = reviewer
+      expect(donor_offer.messages.count).to eq(6)
+      expect(donor_offer.messages.pluck(:id)).to include(*donor_messages.pluck(:id))
+      expect(donor_offer.messages.pluck(:id)).to include(*private_messages.pluck(:id))
+    end
+  end
+
 end
