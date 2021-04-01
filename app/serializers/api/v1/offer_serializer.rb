@@ -30,14 +30,6 @@ module Api::V1
       User.current_user.present?
     end
 
-    def messages
-      if User.current_user.try(:donor?)
-        object.messages.non_private
-      else
-        object.messages
-      end
-    end
-
     alias_method :include_reviewed_by?, :goodcity_user?
     alias_method :include_gogovan_transport?, :goodcity_user?
     alias_method :include_crossroads_transport?, :goodcity_user?
