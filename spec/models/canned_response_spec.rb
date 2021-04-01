@@ -16,7 +16,7 @@ RSpec.describe CannedResponse, type: :model do
     it { is_expected.to validate_presence_of(:content_en) }
     it { is_expected.to validate_uniqueness_of(:guid) }
 
-    context 'when is_private is true' do
+    context 'for system canned_messages' do
       let!(:canned_response) { create(:canned_response, :system) }
 
       context 'on deleting' do
