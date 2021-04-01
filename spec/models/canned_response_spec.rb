@@ -17,7 +17,7 @@ RSpec.describe CannedResponse, type: :model do
     it { is_expected.to validate_uniqueness_of(:guid) }
 
     context 'when is_private is true' do
-      let!(:canned_response) { create(:canned_response, is_private: true) }
+      let!(:canned_response) { create(:canned_response, :system) }
 
       context 'on deleting' do
         it 'does not allow to delete the message' do
@@ -41,22 +41,48 @@ RSpec.describe CannedResponse, type: :model do
     end
   end
 
-  describe '.by_private' do
+  describe '.by_type' do
     before do
       create_list(:canned_response, 5)
-      create_list(:canned_response, 3, is_private: true)
+      create_list(:canned_response, 3, :system)
     end
 
     it 'returns all private canned_responses for truthy argument' do
-      result = CannedResponse.by_private(true)
-      expect(result.pluck(:is_private).uniq).to match_array([true])
+      result = CannedResponse.by_type(CannedResponse::Type::SYSTEM)
+      expect(result.pluck(:message_type).uniq).to match_array([CannedResponse::Type::SYSTEM])
       expect(result.length).to eq(3)
     end
 
     it 'returns all public canned_responses for falsy argument' do
-      result = CannedResponse.by_private(false)
-      expect(result.pluck(:is_private).uniq).to match_array([false])
+      result = CannedResponse.by_type(CannedResponse::Type::USER)
+      expect(result.pluck(:message_type).uniq).to match_array([CannedResponse::Type::USER])
       expect(result.length).to eq(5)
+    end
+  end
+
+  describe '#system_message?' do
+    let(:system_message) { create(:canned_response, :system) }
+    let(:user_message) { create(:canned_response) }
+
+    it 'returns true for system_message' do
+      expect(system_message.system_message?).to be_truthy
+    end
+
+    it 'returns false for user_message' do
+      expect(user_message.system_message?).to be_falsy
+    end
+  end
+
+  describe '#user_message?' do
+    let(:system_message) { create(:canned_response, :system) }
+    let(:user_message) { create(:canned_response) }
+
+    it 'returns true for user_message' do
+      expect(user_message.user_message?).to be_truthy
+    end
+
+    it 'returns false for system_message' do
+      expect(system_message.user_message?).to be_falsy
     end
   end
 end

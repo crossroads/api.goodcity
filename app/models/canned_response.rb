@@ -2,6 +2,11 @@ class CannedResponse < ApplicationRecord
   include CacheableJson
   include FuzzySearch
 
+  module Type
+    USER = 'USER'.freeze
+    SYSTEM = 'SYSTEM'.freeze
+  end
+
   configure_search(
     props: [
       :name_en,
@@ -16,13 +21,21 @@ class CannedResponse < ApplicationRecord
   validates_presence_of :content_en
   validates :guid, uniqueness: true, allow_nil: true
 
-  before_destroy :prevent_delete_for_private_message
+  before_destroy :prevent_delete_for_system_message
 
-  scope :by_private, ->(is_private) { where(is_private: is_private) }
+  scope :by_type, ->(type) { where(message_type: type) }
+
+  def system_message?
+    message_type == Type::SYSTEM
+  end
+
+  def user_message?
+    message_type == Type::USER
+  end
 
   private
 
-  def prevent_delete_for_private_message
-    throw(:abort) if is_private
+  def prevent_delete_for_system_message
+    throw(:abort) if system_message?
   end
 end

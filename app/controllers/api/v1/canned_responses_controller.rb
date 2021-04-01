@@ -16,10 +16,9 @@ module Api
       end
 
       api :GET, '/v1/canned_responses', 'List all private / non private canned_responses'
-      param :is_private, String, desc: 'Flag to indicate private / non private message'
+      param :message_type, String, desc: 'Indicates the USER or SYSTEM canned_messages'
       def index
-        is_private = bool_param(:is_private)
-        @canned_responses = @canned_responses.by_private(is_private)
+        @canned_responses = @canned_responses.by_type(message_type)
         return search_and_render_canned_message if params['searchText'].present?
 
         render json: @canned_responses, each_serializer: serializer
@@ -73,6 +72,14 @@ module Api
         raise Goodcity::NotFoundError if record.nil?
 
         record
+      end
+
+      def message_type
+        if [CannedResponse::Type::SYSTEM, CannedResponse::Type::USER].include? params[:message_type]&.upcase
+          params[:message_type]&.upcase
+        else
+          CannedResponse::Type::USER
+        end
       end
 
       def serializer
