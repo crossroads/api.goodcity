@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users do
         get :me, on: :collection
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -45,7 +45,8 @@ Rails.application.routes.draw do
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index, :create, :destroy]
-      resources :canned_responses, only: [:index, :create, :update, :destroy]
+      resources :canned_responses, only: %i[index create update destroy]
+      get 'canned_responses/:guid', to: 'canned_responses#show'
       resources :user_favourites, only: [:index]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
