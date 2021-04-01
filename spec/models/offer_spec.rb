@@ -324,7 +324,7 @@ RSpec.describe Offer, type: :model do
       expect(donor_offer.messages.pluck(:id)).to_not include(*private_messages.pluck(:id))
     end
 
-    it "for donor fetch non-private messages" do
+    it "for reviewer fetch all messages" do
       User.current_user = reviewer
       expect(donor_offer.messages.count).to eq(6)
       expect(donor_offer.messages.pluck(:id)).to include(*donor_messages.pluck(:id))
