@@ -15,7 +15,7 @@ module Api
         end
       end
 
-      api :GET, '/v1/canned_responses', 'List all private / non private canned_responses'
+      api :GET, '/v1/canned_responses', 'List all system / user canned_responses'
       param :message_type, String, desc: 'Indicates the USER or SYSTEM canned_messages'
       def index
         @canned_responses = @canned_responses.by_type(message_type)
@@ -24,7 +24,7 @@ module Api
         render json: @canned_responses, each_serializer: serializer
       end
 
-      api :POST, '/v1/canned_responses', 'Creates new non-private canned_responses'
+      api :POST, '/v1/canned_responses', 'Creates user canned_responses'
       param_group :canned_response
       def create
         save_and_render_object_with_errors(@canned_response)
