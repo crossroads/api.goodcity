@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post "auth/send_pin", to: "authentication#send_pin"
       post "auth/signup",   to: "authentication#signup"
       post "auth/verify",   to: "authentication#verify"
+      post "auth/resend_pin",   to: "authentication#resend_pin"
       post "auth/hasura",   to: "authentication#hasura"
 
       resources :users do

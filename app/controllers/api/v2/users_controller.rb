@@ -26,7 +26,7 @@ module Api
         render json: serialize(current_user)
       end
 
-      api :PUT, '/v2/users/:id/update_mobile_number', 'Update'
+      api :POST, '/v2/users/update_mobile_number', 'Update'
       description <<-EOS
         Updates the phone number
 
@@ -39,7 +39,10 @@ module Api
         * 422 - returned in case of any error
       EOS
       def update_phone_number
-        @user = AuthenticationService.authenticate!(params, strategy: :pin_jwt)
+        @user = AuthenticationService.authenticate!({ 'otp_auth_key': params[:token],
+                                                      'pin': params[:pin] }.with_indifferent_access,
+                                                    strategy: :pin_jwt)
+
         mobile = Token.new(bearer: params[:token]).read('mobile')
 
         @user.update!(mobile: mobile)
