@@ -205,7 +205,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         let(:user) { create(:user, user_type) }
         let(:other_user) { create(:user, user_type) }
         let(:other_order) { create(:online_order, :with_state_draft, created_by: other_user) }
-        let(:draft_order) { create(:online_order, :with_state_draft, :with_orders_packages, created_by: user) }
+        let(:draft_order) { create(:online_order, :with_state_draft, created_by: user) }
         let(:draft_appointment) { create(:appointment, :with_state_draft, created_by: user) }
         let(:submitted_order) { create(:online_order, :with_state_submitted, :with_orders_packages, submitted_by: user, created_by: user) }
         let(:processing_order) { create(:online_order, :with_state_processing, :with_orders_packages, submitted_by: user, created_by: user) }
@@ -217,7 +217,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         context 'for draft_order' do
-          let(:requested_packages) { create_requested_packges_for(user, draft_order) }
+          let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
           before { initialize_inventory(requested_packages.map(&:package)) }
 
           it "returns a submitted order" do
@@ -269,7 +269,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
         context 'if ignore_unavailable is set' do
           let(:requested_packages) { create_requested_packges_for(user, submitted_order) }
-
           it 'ignores unavailable packages' do
             requested_packages[0].package.update!(allow_web_publish: false)
 
@@ -332,7 +331,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "fails if one of the packages is no longer available" do
-          requested_packages = create_requested_packges_for(user, draft_order)
+          requested_packages = 3.times.map { create(:requested_package, :with_available_package, user: user) }
           requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, params: { order_id: draft_order.id }
           expect(response.status).to eq(422)
