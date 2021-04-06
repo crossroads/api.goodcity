@@ -15,7 +15,7 @@ en:
     duplicate_error: A record already exists
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
-    invalid_params: Invalid or missing params 
+    invalid_params: Invalid or missing params
     foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
     foreign_key_mismatch_violation: A broken entity relationship has occurred
     unsupported_type: Unsupported type %{type}
