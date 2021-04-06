@@ -10,6 +10,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
 
   before do
     create_list(:canned_response, 5)
+    create_list(:canned_response, 3, :system)
   end
 
   describe 'GET /index' do
@@ -17,12 +18,6 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       it 'returns success' do
         get :index
         expect(response).to have_http_status(:success)
-      end
-
-      it 'returns all canned_responses' do
-        get :index
-        expect(response_json['canned_responses'].length).to eq(6)
-        expect(response_json['canned_responses'].map { |res| res['id'] }).to eq(CannedResponse.pluck(:id))
       end
     end
 
@@ -32,6 +27,14 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       it 'returns unauthorized' do
         get :index
         expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when message_type has invalid params' do
+      it 'returns user canned_responses' do
+        get :index, params: { message_type: 'qwerty' }
+        res = response_json['canned_responses'].map { |c| c['message_type'] }
+        expect(res.uniq).to match_array([CannedResponse::Type::USER])
       end
     end
 
@@ -48,9 +51,9 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
       end
 
       context 'when search parameter is empty' do
-        it 'returns all canned_responses' do
+        it 'returns all user canned_responses' do
           get :index, params: { searchText: '' }
-          expect(response_json['canned_responses'].length).to eq(CannedResponse.count)
+          expect(response_json['canned_responses'].length).to eq(CannedResponse.by_type(CannedResponse::Type::USER).count)
         end
       end
 
@@ -61,6 +64,51 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         end
       end
     end
+
+    context 'when message_type is system' do
+      it 'returns system canned_responses in response' do
+        get :index, params: { message_type: 'system' }
+        expect(response_json['canned_responses'].length).to eq(3)
+      end
+
+      it 'response has system canned_responses only' do
+        get :index, params: { message_type: 'SYSTEM' }
+        res = response_json['canned_responses'].map { |c| c['message_type'] }
+        expect(res.uniq).to match_array([CannedResponse::Type::SYSTEM])
+      end
+
+      context 'when search parameter is present' do
+        before do
+          create(:canned_response, :system, name_en: 'What are your opening hours?', content_en: 'We are open from 10AM to 10PM')
+          create(:canned_response, :system, name_en: 'How should I get to the office?', content_en: 'Get a cab!!')
+          create(:canned_response, :system, name_en: 'I need to donate items', content_en: 'Go ahead and submit with a good picture.')
+        end
+
+        it 'returns canned_responses based on the search parameter' do
+          get :index, params: { searchText: 'opening hours', message_type: 'system' }
+          expect(response_json['canned_responses'].length).to eq(1)
+        end
+
+        it 'response has system canned_responses only' do
+          get :index, params: { searchText: 'opening hours', message_type: 'system' }
+          res = response_json['canned_responses'].map { |c| c['message_type'] }
+          expect(res.uniq).to match_array([CannedResponse::Type::SYSTEM])
+        end
+      end
+    end
+
+    context 'when message_type params is not present' do
+      it 'returns user canned_responses in response' do
+        get :index
+        expect(response_json['canned_responses'].length).to eq(6)
+      end
+
+      it 'response do not have system canned_responses' do
+        get :index, params: { message_type: 'user' }
+        res = response_json['canned_responses'].map { |c| c['message_type'] }
+        expect(res.uniq).to match_array([CannedResponse::Type::USER])
+      end
+    end
   end
 
   describe 'POST canned_response' do
@@ -68,7 +116,7 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
     before { generate_and_set_token(user) }
 
     context 'for unauthorized user' do
-      it 'cannot create canned_messages' do
+      it 'cannot create canned_responses' do
         user = create(:user, :with_token)
         generate_and_set_token(user)
         expect {
@@ -144,7 +192,6 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
     it 'update existing canned_response' do
       name_en = 'When is the weeko off?'
       put :update, params: { id: canned_response.id, canned_response: { name_en: name_en } }
-
       expect(response).to have_http_status(:success)
       expect(canned_response.reload.name_en).to eq(name_en)
     end
@@ -203,6 +250,38 @@ RSpec.describe Api::V1::CannedResponsesController, type: :controller do
         delete :destroy, params: { id: canned_response.id }
       }.to change { CannedResponse.count }.by(-1)
       expect(response).to have_http_status(:success)
+    end
+
+    context 'for system messages' do
+      let(:canned_response) { create(:canned_response, :system) }
+      it 'cannot delete messagees' do
+        expect {
+          delete :destroy, params: { id: canned_response.id }
+        }.to_not change { CannedResponse.count }
+      end
+    end
+  end
+
+  describe 'GET canned_response' do
+    it 'returns canned response identified by guid params' do
+      get :show, params: { guid: canned_response.guid }
+      expect(response_json['canned_response']['id']).to eq(canned_response.id)
+    end
+
+    context 'if guid params is invalid' do
+      it 'throws error' do
+        get :show, params: { guid: 'abc' }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context 'when non admin user try to GET canned_response' do
+      let(:user) { create(:user, :order_administrator) }
+
+      it 'throws error' do
+        get :show, params: { guid: 'abc' }
+        expect(response).to have_http_status(:forbidden)
+      end
     end
   end
 end
