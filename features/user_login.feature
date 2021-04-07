@@ -43,12 +43,10 @@ Feature: 'User logging'
     Scenario: A stock_administrator can login to stock app
     Given I am a stock_administrator logging into "stock" app
     And I enter the mobile number
-    And I enter the mobile number
     Then I should be allowed to login
 
     Scenario: A stock_fulfilment can login to stock app
     Given I am a stock_fulfilment logging into "stock" app
-    And I enter the mobile number
     And I enter the mobile number
     Then I should be allowed to login
 
