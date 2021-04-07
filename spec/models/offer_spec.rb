@@ -216,7 +216,7 @@ RSpec.describe Offer, type: :model do
 
   describe '#send_thank_you_message' do
     %w[zh-tw en].map do |locale|
-      context "for #{locale} langugae" do
+      context "for #{locale} language" do
         let(:user) { create(:user, preferred_language: locale) }
         let(:offer) { create(:offer, created_by: user) }
 
