@@ -255,4 +255,32 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       end
     end
   end
+
+  describe '#resend_pin' do
+    let(:user) { create(:user, :with_token) }
+    let(:mobile) { '+85290369036' }
+    before { generate_and_set_token(user) }
+
+    it 're-sends pin for logged in user' do
+      post :resend_pin, params: { mobile: mobile }
+      expect(response).to have_http_status(:success)
+      expect(Token.new(bearer: response_json['otp_auth_key']).read('mobile')).to eq(mobile)
+    end
+
+    context 'when user is not logged in' do
+      it 'raises unauthorised error' do
+        request.headers['Authorization'] = nil
+        post :resend_pin, params: { mobile: mobile }
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'when mobile is invalid' do
+      it 'raises validation error' do
+        post :resend_pin, params: { mobile: '90369036' }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response_json['error']).to eq('Mobile is invalid')
+      end
+    end
+  end
 end

@@ -96,7 +96,7 @@ module Api
       end
 
       def canned_response_abilities
-        can %I[index create update destroy], CannedResponse if can_manage_canned_response?
+        can %I[index create update destroy show], CannedResponse if can_manage_canned_response?
       end
 
       def computer_abilities
