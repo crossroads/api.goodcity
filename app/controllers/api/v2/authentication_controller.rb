@@ -2,7 +2,7 @@ module Api
   module V2
     class AuthenticationController < Api::V2::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura, :resend_pin]
 
       resource_description do
         short "The login process"
@@ -51,7 +51,16 @@ module Api
           AuthenticationService.otp_auth_key_for(user)
         end
 
-        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile) }
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: params[:mobile]) }
+      end
+
+      def resend_pin
+        mobile = Mobile.new(params[:mobile])
+        raise Goodcity::ValidationError.new(mobile.errors.full_messages) unless mobile.valid?
+
+        current_user.send_verification_pin(app_name, params[:mobile])
+        otp_auth_key = AuthenticationService.otp_auth_key_for(current_user)
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: params[:mobile]) }
       end
 
       api :POST, "/v2/auth/signup", "Register a new user"
@@ -144,11 +153,10 @@ module Api
 
       private
 
-      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile)
-        Token.new.generate_otp_token({
-          pin_method:     pin_method,
-          otp_auth_key:   otp_auth_key
-        })
+      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: nil)
+        Token.new.generate_otp_token(pin_method: pin_method,
+                                     otp_auth_key: otp_auth_key,
+                                     mobile: mobile)
       end
 
       def auth_params

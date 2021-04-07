@@ -161,4 +161,26 @@ RSpec.describe Item, type: :model do
       expect(item.not_received_packages?).to be false
     end
   end
+
+  context "messages association" do
+    let(:donor) { create :user }
+    let(:reviewer) { create :user, :reviewer }
+    let!(:donor_item) { create :item }
+    let!(:donor_messages)  { create_list :message, 3, is_private: false, messageable: donor_item }
+    let!(:private_messages) { create_list :message, 3, is_private: true, messageable: donor_item }
+
+    it "for donor fetch non-private messages" do
+      User.current_user = donor
+      expect(donor_item.messages.count).to eq(3)
+      expect(donor_item.messages.pluck(:id)).to match_array(donor_messages.pluck(:id))
+      expect(donor_item.messages.pluck(:id)).to_not include(*private_messages.pluck(:id))
+    end
+
+    it "for reviewer fetch all messages" do
+      User.current_user = reviewer
+      expect(donor_item.messages.count).to eq(6)
+      expect(donor_item.messages.pluck(:id)).to include(*donor_messages.pluck(:id))
+      expect(donor_item.messages.pluck(:id)).to include(*private_messages.pluck(:id))
+    end
+  end
 end
