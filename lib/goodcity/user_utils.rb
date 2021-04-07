@@ -5,22 +5,22 @@ module Goodcity
       other_user = User.find_by(id: other_user_id)
 
       if master_user && other_user
-        self.reassign_roles(master_user, other_user)
+        reassign_roles(master_user, other_user)
 
-        self.reassign_offers(master_user, other_user)
-        self.reassign_messages(master_user, other_user)
+        reassign_offers(master_user, other_user)
+        reassign_messages(master_user, other_user)
 
-        self.reassign_organisations_users(master_user, other_user)
-        self.reassign_orders(master_user, other_user)
-        self.reassign_packages(master_user, other_user)
+        reassign_organisations_users(master_user, other_user)
+        reassign_orders(master_user, other_user)
+        reassign_packages(master_user, other_user)
 
-        self.reassign_printers_users(master_user, other_user)
-        self.reassign_user_favourites(master_user, other_user)
+        reassign_printers_users(master_user, other_user)
+        reassign_user_favourites(master_user, other_user)
 
-        self.reassign_other_records(master_user, other_user)
+        reassign_other_records(master_user, other_user)
 
-        self.remove_unused_records(other_user)
-        self.reassign_versions(master_user, other_user)
+        remove_unused_records(other_user)
+        reassign_versions(master_user, other_user)
 
         other_user.destroy!
 
@@ -36,7 +36,7 @@ module Goodcity
       other_user.offers.update(created_by_id: master_user.id)
       other_user.reviewed_offers.update(reviewed_by_id: master_user.id)
 
-      offer_columns = %w(closed_by_id received_by_id)
+      offer_columns = %w[closed_by_id received_by_id]
 
       offer_columns.each do |column|
         Offer.where(column.to_sym => other_user.id).update(column.to_sym => master_user.id)
@@ -78,7 +78,8 @@ module Goodcity
       UserFavourite.where(user_id: other_user.id).each do |record|
         match_record = master_user_favourites.find_by(
           favourite_type: record.favourite_type,
-          favourite_id: record.favourite_id)
+          favourite_id: record.favourite_id
+        )
 
         if match_record.blank?
           UserFavourite.create(
@@ -105,7 +106,7 @@ module Goodcity
     def self.reassign_orders(master_user, other_user)
       other_user.created_orders.update(created_by_id: master_user.id)
 
-      order_columns = %w(processed_by_id cancelled_by_id process_completed_by_id dispatch_started_by_id closed_by_id submitted_by_id)
+      order_columns = %w[processed_by_id cancelled_by_id process_completed_by_id dispatch_started_by_id closed_by_id submitted_by_id]
 
       order_columns.each do |column|
         Order.where(column.to_sym => other_user.id).update(column.to_sym => master_user.id)
@@ -113,14 +114,14 @@ module Goodcity
     end
 
     def self.reassign_other_records(master_user, other_user)
-      user_added_models = %w(Beneficiary Company GoodcityRequest Shareable StocktakeRevision Stocktake)
+      user_added_models = %w[Beneficiary Company GoodcityRequest Shareable StocktakeRevision Stocktake]
 
       # Update created_by
       user_added_models.each do |model|
         model.constantize.where(created_by_id: other_user.id).update(created_by_id: master_user.id)
       end
 
-      user_updated_models = %w(Company ComputerAccessory Computer Electrical Medical OrdersPackage)
+      user_updated_models = %w[Company ComputerAccessory Computer Electrical Medical OrdersPackage]
 
       # Update updated_by
       user_updated_models.each do |model|
@@ -136,6 +137,5 @@ module Goodcity
     def self.reassign_versions(master_user, other_user)
       Version.where(whodunnit: other_user.id).update(whodunnit: master_user.id)
     end
-
   end
 end
