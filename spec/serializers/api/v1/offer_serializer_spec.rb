@@ -23,4 +23,5 @@ describe Api::V1::OfferSerializer do
       expect(json['gogovan_transport']).to eql(nil)
     end
   end
+
 end

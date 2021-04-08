@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.6.1'
+ruby '2.5.1'
 
 gem 'pg'
 gem 'rails', '~> 6.1.3'
@@ -34,7 +34,7 @@ gem 'oj'
 gem 'paper_trail'
 gem 'paranoia'
 gem 'puma', '>= 4.3.1'
-gem 'rack-cors'
+gem 'rack-cors', require: 'rack/cors'
 gem 'rack-protection'
 gem 'rack-timeout', require: 'rack/timeout/base'
 gem 'rails-i18n'
@@ -57,6 +57,7 @@ gem 'twilio-ruby', '~> 5.11.0'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
+gem 'jsonapi-serializer-formats'
 
 group :development, :staging do
   gem 'grape-swagger-rails'

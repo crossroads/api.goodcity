@@ -300,6 +300,10 @@ class User < ApplicationRecord
     props
   end
 
+  def locale
+    preferred_language || 'en'
+  end
+
   def delete_auth_tokens
     AuthToken.where(user: self).destroy_all
   end

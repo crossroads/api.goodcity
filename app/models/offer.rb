@@ -34,7 +34,9 @@ class Offer < ApplicationRecord
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
-  has_many :messages, as: :messageable, dependent: :destroy
+  has_many :messages, -> {
+    where(is_private: false) if User.current_user.try(:donor?)
+  }, as: :messageable, dependent: :destroy
 
   #
   # Sharing support
@@ -274,7 +276,9 @@ class Offer < ApplicationRecord
   end
 
   def send_thank_you_message
-    send_message(I18n.t("offer.thank_message"), User.system_user)
+    I18n.with_locale(offer.created_by.locale) do
+      send_message(I18n.t('offer.thank_message'), User.system_user)
+    end
   end
 
   def send_item_add_message
