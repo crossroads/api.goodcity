@@ -27,10 +27,10 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-         key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
+         key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle check --path=vendor/bundle || bundle install --deployment --jobs=4 --retry=3
       - save_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
       - run:
@@ -62,7 +62,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - attach_workspace:
           at: ~/api.goodcity/tmp
       - run: bundle install --path vendor/bundle
@@ -114,7 +114,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
           ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
