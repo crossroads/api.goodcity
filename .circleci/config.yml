@@ -27,7 +27,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-         key: v1-bundle-{{ checksum "Gemfile.lock" }}
+         key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
       - run: bundle check --path=vendor/bundle || bundle install --deployment --jobs=4 --retry=3
       - save_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}-{{ checksum "Gemfile" }}
