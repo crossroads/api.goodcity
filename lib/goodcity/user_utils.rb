@@ -5,24 +5,26 @@ module Goodcity
       other_user = User.find_by(id: other_user_id)
 
       if master_user && other_user
-        reassign_roles(master_user, other_user)
+        User.transaction do
+          reassign_roles(master_user, other_user)
 
-        reassign_offers(master_user, other_user)
-        reassign_messages(master_user, other_user)
+          reassign_offers(master_user, other_user)
+          reassign_messages(master_user, other_user)
 
-        reassign_organisations_users(master_user, other_user)
-        reassign_orders(master_user, other_user)
-        reassign_packages(master_user, other_user)
+          reassign_organisations_users(master_user, other_user)
+          reassign_orders(master_user, other_user)
+          reassign_packages(master_user, other_user)
 
-        reassign_printers_users(master_user, other_user)
-        reassign_user_favourites(master_user, other_user)
+          reassign_printers_users(master_user, other_user)
+          reassign_user_favourites(master_user, other_user)
 
-        reassign_other_records(master_user, other_user)
+          reassign_other_records(master_user, other_user)
 
-        remove_unused_records(other_user)
-        reassign_versions(master_user, other_user)
+          remove_unused_records(other_user)
+          reassign_versions(master_user, other_user)
 
-        other_user.destroy!
+          other_user.destroy!
+        end
 
         { user: master_user }
       elsif master_user.blank?

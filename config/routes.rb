@@ -15,8 +15,12 @@ Rails.application.routes.draw do
       post "auth/hasura",   to: "authentication#hasura"
 
       resources :users do
-        get :me, on: :collection
         put :update_phone_number, on: :member
+
+        collection do
+          get :me
+          put :merge_users
+        end
       end
 
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
