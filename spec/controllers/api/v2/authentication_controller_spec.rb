@@ -256,6 +256,114 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     end
   end
 
+  describe 'Goodchat authentication' do
+    let(:donor)         { create :user }
+    let(:charity)       { create :user, :charity }
+    let(:reviewer)      { create(:user, :reviewer) }
+    let(:supervisor)    { create(:user, :with_token, :with_supervisor_role) }
+    let(:stock_manager) { create(:user, :with_token, :with_stock_administrator_role) }
+
+    context 'as a guest' do
+      it 'returns a 401' do
+        post :goodchat
+        expect(parsed_body).to eq({
+          "error"  => "Invalid token",
+          "type"   => "UnauthorizedError",
+          "status" => 401
+        })
+      end
+    end
+
+    context 'when authenticated' do
+      context 'as a donor' do
+        before { generate_and_set_token(donor) }
+
+        it 'returns a 403' do
+          post :goodchat
+          expect(parsed_body).to eq({
+            "error"  => "Access Denied",
+            "type"   => "AccessDeniedError",
+            "status" => 403
+          })
+        end
+      end
+
+      context 'as a charity' do
+        before { generate_and_set_token(charity) }
+
+        it 'returns a 403' do
+          post :goodchat
+          expect(parsed_body).to eq({
+            "error"  => "Access Denied",
+            "type"   => "AccessDeniedError",
+            "status" => 403
+          })
+        end
+      end
+
+
+      context 'as a reviewer' do
+        before { generate_and_set_token(reviewer) }
+
+        it 'returns a 200' do
+          post :goodchat
+          expect(response.status).to eq(200)
+        end
+
+        it 'returns a userId and displayName' do
+          post :goodchat
+          expect(parsed_body['userId']).to eq(reviewer.id)
+          expect(parsed_body['displayName']).to eq(reviewer.first_name + ' ' + reviewer.last_name)
+        end
+
+        it 'grants the chat:customer permissions' do
+          post :goodchat
+          expect(parsed_body['permissions']).to eq(['chat:customer'])
+        end
+      end
+
+      context 'as a supervisor' do
+        before { generate_and_set_token(supervisor) }
+
+        it 'returns a 200' do
+          post :goodchat
+          expect(response.status).to eq(200)
+        end
+
+        it 'returns a userId and displayName' do
+          post :goodchat
+          expect(parsed_body['userId']).to eq(supervisor.id)
+          expect(parsed_body['displayName']).to eq(supervisor.first_name + ' ' + supervisor.last_name)
+        end
+
+        it 'grants the chat:customer and admin permissions' do
+          post :goodchat
+          expect(parsed_body['permissions']).to eq(['chat:customer', 'admin'])
+        end
+      end
+      
+      context 'as a non reviewer/supervisor staff member (e.g stock_management)' do
+        before { generate_and_set_token(stock_manager) }
+
+        it 'returns a 200' do
+          post :goodchat
+          expect(response.status).to eq(200)
+        end
+
+        it 'returns a userId and displayName' do
+          post :goodchat
+          expect(parsed_body['userId']).to eq(stock_manager.id)
+          expect(parsed_body['displayName']).to eq(stock_manager.first_name + ' ' + stock_manager.last_name)
+        end
+
+        it 'does not grant permission to chat with customers' do
+          post :goodchat
+          expect(parsed_body['permissions']).to eq([])
+        end
+      end
+    end
+  end
+
   describe '#resend_pin' do
     let(:user) { create(:user, :with_token) }
     let(:mobile) { '+85290369036' }
