@@ -121,6 +121,9 @@ context Goodcity::UserUtils do
 
     context "reassign_roles" do
       it "reassign roles of other-user to master-user" do
+        other_user.user_roles.destroy_all
+        master_user.user_roles.destroy_all
+
         other_user_role_1 = create :role
         other_user_role_1.users << other_user
 
