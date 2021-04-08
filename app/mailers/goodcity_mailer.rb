@@ -6,7 +6,9 @@ class GoodcityMailer < ApplicationMailer
 
   def send_pin_email
     @user = User.find_by(id: params[:user_id])
-    @pin = @user.most_recent_token.otp_code
-    mail(to: @user.email, subject: I18n.t('email.subject.login'))
+    I18n.with_locale(@user.locale) do
+      @pin = @user.most_recent_token.otp_code
+      mail(to: @user.email, subject: I18n.t('email.subject.login'))
+    end
   end
 end
