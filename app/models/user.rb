@@ -5,6 +5,18 @@ class User < ApplicationRecord
   include ManageUserRoles
   include FuzzySearch
   include Mentionable
+
+  ROLE_NAMES = {
+    :system => 'System',
+    :system_administrator => 'System administrator',
+    :reviewer => 'Reviewer',
+    :supervisor => 'Supervisor',
+    :stock_fulfilment => 'Stock fulfilment',
+    :stock_administrator => 'Stock administrator',
+    :order_fulfilment => 'Order fulfilment',
+    :order_administrator => 'Order administrator'
+  }
+
   # --------------------
   # Configuration
   # --------------------
@@ -212,24 +224,30 @@ class User < ApplicationRecord
     roles.order('level DESC').first
   end
 
+  def has_role?(role_key)
+    name = ROLE_NAMES[role_key]
+    return false if name.blank?
+    user_role_names.include?(name)
+  end
+
   def reviewer?
-    user_role_names.include?("Reviewer") && @treat_user_as_donor != true
+    has_role?(:reviewer) && @treat_user_as_donor != true
   end
 
   def supervisor?
-    user_role_names.include?("Supervisor") && @treat_user_as_donor != true
+    has_role?(:supervisor) && @treat_user_as_donor != true
   end
 
   def order_fulfilment?
-    user_role_names.include?('Order fulfilment')
+    has_role?(:order_fulfilment)
   end
 
   def stock_fulfilment?
-    user_role_names.include?('Stock fulfilment')
+    has_role?(:stock_fulfilment)
   end
 
   def stock_administrator?
-    user_role_names.include?('Stock administrator')
+    has_role?(:stock_administrator)
   end
 
   def has_permission?(permssion)

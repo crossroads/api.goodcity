@@ -162,8 +162,8 @@ module Api
         raise Goodcity::AccessDeniedError if current_user.roles.empty?
 
         permissions = []
-        permissions << "chat:customer" if  (current_user.reviewer? || current_user.supervisor?)
-        permissions << "admin" if  (current_user.system_user? || current_user.supervisor?)
+        permissions << "chat:customer" if  (current_user.has_role?(:reviewer) || current_user.has_role?(:supervisor))
+        permissions << "admin" if  (current_user.has_role?(:system) || current_user.has_role?(:supervisor))
 
         render json: {
           userId: current_user.id,
