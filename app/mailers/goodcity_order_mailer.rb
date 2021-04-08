@@ -13,15 +13,19 @@ class GoodcityOrderMailer < ApplicationMailer
   end
 
   def send_order_submission_pickup_email
-    params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
-                                           code: @order.code, booking_type: booking_type))
-    mail(params)
+    I18n.with_locale(@user.locale) do
+      params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
+                                             code: @order.code, booking_type: booking_type))
+      mail(params)
+    end
   end
 
   def send_order_submission_delivery_email
-    params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
-                                           code: @order.code, booking_type: booking_type))
-    mail(params)
+    I18n.with_locale(@user.locale) do
+      params = create_params(subject: I18n.t('email.subject.order.submission_pickup_delivery',
+                                             code: @order.code, booking_type: booking_type))
+      mail(params)
+    end
   end
 
   def send_order_confirmation_pickup_email
