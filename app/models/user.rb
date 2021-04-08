@@ -6,17 +6,6 @@ class User < ApplicationRecord
   include FuzzySearch
   include Mentionable
 
-  ROLE_NAMES = {
-    :system => 'System',
-    :system_administrator => 'System administrator',
-    :reviewer => 'Reviewer',
-    :supervisor => 'Supervisor',
-    :stock_fulfilment => 'Stock fulfilment',
-    :stock_administrator => 'Stock administrator',
-    :order_fulfilment => 'Order fulfilment',
-    :order_administrator => 'Order administrator'
-  }
-
   # --------------------
   # Configuration
   # --------------------
@@ -225,7 +214,7 @@ class User < ApplicationRecord
   end
 
   def has_role?(role_key)
-    name = ROLE_NAMES[role_key]
+    name = Role::ROLE_NAMES[role_key]
     return false if name.blank?
     user_role_names.include?(name)
   end
