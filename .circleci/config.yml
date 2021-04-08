@@ -6,7 +6,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: circleci/ruby:2.6.1
+    - image: circleci/ruby:2.5.1
   working_directory: ~/api.goodcity
 
 jobs:
@@ -44,61 +44,61 @@ jobs:
           paths:
             - cc-test-reporter
 
-  # test:
-  #   <<: *defaults
-  #   docker:
-  #     - image: circleci/ruby:2.6.1
-  #     - image: circleci/postgres:9.6.9-alpine-ram
-  #     - image: circleci/redis:4.0.9-alpine
-  #   parallelism: 4
-  #   environment:
-  #     RAILS_ENV: test
-  #   steps:
-  #     - run:
-  #         name: Install PostgreSQL Client (required to run migrations)
-  #         command: |
-  #           sudo apt update
-  #           sudo apt-get install postgresql-client-9.6
-  #     - restore_cache:
-  #         key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-  #     - restore_cache:
-  #         key: v1-bundle-{{ checksum "Gemfile.lock" }}
-  #     - attach_workspace:
-  #         at: ~/api.goodcity/tmp
-  #     - run: bundle install --path vendor/bundle
-  #     - run:
-  #         name: Wait for DB and Redis containers to start
-  #         command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
-  #     - run: bundle exec rails db:create:all db:migrate
-  #     - run:
-  #         name: Cucumber tests
-  #         command: |
-  #           bundle exec cucumber
-  #     - run:
-  #         name: Rspec tests
-  #         command: |
-  #           bundle exec rspec --format progress \
-  #                             --format RspecJunitFormatter \
-  #                             --out ~/rspec/rspec.xml \
-  #                             $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-  #           ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
-  #     - store_test_results:
-  #         path: ~/rspec
-  #     - persist_to_workspace:
-  #         root: tmp
-  #         paths:
-  #           - codeclimate.*.json
+  test:
+    <<: *defaults
+    docker:
+      - image: circleci/ruby:2.5.1
+      - image: circleci/postgres:9.6.9-alpine-ram
+      - image: circleci/redis:4.0.9-alpine
+    parallelism: 4
+    environment:
+      RAILS_ENV: test
+    steps:
+      - run:
+          name: Install PostgreSQL Client (required to run migrations)
+          command: |
+            sudo apt update
+            sudo apt-get install postgresql-client-9.6
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
+      - attach_workspace:
+          at: ~/api.goodcity/tmp
+      - run: bundle install --path vendor/bundle
+      - run:
+          name: Wait for DB and Redis containers to start
+          command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
+      - run: bundle exec rails db:create:all db:migrate
+      - run:
+          name: Cucumber tests
+          command: |
+            bundle exec cucumber
+      - run:
+          name: Rspec tests
+          command: |
+            bundle exec rspec --format progress \
+                              --format RspecJunitFormatter \
+                              --out ~/rspec/rspec.xml \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
+      - store_test_results:
+          path: ~/rspec
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - codeclimate.*.json
 
-  # upload-coverage:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/api.goodcity/tmp
-  #     - run:
-  #         name: Upload coverage results to Code Climate
-  #         command: |
-  #           ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 4 -o tmp/codeclimate.total.json
-  #           ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
+  upload-coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/api.goodcity/tmp
+      - run:
+          name: Upload coverage results to Code Climate
+          command: |
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 4 -o tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
 
   # audit:
   #   <<: *defaults
@@ -117,7 +117,7 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
-          ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "update-ruby-version-file" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
+          ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
 
 workflows:
   version: 2
@@ -127,19 +127,19 @@ workflows:
       - bundle_dependencies:
           requires:
             - checkout_code
-      # - test:
-      #     requires:
-      #       - bundle_dependencies
+      - test:
+          requires:
+            - bundle_dependencies
       # - audit:
       #     requires:
       #       - checkout_code
-      # - upload-coverage:
-      #     requires:
-      #       - test
+      - upload-coverage:
+          requires:
+            - test
       - deploy:
-          # requires:
-          #   - test
+          requires:
+            - test
             # - audit
           filters:
             branches:
-              only: /^(update-ruby-version-file|master|live|preview)$/
+              only: /^(master|live|preview)$/
