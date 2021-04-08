@@ -304,7 +304,7 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0212)
-    mimemagic (0.3.9)
+    mimemagic (0.3.10)
       nokogiri (~> 1)
       rake
     mini_mime (1.0.2)
@@ -635,7 +635,7 @@ DEPENDENCIES
   with_advisory_lock
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.6.1p33
 
 BUNDLED WITH
    1.17.3
