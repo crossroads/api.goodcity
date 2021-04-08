@@ -418,6 +418,7 @@ module Api
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?
         can %i[mentionable_users], User if can_mention_users?
+        can %i[merge_users], User if can_merge_users?
       end
 
       def user_role_abilities

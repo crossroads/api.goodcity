@@ -315,6 +315,39 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
     end
 
+    context "get /merge_users" do
+      context "if user has can_merge_users permission" do
+        it "allows to merge two users into one" do
+          [:order_administrator, :stock_administrator].map do |role|
+            user = create(:user, role, :with_can_merge_users_permission)
+            generate_and_set_token(user)
+
+            user1 = create(:user, :reviewer)
+            user2 = create(:user, :reviewer)
+            create_list :offer, 2, reviewed_by: user2
+
+            put :merge_users, params: { master_user_id: user1.id, merged_user_id: user2.id }
+
+            expect{
+              User.find(user2.id)
+            }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(user1.reviewed_offers.count).to eq(2)
+          end
+        end
+
+        it "raises an error for invalid params" do
+          user = create(:user, :order_administrator, :with_can_merge_users_permission)
+          generate_and_set_token(user)
+          user1 = create(:user, :reviewer)
+
+          put :merge_users, params: { master_user_id: "#{user1.id}0", merged_user_id: user1.id }
+
+          expect(response.status).to eq(422)
+          expect(parsed_body["error"]).to eq("User #{user1.id}0 to be merged into does not exist")
+        end
+      end
+    end
+
     describe 'GET /mentionable_users' do
       let!(:reviewer) { create(:user, :reviewer) }
       let!(:donor) { create(:user) }

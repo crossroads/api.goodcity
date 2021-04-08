@@ -15,8 +15,12 @@ Rails.application.routes.draw do
       post "auth/hasura",   to: "authentication#hasura"
 
       resources :users do
-        get :me, on: :collection
         put :update_phone_number, on: :member
+
+        collection do
+          get :me
+          put :merge_users
+        end
       end
 
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
@@ -150,6 +154,7 @@ Rails.application.routes.draw do
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
+      put "merge_users", to: "users#merge_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]

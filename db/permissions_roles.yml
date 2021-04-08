@@ -5,6 +5,7 @@ System administrator:
 - can_disable_user
 - can_read_or_modify_user
 - can_manage_user_roles
+- can_merge_users
 
 Reviewer:
 - can_manage_packages
@@ -96,6 +97,7 @@ Stock administrator:
 - can_manage_stocktakes
 - can_manage_printers
 - can_manage_user_roles
+- can_merge_users
 
 Order fulfilment: &order_fulfilment
 - can_manage_packages
@@ -139,3 +141,4 @@ Order administrator:
 - can_manage_settings
 - can_manage_user_roles
 - can_manage_printers
+- can_merge_users

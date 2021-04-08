@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :company do
-    name { 'MyString' }
+    name { FFaker::Name.name }
     crm_id { 1 }
     created_by_id  { 1 }
   end
