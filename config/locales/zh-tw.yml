@@ -193,6 +193,7 @@ zh-tw:
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
   order:
+    orders_package_should_exist: "There should be atleast one orders package"
     cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
     errors:
       invalid_detail_type: Invalid detail type

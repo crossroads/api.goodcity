@@ -193,6 +193,13 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       end
     end
 
+    def create_requested_packges_for(user, order)
+      packages = order.orders_packages.map(&:package)
+      packages.map do |p|
+        create(:requested_package, :with_available_package, package: p, user: user)
+      end
+    end
+
     user_types.each do |user_type|
       context "as a #{user_type}" do
         let(:user) { create(:user, user_type) }
@@ -200,74 +207,92 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         let(:other_order) { create(:online_order, :with_state_draft, created_by: other_user) }
         let(:draft_order) { create(:online_order, :with_state_draft, created_by: user) }
         let(:draft_appointment) { create(:appointment, :with_state_draft, created_by: user) }
-        let(:submitted_order) { create(:online_order, :with_state_submitted, submitted_by: user, created_by: user) }
-        let(:processing_order) { create(:online_order, :with_state_processing, submitted_by: user, created_by: user) }
+        let(:submitted_order) { create(:online_order, :with_state_submitted, :with_orders_packages, submitted_by: user, created_by: user) }
+        let(:processing_order) { create(:online_order, :with_state_processing, :with_orders_packages, submitted_by: user, created_by: user) }
         let(:awaiting_dispatch_order) { create(:online_order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
-        let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
 
         before do
           3.times.map { create(:requested_package) } # requested_packages for other users
           generate_and_set_token(user)
-          initialize_inventory(requested_packages.map(&:package))
         end
 
-        it "returns a submitted order" do
-          post :checkout, params: { order_id: draft_order.id }
+        context 'for draft_order' do
+          let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
+          before { initialize_inventory(requested_packages.map(&:package)) }
 
-          expect(response.status).to eq(200)
-          expect(parsed_body['order']).not_to be_nil
-          expect(parsed_body['order']['id']).to eq(draft_order.id)
-          expect(parsed_body['order']['state']).to eq('submitted')
+          it "returns a submitted order" do
+            post :checkout, params: { order_id: draft_order.id }
 
-          order = Order.find(draft_order.id)
-          expect(order.state).to eq('submitted')
-          expect(order.orders_packages.map(&:package_id)).to match_array(requested_packages.map(&:package_id))
-          expect(order.orders_packages.length).to eq(requested_packages.length)
-          order.orders_packages.each do |op|
-            expect(op.state).to eq('designated')
+            expect(response.status).to eq(200)
+            expect(parsed_body['order']).not_to be_nil
+            expect(parsed_body['order']['id']).to eq(draft_order.id)
+            expect(parsed_body['order']['state']).to eq('submitted')
+
+            order = Order.find(draft_order.id)
+            expect(order.state).to eq('submitted')
+            expect(order.orders_packages.map(&:package_id)).to match_array(requested_packages.map(&:package_id))
+            expect(order.orders_packages.length).to eq(requested_packages.length)
+
+            order.orders_packages.each do |op|
+              expect(op.state).to eq('designated')
+            end
           end
         end
 
-        it "doesn't modify the state of a submitted order" do
-          post :checkout, params: { order_id: submitted_order.id }
-          expect(response.status).to eq(200)
+        context 'submitted order' do
+          let(:requested_packages) { create_requested_packges_for(user, submitted_order) }
+          before { initialize_inventory(requested_packages.map(&:package)) }
 
-          order = Order.find(submitted_order.id)
-          expect(order.state).to eq('submitted')
-          expect(order.orders_packages.length).to eq(requested_packages.length)
+          it "doesn't modify the state of a submitted order" do
+            post :checkout, params: { order_id: submitted_order.id }
+            expect(response.status).to eq(200)
+
+            order = Order.find(submitted_order.id)
+            expect(order.state).to eq('submitted')
+            expect(order.orders_packages.length).to eq(requested_packages.length)
+          end
         end
 
-        it "doesn't modify the state of a processing order" do
-          post :checkout, params: { order_id: processing_order.id }
-          expect(response.status).to eq(200)
+        context 'for processing_order' do
+          let(:requested_packages) { create_requested_packges_for(user, processing_order) }
+          before { initialize_inventory(requested_packages.map(&:package)) }
 
-          order = Order.find(processing_order.id)
-          expect(order.state).to eq('processing')
-          expect(order.orders_packages.length).to eq(requested_packages.length)
+          it "doesn't modify the state of a processing order" do
+            post :checkout, params: { order_id: processing_order.id }
+            expect(response.status).to eq(200)
+
+            order = Order.find(processing_order.id)
+            expect(order.state).to eq('processing')
+            expect(order.orders_packages.length).to eq(requested_packages.length)
+          end
         end
 
-        it "ignores unavailable packages if the 'ignore_unavailable' flag is set" do
-          requested_packages[0].package.update!(allow_web_publish: false)
+        context 'if ignore_unavailable is set' do
+          let(:requested_packages) { create_requested_packges_for(user, submitted_order) }
+          it 'ignores unavailable packages' do
+            requested_packages[0].package.update!(allow_web_publish: false)
 
-          expect {
-            post :checkout, params: { order_id: draft_order.id, ignore_unavailable: true }
-          }.to change(RequestedPackage, :count).by(-3)
+            expect {
+              post :checkout, params: { order_id: submitted_order.id, ignore_unavailable: true }
+            }.to change(RequestedPackage, :count).by(-3)
 
-          expect(response.status).to eq(200)
-          expect(parsed_body['order']).not_to be_nil
-          expect(parsed_body['order']['id']).to eq(draft_order.id)
-          expect(parsed_body['order']['state']).to eq('submitted')
-          expect(parsed_body['orders_packages'].length).to eq(2)
+            expect(response.status).to eq(200)
+            expect(parsed_body['order']).not_to be_nil
+            expect(parsed_body['order']['id']).to eq(submitted_order.id)
+            expect(parsed_body['order']['state']).to eq('submitted')
+            expect(parsed_body['orders_packages'].length).to eq(3)
 
-          order = Order.find(draft_order.id)
-          expect(order.state).to eq('submitted')
-          expect(order.orders_packages.length).to eq(2)
-          order.orders_packages.each do |op|
-            expect(op.state).to eq('designated')
+            order = Order.find(submitted_order.id)
+            expect(order.state).to eq('submitted')
+            expect(order.orders_packages.length).to eq(3)
+            order.orders_packages.each do |op|
+              expect(op.state).to eq('designated')
+            end
           end
         end
 
         it "clears the requested packages" do
+          requested_packages = create_requested_packges_for(user, draft_order)
           expect {
             post :checkout, params: { order_id: draft_order.id }
           }.to change(RequestedPackage, :count).by(- requested_packages.length)
@@ -306,6 +331,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "fails if one of the packages is no longer available" do
+          requested_packages = 3.times.map { create(:requested_package, :with_available_package, user: user) }
           requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, params: { order_id: draft_order.id }
           expect(response.status).to eq(422)
