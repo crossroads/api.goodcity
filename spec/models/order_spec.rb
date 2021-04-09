@@ -95,24 +95,6 @@ RSpec.describe Order, type: :model do
         end
       end
     end
-
-    context "appointment orders" do
-      context 'if orders_packages are present' do
-        it 'creates order' do
-          order = create(:order, :with_created_by, :with_state_draft, booking_type: appointment_type)
-          order.submit
-          expect(order.state).to eql('submitted')
-        end
-      end
-
-      context 'if orders_packages are not present' do
-        it 'creates order' do
-          order = create(:order, :with_created_by, :with_state_draft, booking_type: appointment_type)
-          order.submit
-          expect(order.state).to eql('submitted')
-        end
-      end
-    end
   end
 
   describe '.counts_for' do
