@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       post "auth/verify",   to: "authentication#verify"
       post "auth/resend_pin",   to: "authentication#resend_pin"
       post "auth/hasura",   to: "authentication#hasura"
+      post "auth/goodchat",   to: "authentication#goodchat"
 
       resources :users do
         put :update_phone_number, on: :member
