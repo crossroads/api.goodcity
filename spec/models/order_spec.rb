@@ -90,7 +90,7 @@ RSpec.describe Order, type: :model do
 
       context 'if orders_packages are not present' do
         it 'does not creates order' do
-          order = create(:order, :with_created_by, :with_state_draft, booking_type: online_type)
+          order = create(:order, :with_created_by, :with_state_submitted, booking_type: online_type)
           expect{ order.submit }.to raise_error(Goodcity::InvalidStateError)
         end
       end
@@ -112,7 +112,7 @@ RSpec.describe Order, type: :model do
           expect(order.state).to eql('submitted')
         end
       end
-    end  
+    end
   end
 
   describe '.counts_for' do
