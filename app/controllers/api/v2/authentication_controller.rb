@@ -2,7 +2,7 @@ module Api
   module V2
     class AuthenticationController < Api::V2::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura, :resend_pin]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura, :goodchat, :resend_pin]
 
       resource_description do
         short "The login process"
@@ -149,6 +149,27 @@ module Api
       def hasura
         token = HasuraService.authenticate current_user
         render json: { token: token }, status: :ok
+      end
+
+      api :POST, "/v2/auth/goodchat", "Webhook authentication for the GoodChat server"
+      description <<-EOS
+        Returns a GoodChat specific payload including
+        * A display name
+        * A user id
+        * An array of chat permissions
+      EOS
+      def goodchat
+        raise Goodcity::AccessDeniedError if current_user.roles.empty?
+
+        permissions = []
+        permissions << "chat:customer" if  (current_user.has_role?(:reviewer) || current_user.has_role?(:supervisor))
+        permissions << "admin" if  (current_user.has_role?(:system) || current_user.has_role?(:supervisor))
+
+        render json: {
+          userId: current_user.id,
+          displayName: "#{current_user.first_name} #{current_user.last_name}",
+          permissions: permissions
+        }, status: :ok
       end
 
       private
