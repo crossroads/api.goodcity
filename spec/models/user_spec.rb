@@ -230,13 +230,23 @@ describe User, :type => :model do
   describe "#send_verification_pin" do
     let(:slack) { SlackPinService.new(user) }
     let(:twilio) { TwilioService.new(user) }
+    let(:mobile) { '+85290369036' }
 
     it "should send pin via Twilio" do
       expect(SlackPinService).to receive(:new).with(user).and_return(slack)
       expect(slack).to receive(:send_otp)
-      expect(TwilioService).to receive(:new).with(user).and_return(twilio)
+      expect(TwilioService).to receive(:new).with(user, user.mobile).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
       user.send_verification_pin(DONOR_APP, user.mobile, nil)
+    end
+
+    it 'sends verification number to the provided mobile number only' do
+      twilio = TwilioService.new(user, mobile)
+      expect(TwilioService).to receive(:new).with(user, mobile).and_return(twilio)
+      expect(twilio).to receive(:sms_verification_pin)
+
+      user.send_verification_pin(DONOR_APP, mobile, nil)
+      expect(twilio.mobile).to eq(mobile)
     end
   end
 
@@ -529,17 +539,6 @@ describe User, :type => :model do
       users = User.with_organisation_status(%w[expired denied])
       expect(users.count).to eq(2)
       expect(users).to match_array([user_4, user_5])
-    end
-  end
-
-  describe '.send_verification_pin' do
-    let(:user) { create(:user) }
-    let(:mobile) { '+85290369036' }
-    context 'for mobile' do
-      it 'sends pin SMS to specified mobile number' do
-        expect_any_instance_of(User).to receive(:send_sms).with('donor', mobile)
-        user.send_verification_pin('donor', mobile)
-      end
     end
   end
 
