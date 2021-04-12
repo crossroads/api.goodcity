@@ -532,6 +532,32 @@ describe User, :type => :model do
     end
   end
 
+  describe '.send_verification_pin' do
+    let(:user) { create(:user) }
+    let(:mobile) { '+85290369036' }
+    context 'for mobile' do
+      it 'sends pin SMS to specified mobile number' do
+        expect_any_instance_of(User).to receive(:send_sms).with('donor', mobile)
+        user.send_verification_pin('donor', mobile)
+      end
+    end
+  end
+
+  describe '.send_sms' do
+    let(:user) { create(:user) }
+    let(:mobile) { '+85290369036' }
+
+    before do
+      allow_any_instance_of(TwilioService).to receive(:pin_sms_text).and_return(true)
+    end
+
+    it 'sends sms to specified mobile number' do
+      expect_any_instance_of(TwilioService).to receive(:initialize).with(user, mobile).and_return(TwilioService.new(user, mobile))
+
+      user.send_sms('donor', mobile)
+    end
+  end
+
   describe "Scopes" do
     describe "with_permissions" do
       let(:user_with_role) { create(:user) }
