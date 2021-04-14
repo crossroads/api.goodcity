@@ -7,7 +7,7 @@ describe 'Message abilities' do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   subject(:ability) { Api::V1::Ability.new(user) }
-  let(:all_actions) { %i[index show create update destroy manage] }
+  let(:all_actions) { %i[index show create update destroy manage notifications] }
   let(:sender)      { create :user }
   let(:charity) { create(:user, :charity) }
   let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_messages_permission) }
@@ -19,7 +19,7 @@ describe 'Message abilities' do
     let(:user) { create(:user, :with_supervisor_role, :with_can_manage_offer_messages_permission) }
 
     context 'and message is not is_private' do
-      @can = %i[index show create]
+      @can = %i[index show create notifications]
       @cannot = %i[manage update destroy]
 
       @can.map do |action|
@@ -37,7 +37,7 @@ describe 'Message abilities' do
 
     context 'and message is is_private' do
       let(:message) { create :message, is_private: true, messageable: offer }
-      @can = %i[index show create]
+      @can = %i[index show create notifications]
       @cannot = %i[manage update destroy]
 
       @can.map do |action|
@@ -61,7 +61,7 @@ describe 'Message abilities' do
     let!(:message) { create :message, sender: reviewer, is_private: is_private, messageable: offer }
     let!(:message2) { create :message, sender: reviewer, is_private: is_private, messageable: other_offer, recipient: user }
 
-    @can = %i[index show create]
+    @can = %i[index show create notifications]
     @cannot = %i[update destroy manage]
 
     @can.map do |action|
@@ -90,6 +90,14 @@ describe 'Message abilities' do
         is_expected.not_to be_able_to(:show, message_from_charity)
       end
 
+      it 'should not show notification of messages sent by a charity regarding the offer' do
+        is_expected.not_to be_able_to(:notifications, message_from_charity)
+      end
+
+      it 'should not show notification of messages sent to a charity regarding the offer' do
+        is_expected.not_to be_able_to(:notifications, message_to_charity)
+      end
+
       it 'should not show messages sent to a charity regarding the offer' do
         is_expected.not_to be_able_to(:show, message_to_charity)
       end
@@ -100,6 +108,10 @@ describe 'Message abilities' do
 
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
+      end
+
+      it 'should be able to read the notification of messages' do
+        is_expected.to be_able_to(:notifications, message)
       end
 
       it 'should be able to mark_read' do
@@ -133,7 +145,7 @@ describe 'Message abilities' do
     let!(:subscription) { create :subscription, message: message, subscribable: order, state: 'unread', user: charity}
     let(:user) { charity }
 
-    @can = %i[index show create]
+    @can = %i[index show create notifications]
     @cannot = %i[update destroy manage]
     @can.map do |action|
       it "is allowed to #{action} any non-private message that is on an order created by them" do
@@ -181,6 +193,11 @@ describe 'Message abilities' do
       let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_order_messages_permission) }
       let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
 
+      it 'should be able to read the notification of messages' do
+        is_expected.to be_able_to(:notifications, message)
+      end
+
+
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
       end
@@ -199,7 +216,11 @@ describe 'Message abilities' do
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
       end
-      
+
+      it 'should be able to read the notification of messages' do
+        is_expected.to be_able_to(:notifications, message)
+      end
+
       it 'should be able to mark_read' do
         is_expected.to be_able_to(:mark_read, message)
       end
@@ -239,7 +260,7 @@ describe 'Message abilities' do
     let(:message) { create :message, is_private: is_private, messageable: order }
     let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_order_messages_permission) }
 
-    @can = %i[index show create]
+    @can = %i[index show create notifications]
     @cannot = %i[update destroy manage]
 
     @can.map do |action|
@@ -256,7 +277,7 @@ describe 'Message abilities' do
 
     context 'private_message' do
       let(:is_private) { true }
-      @can = %i[index show create]
+      @can = %i[index show create notifications]
       @cannot = %i[update destroy manage]
 
       @can.map do |action|
