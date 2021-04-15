@@ -147,9 +147,9 @@ class User < ApplicationRecord
     end
   end
 
-  def send_sms(app_name)
+  def send_sms(app_name, mobile = nil)
     begin
-      TwilioService.new(self).sms_verification_pin(app_name)
+      TwilioService.new(self, mobile).sms_verification_pin(app_name)
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, ".").try(:first)
       self.errors.add(:base, msg)
@@ -158,7 +158,7 @@ class User < ApplicationRecord
 
   def send_verification_pin(app_name, mobile, email = nil)
     SlackPinService.new(self).send_otp(app_name)
-    return send_sms(app_name) if mobile
+    return send_sms(app_name, mobile) if mobile
 
     GoodcityMailer.with(user_id: id).send_pin_email.deliver_later if email
   end

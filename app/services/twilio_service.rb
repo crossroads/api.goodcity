@@ -1,10 +1,11 @@
 require 'twilio-ruby'
 class TwilioService
 
-  attr_accessor :user
+  attr_accessor :user, :mobile
 
-  def initialize(user)
+  def initialize(user, mobile = nil)
     @user = user
+    @mobile = mobile || user.mobile
   end
 
   def sms_verification_pin(app_name, pin: nil)
@@ -38,9 +39,7 @@ class TwilioService
   # options[:to] = "+85261111111"
   # options[:body] = "SMS body"
   def send_sms(options)
-    to = @user.mobile.presence
-
-    options = { to: to }.merge(options)
+    options = { to: mobile }.merge(options)
 
     return unless options[:to]
 
