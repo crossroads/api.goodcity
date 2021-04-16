@@ -8,12 +8,7 @@ class CannedResponse < ApplicationRecord
   end
 
   configure_search(
-    props: [
-      :name_en,
-      :name_zh_tw,
-      :content_en,
-      :content_zh_tw
-    ],
+    props: %i[name_en name_zh_tw content_en content_zh_tw],
     default_tolerance: 0.8
   )
 
