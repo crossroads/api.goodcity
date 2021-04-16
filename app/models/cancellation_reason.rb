@@ -1,7 +1,7 @@
 class CancellationReason < ApplicationRecord
   include CacheableJson
 
-  CANCELLATION_REASONS_TYPE = ["offer", "order"].freeze
+  CANCELLATION_REASONS_TYPE = %w[offer order].freeze
 
   has_many :offers
   has_many :orders
