@@ -225,6 +225,17 @@ describe User, :type => :model do
         expect(user.errors[:mobile]).to include("can't be blank")
       end
     end
+
+    %w[en zh-tw].each do |locale|
+      context "when locale is #{locale}" do
+        it "saves preferred_language field as #{locale}" do
+          I18n.with_locale(locale) do
+            user = User.creation_with_auth(user_attributes, DONOR_APP)
+            expect(user.preferred_language).to eq(locale)
+          end
+        end
+      end
+    end
   end
 
   describe "#send_verification_pin" do
