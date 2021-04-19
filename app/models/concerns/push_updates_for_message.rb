@@ -42,9 +42,9 @@ module PushUpdatesForMessage
   # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
     case object_class
-    when "Order"
+    when 'Order'
       channels = [Channel::ORDER_FULFILMENT_CHANNEL]
-    when "Package"
+    when 'Package'
       channels = [Channel::INVENTORY_CHANNEL]
     else # Offer / Item
       channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
@@ -66,7 +66,7 @@ module PushUpdatesForMessage
   # Need to inject subscription.state into message data
   #   because read/unread state is per subscription not per message
   def serialized_message(state)
-    message = self.tap{|m| m.state_value = state}
+    message = self.tap { |m| m.state_value = state }
     associations = Message.reflections.keys.map(&:to_sym)
     Api::V1::MessageSerializer.new(message, { exclude: associations })
   end
@@ -95,17 +95,17 @@ module PushUpdatesForMessage
     obj = self.related_object
     owner_id = messageable_owner_id
 
-    if object_class == "Order"
+    if object_class == 'Order'
       return [owner_id == user_id ? BROWSE_APP : STOCK_APP]
     end
 
-    return [STOCK_APP] if object_class == "Package"
+    return [STOCK_APP] if object_class == 'Package'
 
-    if ["Offer", "Item"].include?(object_class)
+    if %w[Offer Item].include?(object_class)
       to = []
       to << DONOR_APP if owner_id == user_id
       to << (user_id == recipient_id ? BROWSE_APP : ADMIN_APP)
-      return to.flatten.uniq
+      to.flatten.uniq
     end
   end
 
@@ -116,7 +116,7 @@ module PushUpdatesForMessage
 
   # All admin users with permission to view messages on that object
   def relevant_staff_user_ids
-    if ['Offer', 'Item'].include?(object_class)
+    if %w[Offer Item].include?(object_class)
       message_permissions = ['can_manage_offer_messages']
     elsif object_class == 'Order'
       message_permissions = ['can_manage_order_messages']
@@ -125,7 +125,6 @@ module PushUpdatesForMessage
     else
       message_permissions = []
     end
-    User.joins(roles: [:permissions]).where(permissions: { name: message_permissions } ).distinct.pluck(:id)
+    User.joins(roles: [:permissions]).where(permissions: { name: message_permissions }).distinct.pluck(:id)
   end
-
 end
