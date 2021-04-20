@@ -18,6 +18,15 @@ describe PushService do
 
   context "send_update_store" do
     context "should send updates" do
+      before do
+        allow(SocketioSendJob).to receive(:set).and_return(SocketioSendJob)
+      end
+
+      it "with a 1 second delay" do
+        expect(SocketioSendJob).to receive(:set).with(wait: 1.second).and_return(SocketioSendJob)
+        allow(SocketioSendJob).to receive(:perform_later)
+        service.send_update_store('user_1', data)
+      end
       it "with single channel string" do
         expect(SocketioSendJob).to receive(:perform_later).with(['user_1'], 'update_store', data.to_json, false)
         service.send_update_store('user_1', data)
