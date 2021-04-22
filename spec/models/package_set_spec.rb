@@ -50,20 +50,6 @@ RSpec.describe PackageSet, type: :model do
         end
       end
     end
-
-    describe 'auto destroys when the number of packages is less than 2' do
-      it 'if the packages get unassigned from the set' do
-        p1, p2 = packages
-        expect { p1.update(package_set_id: nil) }.not_to change(PackageSet, :count)
-        expect { p2.update(package_set_id: nil) }.to change(PackageSet, :count).by(-1)
-      end
-
-      it 'if the packages are destroyed' do
-        p1, p2 = packages
-        expect { p1.reload.destroy }.not_to change(PackageSet, :count)
-        expect { p2.reload.destroy }.to change(PackageSet, :count).by(-1)
-      end
-    end
   end
 
   describe "Package Set initialization" do

@@ -2,7 +2,7 @@ module Api
   module V2
     class AuthenticationController < Api::V2::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :hasura, :goodchat, :resend_pin]
 
       resource_description do
         short "The login process"
@@ -51,7 +51,16 @@ module Api
           AuthenticationService.otp_auth_key_for(user)
         end
 
-        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile) }
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: params[:mobile]) }
+      end
+
+      def resend_pin
+        mobile = Mobile.new(params[:mobile])
+        raise Goodcity::ValidationError.new(mobile.errors.full_messages) unless mobile.valid?
+
+        current_user.send_verification_pin(app_name, params[:mobile])
+        otp_auth_key = AuthenticationService.otp_auth_key_for(current_user)
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: params[:mobile]) }
       end
 
       api :POST, "/v2/auth/signup", "Register a new user"
@@ -142,13 +151,33 @@ module Api
         render json: { token: token }, status: :ok
       end
 
+      api :POST, "/v2/auth/goodchat", "Webhook authentication for the GoodChat server"
+      description <<-EOS
+        Returns a GoodChat specific payload including
+        * A display name
+        * A user id
+        * An array of chat permissions
+      EOS
+      def goodchat
+        raise Goodcity::AccessDeniedError if current_user.roles.empty?
+
+        permissions = []
+        permissions << "chat:customer" if  (current_user.has_role?(:reviewer) || current_user.has_role?(:supervisor))
+        permissions << "admin" if  (current_user.has_role?(:system) || current_user.has_role?(:supervisor))
+
+        render json: {
+          userId: current_user.id,
+          displayName: "#{current_user.first_name} #{current_user.last_name}",
+          permissions: permissions
+        }, status: :ok
+      end
+
       private
 
-      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile)
-        Token.new.generate_otp_token({
-          pin_method:     pin_method,
-          otp_auth_key:   otp_auth_key
-        })
+      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile, mobile: nil)
+        Token.new.generate_otp_token(pin_method: pin_method,
+                                     otp_auth_key: otp_auth_key,
+                                     mobile: mobile)
       end
 
       def auth_params

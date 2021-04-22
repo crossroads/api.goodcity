@@ -5,6 +5,7 @@ class User < ApplicationRecord
   include ManageUserRoles
   include FuzzySearch
   include Mentionable
+
   # --------------------
   # Configuration
   # --------------------
@@ -130,6 +131,7 @@ class User < ApplicationRecord
     email = user_params["email"].presence
     user = find_user_by_mobile_or_email(mobile, email)
     user ||= new(user_params)
+    user.preferred_language = I18n.locale
     user.request_from_browse = (app_name == BROWSE_APP)
     user.save if user.changed?
     user.send_verification_pin(app_name, mobile, email) if user.valid?
@@ -146,9 +148,9 @@ class User < ApplicationRecord
     end
   end
 
-  def send_sms(app_name)
+  def send_sms(app_name, mobile = nil)
     begin
-      TwilioService.new(self).sms_verification_pin(app_name)
+      TwilioService.new(self, mobile).sms_verification_pin(app_name)
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, ".").try(:first)
       self.errors.add(:base, msg)
@@ -157,7 +159,7 @@ class User < ApplicationRecord
 
   def send_verification_pin(app_name, mobile, email = nil)
     SlackPinService.new(self).send_otp(app_name)
-    return send_sms(app_name) if mobile
+    return send_sms(app_name, mobile) if mobile
 
     GoodcityMailer.with(user_id: id).send_pin_email.deliver_later if email
   end
@@ -212,24 +214,30 @@ class User < ApplicationRecord
     roles.order('level DESC').first
   end
 
+  def has_role?(role_key)
+    name = Role::ROLE_NAMES[role_key]
+    return false if name.blank?
+    user_role_names.include?(name)
+  end
+
   def reviewer?
-    user_role_names.include?("Reviewer") && @treat_user_as_donor != true
+    has_role?(:reviewer) && @treat_user_as_donor != true
   end
 
   def supervisor?
-    user_role_names.include?("Supervisor") && @treat_user_as_donor != true
+    has_role?(:supervisor) && @treat_user_as_donor != true
   end
 
   def order_fulfilment?
-    user_role_names.include?('Order fulfilment')
+    has_role?(:order_fulfilment)
   end
 
   def stock_fulfilment?
-    user_role_names.include?('Stock fulfilment')
+    has_role?(:stock_fulfilment)
   end
 
   def stock_administrator?
-    user_role_names.include?('Stock administrator')
+    has_role?(:stock_administrator)
   end
 
   def has_permission?(permssion)
@@ -298,6 +306,10 @@ class User < ApplicationRecord
       props["contact_organisation_name_zh_tw"] = org.name_zh_tw
     end
     props
+  end
+
+  def locale
+    preferred_language || 'en'
   end
 
   def delete_auth_tokens

@@ -53,7 +53,7 @@ zh-tw:
     order_submitted_sms_to_order_fulfilment_users: |
       %{submitter_name} from %{organisation_name} has just placed an order %{code} on GoodCity.
     new_order_submitted_sms_to_charity: |
-      Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
+      感謝您通過好人好市提交訂單 %{code}。我們的團隊會盡快與您聯絡。
     input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
     unread_message_sms: |
@@ -193,6 +193,7 @@ zh-tw:
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
   order:
+    orders_package_should_exist: "There should be atleast one orders package"
     cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
     errors:
       invalid_detail_type: Invalid detail type

@@ -15,7 +15,7 @@ en:
     duplicate_error: A record already exists
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
-    invalid_params: Invalid or missing params 
+    invalid_params: Invalid or missing params
     foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
     foreign_key_mismatch_violation: A broken entity relationship has occurred
     unsupported_type: Unsupported type %{type}
@@ -195,6 +195,7 @@ en:
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
   order:
+    orders_package_should_exist: "There should be atleast one orders package"
     cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
     errors:
       invalid_detail_type: Invalid detail type

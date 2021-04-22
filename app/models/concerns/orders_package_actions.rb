@@ -2,7 +2,6 @@ module OrdersPackageActions
   include OrderFulfilmentOperations
   include DesignationOperations
 
-
   #
   # Enum of all available actions
   #
@@ -26,7 +25,7 @@ module OrdersPackageActions
     REDESIGNATE     = Action.new('redesignate') { |op, opts| Operations.redesignate(op, to_order: opts[:order_id]) }
     EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| Package::Operations.designate(op.package, quantity: opts[:quantity], to_order: op.order) }
 
-    ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]
+    ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY].freeze
   end
 
   #
@@ -70,7 +69,6 @@ module OrdersPackageActions
   #
   #
   class ActionResolver
-
     def initialize(orders_package)
       @model = orders_package
     end
@@ -81,27 +79,28 @@ module OrdersPackageActions
 
     def resolve
       case @model
-        when ORDER_FINISHED then []
-        when ORDERS_PACKAGE_CANCELLED then [
-          Actions::REDESIGNATE.if(has_quantity_to_redesignate?)
-        ]
-        when ORDERS_PACKAGE_DESIGNATED then [
-          Actions::EDIT_QUANTITY.if(editable_qty?),
-          Actions::CANCEL.if(!partially_dispatched?),
-          Actions::DISPATCH.on,
-          Actions::UNDISPATCH.if(partially_dispatched?),
-        ]
-        when ORDERS_PACKAGE_DISPATCHED then [ Actions::UNDISPATCH.on ]
-        else [] # default
+      when ORDER_FINISHED then []
+      when ORDERS_PACKAGE_CANCELLED then [
+        Actions::REDESIGNATE.if(has_quantity_to_redesignate?)
+      ]
+      when ORDERS_PACKAGE_DESIGNATED then [
+        Actions::EDIT_QUANTITY.if(editable_qty?),
+        Actions::CANCEL.if(!partially_dispatched?),
+        Actions::DISPATCH.on,
+        Actions::UNDISPATCH.if(partially_dispatched?)
+      ]
+      when ORDERS_PACKAGE_DISPATCHED then [Actions::UNDISPATCH.on]
+      else
+        [] # default
       end
     end
 
     private
 
-    ORDER_FINISHED = -> (model) { Order::INACTIVE_STATES.include?(model.order.state) }
-    ORDERS_PACKAGE_CANCELLED = -> (model) { model.cancelled? }
-    ORDERS_PACKAGE_DESIGNATED = -> (model) { model.designated? }
-    ORDERS_PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
+    ORDER_FINISHED = ->(model) { Order::INACTIVE_STATES.include?(model.order.state) }
+    ORDERS_PACKAGE_CANCELLED = ->(model) { model.cancelled? }
+    ORDERS_PACKAGE_DESIGNATED = ->(model) { model.designated? }
+    ORDERS_PACKAGE_DISPATCHED = ->(model) { model.dispatched? }
 
     def partially_dispatched?
       @model.designated? && @model.dispatched_quantity.positive?

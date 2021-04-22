@@ -3,7 +3,9 @@ class PushService
     channels = [channels].flatten.uniq
     payload = default_payload.merge(data)
     if channels.any?
-      SocketioSendJob.perform_later(channels, "update_store", payload.to_json, false)
+      SocketioSendJob
+        .set(wait: 1.seconds)
+        .perform_later(channels, "update_store", payload.to_json, false)
     end
   end
 

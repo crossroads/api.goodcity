@@ -9,7 +9,7 @@ class SlackPinService
   def send_otp(app_name)
     channel = ENV['SLACK_PIN_CHANNEL']
     token = @user.most_recent_token
-    
+
     message = "[#{Rails.env}] " + message_text(app_name, token)
     SlackMessageJob.perform_later(message, channel)
   end

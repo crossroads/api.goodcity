@@ -1,6 +1,17 @@
 class Role < ApplicationRecord
   include CacheableJson
 
+  ROLE_NAMES = {
+    :system => 'System',
+    :system_administrator => 'System administrator',
+    :reviewer => 'Reviewer',
+    :supervisor => 'Supervisor',
+    :stock_fulfilment => 'Stock fulfilment',
+    :stock_administrator => 'Stock administrator',
+    :order_fulfilment => 'Order fulfilment',
+    :order_administrator => 'Order administrator'
+  }
+
   validates :name, uniqueness: true
 
   has_many :user_roles

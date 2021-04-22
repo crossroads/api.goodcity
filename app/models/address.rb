@@ -9,8 +9,6 @@ class Address < ApplicationRecord
 
   # Required by PushUpdates and PaperTrail modules
   def offer
-    if addressable_type == "Contact"
-      addressable.try(:delivery).try(:offer)
-    end
+    addressable.try(:delivery).try(:offer) if addressable_type == "Contact"
   end
 end

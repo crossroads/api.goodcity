@@ -19,7 +19,6 @@ class PackageSet < ApplicationRecord
   watch [Package], on: [:update, :destroy] do |package, event|
     package_set_id = package.saved_change_to_attribute?(:package_set_id) ? package.package_set_id_before_last_save : package.package_set_id
     package_set = PackageSet.find_by(id: package_set_id)
-    package_set.destroy! if package_set.present? && package_set.packages.length < 2
   end
 
 

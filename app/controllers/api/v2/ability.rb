@@ -3,7 +3,7 @@ module Api
     class Ability < ::Ability
 
       def initialize(user, role: nil)
-        @role = role        
+        @role = role
         super(user)
       end
 
@@ -27,6 +27,7 @@ module Api
 
       def users_abilities
         can [:me], User
+        can :update_phone_number, User, id: @user_id
       end
 
       def shareable_abilities

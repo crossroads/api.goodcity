@@ -11,12 +11,19 @@ Rails.application.routes.draw do
       post "auth/send_pin", to: "authentication#send_pin"
       post "auth/signup",   to: "authentication#signup"
       post "auth/verify",   to: "authentication#verify"
+      post "auth/resend_pin",   to: "authentication#resend_pin"
       post "auth/hasura",   to: "authentication#hasura"
+      post "auth/goodchat",   to: "authentication#goodchat"
 
       resources :users do
-        get :me, on: :collection
+        put :update_phone_number, on: :member
+
+        collection do
+          get :me
+          put :merge_users
+        end
       end
-      
+
       resources :shareables, only: [:show, :index, :create, :destroy, :update] do
         collection do
           delete :unshare
@@ -45,7 +52,8 @@ Rails.application.routes.draw do
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index, :create, :destroy]
-      resources :canned_responses, only: [:index, :create, :update, :destroy]
+      resources :canned_responses, only: %i[index create update destroy]
+      get 'canned_responses/:guid', to: 'canned_responses#show'
       resources :user_favourites, only: [:index]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
@@ -147,6 +155,7 @@ Rails.application.routes.draw do
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
+      put "merge_users", to: "users#merge_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]

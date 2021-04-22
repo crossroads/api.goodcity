@@ -96,7 +96,7 @@ module Api
       end
 
       def canned_response_abilities
-        can %I[index create update destroy], CannedResponse if can_manage_canned_response?
+        can %I[index create update destroy show], CannedResponse if can_manage_canned_response?
       end
 
       def computer_abilities
@@ -194,7 +194,7 @@ module Api
         can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
         can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
-        can [:show, :index], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
         can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
 
         can :create, Message do |message|
@@ -418,6 +418,7 @@ module Api
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?
         can %i[mentionable_users], User if can_mention_users?
+        can %i[merge_users], User if can_merge_users?
       end
 
       def user_role_abilities

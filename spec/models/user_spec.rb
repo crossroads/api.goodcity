@@ -225,18 +225,39 @@ describe User, :type => :model do
         expect(user.errors[:mobile]).to include("can't be blank")
       end
     end
+
+    %w[en zh-tw].each do |locale|
+      context "when locale is #{locale}" do
+        it "saves preferred_language field as #{locale}" do
+          I18n.with_locale(locale) do
+            user = User.creation_with_auth(user_attributes, DONOR_APP)
+            expect(user.preferred_language).to eq(locale)
+          end
+        end
+      end
+    end
   end
 
   describe "#send_verification_pin" do
     let(:slack) { SlackPinService.new(user) }
     let(:twilio) { TwilioService.new(user) }
+    let(:mobile) { '+85290369036' }
 
     it "should send pin via Twilio" do
       expect(SlackPinService).to receive(:new).with(user).and_return(slack)
       expect(slack).to receive(:send_otp)
-      expect(TwilioService).to receive(:new).with(user).and_return(twilio)
+      expect(TwilioService).to receive(:new).with(user, user.mobile).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
       user.send_verification_pin(DONOR_APP, user.mobile, nil)
+    end
+
+    it 'sends verification number to the provided mobile number only' do
+      twilio = TwilioService.new(user, mobile)
+      expect(TwilioService).to receive(:new).with(user, mobile).and_return(twilio)
+      expect(twilio).to receive(:sms_verification_pin)
+
+      user.send_verification_pin(DONOR_APP, mobile, nil)
+      expect(twilio.mobile).to eq(mobile)
     end
   end
 
@@ -319,6 +340,20 @@ describe User, :type => :model do
 
     it "should be false" do
       expect(build(:user, last_connected: 1.hour.ago).online?).to eq(true)
+    end
+  end
+
+  describe '#locale' do
+    let(:user) { create(:user, preferred_language: 'zh-tw') }
+    it 'returns the users preferred language' do
+      expect(user.locale).to eq('zh-tw')
+    end
+
+    context 'if preferred_language is nil' do
+      let(:user) { create(:user, preferred_language: nil) }
+      it 'returns en as the locale' do
+        expect(user.locale).to eq('en')
+      end
     end
   end
 
@@ -515,6 +550,21 @@ describe User, :type => :model do
       users = User.with_organisation_status(%w[expired denied])
       expect(users.count).to eq(2)
       expect(users).to match_array([user_4, user_5])
+    end
+  end
+
+  describe '.send_sms' do
+    let(:user) { create(:user) }
+    let(:mobile) { '+85290369036' }
+
+    before do
+      allow_any_instance_of(TwilioService).to receive(:pin_sms_text).and_return(true)
+    end
+
+    it 'sends sms to specified mobile number' do
+      expect_any_instance_of(TwilioService).to receive(:initialize).with(user, mobile).and_return(TwilioService.new(user, mobile))
+
+      user.send_sms('donor', mobile)
     end
   end
 

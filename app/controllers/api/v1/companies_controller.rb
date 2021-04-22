@@ -25,8 +25,7 @@ module Api
       end
 
       def index
-        @companies = @companies.search({search_text: params["searchText"]})
-          .page(page).per(per_page) if params["searchText"]
+        @companies = @companies.search(search_text: params["searchText"]).page(page).per(per_page) if params["searchText"]
         render json: @companies, each_serializer: serializer
       end
 
@@ -44,7 +43,6 @@ module Api
       def show
         render json: @company, serializer: serializer
       end
-
 
       private
 
