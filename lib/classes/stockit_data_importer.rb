@@ -8,7 +8,7 @@ class StockitDataMigrator
 
   def initialize(filename)
     @filename = filename
-    @workbook = RubyXL::Parser.parse(Rails.root.join('public/data', filename))
+    @workbook = RubyXL::Parser.parse(Rails.root.join('tmp', filename))
     @bar = RakeProgressbar.new(worksheet.sheet_data.rows.size)
   end
 
