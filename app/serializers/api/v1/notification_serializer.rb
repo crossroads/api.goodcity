@@ -1,6 +1,13 @@
 module Api::V1
   class NotificationSerializer < MessageSerializer
     attributes :unread_count
+    attributes :shareable_public_id
+
+    def shareable_public_id
+      if object.messageable_type == "Offer"
+        Shareable.find_by(resource_id: object.messageable_id).try(:public_uid)
+      end
+    end
 
     def unread_count
       record = Message.select("count(subscriptions.state)")

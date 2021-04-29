@@ -3,10 +3,12 @@ require "rails_helper"
 describe Api::V1::NotificationSerializer do
 
   let(:user) { create(:user) }
+  let(:offer)  { create(:offer) }
+  let(:shareable) { create :shareable, resource: offer }
   let(:package) { create :package }
-  let(:message) { create :message, messageable: package, is_private: true }
-  let(:message2) { create :message, messageable: package, is_private: true }
-  let(:serializer) { Api::V1::NotificationSerializer.new(message, root: "message").as_json }
+  let(:message) { create :message, messageable: offer, is_private: true }
+  let(:message2) { create :message, messageable: offer, is_private: true }
+  let(:serializer) { Api::V1::NotificationSerializer.new(message, root: "message").as_json
   let(:json) { JSON.parse(serializer.to_json) }
 
   before do
@@ -22,5 +24,6 @@ describe Api::V1::NotificationSerializer do
     expect(json["message"]["is_private"]).to eql(message.is_private)
     expect(json["message"]["sender_id"]).to eql(message.sender_id)
     expect(json["message"]["unread_count"]).to eql(2)
+    expect(json["message"]["shareable_public_id"]).to eql(shareable.public_uid)
   end
 end
