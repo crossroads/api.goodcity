@@ -5,5 +5,4 @@ class SlackMessageJob < ActiveJob::Base
     client = Slack::Web::Client.new
     client.chat_postMessage(channel: channel, text: message, as_user: true)
   end
-
 end
