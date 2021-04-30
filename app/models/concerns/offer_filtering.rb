@@ -9,12 +9,12 @@ module OfferFiltering
     #   -[:before] = timestamp
     #   -[:after] = timestamp
 
-    scope :filter_offers, -> (options = {}) do
+    scope :filter_offers, ->(options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
       res = res.shareable if options[:shareable].present?
       res = res.select('offers.*, schedules.scheduled_at')
-      res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
+      res = res.where('offers.state IN (?)', options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
@@ -35,19 +35,20 @@ module OfferFiltering
     end
 
     def self.sort_offer(options)
-      return "id DESC" if options[:recent_offers]
+      return 'id DESC' if options[:recent_offers]
+
       # prevent SQL injection by sanitizing the input
       sort_column = if self.column_names.include?(options[:sort_column]) || (options[:sort_column] == 'schedules.scheduled_at')
-          options[:sort_column]
-        else
-          'id'
-        end
-      sort_type = options[:is_desc] ? "DESC" : "ASC"
+                      options[:sort_column]
+                    else
+                      'id'
+                    end
+      sort_type = options[:is_desc] ? 'DESC' : 'ASC'
       "#{sort_column} #{sort_type}"
     end
 
     def self.self_reviewer
-      where("reviewed_by_id= ?", User.current_user.id)
+      where('reviewed_by_id= ?', User.current_user.id)
     end
 
     def self.due_after(time)
@@ -60,8 +61,8 @@ module OfferFiltering
 
     def self.with_notifications(state)
       res = joins("LEFT OUTER JOIN subscriptions ON offers.id = subscriptions.subscribable_id and subscriptions.subscribable_type = 'Offer'")
-      res = res.where("subscriptions.user_id = (?)", User.current_user.id)
-      res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
+      res = res.where('subscriptions.user_id = (?)', User.current_user.id)
+      res = res.where('subscriptions.state = (?)', state) if %w[unread read].include?(state)
       res
     end
 
@@ -74,13 +75,12 @@ module OfferFiltering
     end
 
     def self.shareable
-      joins("INNER JOIN shareables ON shareables.resource_id=offers.id")
+      joins('INNER JOIN shareables ON shareables.resource_id=offers.id')
     end
 
     def self.assoicate_delivery_and_schedule
-      res = joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id")
-      res = res.joins("LEFT OUTER JOIN schedules ON deliveries.schedule_id = schedules.id")
-      res
+      res = joins('LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id')
+      res.joins('LEFT OUTER JOIN schedules ON deliveries.schedule_id = schedules.id')
     end
   end
 end
