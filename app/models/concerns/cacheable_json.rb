@@ -13,8 +13,9 @@ module CacheableJson
 
   # Methods defined here are going to extend the class, not the instance
   module ClassMethods
-    def cache_key
-      key = "#{name.underscore}/#{I18n.locale}"
+    def cache_key(opts = {})
+      root = opts[:root] || name.underscore.pluralize
+      key = "#{name.underscore}/#{I18n.locale}/#{root}"
       max = maximum(:updated_at)
       key << "/#{max.utc.to_s(:nsec)}" unless max.blank?
       key
@@ -25,13 +26,13 @@ module CacheableJson
       records = try(:with_eager_load) || all
       root = opts[:root] || name.underscore.pluralize
       objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize, root: root).as_json
-      Rails.cache.write(cache_key, objects)
+      Rails.cache.write(cache_key(opts), objects)
       objects
     end
 
     # Return the cached json or generate it if needed
     def cached_json(opts = {})
-      Rails.cache.fetch(cache_key) || cache_json(opts)
+      Rails.cache.fetch(cache_key(opts)) || cache_json(opts)
     end
   end
 end
