@@ -4,11 +4,11 @@ describe Api::V1::NotificationSerializer do
 
   let(:user) { create(:user) }
   let(:offer)  { create(:offer) }
-  let(:shareable) { create :shareable, resource: offer }
+  let!(:shareable) { create :shareable, resource: offer }
   let(:package) { create :package }
   let(:message) { create :message, messageable: offer, is_private: true }
   let(:message2) { create :message, messageable: offer, is_private: true }
-  let(:serializer) { Api::V1::NotificationSerializer.new(message, root: "message").as_json
+  let(:serializer) { Api::V1::NotificationSerializer.new(message, root: "message").as_json }
   let(:json) { JSON.parse(serializer.to_json) }
 
   before do
