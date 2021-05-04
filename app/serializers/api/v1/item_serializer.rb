@@ -8,8 +8,6 @@ module Api::V1
 
     has_many :packages, serializer: PackageSerializer
     has_many :images,   serializer: ImageSerializer, polymorphic: true
-    # default scope will exclude { is_private = true } messages which is what we want
-    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :package_type, serializer: PackageTypeSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer
     has_one  :donor_condition, serializer: DonorConditionSerializer

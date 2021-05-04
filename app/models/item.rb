@@ -11,9 +11,7 @@ class Item < ApplicationRecord
   belongs_to :rejection_reason
   belongs_to :donor_condition
   has_many   :images, as: :imageable, dependent: :destroy
-  has_many :messages, -> {
-    where(is_private: false) if User.current_user.try(:donor?)
-  }, as: :messageable, dependent: :destroy
+  has_many   :messages, as: :messageable, dependent: :destroy
   has_many   :packages, dependent: :destroy
   has_many   :expecting_packages, -> { where(state: 'expecting') }, class_name: "Package" # Used in Offer
   has_many   :missing_packages,   -> { where(state: 'missing') },   class_name: "Package" # Used in Offer

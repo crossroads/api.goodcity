@@ -34,9 +34,7 @@ class Offer < ApplicationRecord
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
-  has_many :messages, -> {
-    where(is_private: false) if User.current_user.try(:donor?)
-  }, as: :messageable, dependent: :destroy
+  has_many :messages, as: :messageable, dependent: :destroy
 
   #
   # Sharing support

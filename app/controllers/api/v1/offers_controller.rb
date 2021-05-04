@@ -186,8 +186,7 @@ module Api
         serializer = params[:companies] == 'true' ? offer_company_serializer : summary_serializer
         ActiveModel::ArraySerializer.new(records,
           each_serializer: serializer,
-          root: "offers",
-          include_messages: params[:include_messages] == "true"
+          root: "offers"
         ).as_json
       end
 

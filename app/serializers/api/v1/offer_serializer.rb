@@ -10,8 +10,6 @@ module Api::V1
       :company_id, :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
     has_many :items, serializer: ItemSerializer
-    # default scope will exclude { is_private = true } messages which is what we want
-    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :closed_by, serializer: UserSerializer, root: :user
     has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :reviewed_by, serializer: UserSerializer, root: :user
@@ -20,11 +18,6 @@ module Api::V1
     has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
     has_one  :cancellation_reason, serializer: CancellationReasonSerializer
     has_one  :company, serializer: CompanySerializer
-
-    def include_messages?
-      return false unless goodcity_user?
-      @options[:exclude_messages] != true
-    end
 
     def goodcity_user?
       User.current_user.present?

@@ -31,31 +31,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       expect( body['offers'].size ).to eq(2)
     end
 
-    context "exclude_messages" do
-      it "is 'false'" do
-        offer1 = create(:offer, :with_messages)
-        expect(offer1.messages.size).to eql(1)
-        get :index, params: { exclude_messages: "false" }
-        expect(assigns(:offers).to_a).to eql([offer1])
-        expect(response.body).to include(offer1.messages.first.body)
-      end
-
-      it "is 'true'" do
-        offer1 = create(:offer, :with_messages)
-        expect(offer1.messages.size).to eql(1)
-        get :index, params: { exclude_messages: "true" }
-        expect(assigns(:offers).to_a).to eql([offer1])
-        expect(response.body).to_not include(offer1.messages.first.body)
-      end
-
-      it "is not set" do
-        offer1 = create(:offer, :with_messages)
-        expect(offer1.messages.size).to eql(1)
-        get :index
-        expect(assigns(:offers).to_a).to eql([offer1])
-        expect(response.body).to include(offer1.messages.first.body)
-      end
-    end
     context "states" do
       it "returns offers in the submitted state" do
         offer1 = create(:offer, state: "submitted")
@@ -162,20 +137,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     it "returns 200" do
       get :show, params: { id: offer.id }
       expect(response.status).to eq(200)
-    end
-
-    context 'polymorphic associations' do
-      let(:item) { create(:item, id: offer.id, offer: offer) }
-      let!(:item_message) { create(:message, messageable: item) }
-      let!(:offer_message) { create(:message, messageable: offer) }
-      let!(:order_message) { create(:message, :with_order, sender: user) }
-
-      it 'expects to include messages related only to item' do
-        get :show, params: { id: offer.id }
-        expect(parsed_body['messages'].count).to eq(2)
-        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
-        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(offer.id, item.id)
-      end
     end
 
     describe "Serialization options" do
