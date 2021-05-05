@@ -177,7 +177,8 @@ module Api
       def offer_summary_response(records)
         records = params[:companies]== 'true' ? records : records.with_summary_eager_load
         serializer = params[:companies] == 'true' ? offer_company_serializer : summary_serializer
-        ActiveModel::ArraySerializer.new(records,
+        ActiveModel::ArraySerializer.new(
+          records,
           each_serializer: serializer,
           root: "offers"
         ).as_json

@@ -139,7 +139,8 @@ module Api
       end
 
       def message_response(records, serializer)
-        ActiveModel::ArraySerializer.new(records,
+        ActiveModel::ArraySerializer.new(
+          records,
           each_serializer: serializer,
           include_organisations_users: (staff? && params["include_organisations_users"] == "true"),
           root: "messages"

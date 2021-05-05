@@ -204,7 +204,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           end
 
           it "doesn't include the organisations user" do
-            debugger
             get :index, params: { messageable_id: offer.id, messageable_type: "Offer", include_organisations_users: "true" }
 
             expect(response.status).to eq(200)
