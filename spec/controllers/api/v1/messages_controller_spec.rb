@@ -4,7 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission }
+  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission, :with_can_manage_offers_permission }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
@@ -170,6 +170,47 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         subject['messages'].each do |m|
           expect(m['messageable_type']).to eq('Item')
           expect(m['messageable_id']).not_to be_nil
+        end
+      end
+    end
+
+    describe "Serialization options" do
+      let(:charity) { create :user, :charity }
+      let!(:offer) { create :offer, created_by: user, reviewed_by: reviewer }
+      let(:parsed_body) { JSON.parse(response.body) }
+
+      before do
+        # Charity users sends a message about the offers
+        create :message, sender: charity, messageable: offer, body: "Hi", recipient: user
+      end
+
+      describe "including organisations users ?include_organisations_users=true" do
+        context "as a staff member" do
+          before { generate_and_set_token(reviewer) }
+
+          it "includes organisations users" do
+            get :index, params: { messageable_id: offer.id, messageable_type: "Offer", include_organisations_users: "true" }
+
+            expect(response.status).to eq(200)
+            expect(parsed_body['organisations']).not_to be_nil
+            expect(parsed_body['organisations_users']).not_to be_nil
+          end
+        end
+
+        context "as a normal user" do
+          before do
+            user.roles.destroy_all
+            generate_and_set_token(user)
+          end
+
+          it "doesn't include the organisations user" do
+            debugger
+            get :index, params: { messageable_id: offer.id, messageable_type: "Offer", include_organisations_users: "true" }
+
+            expect(response.status).to eq(200)
+            expect(parsed_body['organisations']).to be_nil
+            expect(parsed_body['organisations_users']).to be_nil
+          end
         end
       end
     end

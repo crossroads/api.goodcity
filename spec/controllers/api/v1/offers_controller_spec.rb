@@ -138,45 +138,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :show, params: { id: offer.id }
       expect(response.status).to eq(200)
     end
-
-    describe "Serialization options" do
-      let(:charity) { create :user, :charity }
-      let!(:offer) { create :offer, created_by: user }
-
-      before do
-        # Charity users sends a message about the offers
-        create :message, sender: charity, messageable: offer, body: "Hi"
-      end
-
-
-      describe "including organisations users ?include_organisations_users=true" do
-        context "as a staff member" do
-
-          before { generate_and_set_token(supervisor) }
-
-          it "includes organisations users" do
-            get :show, params: { id: offer.id, include_organisations_users: "true" }
-
-            expect(response.status).to eq(200)
-            expect(parsed_body['organisations']).not_to be_nil
-            expect(parsed_body['organisations_users']).not_to be_nil
-          end
-        end
-
-        context "as a normal user" do
-
-          before { generate_and_set_token(user) }
-
-          it "doesn't include the organisations user" do
-            get :show, params: { id: offer.id, include_organisations_users: "true" }
-
-            expect(response.status).to eq(200)
-            expect(parsed_body['organisations']).to be_nil
-            expect(parsed_body['organisations_users']).to be_nil
-          end
-        end
-      end
-    end
   end
 
   describe "POST /offers" do

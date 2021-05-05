@@ -87,7 +87,7 @@ module Api
           .select("max(@messages.id) AS message_id")
           .page(page).per(per_page)
           .order('message_id DESC')
-        
+
         if bool_param(:is_private, false)
           notification_ids = notification_ids.group("messageable_type, messageable_id, is_private")
         else
@@ -141,8 +141,13 @@ module Api
       def message_response(records, serializer)
         ActiveModel::ArraySerializer.new(records,
           each_serializer: serializer,
+          include_organisations_users: (staff? && params["include_organisations_users"] == "true"),
           root: "messages"
         ).as_json
+      end
+
+      def staff?
+        current_user.has_permission?("can_manage_offers")
       end
 
       def handle_backward_compatibility
