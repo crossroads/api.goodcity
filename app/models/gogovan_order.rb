@@ -96,7 +96,7 @@ class GogovanOrder < ApplicationRecord
     attributes['vehicle'] =
       if attributes['gogovanOptionId']
         GogovanTransport.get_vehicle_tag(attributes['gogovanOptionId'])
-      elsif (attributes['offerId'])
+      elsif attributes['offerId']
         Offer.find(attributes['offerId']).try(:gogovan_transport).try(:vehicle_tag)
       else
         GogovanTransport.first.try(:vehicle_tag)
@@ -107,7 +107,7 @@ class GogovanOrder < ApplicationRecord
   def self.update_vehicle_type(attributes)
     if attributes['gogovanOptionId'] && attributes['offerId']
       offer = Offer.find(attributes['offerId'])
-      offer && offer.update_column(:gogovan_transport_id, attributes['gogovanOptionId'])
+      offer&.update_column(:gogovan_transport_id, attributes['gogovanOptionId'])
     end
   end
 
@@ -115,9 +115,9 @@ class GogovanOrder < ApplicationRecord
     message = I18n.t('gogovan.notify_completed', license: driver_license, booking_id: booking_id)
 
     PushService.new.send_notification Channel::STAFF_CHANNEL, ADMIN_APP, {
-      category:  'offer_delivery',
-      message:   message,
-      offer_id:  offer.id,
+      category: 'offer_delivery',
+      message: message,
+      offer_id: offer.id,
       author_id: User.system_user
     }
   end

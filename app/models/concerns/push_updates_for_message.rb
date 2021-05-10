@@ -41,14 +41,14 @@ module PushUpdatesForMessage
 
   # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
-    case object_class
-    when 'Order'
-      channels = [Channel::ORDER_FULFILMENT_CHANNEL]
-    when 'Package'
-      channels = [Channel::INVENTORY_CHANNEL]
-    else # Offer / Item
-      channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
-    end
+    channels = case object_class
+               when 'Order'
+                 [Channel::ORDER_FULFILMENT_CHANNEL]
+               when 'Package'
+                 [Channel::INVENTORY_CHANNEL]
+               else # Offer / Item
+                 [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
+               end
     send_update('read', channels, :delete)
   end
 
@@ -66,7 +66,7 @@ module PushUpdatesForMessage
   # Need to inject subscription.state into message data
   #   because read/unread state is per subscription not per message
   def serialized_message(state)
-    message = self.tap { |m| m.state_value = state }
+    message = tap { |m| m.state_value = state }
     associations = Message.reflections.keys.map(&:to_sym)
     Api::V1::MessageSerializer.new(message, { exclude: associations })
   end
@@ -116,15 +116,15 @@ module PushUpdatesForMessage
 
   # All admin users with permission to view messages on that object
   def relevant_staff_user_ids
-    if %w[Offer Item].include?(object_class)
-      message_permissions = ['can_manage_offer_messages']
-    elsif object_class == 'Order'
-      message_permissions = ['can_manage_order_messages']
-    elsif object_class == 'Package'
-      message_permissions = ['can_manage_package_messages']
-    else
-      message_permissions = []
-    end
+    message_permissions = if %w[Offer Item].include?(object_class)
+                            ['can_manage_offer_messages']
+                          elsif object_class == 'Order'
+                            ['can_manage_order_messages']
+                          elsif object_class == 'Package'
+                            ['can_manage_package_messages']
+                          else
+                            []
+                          end
     User.joins(roles: [:permissions]).where(permissions: { name: message_permissions }).distinct.pluck(:id)
   end
 end

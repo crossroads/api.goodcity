@@ -9,7 +9,7 @@ module OfferFiltering
     #   -[:before] = timestamp
     #   -[:after] = timestamp
 
-    scope :filter_offers, ->(options = {}) do
+    scope :filter_offers, lambda { |options = {}|
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
       res = res.shareable if options[:shareable].present?
@@ -22,7 +22,7 @@ module OfferFiltering
       res = res.order(sort_offer(options)) if options[:sort_column] || options[:recent_offers]
       res = res.with_notifications(options[:with_notifications]) if options[:with_notifications].present?
       res.distinct
-    end
+    }
 
     def self.priority
       where <<-SQL
