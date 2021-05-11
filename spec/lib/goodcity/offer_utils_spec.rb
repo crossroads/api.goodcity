@@ -18,21 +18,49 @@ context Goodcity::OfferUtils do
         context 'When base offer has a valid state' do
 
           context 'When other offer has a valid state' do
-            before { create :item, :with_messages, offer: other_offer }
+            before do
+              create :item, :with_messages, :with_packages, offer: other_offer
+              create :version, item: other_offer, related: other_offer
+            end
 
-            it 'should successfully merge other offer into base offer' do
+            it 'should successfully merge other offer into base-offer' do
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+
               expect(response).to eq(true)
               expect(base_offer).to be_valid
               expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
 
-            it 'reassign other offer items along with its messages to base offer' do
+            it 'reassign other-offer items along with its messages to base-offer' do
               expect(base_offer.items.count).to eq(0)
+
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+
               expect(response).to eq(true)
               expect(base_offer.items.count).to eq(1)
               expect(base_offer.items.last.messages.count).to eq(1)
+              expect(Offer.where(id: other_offer.id).count).to eq(0)
+            end
+
+            it 'reassign other-offer item packages to base-offer' do
+              expect(base_offer.expecting_packages.count).to eq(0)
+              expect(other_offer.expecting_packages.count).to be >= 1
+
+              response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+
+              expect(response).to eq(true)
+              expect(base_offer.expecting_packages.count).to be >= 1
+              expect(Offer.where(id: other_offer.id).count).to eq(0)
+            end
+
+            it 'reassign other-offer versions to base-offer' do
+              expect(Version.where(related_type: "Offer").where(related_id: base_offer.id).count).to eq(0)
+              expect(Version.where(related_type: "Offer").where(related_id: other_offer.id).count).to eq(1)
+
+              response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+
+              expect(response).to eq(true)
+              expect(Version.where(related_type: "Offer").where(related_id: base_offer.id).count).to eq(1)
               expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
           end
