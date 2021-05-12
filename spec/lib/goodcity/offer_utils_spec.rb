@@ -1,5 +1,5 @@
 require 'goodcity/offer_utils'
-require "rails_helper"
+require 'rails_helper'
 
 context Goodcity::OfferUtils do
 
@@ -9,7 +9,7 @@ context Goodcity::OfferUtils do
   let!(:other_offer) { create :offer, :reviewed, created_by: first_user }
   let!(:offer_created_by_other_user) { create :offer, :reviewed, created_by: other_user }
 
-  context "Merge two offers into one" do
+  context 'Merge two offers into one' do
 
     context '.merge_offer!' do
 
@@ -19,7 +19,7 @@ context Goodcity::OfferUtils do
 
           context 'When other offer has a valid state' do
             before do
-              create :item, :with_messages, :with_packages, offer: other_offer
+              create :item, :with_messages, :with_packages, offer: other_offer, donor_description: 'Test description'
               create :version, item: other_offer, related: other_offer
             end
 
@@ -32,35 +32,44 @@ context Goodcity::OfferUtils do
             end
 
             it 'reassign other-offer items along with its messages to base-offer' do
+              other_offer_item_messages = other_offer.items.last.messages.pluck(:body)
+
               expect(base_offer.items.count).to eq(0)
 
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
 
               expect(response).to eq(true)
+              expect(base_offer.items.pluck(:donor_description)).to include('Test description')
+              expect(base_offer.items.last.messages.pluck(:body)).to match_array(other_offer_item_messages)
               expect(base_offer.items.count).to eq(1)
               expect(base_offer.items.last.messages.count).to eq(1)
               expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
 
             it 'reassign other-offer item packages to base-offer' do
+              other_offer_packages_note = other_offer.expecting_packages.pluck(:notes)
+
               expect(base_offer.expecting_packages.count).to eq(0)
               expect(other_offer.expecting_packages.count).to be >= 1
 
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
 
               expect(response).to eq(true)
+              expect(base_offer.expecting_packages.pluck(:notes)).to match_array(other_offer_packages_note)
               expect(base_offer.expecting_packages.count).to be >= 1
               expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
 
             it 'reassign other-offer versions to base-offer' do
-              expect(Version.where(related_type: "Offer").where(related_id: base_offer.id).count).to eq(0)
-              expect(Version.where(related_type: "Offer").where(related_id: other_offer.id).count).to eq(1)
+              other_offer_version_ids = Version.where(related_type: 'Offer').where(related_id: other_offer.id).pluck(:id)
+
+              expect(Version.where(related_type: 'Offer').where(related_id: base_offer.id).count).to eq(0)
+              expect(Version.where(related_type: 'Offer').where(related_id: other_offer.id).count).to eq(1)
 
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
 
               expect(response).to eq(true)
-              expect(Version.where(related_type: "Offer").where(related_id: base_offer.id).count).to eq(1)
+              expect(Version.where(related_type: 'Offer').where(related_id: base_offer.id).pluck(:id)).to match_array(other_offer_version_ids)
               expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
           end
