@@ -19,7 +19,7 @@ context Goodcity::OfferUtils do
 
           context 'When other offer has a valid state' do
             before do
-              create :item, :with_messages, :with_packages, offer: other_offer, donor_description: 'Test description'
+              create :item, :with_messages, offer: other_offer, donor_description: 'Test description'
               create :version, item: other_offer, related: other_offer
             end
 
@@ -43,16 +43,14 @@ context Goodcity::OfferUtils do
             end
 
             it 'reassign other-offer item packages to base-offer' do
+              create :package, item: other_offer.items.last
               other_offer_packages_note = other_offer.expecting_packages.pluck(:notes)
 
-              expect(base_offer.expecting_packages.count).to eq(0)
-              expect(other_offer.expecting_packages.count).to be >= 1
+              expect {
+                Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+              }.to change(base_offer.expecting_packages, :count).from(0).to(1)
 
-              response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
-
-              expect(response).to eq(true)
               expect(base_offer.expecting_packages.pluck(:notes)).to match_array(other_offer_packages_note)
-              expect(base_offer.expecting_packages.count).to be >= 1
             end
 
             it 'reassign other-offer versions to base-offer' do
