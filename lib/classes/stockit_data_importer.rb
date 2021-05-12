@@ -65,19 +65,22 @@ class StockitOrganisationToOrganisationMapper < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc # must come before the first 'next'
+        
         next unless row&.index_in_collection && row.index_in_collection > 1
-
-        organisation = StockitOrganisation.find_by(name: row[0].value)
-        next if organisation.nil?
         
         gc_organisation_id = row[1].value
         next if gc_organisation_id.blank?
 
-        records = Order.where(stockit_organisation: organisation)
-        next if records.empty?
+        # Handle cases where multiple stockit organisations have the same name
+        organisations = StockitOrganisation.where(name: row[0].value)
+        next if organisations.empty?
 
-        update_fields(records, gc_organisation_id)
-        bar.inc
+        organisations.each do |organisation|
+          records = Order.where(stockit_organisation: organisation)
+          update_fields(records, gc_organisation_id) if records.any?
+        end
+
       end
     ensure
       bar.finished
