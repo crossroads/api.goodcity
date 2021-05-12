@@ -18,10 +18,7 @@ context Goodcity::OfferUtils do
         context 'When base offer has a valid state' do
 
           context 'When other offer has a valid state' do
-            before do
-              create :item, :with_messages, offer: other_offer, donor_description: 'Test description'
-              create :version, item: other_offer, related: other_offer
-            end
+            before { create :item, :with_messages, offer: other_offer, donor_description: 'Test description' }
 
             it 'should successfully merge other offer into base-offer' do
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
@@ -54,6 +51,7 @@ context Goodcity::OfferUtils do
             end
 
             it 'reassign other-offer versions to base-offer' do
+              create :version, item: other_offer, related: other_offer
               other_offer_version_ids = Version.where(related_type: 'Offer').where(related_id: other_offer.id).pluck(:id)
 
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
