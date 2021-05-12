@@ -65,19 +65,22 @@ class StockitOrganisationToOrganisationMapper < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc # must come before the first 'next'
+        
         next unless row&.index_in_collection && row.index_in_collection > 1
-
-        organisation = StockitOrganisation.find_by(name: row[0].value)
-        next if organisation.nil?
         
         gc_organisation_id = row[1].value
         next if gc_organisation_id.blank?
 
-        records = Order.where(stockit_organisation: organisation)
-        next if records.empty?
+        # Handle cases where multiple stockit organisations have the same name
+        organisations = StockitOrganisation.where(name: row[0].value)
+        next if organisations.empty?
 
-        update_fields(records, gc_organisation_id)
-        bar.inc
+        organisations.each do |organisation|
+          records = Order.where(stockit_organisation: organisation)
+          update_fields(records, gc_organisation_id) if records.any?
+        end
+
       end
     ensure
       bar.finished
@@ -103,15 +106,16 @@ class ImportMissingShipments < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc
         next if row.index_in_collection.zero?
 
         code = row[1]&.value
-        next unless code
+        next if code.blank?
 
         order = Order.find_or_initialize_by(code: code)
-        attributes = { created_at: row[6]&.value,
-                       updated_at: row[7]&.value || row[6]&.value,
-                       closed_at: row[21]&.value,
+        attributes = { created_at: row[6]&.value || row[21]&.value || row[7]&.value,
+                       updated_at: row[7]&.value || row[6]&.value || row[21]&.value,
+                       closed_at: row[21]&.value || row[7]&.value || row[6]&.value,
                        detail_type: row[2]&.value,
                        country_id: row[10]&.value,
                        state: row[14]&.value,
@@ -121,12 +125,12 @@ class ImportMissingShipments < StockitDataMigrator
                       }
 
         order.assign_attributes(attributes)
-        if order.save
-          # puts "Created #{order.code}"
+        if order.save!
+          puts "Created #{order.code}"
         else
           puts "Could not create #{order.code}. Reasons: #{order.errors.map&(:message).join(', ')}"
         end
-        bar.inc
+
       end
     end
   ensure
