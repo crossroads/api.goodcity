@@ -106,15 +106,16 @@ class ImportMissingShipments < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc
         next if row.index_in_collection.zero?
 
         code = row[1]&.value
-        next unless code
+        next if code.blank?
 
         order = Order.find_or_initialize_by(code: code)
-        attributes = { created_at: row[6]&.value,
-                       updated_at: row[7]&.value || row[6]&.value,
-                       closed_at: row[21]&.value,
+        attributes = { created_at: row[6]&.value || row[21]&.value || row[7]&.value,
+                       updated_at: row[7]&.value || row[6]&.value || row[21]&.value,
+                       closed_at: row[21]&.value || row[7]&.value || row[6]&.value,
                        detail_type: row[2]&.value,
                        country_id: row[10]&.value,
                        state: row[14]&.value,
@@ -124,12 +125,12 @@ class ImportMissingShipments < StockitDataMigrator
                       }
 
         order.assign_attributes(attributes)
-        if order.save
-          # puts "Created #{order.code}"
+        if order.save!
+          puts "Created #{order.code}"
         else
           puts "Could not create #{order.code}. Reasons: #{order.errors.map&(:message).join(', ')}"
         end
-        bar.inc
+
       end
     end
   ensure
