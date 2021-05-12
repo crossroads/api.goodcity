@@ -34,16 +34,12 @@ context Goodcity::OfferUtils do
             it 'reassign other-offer items along with its messages to base-offer' do
               other_offer_item_messages = other_offer.items.last.messages.pluck(:body)
 
-              expect(base_offer.items.count).to eq(0)
+              expect {
+                Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+              }.to change(base_offer.items, :count).from(0).to(1)
 
-              response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
-
-              expect(response).to eq(true)
               expect(base_offer.items.pluck(:donor_description)).to include('Test description')
               expect(base_offer.items.last.messages.pluck(:body)).to match_array(other_offer_item_messages)
-              expect(base_offer.items.count).to eq(1)
-              expect(base_offer.items.last.messages.count).to eq(1)
-              expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
 
             it 'reassign other-offer item packages to base-offer' do
@@ -57,20 +53,15 @@ context Goodcity::OfferUtils do
               expect(response).to eq(true)
               expect(base_offer.expecting_packages.pluck(:notes)).to match_array(other_offer_packages_note)
               expect(base_offer.expecting_packages.count).to be >= 1
-              expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
 
             it 'reassign other-offer versions to base-offer' do
               other_offer_version_ids = Version.where(related_type: 'Offer').where(related_id: other_offer.id).pluck(:id)
 
-              expect(Version.where(related_type: 'Offer').where(related_id: base_offer.id).count).to eq(0)
-              expect(Version.where(related_type: 'Offer').where(related_id: other_offer.id).count).to eq(1)
-
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
 
               expect(response).to eq(true)
               expect(Version.where(related_type: 'Offer').where(related_id: base_offer.id).pluck(:id)).to match_array(other_offer_version_ids)
-              expect(Offer.where(id: other_offer.id).count).to eq(0)
             end
           end
 
