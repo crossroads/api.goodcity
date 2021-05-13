@@ -37,7 +37,7 @@ context Goodcity::UserUtils do
       it "should give error if both user-ids are same" do
         response = Goodcity::UserUtils.merge_user!(master_user.id, master_user.id)
 
-        expect(response[:error]).to eq("Please provide differnt users to perform merge operation.")
+        expect(response[:error]).to eq("Please provide different users to perform merge operation.")
       end
     end
 

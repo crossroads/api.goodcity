@@ -35,7 +35,7 @@ module Goodcity
       elsif other_user.blank?
         { error: "User #{other_user_id} to be merged does not exist" }
       elsif other_user == master_user
-        { error: "Please provide differnt users to perform merge operation." }
+        { error: "Please provide different users to perform merge operation." }
       end
     end
 
