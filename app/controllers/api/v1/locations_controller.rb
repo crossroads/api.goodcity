@@ -5,34 +5,35 @@ module Api
 
       resource_description do
         formats ['json']
-        error 401, "Unauthorized"
-        error 404, "Not Found"
-        error 422, "Validation Error"
-        error 500, "Internal Server Error"
+        error 401, 'Unauthorized'
+        error 404, 'Not Found'
+        error 422, 'Validation Error'
+        error 500, 'Internal Server Error'
       end
 
       def_param_group :location do
         param :location, Hash, required: true do
-          param :building, String, desc: "Name of building"
-          param :area, String, desc: "Name of area"
+          param :building, String, desc: 'Name of building'
+          param :area, String, desc: 'Name of area'
         end
       end
 
-      api :GET, '/v1/locations', "List all locations"
-      param :ids, Array, of: Integer, desc: "Filter by location ids e.g. ids = [1,2,3,4]"
+      api :GET, '/v1/locations', 'List all locations'
+      param :ids, Array, of: Integer, desc: 'Filter by location ids e.g. ids = [1,2,3,4]'
       def index
         return search if params['searchText'].present?
         return recent_locations if params['recently_used'].present?
+
         if params[:ids].blank?
           render json: Location.cached_json
           return
         end
         @locations = @locations.with_eager_load
-        @locations = @locations.find(params[:ids].split(",")) if params[:ids].present?
+        @locations = @locations.find(params[:ids].split(',')) if params[:ids].present?
         render json: @locations, each_serializer: serializer
       end
 
-      api :POST, "/v1/locations", "Create or Update a location"
+      api :POST, '/v1/locations', 'Create or Update a location'
       param_group :location
       def create
         @location.assign_attributes(location_params)
@@ -43,16 +44,15 @@ module Api
         end
       end
 
-      api :DELETE, "/v1/locations/1", "Delete Location"
+      api :DELETE, '/v1/locations/1', 'Delete Location'
       def destroy
         @location.try(:destroy)
         render json: {}
       end
 
       def search
-        records = @locations.search(params['searchText']).
-          page(params["page"]).per(params["per_page"])
-        locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").as_json
+        records = @locations.search(params['searchText']).page(params['page']).per(params['per_page'])
+        locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: 'locations').as_json
         render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(locations)
       end
 
