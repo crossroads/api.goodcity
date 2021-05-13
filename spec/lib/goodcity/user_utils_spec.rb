@@ -19,6 +19,26 @@ context Goodcity::UserUtils do
           User.find(other_user.id)
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
+
+      it "should give error if master_user_id is blank" do
+        invalid_id = User.last.id + 1
+        response = Goodcity::UserUtils.merge_user!(invalid_id, other_user.id)
+
+        expect(response[:error]).to eq("User #{invalid_id} to be merged into does not exist")
+      end
+
+      it "should give error if other_user_id is blank" do
+        invalid_id = User.last.id + 1
+        response = Goodcity::UserUtils.merge_user!(master_user.id, invalid_id)
+
+        expect(response[:error]).to eq("User #{invalid_id} to be merged does not exist")
+      end
+
+      it "should give error if both user-ids are same" do
+        response = Goodcity::UserUtils.merge_user!(master_user.id, master_user.id)
+
+        expect(response[:error]).to eq("Please provide differnt users to perform merge operation.")
+      end
     end
 
     context "reassign_user_details" do
