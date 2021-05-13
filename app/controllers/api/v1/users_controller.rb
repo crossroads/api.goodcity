@@ -90,7 +90,7 @@ module Api
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
-      api :PUT, '/v1/merge_users', "Merge one user details into another user"
+      api :PUT, '/v1/users/merge_users', "Merge one user details into another user"
       param :master_user_id, String, desc: "Id of user in which other user will be merged"
       param :merged_user_id, String, desc: "Id of user which needs to be merged and removed."
       def merge_users

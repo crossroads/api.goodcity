@@ -6,7 +6,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: circleci/ruby:2.6.1
+    - image: circleci/ruby:2.7.3
   working_directory: ~/api.goodcity
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
   test:
     <<: *defaults
     docker:
-      - image: circleci/ruby:2.6.1
+      - image: cimg/ruby:2.7.3
       - image: circleci/postgres:9.6.9-alpine-ram
       - image: circleci/redis:4.0.9-alpine
     parallelism: 4
@@ -57,6 +57,8 @@ jobs:
       - run:
           name: Install PostgreSQL Client (required to run migrations)
           command: |
+            sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+            wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
             sudo apt update
             sudo apt-get install postgresql-client-9.6
       - restore_cache:
