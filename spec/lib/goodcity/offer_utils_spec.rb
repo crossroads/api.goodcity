@@ -64,9 +64,21 @@ context Goodcity::OfferUtils do
           context 'When other offer has invalid state' do
             it 'should not allow to merge two offer' do
               other_offer.receive
+
+              expect(Rails.logger).to receive(:info).with(
+                class: 'Class', msg: 'Unable to merge offer', from_offer_id: other_offer.id, into_offer_id: base_offer.id
+              )
+
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
               expect(response).to eq(false)
             end
+
+            it 'should not copy other-offer items to base-offer' do
+              expect {
+                Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+              }.to_not change(base_offer.items, :count)
+            end
+
           end
 
         end
@@ -74,16 +86,37 @@ context Goodcity::OfferUtils do
         context 'When base offer has invalid state' do
           it 'should not allow to merge two offer' do
             base_offer.receive
+
+            expect(Rails.logger).to receive(:info).with(
+              class: 'Class', msg: 'Unable to merge offer', from_offer_id: other_offer.id, into_offer_id: base_offer.id
+            )
+
             response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
             expect(response).to eq(false)
+          end
+
+          it 'should not copy other-offer items to base-offer' do
+            expect {
+              Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
+            }.to_not change(base_offer.items, :count)
           end
         end
       end
 
       context 'When both offers belongs to different User' do
         it 'should not allow to merge two offer' do
+          expect(Rails.logger).to receive(:info).with(
+            class: 'Class', msg: 'Unable to merge offer', from_offer_id: offer_created_by_other_user.id, into_offer_id: base_offer.id
+          )
+
           response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: offer_created_by_other_user.id)
           expect(response).to eq(false)
+        end
+
+        it 'should not copy other-offer items to base-offer' do
+          expect {
+            Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: offer_created_by_other_user.id)
+          }.to_not change(base_offer.items, :count)
         end
       end
 
