@@ -164,7 +164,8 @@ context Goodcity::UserUtils do
         other_user_role_1.users << other_user
 
         other_user_role_2 = create :role
-        other_user_role_2.users << [other_user, master_user]
+        other_user_role_2.users << other_user unless other_user.roles.include?(other_user_role_2)
+        other_user_role_2.users << master_user unless master_user.roles.include?(other_user_role_2)
 
         Goodcity::UserUtils.reassign_roles(master_user, other_user)
 
