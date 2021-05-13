@@ -121,8 +121,12 @@ describe User, :type => :model do
       charity_users.each { |u| sample_role.grant(u) }
     end
 
-    it "will return users according to searchText" do
+    it "will return users based on firstname from search text" do
       expect(User.search(charity_users.first.first_name)).to include(charity_users.first)
+    end
+
+    it "will return users based on lastname from search text" do
+      expect(User.search(charity_users.first.last_name)).to include(charity_users.first)
     end
 
     it "will return users based on email from search text" do
