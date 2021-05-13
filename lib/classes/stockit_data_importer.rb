@@ -37,9 +37,9 @@ class ImportSentDates < StockitDataMigrator
         next if row[0].value == 'designation_id'
 
         designation_code = row[1].value.strip
-        closed_date = row[2].value
+        closed_at = row[2].value
 
-        update_fields(designation_code, closed_date)
+        update_fields(designation_code, closed_at)
         bar.inc
       end
     ensure
@@ -47,9 +47,16 @@ class ImportSentDates < StockitDataMigrator
     end
   end
 
-  def update_fields(designation_code, closed_date)
+  def update_fields(designation_code, closed_at)
     order = Order.find_by(code: designation_code)
-    order&.update(closed_date: closed_date)
+    if closed_at.blank?
+      puts "'#{designation_code}' has empty closed_at value. Ignoring."
+    elsif order.present?
+      order.update(closed_at: closed_at)
+      puts "'#{order.code}' updating closed_at to '#{closed_at}'"
+    else
+      puts "'#{designation_code}' could not be found."
+    end
   end
 end
 
@@ -58,14 +65,22 @@ class StockitOrganisationToOrganisationMapper < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc # must come before the first 'next'
+        
         next unless row&.index_in_collection && row.index_in_collection > 1
-
-        organisation = StockitOrganisation.find_by(name: row[0].value)
+        
         gc_organisation_id = row[1].value
+        next if gc_organisation_id.blank?
 
-        records = Order.where(stockit_organisation: organisation)
-        update_fields(records, gc_organisation_id)
-        bar.inc
+        # Handle cases where multiple stockit organisations have the same name
+        organisations = StockitOrganisation.where(name: row[0].value)
+        next if organisations.empty?
+
+        organisations.each do |organisation|
+          records = Order.where(stockit_organisation: organisation)
+          update_fields(records, gc_organisation_id) if records.any?
+        end
+
       end
     ensure
       bar.finished
@@ -73,7 +88,16 @@ class StockitOrganisationToOrganisationMapper < StockitDataMigrator
   end
 
   def update_fields(records, organisation_id)
-    Organisation.find_by(id: organisation_id) && records.update_all(organisation_id: organisation_id)
+    if organisation_id.blank?
+      puts "organisation_id blank not updating"
+    elsif records.empty?
+      puts "No orders to update for #{organisation_id}"
+    elsif Organisation.find_by(id: organisation_id).present?
+      records.update_all(organisation_id: organisation_id)
+      puts "Updated orders for #{organisation_id}"
+    else
+      puts "Couldn't find organisation_id #{organisation_id}"
+    end
   end
 end
 
@@ -82,27 +106,31 @@ class ImportMissingShipments < StockitDataMigrator
   def import
     logger do
       worksheet.collect do |row|
+        bar.inc
         next if row.index_in_collection.zero?
 
         code = row[1]&.value
-        next unless code
+        next if code.blank?
 
         order = Order.find_or_initialize_by(code: code)
-        attributes = { created_at: row[6]&.value,
-                       updated_at: row[7]&.value || row[6]&.value,
-                       closed_at: row[21]&.value,
+        attributes = { created_at: row[6]&.value || row[21]&.value || row[7]&.value,
+                       updated_at: row[7]&.value || row[6]&.value || row[21]&.value,
+                       closed_at: row[21]&.value || row[7]&.value || row[6]&.value,
                        detail_type: row[2]&.value,
                        country_id: row[10]&.value,
                        state: row[14]&.value,
                        staff_note: row[33]&.value,
                        continuous: false,
-                       shipment_date: row[36]&.value }
+                       shipment_date: row[36]&.value
+                      }
 
         order.assign_attributes(attributes)
-        # need to validate without save
-        # as a model validation is trigerred for condition shipment_date >= Date.current
-        order.save(validate: false)
-        bar.inc
+        if order.save!
+          puts "Created #{order.code}"
+        else
+          puts "Could not create #{order.code}. Reasons: #{order.errors.map&(:message).join(', ')}"
+        end
+
       end
     end
   ensure
