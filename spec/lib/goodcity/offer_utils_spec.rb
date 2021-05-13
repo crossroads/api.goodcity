@@ -65,10 +65,6 @@ context Goodcity::OfferUtils do
             it 'should not allow to merge two offer' do
               other_offer.receive
 
-              expect(Rails.logger).to receive(:info).with(
-                class: 'Class', msg: 'Unable to merge offer', from_offer_id: other_offer.id, into_offer_id: base_offer.id
-              )
-
               response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
               expect(response).to eq(false)
             end
@@ -87,10 +83,6 @@ context Goodcity::OfferUtils do
           it 'should not allow to merge two offer' do
             base_offer.receive
 
-            expect(Rails.logger).to receive(:info).with(
-              class: 'Class', msg: 'Unable to merge offer', from_offer_id: other_offer.id, into_offer_id: base_offer.id
-            )
-
             response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: other_offer.id)
             expect(response).to eq(false)
           end
@@ -105,10 +97,6 @@ context Goodcity::OfferUtils do
 
       context 'When both offers belongs to different User' do
         it 'should not allow to merge two offer' do
-          expect(Rails.logger).to receive(:info).with(
-            class: 'Class', msg: 'Unable to merge offer', from_offer_id: offer_created_by_other_user.id, into_offer_id: base_offer.id
-          )
-
           response = Goodcity::OfferUtils.merge_offer!(offer_id: base_offer.id, other_offer_id: offer_created_by_other_user.id)
           expect(response).to eq(false)
         end
