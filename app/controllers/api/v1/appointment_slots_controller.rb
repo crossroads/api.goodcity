@@ -8,10 +8,10 @@ module Api
       resource_description do
         short 'Manage a list of appointment quotas for special days'
         formats ['json']
-        error 401, "Unauthorized"
-        error 404, "Not Found"
-        error 422, "Validation Error"
-        error 500, "Internal Server Error"
+        error 401, 'Unauthorized'
+        error 404, 'Not Found'
+        error 422, 'Validation Error'
+        error 500, 'Internal Server Error'
       end
 
       def_param_group :appointment_slot do
@@ -23,15 +23,15 @@ module Api
       end
 
       def appointment_slot_params
-        params.require(:appointment_slot).permit([:timestamp, :quota, :note])
+        params.require(:appointment_slot).permit(%i[timestamp quota note])
       end
 
-      api :GET, '/v1/appointment_slots', "List upcoming appointment slots"
+      api :GET, '/v1/appointment_slots', 'List upcoming appointment slots'
       def index
         render_with_timezone(@appointment_slots.upcoming.ascending)
       end
 
-      api :GET, '/v1/appointment_slots/calendar', "List upcoming appointment slots aggregated by dates"
+      api :GET, '/v1/appointment_slots/calendar', 'List upcoming appointment slots aggregated by dates'
       def calendar
         booking_type_id = params[:booking_type_id]
         from = params[:from] ? Date.parse(params[:from]) : Date.today
@@ -39,13 +39,13 @@ module Api
         render json: { appointment_calendar_dates: AppointmentSlot.calendar(from, to, booking_type: booking_type_id) }, status: 200
       end
 
-      api :POST, "/v1/appointment_slots", "Add an appointment slot"
+      api :POST, '/v1/appointment_slots', 'Add an appointment slot'
       param_group :appointment_slot
       def create
         save_and_render_with_timezone(@appointment_slot, 201)
       end
 
-      api :PUT, '/v1/appointment_slots/1', "Update an appointment slot"
+      api :PUT, '/v1/appointment_slots/1', 'Update an appointment slot'
       param_group :appointment_slot
       def update
         if @appointment_slot.update(appointment_slot_params)
@@ -55,7 +55,7 @@ module Api
         end
       end
 
-      api :DELETE, '/v1/appointment_slots/1', "Delete a preset appointment slot"
+      api :DELETE, '/v1/appointment_slots/1', 'Delete a preset appointment slot'
       def destroy
         @appointment_slot.destroy
         render json: {}
