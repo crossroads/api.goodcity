@@ -182,7 +182,6 @@ module Api
       end
 
       def authenticated_user
-        debugger
         @user.present? && (is_browse_app? || @user.allowed_login?(app_name))
       end
 
