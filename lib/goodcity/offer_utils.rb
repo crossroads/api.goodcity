@@ -36,9 +36,6 @@ module Goodcity
             item.packages.each do |package|
               package.update(offer_id: offer.id)
             end
-            item.messages.each do |message|
-              message.update(messageable_id: offer.id)
-            end
           end
           Version.where(related_type: "Offer").where(related_id: other_offer.id).each do |version|
             version.update(related_id: offer.id)

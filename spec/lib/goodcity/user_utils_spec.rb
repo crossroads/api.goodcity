@@ -8,6 +8,62 @@ context Goodcity::UserUtils do
 
   context "Merge two users into one" do
 
+    context "merge_user!" do
+      it "should merge other-user into master-user" do
+        master_user.update_attribute(:email, nil)
+
+        Goodcity::UserUtils.merge_user!(master_user, other_user)
+
+        expect(master_user.reload.email).to eq(other_user.email)
+        expect{
+          User.find(other_user.id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should give error if master_user_id is blank" do
+        invalid_id = User.last.id + 1
+        response = Goodcity::UserUtils.merge_user!(invalid_id, other_user.id)
+
+        expect(response[:error]).to eq("User #{invalid_id} to be merged into does not exist")
+      end
+
+      it "should give error if other_user_id is blank" do
+        invalid_id = User.last.id + 1
+        response = Goodcity::UserUtils.merge_user!(master_user.id, invalid_id)
+
+        expect(response[:error]).to eq("User #{invalid_id} to be merged does not exist")
+      end
+
+      it "should give error if both user-ids are same" do
+        response = Goodcity::UserUtils.merge_user!(master_user.id, master_user.id)
+
+        expect(response[:error]).to eq("Please provide different users to perform merge operation.")
+      end
+    end
+
+    context "reassign_user_details" do
+      it "should give precedence to master-user details" do
+        master_user_attributes = master_user.attributes
+        Goodcity::UserUtils.reassign_user_details(master_user, other_user)
+
+        %W[first_name last_name email mobile preferred_language title other_phone image_id].each do |attribute|
+          expect(master_user[attribute]).to eq(master_user_attributes[attribute])
+        end
+      end
+
+      it "should give precedence to other-user details when master-user details are empty" do
+        master_user = create :user, first_name: nil, last_name: nil, email: nil,
+                      preferred_language: nil, title: nil, other_phone: nil, image_id: nil
+        other_user_attributes = other_user.attributes
+
+        Goodcity::UserUtils.reassign_user_details(master_user, other_user)
+
+        %W[first_name last_name email preferred_language title other_phone image_id].each do |attribute|
+          expect(master_user[attribute]).to eq(other_user_attributes[attribute])
+        end
+      end
+    end
+
     context "reassign_offers" do
       before do
         merged_offers = create_list :offer, 5, created_by: other_user,
@@ -128,7 +184,8 @@ context Goodcity::UserUtils do
         other_user_role_1.users << other_user
 
         other_user_role_2 = create :role
-        other_user_role_2.users << [other_user, master_user]
+        other_user_role_2.users << other_user unless other_user.roles.include?(other_user_role_2)
+        other_user_role_2.users << master_user unless master_user.roles.include?(other_user_role_2)
 
         Goodcity::UserUtils.reassign_roles(master_user, other_user)
 
