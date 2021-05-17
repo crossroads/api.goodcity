@@ -4,7 +4,7 @@ module Goodcity
       master_user = User.find_by(id: master_user_id)
       other_user = User.find_by(id: other_user_id)
 
-      if master_user && other_user
+      if master_user && other_user && master_user != other_user
         User.transaction do
           reassign_roles(master_user, other_user)
 
@@ -23,7 +23,10 @@ module Goodcity
           remove_unused_records(other_user)
           reassign_versions(master_user, other_user)
 
+          reassign_user_details(master_user, other_user)
+
           other_user.destroy!
+          master_user.save
         end
 
         { user: master_user }
@@ -31,6 +34,19 @@ module Goodcity
         { error: "User #{master_user_id} to be merged into does not exist" }
       elsif other_user.blank?
         { error: "User #{other_user_id} to be merged does not exist" }
+      elsif other_user == master_user
+        { error: "Please provide different users to perform merge operation." }
+      end
+    end
+
+    def self.reassign_user_details(master_user, other_user)
+      %w[first_name last_name email mobile preferred_language title other_phone].each do |attribute|
+        master_user[attribute] ||= other_user[attribute]
+      end
+
+      if master_user.image.blank?
+        master_user.update_attribute(:image_id, other_user.image_id)
+        other_user.update_attribute(:image_id, nil)
       end
     end
 
@@ -133,7 +149,7 @@ module Goodcity
 
     def self.remove_unused_records(other_user)
       AuthToken.where(user_id: other_user.id).delete_all
-      other_user.address.destroy
+      other_user.address.try(:destroy)
     end
 
     def self.reassign_versions(master_user, other_user)
