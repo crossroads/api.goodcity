@@ -142,13 +142,8 @@ module Api
         ActiveModel::ArraySerializer.new(
           records,
           each_serializer: serializer,
-          include_organisations_users: (staff? && params["include_organisations_users"] == "true"),
           root: "messages"
         ).as_json
-      end
-
-      def staff?
-        current_user.has_permission?("can_manage_offers")
       end
 
       def handle_backward_compatibility
