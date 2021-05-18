@@ -62,7 +62,7 @@ module Api
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
-        @otp_auth_key = otp_auth_key_for(@user,refresh: true)
+        @otp_auth_key = otp_auth_key_for(@user, refresh: true)
 
         if @user && @user.allowed_login?(app_name)
           @user.send_verification_pin(app_name, params[:mobile])
@@ -193,7 +193,7 @@ module Api
       # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
       def otp_auth_key_for(user, refresh: false)
         if user.present?
-          AuthenticationService.otp_auth_key_for(user,refresh: refresh)
+          AuthenticationService.otp_auth_key_for(user, refresh: refresh)
         else
           AuthenticationService.fake_otp_auth_key
         end
