@@ -61,6 +61,20 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
   end
 
+  context "otp_auth_key" do
+    before do
+      set_browse_app_header
+    end
+    it "is recycled if the user phone number is valid" do
+      current_otp_auth_key = user.most_recent_token.otp_auth_key
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(AuthenticationService).to receive(:otp_auth_key_for).with(user,refresh: true).and_return(otp_auth_key)
+      post :send_pin, params: { mobile: mobile }
+      expect(response.status).to eq(200)
+      expect(parsed_body['otp_auth_key']).to_not eq(current_otp_auth_key)
+    end
+  end
+
   context "verify" do
     context "with successful authentication" do
       it 'should allow access to user and verify email after signed in on browse', :show_in_doc do
