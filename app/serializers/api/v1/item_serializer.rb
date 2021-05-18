@@ -8,6 +8,7 @@ module Api::V1
 
     has_many :packages, serializer: PackageSerializer
     has_many :images,   serializer: ImageSerializer, polymorphic: true
+    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :package_type, serializer: PackageTypeSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer
     has_one  :donor_condition, serializer: DonorConditionSerializer
@@ -16,7 +17,7 @@ module Api::V1
       object.offer.try(:saleable)
     end
 
-    def include_message_ids?
+    def include_messages?
       @options[:exclude_messages] != true
     end
 
