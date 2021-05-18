@@ -17,7 +17,7 @@ class GogovanOrder < ApplicationRecord
 
   def self.book_order(user, attributes)
     order = create(status: 'pending')
-    attributes["ggv_uuid"] = order.ggv_uuid
+    attributes['ggv_uuid'] = order.ggv_uuid
     attributes = set_vehicle_type(attributes)
     update_vehicle_type(attributes)
     book_order = Gogovan.new(user, attributes).confirm_order
@@ -28,6 +28,7 @@ class GogovanOrder < ApplicationRecord
   def self.offer_by_ggv_uuid(ggv_uuid)
     offer = find_by(ggv_uuid: ggv_uuid).try(:delivery).try(:offer)
     raise ActiveRecord::RecordNotFound unless offer
+
     Offer.with_eager_load.find(offer.id)
   end
 
@@ -36,15 +37,15 @@ class GogovanOrder < ApplicationRecord
   end
 
   def need_polling?
-    status == "active" || status == "pending"
+    status == 'active' || status == 'pending'
   end
 
   def pending?
-    status == "pending"
+    status == 'pending'
   end
 
   def cancelled?
-    status_changed?(to: "cancelled")
+    status_changed?(to: 'cancelled')
   end
 
   def can_cancel?
@@ -65,14 +66,14 @@ class GogovanOrder < ApplicationRecord
   end
 
   def assign_details(order_details)
-    self.status = order_details["status"]
-    self.price = order_details["price"]
-    if (driver_details = order_details["driver"])
-      self.driver_name = driver_details["name"]
-      self.driver_mobile = driver_details["phone_number"]
-      self.driver_license = driver_details["license_plate"]
+    self.status = order_details['status']
+    self.price = order_details['price']
+    if (driver_details = order_details['driver'])
+      self.driver_name = driver_details['name']
+      self.driver_mobile = driver_details['phone_number']
+      self.driver_license = driver_details['license_plate']
     end
-    self.completed_at = Time.now if (order_details["status"] == "completed")
+    self.completed_at = Time.now if order_details['status'] == 'completed'
     self
   end
 
@@ -92,11 +93,11 @@ class GogovanOrder < ApplicationRecord
   end
 
   def self.set_vehicle_type(attributes)
-    attributes["vehicle"] =
-      if (attributes["gogovanOptionId"])
-        GogovanTransport.get_vehicle_tag(attributes["gogovanOptionId"])
-      elsif(attributes['offerId'])
-        Offer.find(attributes["offerId"]).try(:gogovan_transport).try(:vehicle_tag)
+    attributes['vehicle'] =
+      if attributes['gogovanOptionId']
+        GogovanTransport.get_vehicle_tag(attributes['gogovanOptionId'])
+      elsif attributes['offerId']
+        Offer.find(attributes['offerId']).try(:gogovan_transport).try(:vehicle_tag)
       else
         GogovanTransport.first.try(:vehicle_tag)
       end
@@ -104,25 +105,25 @@ class GogovanOrder < ApplicationRecord
   end
 
   def self.update_vehicle_type(attributes)
-    if attributes["gogovanOptionId"] && attributes['offerId']
-      offer = Offer.find(attributes["offerId"])
-      offer && offer.update_column(:gogovan_transport_id, attributes["gogovanOptionId"])
+    if attributes['gogovanOptionId'] && attributes['offerId']
+      offer = Offer.find(attributes['offerId'])
+      offer&.update_column(:gogovan_transport_id, attributes['gogovanOptionId'])
     end
   end
 
   def notify_order_completed
-    message = I18n.t("gogovan.notify_completed", license: driver_license, booking_id: booking_id)
+    message = I18n.t('gogovan.notify_completed', license: driver_license, booking_id: booking_id)
 
     PushService.new.send_notification Channel::STAFF_CHANNEL, ADMIN_APP, {
       category: 'offer_delivery',
-      message:   message,
-      offer_id:  offer.id,
+      message: message,
+      offer_id: offer.id,
       author_id: User.system_user
     }
   end
 
   def order_completed?
-    previous_changes.key?("status") && previous_changes["status"].last == "completed"
+    previous_changes.key?('status') && previous_changes['status'].last == 'completed'
   end
 
   def pick_up_location
