@@ -18,7 +18,7 @@ module Api::V1
       object.offer.try(:saleable)
     end
 
-    def include_message_ids?
+    def include_messages?
       @options[:exclude_messages] != true
     end
 
