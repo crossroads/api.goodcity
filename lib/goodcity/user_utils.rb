@@ -40,13 +40,13 @@ module Goodcity
     end
 
     def self.reassign_user_details(master_user, other_user)
-      %w[first_name last_name email mobile preferred_language title other_phone].each do |attribute|
-        master_user[attribute] ||= other_user[attribute]
-      end
-
-      if master_user.image.blank?
+      if master_user.image.blank? && other_user.image_id.present?
         master_user.update_attribute(:image_id, other_user.image_id)
         other_user.update_attribute(:image_id, nil)
+      end
+
+      %w[first_name last_name email mobile preferred_language title other_phone].each do |attribute|
+        master_user[attribute] = master_user[attribute].presence || other_user[attribute].presence
       end
     end
 

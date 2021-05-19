@@ -180,10 +180,10 @@ context Goodcity::UserUtils do
         other_user.user_roles.destroy_all
         master_user.user_roles.destroy_all
 
-        other_user_role_1 = create :role
+        other_user_role_1 = create :role, name: "Reviewer"
         other_user_role_1.users << other_user
 
-        other_user_role_2 = create :role
+        other_user_role_2 = create :role, name: "Supervisor"
         other_user_role_2.users << other_user unless other_user.roles.include?(other_user_role_2)
         other_user_role_2.users << master_user unless master_user.roles.include?(other_user_role_2)
 
