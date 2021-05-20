@@ -114,8 +114,10 @@ module Goodcity
 
     def self.reassign_roles(master_user, other_user)
       master_user_roles = master_user.roles
-      other_user.roles.each do |role|
-        master_user.roles << role unless master_user_roles.include?(role)
+      other_user.user_roles.each do |user_role|
+        unless master_user_roles.include?(user_role.role)
+          master_user.assign_role(master_user.id, user_role.role_id, user_role.expires_at)
+        end
       end
 
       other_user.user_roles.delete_all
