@@ -69,7 +69,7 @@ module Api
         elsif @user
           return render json: {error: "You are not authorized."}, status: 401
         end
-        render json: {otp_auth_key: @otp_auth_key }
+        render json: { otp_auth_key: @otp_auth_key }
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"
