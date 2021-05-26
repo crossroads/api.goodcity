@@ -4,6 +4,7 @@ RSpec.describe Offer, type: :model do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:offer) { create :offer }
+  let(:offer_with_no_donor) { create :offer, created_by: nil }
 
   it_behaves_like "paranoid"
 
@@ -245,8 +246,9 @@ RSpec.describe Offer, type: :model do
       offer.send_message(nil, user)
     end
     it 'should not send a message if the offer has no donor' do
-      expect(offer).not_to receive(:messages)
-      offer.send_message(nil, user)
+      expect(offer_with_no_donor.created_by).to eq(nil)
+      expect(offer_with_no_donor).not_to receive(:messages)
+      offer_with_no_donor.send_message("test", user)
     end
   end
 
