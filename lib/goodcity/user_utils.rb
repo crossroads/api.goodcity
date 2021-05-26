@@ -74,11 +74,14 @@ module Goodcity
 
     def self.reassign_organisations_users(master_user, other_user)
       master_user_organisations = master_user.organisations
-      other_user.organisations.each do |organisation|
-        master_user.organisations << organisation unless master_user_organisations.include?(organisation)
-      end
 
-      other_user.organisations_users.delete_all
+      other_user.organisations_users.each do |organisations_user|
+        if master_user_organisations.include?(organisations_user.organisation)
+          organisations_user.destroy
+        else
+          organisations_user.update_attribute(:user_id, master_user.id)
+        end
+      end
     end
 
     def self.reassign_printers_users(master_user, other_user)
