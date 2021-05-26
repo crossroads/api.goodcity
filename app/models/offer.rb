@@ -287,7 +287,7 @@ class Offer < ApplicationRecord
   end
 
   def send_message(body, user)
-    messages.create(body: body, sender: user) unless body.blank?
+    messages.create(body: body, sender: user, recipient: created_by) unless body.blank? || user.blank? || created_by.blank?
   end
 
   def assign_reviewer(reviewer)
