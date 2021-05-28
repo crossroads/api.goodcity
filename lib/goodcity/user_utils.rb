@@ -4,7 +4,7 @@ module Goodcity
       master_user = User.find_by(id: master_user_id)
       other_user = User.find_by(id: other_user_id)
 
-      if master_user && other_user
+      if master_user && other_user && master_user != other_user
         User.transaction do
           reassign_roles(master_user, other_user)
 
@@ -23,7 +23,10 @@ module Goodcity
           remove_unused_records(other_user)
           reassign_versions(master_user, other_user)
 
+          reassign_user_details(master_user, other_user)
+
           other_user.destroy!
+          master_user.save
         end
 
         { user: master_user }
@@ -31,6 +34,19 @@ module Goodcity
         { error: "User #{master_user_id} to be merged into does not exist" }
       elsif other_user.blank?
         { error: "User #{other_user_id} to be merged does not exist" }
+      elsif other_user == master_user
+        { error: "Please provide different users to perform merge operation." }
+      end
+    end
+
+    def self.reassign_user_details(master_user, other_user)
+      if master_user.image.blank? && other_user.image_id.present?
+        master_user.update_attribute(:image_id, other_user.image_id)
+        other_user.update_attribute(:image_id, nil)
+      end
+
+      %w[first_name last_name email mobile preferred_language title other_phone].each do |attribute|
+        master_user[attribute] = master_user[attribute].presence || other_user[attribute].presence
       end
     end
 
@@ -58,11 +74,14 @@ module Goodcity
 
     def self.reassign_organisations_users(master_user, other_user)
       master_user_organisations = master_user.organisations
-      other_user.organisations.each do |organisation|
-        master_user.organisations << organisation unless master_user_organisations.include?(organisation)
-      end
 
-      other_user.organisations_users.delete_all
+      other_user.organisations_users.each do |organisations_user|
+        if master_user_organisations.include?(organisations_user.organisation)
+          organisations_user.destroy
+        else
+          organisations_user.update_attribute(:user_id, master_user.id)
+        end
+      end
     end
 
     def self.reassign_printers_users(master_user, other_user)
@@ -98,8 +117,10 @@ module Goodcity
 
     def self.reassign_roles(master_user, other_user)
       master_user_roles = master_user.roles
-      other_user.roles.each do |role|
-        master_user.roles << role unless master_user_roles.include?(role)
+      other_user.user_roles.each do |user_role|
+        unless master_user_roles.include?(user_role.role)
+          master_user.assign_role(master_user.id, user_role.role_id, user_role.expires_at)
+        end
       end
 
       other_user.user_roles.delete_all
@@ -133,7 +154,7 @@ module Goodcity
 
     def self.remove_unused_records(other_user)
       AuthToken.where(user_id: other_user.id).delete_all
-      other_user.address.destroy
+      other_user.address.try(:destroy)
     end
 
     def self.reassign_versions(master_user, other_user)

@@ -130,6 +130,7 @@ class User < ApplicationRecord
     mobile = user_params["mobile"].presence
     email = user_params["email"].presence
     user = find_user_by_mobile_or_email(mobile, email)
+    AuthenticationService.otp_auth_key_for(user, refresh: true) if user.present?
     user ||= new(user_params)
     user.preferred_language = I18n.locale
     user.request_from_browse = (app_name == BROWSE_APP)

@@ -236,6 +236,24 @@ describe User, :type => :model do
         end
       end
     end
+
+    context "when user is present" do
+      it "should recycle otp_auth_key" do
+        user = create(:user, mobile: mobile, email: "abc@example.com")
+        expect(AuthenticationService).to receive(:otp_auth_key_for).with(user,refresh: true)
+        User.creation_with_auth(user_attributes, BROWSE_APP)
+      end
+    end
+
+    context "when user is not present" do
+      it "should not recycle otp_auth_key" do
+        new_user = build(:user)
+        allow(new_user).to receive(:send_verification_pin)
+        expect(User).to receive(:new).with(user_attributes).and_return(new_user)
+        expect(AuthenticationService).not_to receive(:otp_auth_key_for)
+        User.creation_with_auth(user_attributes, BROWSE_APP)
+      end
+    end
   end
 
   describe "#send_verification_pin" do

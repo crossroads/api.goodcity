@@ -62,13 +62,14 @@ module Api
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
+        @otp_auth_key = otp_auth_key_for(@user, refresh: true)
 
         if @user && @user.allowed_login?(app_name)
           @user.send_verification_pin(app_name, params[:mobile])
         elsif @user
           return render json: {error: "You are not authorized."}, status: 401
         end
-        render json: {otp_auth_key: otp_auth_key_for(@user)}
+        render json: { otp_auth_key: @otp_auth_key }
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"
@@ -190,11 +191,11 @@ module Api
       # to successfully authenticate. This helps prevent man-in-the-middle attacks by ensuring that only this
       # client that can authenticate the OTP code with it.
       # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
-      def otp_auth_key_for(user)
+      def otp_auth_key_for(user, refresh: false)
         if user.present?
-          user.most_recent_token.otp_auth_key
+          AuthenticationService.otp_auth_key_for(user, refresh: refresh)
         else
-          AuthToken.new.new_otp_auth_key
+          AuthenticationService.fake_otp_auth_key
         end
       end
 
