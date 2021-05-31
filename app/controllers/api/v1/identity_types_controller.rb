@@ -1,7 +1,7 @@
 module Api
   module V1
     class IdentityTypesController < Api::V1::ApiController
-      skip_before_action :validate_token, only: [:index, :show]
+      skip_before_action :validate_token, only: %i[index show]
       load_and_authorize_resource :identity_type, parent: false
 
       resource_description do

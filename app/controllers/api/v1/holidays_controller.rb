@@ -21,9 +21,9 @@ module Api
 
       api :GET, "/v1/holidays/available_dates", "List all available dates"
       param :schedule_days, String, allow_nil: true,
-        desc: "Number of next available days"
+      desc: "Number of next available days"
       param :start_from, String, allow_nil: true,
-        desc: "Interval in number of days from when schedule start from current day"
+      desc: "Interval in number of days from when schedule start from current day"
       def available_dates
         days_count = params[:schedule_days] || NEXT_AVAILABLE_DAYS_COUNT
         start_from = params[:start_from] || START_DAYS_COUNT

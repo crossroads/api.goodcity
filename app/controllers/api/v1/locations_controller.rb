@@ -23,6 +23,7 @@ module Api
       def index
         return search if params['searchText'].present?
         return recent_locations if params['recently_used'].present?
+
         if params[:ids].blank?
           render json: Location.cached_json
           return
@@ -50,8 +51,8 @@ module Api
       end
 
       def search
-        records = @locations.search(params['searchText']).
-          page(params["page"]).per(params["per_page"])
+        records = @locations.search(params['searchText'])
+        .page(params["page"]).per(params["per_page"])
         locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").as_json
         render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(locations)
       end
