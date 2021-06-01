@@ -57,9 +57,8 @@ module Api::V1
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
       record = Api::V1::OrganisationSerializer.new(@organisation,
-        root: "organisations",
-        include_orders_count: true
-      ).as_json
+                                                  root: "organisations",
+                                                  include_orders_count: true).as_json
       render json: record
     end
 
