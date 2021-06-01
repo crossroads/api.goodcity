@@ -57,7 +57,9 @@ module Api::V1
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
       record = Api::V1::OrganisationSerializer.new(@organisation,
-      root: "organisations", include_orders_count: true).as_json
+        root: "organisations",
+        include_orders_count: true
+      ).as_json
       render json: record
     end
 
@@ -113,16 +115,18 @@ module Api::V1
     def find_record_and_render_json(serializer)
       if params['ids'].present?
         records = @organisations.where(id: params['ids'])
-        .page(params["page"])
-        .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+                                .page(params["page"])
+                                .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       else
         records = @organisations.with_order.search(params["searchText"])
-        .page(params["page"])
-        .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+                                .page(params["page"])
+                                .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
       data = ActiveModel::ArraySerializer.new(records,
-      each_serializer: serializer, root: "organisations",
-      include_orders_count: true).as_json
+        each_serializer: serializer,
+        root: "organisations",
+        include_orders_count: true
+      ).as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
     end
   end
