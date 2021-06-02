@@ -78,7 +78,7 @@ package_types.each do |code, value|
     name_zh_tw: value[:name_zh_tw],
     other_terms_en: value[:other_terms_en],
     other_terms_zh_tw: value[:other_terms_zh_tw],
-    allow_stock: true,
+    allow_package: true,
     default_value_hk_dollar: value[:default_value_hk_dollar] )
 end
 

@@ -1,6 +1,6 @@
 class PackageType < ApplicationRecord
   include CacheableJson
-  
+
   belongs_to :location
   has_many :subpackage_types
   has_many :child_package_types, through: :subpackage_types,
@@ -27,7 +27,9 @@ class PackageType < ApplicationRecord
 
   translates :name, :other_terms
 
-  scope :visible, -> { where(allow_stock: true) }
+  scope :visible, -> { where(allow_package: true).or(PackageType.box_types).or(PackageType.pallet_types) }
+  scope :box_types, -> { where(allow_box: true) }
+  scope :pallet_types, -> { where(allow_pallet: true) }
 
   scope :with_eager_load, -> {
     eager_load([:location])
