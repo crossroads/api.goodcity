@@ -18,9 +18,9 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
 
     it "returns all stock enabled package_types" do
       stock_package_types = [
-        create(:base_package_type, allow_stock: true, code: "AFO"),
-        create(:base_package_type, allow_stock: true, code: "BBC"),
-        create(:base_package_type, allow_stock: true, code: "BBM")
+        create(:base_package_type, allow_package: true, code: "AFO"),
+        create(:base_package_type, allow_package: true, code: "BBC"),
+        create(:base_package_type, allow_package: true, code: "BBM")
       ]
       package_type = create :base_package_type, code: "BCS"
 
