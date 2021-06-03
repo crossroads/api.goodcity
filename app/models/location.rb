@@ -56,13 +56,13 @@ class Location < ApplicationRecord
     # ORDER BY MAX(created_at) DESC
     # LIMIT 15
     location_ids = Version.item_location_changed(user_id)
-                   .limit(15)
-                   .map(&:location_id)
+                          .limit(15)
+                          .map(&:location_id)
     locations = Location.where(id: location_ids)
-                .where("building NOT IN (?)", ['Dispatched', 'Multiple'])
-                .inject({}) {|h,v| h[v.id] = v; h}
+                        .where("building NOT IN (?)", ['Dispatched', 'Multiple'])
+                        .inject({}) { |h, v| h[v.id] = v; h }
     # We want most recently used first so preserve location_ids order
     # and ensure possible nils are removed
-    location_ids.map{ |id| locations[id] }.compact
+    location_ids.map { |id| locations[id] }.compact
   end
 end
