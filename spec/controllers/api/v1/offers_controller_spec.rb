@@ -19,6 +19,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     before(:each) do
       generate_and_set_token(reviewer)
     end
+
     it "returns 200" do
       get :index
       expect(response.status).to eq(200)
@@ -56,6 +57,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(response.body).to include(offer1.messages.first.body)
       end
     end
+
     context "states" do
       it "returns offers in the submitted state" do
         offer1 = create(:offer, state: "submitted")
@@ -127,6 +129,17 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         offer2 = create(:offer)
         get :index, params: { reviewed_by_id: offer1.reviewed_by_id }
         expect(assigns(:offers).to_a).to eql([offer1])
+      end
+    end
+
+    context "staff_user" do
+      it "returns non-draft offers of specific user" do
+        offer1 = create(:offer, created_by: user, state: "draft")
+        offer2 = create(:offer, created_by: user, state: "under_review")
+
+        get :index, params: { created_by_id: user.id, states: ['donor_non_draft'] }
+
+        expect(assigns(:offers).to_a).to eql([offer2])
       end
     end
   end
