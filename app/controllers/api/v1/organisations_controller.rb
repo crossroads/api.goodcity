@@ -56,10 +56,9 @@ module Api::V1
 
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
-      record = Api::V1::OrganisationSerializer.new( @organisation,
-                                                    root: "organisations",
-                                                    include_orders_count: true
-                                                  ).as_json
+      record = Api::V1::OrganisationSerializer.new(@organisation,
+                                                   root: "organisations",
+                                                   include_orders_count: true).as_json
       render json: record
     end
 
@@ -125,8 +124,7 @@ module Api::V1
       data = ActiveModel::ArraySerializer.new(records,
                                               each_serializer: serializer,
                                               root: "organisations",
-                                              include_orders_count: true
-                                              ).as_json
+                                              include_orders_count: true).as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
     end
   end
