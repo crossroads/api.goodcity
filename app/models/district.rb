@@ -1,7 +1,6 @@
 class District < ApplicationRecord
   include CacheableJson
 
-
   belongs_to :territory, inverse_of: :districts
   has_many :addresses
   has_many :orders

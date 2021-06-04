@@ -1,18 +1,15 @@
 require 'rails_helper'
 
 describe InventoryLegacySupport do
-  let(:dispatch_location) { create(:location, :dispatched) }
   let(:location) { create(:location) }
   let(:other_location) { create(:location) }
   let(:user) { create(:user) }
   let(:package) { create(:package) }
   let(:other_package) { create(:package) }
   let(:packages_location) { create(:packages_location, quantity: quantity, location: location, package: package) }
-  let(:packages_location_dispatch) { create(:packages_location, quantity: quantity, location: dispatch_location, package: package) }
   let(:computer) { PackagesInventory::Computer }
 
   before do
-    touch(dispatch_location)
     User.current_user = user
   end
 
@@ -441,15 +438,6 @@ describe InventoryLegacySupport do
 
             expect(packages_location.reload.quantity).to eq(quantity - removed_quantity)
           end
-
-          it 'does not create any "Dispatched" packages_location\'s' do
-            expect(PackagesLocation.where(package: package, location: dispatch_location).count).to eq(0)
-            expect {
-              create :packages_inventory, quantity: - removed_quantity, action: 'dispatch', package: package, location: location
-            }.not_to change {
-              PackagesLocation.where(package: package, location: dispatch_location).count
-            }
-          end
         end
 
         context 'of the entire quantity' do
@@ -461,15 +449,6 @@ describe InventoryLegacySupport do
             }.to change {
               PackagesLocation.where(package: package, location: location).count
             }.by(-1)
-          end
-
-          it 'does not create any "Dispatched" packages_location\'s' do
-            expect(PackagesLocation.where(package: package, location: dispatch_location).count).to eq(0)
-            expect {
-              create :packages_inventory, quantity: - removed_quantity, action: 'dispatch', package: package, location: location
-            }.not_to change {
-              PackagesLocation.where(package: package, location: dispatch_location).count
-            }
           end
         end
       end
@@ -493,14 +472,6 @@ describe InventoryLegacySupport do
               PackagesLocation.find_by(package: package, location: location).try(:quantity) || 0
             }.from(0).to(restored_quantity)
           end
-
-          it 'does nothing to any "Dispatched" packages_location\'s' do
-            expect {
-              create :packages_inventory, quantity: restored_quantity, action: 'undispatch', package: package, location: location
-            }.not_to change {
-              PackagesLocation.find_by(package: package, location: dispatch_location).try(:quantity) || 0
-            }
-          end
         end
 
         context 'of the entire quantity' do
@@ -512,15 +483,6 @@ describe InventoryLegacySupport do
             }.to change {
               PackagesLocation.find_by(package: package, location: location).try(:quantity) || 0
             }.from(0).to(restored_quantity)
-          end
-
-          it 'does nothing to any "Dispatched" packages_location\'s' do
-            expect(PackagesLocation.find_by(package: package, location: dispatch_location)).to be_nil
-            expect {
-              create :packages_inventory, quantity: restored_quantity, action: 'undispatch', package: package, location: location
-            }.not_to change {
-              PackagesLocation.find_by(package: package, location: dispatch_location).try(:quantity) || 0
-            }
           end
         end
       end

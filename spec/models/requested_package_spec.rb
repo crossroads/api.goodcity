@@ -53,7 +53,6 @@ describe RequestedPackage, :type => :model do
 
   describe "Availability" do
     let(:user) { create(:user) }
-    let!(:dispatch_location) { create(:location, :dispatched) }
     let(:order) { create(:order, :with_state_awaiting_dispatch) }
 
     let(:undesignated_package_unpublished) { create(:package, :with_inventory_record, :unpublished) }
