@@ -48,10 +48,6 @@ Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)
 end
 
-Before do
-  FactoryBot.create :location, :dispatched
-end
-
 def parsed_body
   JSON.parse(last_response.body)
 end

@@ -111,10 +111,6 @@ class OrdersPackage < ApplicationRecord
     update(state: 'designated')
   end
 
-  def delete_unwanted_cancelled_packages(order_to_delete)
-    OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
-  end
-
   def dispatch_orders_package
     self.dispatch
   end

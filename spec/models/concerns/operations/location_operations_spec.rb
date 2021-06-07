@@ -3,7 +3,7 @@ require 'rails_helper'
 context LocationOperations do
 
   describe 'Moving packages' do
-    let(:dispatch_location) { create(:location, :dispatched) }
+
     let(:src_location) { create(:location) }
     let(:dest_location) { create(:location) }
     let(:pkg_loc) { create(:packages_location, location: src_location, quantity: 30) }

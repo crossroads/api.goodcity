@@ -55,7 +55,7 @@ module Api
             if User.current_user.staff?
               @offers.in_states(states)
                 .union(User.current_user.offers_with_unread_messages)
-                .union(Offer.active_from_past_fortnight)
+                .union(Offer.active_from_past_fortnight.non_draft)
             else
               @offers.in_states(states)
             end

@@ -24,20 +24,7 @@ module Api
                                    .cached_json({ root: :codes })
       end
 
-      def create
-        @package_type.assign_attributes(package_type_params)
-        if @package_type.save
-          render json: {}, status: 201
-        else
-          render json: @package_type.errors, status: 422
-        end
-      end
-
       private
-
-      def package_type_params
-        params.require(:package_type).permit(:code, :name_en, :name_zh_tw, :visible_in_selects, :allow_requests, :allow_stock)
-      end
 
       def serializer
         Api::V1::PackageTypeSerializer

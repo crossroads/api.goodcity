@@ -11,11 +11,6 @@ FactoryBot.define do
       )
     }
 
-    trait :dispatched do
-      building { 'Dispatched' }
-      area { '' }
-    end
-
     trait :multiple do
       building { 'Multiple' }
     end

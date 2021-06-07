@@ -158,12 +158,6 @@ class Package < ApplicationRecord
     orders_packages.designated.first
   end
 
-  def orders_package_with_different_designation
-    if (orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
-      (orders_package != designation && orders_package.try(:state) != 'dispatched') && orders_package
-    end
-  end
-
   def delete_associated_packages_locations
     packages_locations.destroy_all
   end
@@ -187,16 +181,6 @@ class Package < ApplicationRecord
   # Required by PushUpdates and PaperTrail modules
   def offer
     item.try(:offer)
-  end
-
-  def updated_received_package?
-    !self.previous_changes.key?("state") && received?
-  end
-
-  def add_errors(response)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    end
   end
 
   def total_assigned_quantity
