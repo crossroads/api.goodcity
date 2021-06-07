@@ -12,5 +12,4 @@ class Electrical < ApplicationRecord
   before_save :downcase_brand, if: :brand_changed?
 
   before_save :set_updated_by
-
 end

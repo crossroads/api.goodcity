@@ -99,7 +99,6 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     #
     # Testing that each action does what it is intended to do
     #
-    let!(:dispatch_location) { create(:location, :dispatched) }
     let(:json_record) { subject['orders_package'] }
     let(:error_text) { subject['errors'][0]['message'] }
     let(:new_state) { json_record['state'] }
@@ -228,7 +227,6 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       end
 
       describe 'Undispatching' do
-        let!(:dispatch_location) { create(:location, :dispatched) }
         let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
         let(:quantity) { 10 }

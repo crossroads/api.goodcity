@@ -5,7 +5,6 @@ RSpec.describe Package, type: :model do
 
   before do
     User.current_user = create(:user)
-    create(:location, :dispatched)
   end
 
   before(:all) do

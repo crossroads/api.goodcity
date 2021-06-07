@@ -2,9 +2,6 @@ class Location < ApplicationRecord
   include CacheableJson
   include PushUpdates
 
-  DISPATCH_BLD = 'Dispatched'.freeze
-  MULTIPLE_BLD = 'Multiple'.freeze
-
   has_many :packages_locations
   has_many :packages, through: :packages_locations
   has_many :package_types, inverse_of: :location
@@ -17,22 +14,6 @@ class Location < ApplicationRecord
   # to satisfy PushUpdate module
   def offer
     nil
-  end
-
-  def can_delete?
-    packages_locations.count.zero? && package_types.count.zero?
-  end
-
-  def dispatch?
-    building.eql?(DISPATCH_BLD)
-  end
-
-  def self.multiple_location
-    find_by(building: MULTIPLE_BLD)
-  end
-
-  def self.dispatch_location
-    find_by(building: DISPATCH_BLD)
   end
 
   def self.search(key)
@@ -61,7 +42,6 @@ class Location < ApplicationRecord
       map(&:location_id)
     locations = Location.
       where(id: location_ids).
-      where("building NOT IN (?)", ['Dispatched', 'Multiple']).
       inject({}) {|h,v| h[v.id] = v; h}
     # We want most recently used first so preserve location_ids order
     # and ensure possible nils are removed
