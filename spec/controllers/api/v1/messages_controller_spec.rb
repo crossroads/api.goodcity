@@ -136,6 +136,15 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         expect(subject['messages'].length).to eq(6)
       end
 
+      it "for multiple offers" do
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
+        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
+
+        get :index, params: { messageable_id: [offer.id,offer2.id], messageable_type: "Offer" }
+        expect(subject['messages'].length).to eq(6)
+        expect(subject['messages'].map{|row| row["messageable_id"] }.uniq).to match_array([offer.id, offer2.id])
+      end
+
       it "for one order" do
         3.times { create :message, sender: reviewer, messageable: order }
         3.times { create :message, sender: reviewer, messageable: order2 }

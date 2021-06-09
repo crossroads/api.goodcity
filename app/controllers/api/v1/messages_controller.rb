@@ -87,7 +87,7 @@ module Api
           .select("max(@messages.id) AS message_id")
           .page(page).per(per_page)
           .order('message_id DESC')
-        
+
         if bool_param(:is_private, false)
           notification_ids = notification_ids.group("messageable_type, messageable_id, is_private")
         else
@@ -103,7 +103,10 @@ module Api
 
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
-        messages = messages.where(messageable_id: options[:messageable_id]) if options[:messageable_id].present?
+        messages = messages.where(
+          messageable_id: options[:messageable_id],
+          messageable_type: options[:messageable_type]
+        ) if options[:messageable_id].present? && options[:messageable_type].present?
 
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
