@@ -8,8 +8,10 @@ class GoodcityOrderMailer < ApplicationMailer
   before_action :configure_order_email_properties
 
   def send_appointment_confirmation_email
-    params = create_params(subject: I18n.t('email.subject.appointment.confirmation', code: @order.code))
-    mail(params)
+    I18n.with_locale(@user.locale) do
+      params = create_params(subject: I18n.t('email.subject.appointment.confirmation', code: @order.code))
+      mail(params)
+    end
   end
 
   def send_order_submission_pickup_email
@@ -29,15 +31,19 @@ class GoodcityOrderMailer < ApplicationMailer
   end
 
   def send_order_confirmation_pickup_email
-    params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
+    I18n.with_locale(@user.locale) do
+      params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
                                            code: @order.code, booking_type: booking_type))
-    mail(params)
+      mail(params)
+    end
   end
 
   def send_order_confirmation_delivery_email
-    params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
-                                           code: @order.code, booking_type: booking_type))
-    mail(params)
+    I18n.with_locale(@user.locale) do
+      params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
+                                            code: @order.code, booking_type: booking_type))
+      mail(params)
+    end
   end
 
   private
