@@ -94,15 +94,14 @@ module FuzzySearch
       similarities = search_prop_names.reduce({}) do |sims, f|
         sims[f] = self.model.sanitize_sql_for_conditions(["SIMILARITY(#{f}, ?)", search_text])
         sims
-      end 
+      end
 
-      select_list = similarities.values + ["#{table_name}.*"]
+      select_list = ["GREATEST(#{similarities.values.join(',')}) as max_tolerance"] + ["#{table_name}.*"]
       conditions  = similarities.map { |f, s| "#{s} >= #{search_configuration[f][:threshold]}" }
-      ordering    = similarities.values.map { |s| "#{s} DESC" }
 
       select(Arel.sql(select_list.join(',')))
         .where(Arel.sql(conditions.join(' OR ')))
-        .order(Arel.sql(ordering.join(',')))
+        .order(Arel.sql('max_tolerance DESC'))
         .distinct
     }
   end
