@@ -41,7 +41,7 @@ class GoodcityOrderMailer < ApplicationMailer
   def send_order_confirmation_delivery_email
     I18n.with_locale(@user.locale) do
       params = create_params(subject: I18n.t('email.subject.order.confirmation_pickup_delivery',
-                                            code: @order.code, booking_type: booking_type))
+                                             code: @order.code, booking_type: booking_type))
       mail(params)
     end
   end
