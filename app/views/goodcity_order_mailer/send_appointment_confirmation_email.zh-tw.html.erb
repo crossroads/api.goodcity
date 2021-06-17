@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <p>
+    親愛的 <%= @email_property[:contact_name] %>,
+  </p><br/>
+
+  <p>
+    NOTE: English version further down the page.
+  </p><br/>
+
+  <h4>回覆：通過國際十字路會接收物資</h4><br/>
+
+  感謝您的申請。我們會竭盡所能為您服務！<br/> <br/>
+
+  請確認是次預約日期為：<%= @email_property[:scheduled_at]%><br/> <br/>
+
+  請通知您的受助人以下事項：
+  <ul>
+    <li>
+      <b>請帶備此確認信及其身份證明文件出席。</b>
+    </li>
+    <li>
+      <b>請依時到達本會。</b> 由於受助人眾多，逾時三十分鐘者，恕不招待。我們或為是次預約重新排期。
+    </li>
+    <li>
+      <b>若受助人未能出席，請聯絡我們。</b> 若我們接收不到任何通知，我們將取消預約，並不獲重新排期。
+    </li>
+    <li>
+      <b>請尊重我們的義工。</b>
+    </li>
+    <li>
+      <b>請安排受助人閱讀以下指南 (國際十字路會指南) 。</b>請列印此副本給予受助人。若受助人無法閱讀，請向他們口述解釋。
+    </li>
+  </ul>
+
+  <br/>
+  我們期待為您的受助人提供協助！  <br/><br/>
+
+  香港分派中心 <br/>
+  國際十字路會  <br/>
+  聯絡電話: 2272 9343<br/>
+  聯絡電郵: local@crossroads.org.hk<br/>
+
+  <br/>
+
+  <div class="header"><h3>國際十字路會指南</h3></div>
+
+  我們很高興能為您服務！我們將會為您提供到訪指南。 <br/>
+
+  <h4>國際十字路會的地點在哪裡？</h4>
+  地址：香港屯門青山公路2號國際十字路會（黃金海岸住宅一期對面）<br/>
+  香港分派中心30座 <br/>
+  地圖及交通路線請參見本會網址： <a href="https://www.crossroads.org.hk/zh-hant/home/contact/">https://www.crossroads.org.hk/zh-hant/home/contact/</a><br/>
+
+  <h4>如何挑選物品？</h4>
+  我們會安排一位職員協助您從庫存中挑選物品。我們會根據您於申請物品列單（列於下方）上與當日於倉庫內許可的庫存提供物品。 <br/>
+
+  備註：所有物品均為捐贈物資，只供個人使用，禁止在任何情況作出售之用。<br/>
+
+  <h4>國際十字路會的庫存物資齊備嗎？</h4>
+  我們竭誠為您服務！不過，由於我們依賴善長仁翁的慷慨捐贈，我們未能保證所有物品有足夠的庫存。尤其電子產品的庫存因高需求而長期稀缺。因此，我們會依照當日的庫存狀態盡力為您提供合適的物品，但我們不能保證能提供所有物品。 <br/>
+
+  <h4>物品的質素良好嗎？</h4>
+  捐贈物資大部分為二手物品，不過物品通常都處於良好狀態。我們已為所有電子產品進行測試。本會並非商業零售商，我們不會對物品中的損壞承擔任何責任。 <br/> <br/>
+
+ <div><strong>申請物品詳情：</strong> </div>
+
+  <ul>
+  <% if @email_property[:requests]%>
+    <% @email_property[:requests].each do |request| %>
+      <li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
+    <% end %>
+  <% end %>
+  </ul>
+  <br/> <br/>
+
+  <h4>若收到的電子產品有損壞，我應該歸還嗎？</h4>
+  由於電子產品價格不菲，若您希望重新申請該物品，請您歸還已損壞之物品，以供我們進行測試。<br/> <br/>
+
+  <strong>到訪時長:</strong>  &nbsp; 一般預約60–90 分鐘，小型預約（只取1–2件物品）30分鐘。我們歡迎您於時限內挑選、安排運送及裝載物品。 <br/> <br/>
+
+  <strong>運送:</strong>  &nbsp; 我們可以協助您安排運送 (電召貨車)。但很抱歉，我們不會負責任何運送費用。<br/> <br/>
+
+  <strong>額外幫助:</strong> &nbsp;  我們誠懇建議您攜同額外2–3人協助您搬運大型物品。若您要求貨車司機提供卸載物品服務，司機可能會向您收取額外費用。<br/> <br/>
+
+  <h4> 若您未能準時出席或缺席是次預約，該怎麼辦？ </h4>
+  請致電香港分派中心2272 9343。由於受助人眾多，為盡量滿足所有人的要求，我們會嘗試安排您於當日之後的時段到訪。若情況不許可，我們可以為您重新排期。由於預約經常滿額，重新申請預約日期可能會延至兩個月後，我們對此深表歉意。<br/><br/>
+
+
+  <b>Attention: </b> <%= @email_property[:contact_name]%> <br/>
+  <%= @email_property[:contact_organisation_name_en]%> <br/>
+  <b>Our Ref#:</b> <%= @email_property[:order_code]%> <br/>
+  <% if @email_property[:client]%>
+    <b>Client Name:</b> <%= @email_property[:client][:name]%> <br/>
+    <b>Client contact:</b> <%= @email_property[:client][:phone]%> <br/>
+    <b> <%= @email_property[:client][:id_type]%> </b>  *** <%= @email_property[:client][:id_no]%>(*) <br/>
+  <% end %>
+  <br /> <br/>
+  Dear <%= @email_property[:contact_name]%>, <br/>
+
+  <h4>RE: RECEIVING GOODS FROM CROSSROADS</h4>
+
+  Thank you for your enquiry.  We would be delighted to help in any way we can. <br/> <br/>
+
+  This email is to confirm an appointment for <%= @email_property[:scheduled_at]%><br/> <br/>
+  <% if @email_property[:client] %>
+
+    Please ask your client to:
+    <ul>
+      <li>
+        <b>bring this confirmation letter and their identity document.</b>
+      </li>
+      <li>
+        <b>arrive on time.</b> We have many people to care for each day so, if your client arrives more than 30 minutes late, we may need to reschedule the appointment.
+      </li>
+      <li>
+        <b> let us know if he/she cannot make it.</b> It is sad for us to be turning down others in need, only to find a scheduled appointment is not kept.
+      </li>
+      <li>
+        <b>
+          respect our volunteer staff.
+        </b>
+      </li>
+      <li>
+        <b>
+          read the guidelines below.
+        </b> Please give your client a copy of the guidelines and, if he or she cannot read, explain it to them.
+      </li>
+    </ul>
+
+    <br/>
+    We look forward to receiving your client and hope we may help! <br/>
+
+  <% else %>
+    Please ensure you:
+    <ul>
+      <li>
+        <b>bring this confirmation letter</b> (or note your reference number <%= @email_property[:order_code]%>)
+      </li>
+      <li>
+        arrive on time or let us know if you are delayed. We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
+      </li>
+      <li>
+        read the guidelines below
+      </li>
+    </ul>
+
+    <br/>
+    We look forward to receiving your client and hope we may help! <br/>
+
+  <% end %>
+  <br/>
+  Yours sincerely, <br/>
+
+  <%= @email_property[:staff_member_name]%> <br/>
+  Hong Kong Distribution <br/>
+  Office Tel: 2272 9343 <br/>
+  Email: local@crossroads.org.hk<br/>
+
+  <br/>
+
+  <div class="header"><h3>CROSSROAD'S GUIDELINES</h3></div>
+
+
+  We look forward to serving you at Crossroads. Here are some guidelines for your visit. <br/>
+
+  <h4>WHERE IS CROSSROADS?</h4>
+  Crossroads Village, 2 Castle Peak Road, Tuen Mun (opposite Gold Coast Phase 1). The Hong Kong Distribution office is located in Block 30. <br/>
+  A map and transport directions can be found on our website: <a href="https://www.crossroads.org.hk/contact/">www.crossroads.org.hk/contact/</a><br/>
+
+  <h4>HOW ARE THE ITEMS SELECTED?</h4>
+  One of our team will help you choose from our available stock. We will supply items based on the request list in your application (shown below), and the availability of stock at the time of your appointment. <br/>
+
+  Please note that items donated by Crossroads for personal use are not to be sold under any circumstances. <br/>
+
+  <h4>DOES CROSSROADS HAVE ALL ITEMS IN STOCK?</h4>
+  We love to help wherever possible. However, as we rely on donations from the public, we cannot guarantee the availability of all requested items. In particular, our supply of electrical items is usually very low, due to large demand. We would be glad for you to collect these items, if we have appropriate stock on the day, but cannot promise we will have everything available. <br/>
+
+  <h4>ARE THE ITEMS GOOD QUALITY?</h4>
+  Many of the goods available are used, but normally of good quality. We test all electrical products but, unlike a retail shop selling new items, Crossroads cannot issue guarantees or be held liable for any faults in these donated items. <br/> <br/>
+
+  <div><strong>REQUESTED ITEMS:</strong> Your application included requests for the following. </div>
+
+  <ul>
+  <% if @email_property[:requests]%>
+    <% @email_property[:requests].each do |request| %>
+      <li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
+    <% end %>
+  <% end %>
+  </ul>
+  <br/> <br/>
+
+  <h4>SHOULD I RETURN BROKEN ELECTRICAL ITEMS? </h4>
+  Due to the high value of electrical donations, to be eligible to apply for the same item again, we request that any faulty electrical items should be returned for testing. <br/> <br/>
+
+  <strong>LENGTH OF VISIT:</strong>  &nbsp; Normally 60-90 minutes for requests of several items, or 30 minutes for smaller requests. During this time, you are welcome to select items and then arrange transport and load your items into the van/truck. <br/> <br/>
+
+  <strong>TRANSPORTATION:</strong>  &nbsp; Crossroads can assist in arranging transportation of goods, but regret we cannot assist with transport costs. <br/> <br/>
+
+  <strong>EXTRA HELP:</strong> &nbsp;  We sincerely advise you to bring 2-3 other people to assist in moving any big items. The truck driver may be willing, but will charge you extra for lifting. <br/> <br/>
+
+  <h4> WHAT IF YOU ARE RUNNING LATE, OR CANNOT MAKE YOUR APPOINTMENT? </h4>
+  Please phone us on 2272-9343. We usually have other people waiting for the next appointment slots so it is best that you call and see if our team can still fit you in, to avoid disappointment. If not, they can make a new appointment but this may, regrettably, take two months as we are heavily booked.
+</body>
+</html>
