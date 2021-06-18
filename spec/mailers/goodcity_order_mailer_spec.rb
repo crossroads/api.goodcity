@@ -56,7 +56,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
           quantity = order.goodcity_requests.count
           type_en = order.goodcity_requests.first.package_type.name_en
           description = order.goodcity_requests.first.description
-          expect(mailer).to have_body_text("#{quantity} x #{type_en}. #{description}.")
+          expect(mailer).to have_body_text("#{quantity} x #{type_en}. #{description}")
         end
       end
     end
@@ -166,7 +166,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
           quantity = order.goodcity_requests.count
           type_en = order.goodcity_requests.first.package_type.name_en
           description = order.goodcity_requests.first.description
-          expect(mailer).to have_body_text("#{quantity} x #{type_en}. #{description}.")
+          expect(mailer).to have_body_text("#{quantity} x #{type_en}. #{description}")
         end
       end
     end
