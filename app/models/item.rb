@@ -1,6 +1,6 @@
 class Item < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer },
-  only: [:donor_description, :donor_condition_id, :state]
+  only: %i[donor_description donor_condition_id state]
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -24,8 +24,7 @@ class Item < ApplicationRecord
 
   scope :with_eager_load, -> {
     eager_load([:package_type, :rejection_reason, :donor_condition, :images,
-      { messages: :sender }, { packages: :package_type }
-    ])
+               { messages: :sender }, { packages: :package_type }])
   }
 
   scope :accepted, -> { where("state = 'accepted'") }
@@ -41,18 +40,18 @@ class Item < ApplicationRecord
     state :accepted
 
     event :accept do
-      transition [:draft, :submitted, :accepted, :rejected] => :accepted
+      transition %i[draft submitted accepted rejected] => :accepted
     end
 
     event :reject do
-      transition [:draft, :submitted, :accepted, :rejected] => :rejected
+      transition %i[draft submitted accepted rejected] => :rejected
     end
 
     event :submit do
-      transition [:draft, :submitted] => :submitted
+      transition %i[draft submitted] => :submitted
     end
 
-    after_transition on: [:accept, :reject], do: :assign_reviewer
+    after_transition on: %i[accept reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
     after_transition on: :submit, do: :send_new_item_message
   end
@@ -70,14 +69,13 @@ class Item < ApplicationRecord
   end
 
   def send_reject_message
-    if rejection_comments.present? && !recently_messaged_reason?
-      messages.create(
-        is_private: false,
-        body: rejection_comments,
-        messageable: offer,
-        sender: User.current_user
-      )
-    end
+    return unless rejection_comments.present? && !recently_messaged_reason?
+    messages.create(
+      is_private: false,
+      body: rejection_comments,
+      messageable: offer,
+      sender: User.current_user
+    )
   end
 
   def send_new_item_message
