@@ -2,18 +2,17 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_02_085849) do
+ActiveRecord::Schema.define(version: 2021_06_20_222418) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "fuzzystrmatch"
   enable_extension "btree_gin"
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -26,9 +25,9 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "addressable_id"
     t.string "addressable_type"
     t.string "address_type"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.index ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type"
     t.index ["district_id"], name: "index_addresses_on_district_id"
   end
@@ -41,17 +40,17 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   end
 
   create_table "appointment_slots", id: :serial, force: :cascade do |t|
-    t.datetime "timestamp", precision: 6
+    t.datetime "timestamp"
     t.integer "quota"
     t.string "note", default: ""
   end
 
   create_table "auth_tokens", id: :serial, force: :cascade do |t|
-    t.datetime "otp_code_expiry", precision: 6
+    t.datetime "otp_code_expiry"
     t.string "otp_secret_key"
     t.integer "user_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "otp_auth_key", limit: 30
     t.index ["user_id"], name: "index_auth_tokens_on_user_id"
   end
@@ -64,8 +63,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "first_name"
     t.string "last_name"
     t.string "phone_number"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_beneficiaries_on_created_by_id"
     t.index ["identity_type_id"], name: "index_beneficiaries_on_identity_type_id"
   end
@@ -73,8 +72,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "booking_types", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "identifier"
     t.index ["name_en", "name_zh_tw"], name: "index_booking_types_on_name_en_and_name_zh_tw", unique: true
   end
@@ -85,16 +84,16 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.text "comments"
     t.integer "pallet_id"
     t.integer "stockit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["pallet_id"], name: "index_boxes_on_pallet_id"
   end
 
   create_table "cancellation_reasons", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean "visible_to_offer", default: true
     t.boolean "visible_to_order", default: false
   end
@@ -105,16 +104,19 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "content_en"
     t.string "content_zh_tw"
     t.string "respondable_type"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "message_type", default: "USER"
+    t.string "guid"
+    t.index ["guid"], name: "index_canned_responses_on_guid", unique: true
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "crm_id"
     t.integer "created_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "updated_by_id"
   end
 
@@ -127,8 +129,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "interface"
     t.string "comp_voltage"
     t.integer "updated_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "comp_test_status_id"
   end
 
@@ -154,24 +156,24 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "mar_os_serial_num"
     t.string "mar_ms_office_serial_num"
     t.integer "updated_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "comp_test_status_id"
   end
 
   create_table "contacts", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "mobile"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "countries", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "preferred_region"
     t.string "preferred_sub_region"
     t.integer "m49"
@@ -186,8 +188,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "crossroads_transports", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "cost"
     t.float "truck_size"
     t.boolean "is_van_allowed", default: true
@@ -198,12 +200,12 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "contact_id"
     t.integer "schedule_id"
     t.string "delivery_type"
-    t.datetime "start", precision: 6
-    t.datetime "finish", precision: 6
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "start"
+    t.datetime "finish"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "gogovan_order_id"
-    t.datetime "deleted_at", precision: 6
+    t.datetime "deleted_at"
     t.index ["contact_id"], name: "index_deliveries_on_contact_id"
     t.index ["gogovan_order_id"], name: "index_deliveries_on_gogovan_order_id"
     t.index ["offer_id"], name: "index_deliveries_on_offer_id"
@@ -214,8 +216,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "name_en"
     t.string "name_zh_tw"
     t.integer "territory_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.float "latitude"
     t.float "longitude"
     t.index ["territory_id"], name: "index_districts_on_territory_id"
@@ -224,8 +226,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "donor_conditions", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean "visible_to_donor", default: true, null: false
   end
 
@@ -239,8 +241,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "system_or_region"
     t.date "tested_on"
     t.integer "updated_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "test_status_id"
     t.integer "voltage_id"
     t.integer "frequency_id"
@@ -249,23 +251,23 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "gogovan_orders", id: :serial, force: :cascade do |t|
     t.integer "booking_id"
     t.string "status"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.float "price"
     t.string "driver_name"
     t.string "driver_mobile"
     t.string "driver_license"
     t.string "ggv_uuid"
-    t.datetime "completed_at", precision: 6
+    t.datetime "completed_at"
     t.index ["ggv_uuid"], name: "index_gogovan_orders_on_ggv_uuid", unique: true
   end
 
   create_table "gogovan_transports", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean "disabled", default: false
   end
 
@@ -275,8 +277,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "order_id"
     t.text "description"
     t.integer "created_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_goodcity_requests_on_created_by_id"
     t.index ["order_id"], name: "index_goodcity_requests_on_order_id"
     t.index ["package_type_id"], name: "index_goodcity_requests_on_package_type_id"
@@ -290,28 +292,28 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   end
 
   create_table "holidays", id: :serial, force: :cascade do |t|
-    t.datetime "holiday", precision: 6
+    t.datetime "holiday"
     t.integer "year"
     t.string "name"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "identity_types", id: :serial, force: :cascade do |t|
     t.string "identifier"
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "images", id: :serial, force: :cascade do |t|
     t.string "cloudinary_id"
     t.boolean "favourite", default: false
     t.integer "item_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.integer "angle", default: 0
     t.integer "imageable_id"
     t.string "imageable_type"
@@ -329,10 +331,10 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "package_type_id"
     t.integer "rejection_reason_id"
     t.string "reject_reason"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "donor_condition_id"
-    t.datetime "deleted_at", precision: 6
+    t.datetime "deleted_at"
     t.text "rejection_comments"
     t.index ["donor_condition_id"], name: "index_items_on_donor_condition_id"
     t.index ["offer_id"], name: "index_items_on_offer_id"
@@ -343,8 +345,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "locations", id: :serial, force: :cascade do |t|
     t.string "building"
     t.string "area"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["area"], name: "index_locations_on_area", opclass: :gin_trgm_ops, using: :gin
     t.index ["building"], name: "index_locations_on_building", opclass: :gin_trgm_ops, using: :gin
   end
@@ -354,8 +356,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "key"
     t.string "label_en"
     t.string "label_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["name", "label_en"], name: "index_lookups_on_name_and_label_en"
     t.index ["name", "label_zh_tw"], name: "index_lookups_on_name_and_label_zh_tw"
     t.index ["name"], name: "index_lookups_on_name"
@@ -367,24 +369,31 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "brand"
     t.integer "country_id"
     t.integer "updated_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "messages", id: :serial, force: :cascade do |t|
     t.text "body"
     t.integer "sender_id"
     t.boolean "is_private", default: false
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.string "messageable_type"
     t.integer "messageable_id"
-    t.jsonb "lookup", default: "{}"
+    t.jsonb "lookup", default: {}
     t.integer "recipient_id"
     t.index ["body"], name: "messages_body_search_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
+  create_table "offer_responses", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "offer_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "offers", id: :serial, force: :cascade do |t|
@@ -396,24 +405,24 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "estimated_size"
     t.text "notes"
     t.integer "created_by_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
-    t.datetime "submitted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+    t.datetime "submitted_at"
     t.integer "reviewed_by_id"
-    t.datetime "reviewed_at", precision: 6
+    t.datetime "reviewed_at"
     t.integer "gogovan_transport_id"
     t.integer "crossroads_transport_id"
-    t.datetime "review_completed_at", precision: 6
-    t.datetime "received_at", precision: 6
+    t.datetime "review_completed_at"
+    t.datetime "received_at"
     t.string "delivered_by", limit: 30
     t.integer "closed_by_id"
-    t.datetime "cancelled_at", precision: 6
+    t.datetime "cancelled_at"
     t.integer "received_by_id"
-    t.datetime "start_receiving_at", precision: 6
+    t.datetime "start_receiving_at"
     t.integer "cancellation_reason_id"
     t.string "cancel_reason"
-    t.datetime "inactive_at", precision: 6
+    t.datetime "inactive_at"
     t.boolean "saleable", default: false
     t.integer "company_id"
     t.index ["cancellation_reason_id"], name: "index_offers_on_cancellation_reason_id"
@@ -434,14 +443,14 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   end
 
   create_table "order_transports", id: :serial, force: :cascade do |t|
-    t.datetime "scheduled_at", precision: 6
+    t.datetime "scheduled_at"
     t.string "timeslot"
     t.string "transport_type"
     t.integer "contact_id"
     t.integer "gogovan_order_id"
     t.integer "order_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean "need_english", default: false
     t.boolean "need_cart", default: false
     t.boolean "need_carry", default: false
@@ -461,8 +470,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "detail_id"
     t.integer "stockit_contact_id"
     t.integer "stockit_organisation_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at", null: false
     t.text "description"
     t.integer "stockit_activity_id"
     t.integer "country_id"
@@ -471,17 +480,17 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "organisation_id"
     t.string "state"
     t.text "purpose_description"
-    t.datetime "processed_at", precision: 6
+    t.datetime "processed_at"
     t.integer "process_completed_by_id"
-    t.datetime "process_completed_at", precision: 6
-    t.datetime "cancelled_at", precision: 6
+    t.datetime "process_completed_at"
+    t.datetime "cancelled_at"
     t.integer "cancelled_by_id"
-    t.datetime "closed_at", precision: 6
+    t.datetime "closed_at"
     t.integer "closed_by_id"
-    t.datetime "dispatch_started_at", precision: 6
+    t.datetime "dispatch_started_at"
     t.integer "dispatch_started_by_id"
     t.integer "submitted_by_id"
-    t.datetime "submitted_at", precision: 6
+    t.datetime "submitted_at"
     t.integer "people_helped", default: 0
     t.integer "beneficiary_id"
     t.integer "address_id"
@@ -519,9 +528,9 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "state"
     t.integer "quantity"
     t.integer "updated_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.datetime "sent_on", precision: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "sent_on"
     t.integer "dispatched_quantity", default: 0
     t.integer "shipping_number"
     t.index ["order_id", "package_id"], name: "index_orders_packages_on_order_id_and_package_id"
@@ -550,8 +559,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "name_zh_tw"
     t.string "category_en"
     t.string "category_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "organisations", id: :serial, force: :cascade do |t|
@@ -564,8 +573,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "website"
     t.integer "country_id"
     t.integer "district_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "gih3_id"
     t.index ["country_id"], name: "index_organisations_on_country_id"
     t.index ["district_id"], name: "index_organisations_on_district_id"
@@ -578,8 +587,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "organisation_id"
     t.integer "user_id"
     t.string "position"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "preferred_contact_number"
     t.string "status", default: "pending"
     t.index ["organisation_id"], name: "index_organisations_users_on_organisation_id"
@@ -590,16 +599,16 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "name_en"
     t.string "name_zh_tw"
     t.integer "parent_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["parent_id"], name: "index_package_categories_on_parent_id"
   end
 
   create_table "package_categories_package_types", id: :serial, force: :cascade do |t|
     t.integer "package_type_id"
     t.integer "package_category_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["package_category_id"], name: "index_package_categories_package_types_on_package_category_id"
     t.index ["package_type_id"], name: "index_package_categories_package_types_on_package_type_id"
   end
@@ -607,8 +616,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "package_sets", id: :serial, force: :cascade do |t|
     t.integer "package_type_id"
     t.text "description"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["package_type_id"], name: "index_package_sets_on_package_type_id"
   end
 
@@ -618,24 +627,24 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "name_zh_tw"
     t.string "other_terms_en"
     t.string "other_terms_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean "visible_in_selects", default: false
     t.integer "location_id"
     t.boolean "allow_requests", default: true
-    t.boolean "allow_package", default: false
     t.boolean "allow_pieces", default: false
     t.string "subform"
+    t.boolean "allow_package", default: false
     t.boolean "allow_box", default: false
     t.boolean "allow_pallet", default: false
-    t.decimal "default_value_hk_dollar"
     t.boolean "allow_expiry_date", default: false
-    t.text "description_en"
-    t.text "description_zh_tw"
+    t.decimal "default_value_hk_dollar"
     t.integer "length"
     t.integer "width"
     t.integer "height"
     t.string "department"
+    t.text "description_en"
+    t.text "description_zh_tw"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", opclass: :gin_trgm_ops, using: :gin
@@ -650,12 +659,12 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.text "notes", null: false
     t.integer "item_id"
     t.string "state"
-    t.datetime "received_at", precision: 6
-    t.datetime "rejected_at", precision: 6
+    t.datetime "received_at"
+    t.datetime "rejected_at"
     t.integer "package_type_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.datetime "deleted_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.integer "offer_id", default: 0
     t.string "inventory_number"
     t.integer "location_id"
@@ -676,10 +685,11 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "case_number"
     t.boolean "allow_web_publish"
     t.integer "received_quantity"
+    t.boolean "last_allow_web_published"
     t.integer "weight"
     t.integer "pieces"
-    t.string "detail_type"
     t.integer "detail_id"
+    t.string "detail_type"
     t.integer "storage_type_id"
     t.integer "available_quantity", default: 0
     t.integer "on_hand_quantity", default: 0
@@ -728,8 +738,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "source_type"
     t.integer "source_id"
     t.integer "quantity", null: false
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text "description"
     t.index ["action"], name: "index_packages_inventories_on_action"
     t.index ["created_at"], name: "index_packages_inventories_on_created_at"
@@ -748,8 +758,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "package_id"
     t.integer "location_id"
     t.integer "quantity"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "reference_to_orders_package"
     t.index ["location_id", "package_id"], name: "index_packages_locations_on_location_id_and_package_id"
     t.index ["location_id"], name: "index_packages_locations_on_location_id"
@@ -762,14 +772,14 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "pallet_number"
     t.string "description"
     t.text "comments"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "permissions", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "printers", id: :serial, force: :cascade do |t|
@@ -780,8 +790,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "port"
     t.string "username"
     t.string "password"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "printers_users", id: :serial, force: :cascade do |t|
@@ -799,22 +809,22 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
 
   create_table "processing_destinations", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "purposes", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "identifier"
   end
 
   create_table "rejection_reasons", id: :serial, force: :cascade do |t|
     t.string "name_en"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "name_zh_tw"
   end
 
@@ -832,23 +842,23 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "restrictions", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "role_permissions", id: :serial, force: :cascade do |t|
     t.integer "role_id"
     t.integer "permission_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
     t.index ["role_id"], name: "index_role_permissions_on_role_id"
   end
 
   create_table "roles", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "level"
     t.index ["level"], name: "index_roles_on_level"
   end
@@ -858,9 +868,9 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "slot"
     t.string "slot_name"
     t.string "zone"
-    t.datetime "scheduled_at", precision: 6
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "scheduled_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "shareables", force: :cascade do |t|
@@ -868,10 +878,10 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "resource_id", null: false
     t.string "public_uid", null: false
     t.boolean "allow_listing", default: false, null: false
-    t.datetime "expires_at", precision: 6
+    t.datetime "expires_at"
     t.integer "created_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text "notes"
     t.text "notes_zh_tw"
     t.index ["created_by_id"], name: "index_shareables_on_created_by_id"
@@ -885,8 +895,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "stockit_activities", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "stockit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "stockit_contacts", id: :serial, force: :cascade do |t|
@@ -895,8 +905,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "mobile_phone_number"
     t.string "phone_number"
     t.integer "stockit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["first_name"], name: "st_contacts_first_name_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["last_name"], name: "st_contacts_last_name_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", opclass: :gin_trgm_ops, using: :gin
@@ -908,8 +918,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "hkid_number"
     t.string "reference_number"
     t.integer "stockit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text "purpose_of_goods"
     t.index ["client_name"], name: "st_local_orders_client_name_idx", opclass: :gin_trgm_ops, using: :gin
   end
@@ -917,8 +927,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "stockit_organisations", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "stockit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["name"], name: "st_organisations_name_idx", opclass: :gin_trgm_ops, using: :gin
   end
 
@@ -930,8 +940,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.boolean "dirty", default: false, null: false
     t.string "warning"
     t.integer "created_by_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "processed_delta", default: 0
     t.index ["package_id", "stocktake_id"], name: "index_stocktake_revisions_on_package_id_and_stocktake_id", unique: true
     t.index ["package_id"], name: "index_stocktake_revisions_on_package_id"
@@ -945,8 +955,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "comment"
     t.integer "created_by_id"
     t.integer "location_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "counts", default: 0
     t.integer "gains", default: 0
     t.integer "losses", default: 0
@@ -957,8 +967,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
 
   create_table "storage_types", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "max_unit_quantity"
   end
 
@@ -966,10 +976,10 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "package_type_id"
     t.integer "subpackage_type_id"
     t.boolean "is_default", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["package_type_id", "package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id"
-    t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id"
   end
 
@@ -987,15 +997,15 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "territories", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "timeslots", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "user_favourites", force: :cascade do |t|
@@ -1003,8 +1013,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "favourite_id"
     t.integer "user_id"
     t.boolean "persistent", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["favourite_type"], name: "index_user_favourites_on_favourite_type"
     t.index ["updated_at"], name: "index_user_favourites_on_updated_at"
     t.index ["user_id", "favourite_type", "favourite_id"], name: "index_user_and_favourites", unique: true
@@ -1013,9 +1023,9 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   create_table "user_roles", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "role_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.datetime "expires_at", precision: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "expires_at"
     t.index ["role_id"], name: "index_user_roles_on_role_id"
     t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
@@ -1024,15 +1034,15 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.string "first_name"
     t.string "last_name"
     t.string "mobile"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "image_id"
-    t.datetime "last_connected", precision: 6
-    t.datetime "last_disconnected", precision: 6
+    t.datetime "last_connected"
+    t.datetime "last_disconnected"
     t.boolean "disabled", default: false
     t.string "email"
     t.string "title"
-    t.datetime "sms_reminder_sent_at", precision: 6
+    t.datetime "sms_reminder_sent_at"
     t.boolean "is_mobile_verified", default: false
     t.boolean "is_email_verified", default: false
     t.boolean "receive_email", default: false
@@ -1047,8 +1057,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.integer "donor_condition_id", null: false
     t.string "grade", null: false
     t.decimal "multiplier", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "versions", id: :serial, force: :cascade do |t|
@@ -1060,7 +1070,7 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
     t.jsonb "object_changes"
     t.integer "related_id"
     t.string "related_type"
-    t.datetime "created_at", precision: 6
+    t.datetime "created_at"
     t.index ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))"
     t.index ["created_at"], name: "index_versions_on_created_at"
     t.index ["event"], name: "index_versions_on_event"
@@ -1099,6 +1109,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_085849) do
   add_foreign_key "medicals", "countries", name: "medicals_country_id_fk"
   add_foreign_key "messages", "users", column: "recipient_id"
   add_foreign_key "messages", "users", column: "sender_id", name: "messages_sender_id_fk"
+  add_foreign_key "offer_responses", "offers"
+  add_foreign_key "offer_responses", "users"
   add_foreign_key "offers", "cancellation_reasons", name: "offers_cancellation_reason_id_fk"
   add_foreign_key "offers", "companies", name: "offers_company_id_fk"
   add_foreign_key "offers", "crossroads_transports", name: "offers_crossroads_transport_id_fk"
