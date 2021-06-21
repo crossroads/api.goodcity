@@ -30,7 +30,7 @@ class Delivery < ApplicationRecord
       update_column(:gogovan_order_id, nil)
       old_contact.try(:really_destroy!)
       old_ggv.try(:really_destroy!)
-      schedule &.deliveries.delete(self)
+      schedule && deliveries.delete(self)
     end
   end
 
@@ -47,6 +47,6 @@ class Delivery < ApplicationRecord
 
   def process_completed?
     (contact_id_previously_changed? && contact.present?) ||
-    (delivery_type == 'Drop Off' && schedule_id_previously_changed? && schedule.present?)
+      (delivery_type == 'Drop Off' && schedule_id_previously_changed? && schedule.present?)
   end
 end

@@ -1,6 +1,6 @@
 class Item < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer },
-  only: %i[donor_description donor_condition_id state]
+                  only: %i[donor_description donor_condition_id state]
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -70,6 +70,7 @@ class Item < ApplicationRecord
 
   def send_reject_message
     return unless rejection_comments.present? && !recently_messaged_reason?
+
     messages.create(
       is_private: false,
       body: rejection_comments,
