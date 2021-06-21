@@ -1,6 +1,5 @@
 require 'twilio-ruby'
 class TwilioService
-
   attr_accessor :user, :mobile
 
   def initialize(user, mobile = nil)
@@ -72,17 +71,18 @@ class TwilioService
 
   def welcome_sms_text(user_name)
     I18n.t('twilio.charity_user_welcome_sms',
-      full_name: user_name)
+           full_name: user_name)
   end
 
   def new_order_placed_text_to_users(order)
     I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
-      code: order.code, submitter_name: order.created_by.full_name, organisation_name: order.organisation.try(:name_en))
+           code: order.code, submitter_name: order.created_by.full_name,
+           organisation_name: order.organisation.try(:name_en))
   end
 
   def new_order_confirmed_text_to_charity(order)
     I18n.t('twilio.new_order_submitted_sms_to_charity',
-      code: order.code)
+           code: order.code)
   end
 
   def unread_message_reminder(url)

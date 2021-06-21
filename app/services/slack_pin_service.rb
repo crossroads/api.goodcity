@@ -1,5 +1,4 @@
 class SlackPinService
-
   attr_accessor :user
 
   def initialize(user)

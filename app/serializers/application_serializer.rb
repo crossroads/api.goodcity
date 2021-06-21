@@ -1,5 +1,4 @@
 class ApplicationSerializer < ActiveModel::Serializer
-
   protected
 
   def current_language
