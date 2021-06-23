@@ -23,11 +23,13 @@ module StocktakeProcessor
 
       Stocktake.without_auto_counters do
         PackagesInventory.secured_transaction do
-          stocktake.revisions.each do |revision|
-            next unless revision.pending?
+          PushService.paused do
+            stocktake.revisions.find_each do |revision|
+              next unless revision.pending?
 
-            error = apply_package_revision(revision)
-            errors[revision.id] = error if error.present?
+              error = apply_package_revision(revision)
+              errors[revision.id] = error if error.present?
+            end
           end
 
           raise ActiveRecord::Rollback if errors.length.positive?
