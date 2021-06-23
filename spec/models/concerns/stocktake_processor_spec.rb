@@ -100,7 +100,7 @@ context StocktakeProcessor do
     end
 
     it 'calls computed_counters! only once' do
-      expect_any_instance_of(Stocktake).to receive(:compute_counters!).and_call_original
+      expect_any_instance_of(Stocktake).to receive(:compute_counters!).once.and_call_original
       subject.process_stocktake(Stocktake.find(stocktake.id))
     end
 
