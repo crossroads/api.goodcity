@@ -21,7 +21,7 @@ RSpec.describe Stocktake, type: :model do
     let(:location) { create(:location) }
     let(:package) { create(:package, received_quantity: 5) }
     let(:stocktake) { create(:stocktake, location: location) }
-  
+
     before { initialize_inventory(package, location: location) }
 
     before do
@@ -81,6 +81,12 @@ RSpec.describe Stocktake, type: :model do
       expect(stocktake.reload.gains).to eq(1)
       revision.update!(dirty: true)
       expect(stocktake.reload.gains).to eq(0)
+    end
+
+    it "doesnt modify counters if ran within a without_auto_counters block" do
+      expect {
+        Stocktake.without_auto_counters { create :stocktake_revision, stocktake: stocktake, package: package, quantity: 6 }
+      }.not_to change(stocktake, :gains)
     end
   end
 
