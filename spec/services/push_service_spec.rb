@@ -49,6 +49,13 @@ describe PushService do
         expect(SocketioSendJob).to_not receive(:perform_later)
         service.send_update_store([], data)
       end
+      it "if is called within a paused block" do
+        allow(SocketioSendJob).to receive(:set).and_return(SocketioSendJob)
+        expect(SocketioSendJob).not_to receive(:perform_later)
+        PushService.paused do
+          service.send_update_store('user_1', data)
+        end
+      end
     end
   end
 
