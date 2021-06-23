@@ -99,6 +99,11 @@ context StocktakeProcessor do
       expect { subject.process_stocktake(stocktake)  }.to raise_error(Goodcity::InvalidStateError).with_message('Some quantity revisions require a re-count')
     end
 
+    it 'calls computed_counters! only once' do
+      expect_any_instance_of(Stocktake).to receive(:compute_counters!).and_call_original
+      subject.process_stocktake(Stocktake.find(stocktake.id))
+    end
+
     describe 'when an error occurs' do
       before do
         # This quantity designated, therefore cannot be reduced in the inventory
