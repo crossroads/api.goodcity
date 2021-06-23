@@ -21,27 +21,31 @@ module StocktakeProcessor
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open?
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions')) if stocktake.revisions.where(dirty: true).count.positive?
 
-      PackagesInventory.secured_transaction do
-        stocktake.revisions.each do |revision|
-          next unless revision.pending?
+      Stocktake.without_auto_counters do
+        PackagesInventory.secured_transaction do
+          stocktake.revisions.each do |revision|
+            next unless revision.pending?
 
-          error = apply_package_revision(revision)
-          errors[revision.id] = error if error.present?
+            error = apply_package_revision(revision)
+            errors[revision.id] = error if error.present?
+          end
+
+          raise ActiveRecord::Rollback if errors.length.positive?
+
+          stocktake.revisions.update_all(state: 'processed')
+          stocktake.close
         end
 
-        raise ActiveRecord::Rollback if errors.length.positive?
+        persist_errors(stocktake, errors)
 
-        stocktake.revisions.update_all(state: 'processed')
-        stocktake.close
+        stocktake.compute_counters! # Manually trigger recount at the end
+
+        errors.values
       end
-      
-      persist_errors(stocktake, errors)
-
-      errors.values
     end
 
     def serialize_exception(e, revision)
-      message = e.message      
+      message = e.message
       message = message.gsub(/^Validation failed:/, '') if e.is_a?(ActiveRecord::RecordInvalid)
       { revision: revision, message: message }
     end
