@@ -18,8 +18,10 @@ module StocktakeProcessor
     def process_stocktake(stocktake)
       errors = {}
 
-      raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open?
+      raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open? || stocktake.awaiting_process?
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions')) if stocktake.revisions.where(dirty: true).count.positive?
+
+      stocktake.start_processing
 
       Stocktake.without_auto_counters do
         PackagesInventory.secured_transaction do
@@ -41,9 +43,11 @@ module StocktakeProcessor
         persist_errors(stocktake, errors)
 
         stocktake.compute_counters! # Manually trigger recount at the end
-
-        errors.values
       end
+
+      stocktake.reopen if errors.length.positive?
+
+      errors.values
     end
 
     def serialize_exception(e, revision)

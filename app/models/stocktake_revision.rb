@@ -8,6 +8,8 @@ class StocktakeRevision < ApplicationRecord
 
   before_save :unset_dirty_and_warning
 
+  validate :validate_open_stocktake, on: [:create, :update]
+
   # ---------------------
   # Live updates
   # ---------------------
@@ -46,6 +48,14 @@ class StocktakeRevision < ApplicationRecord
   # ---------------------
   # Hook methods
   # ---------------------
+
+  def validate_open_stocktake
+    return if self.stocktake&.open?
+
+    if self.new_record? || self.quantity_changed?
+      errors.add(:base, Goodcity::InvalidStateError.new(I18n.t('stocktakes.cannot_edit_revision')))
+    end
+  end
 
   def unset_dirty_and_warning
     self.dirty    = false unless self.dirty_changed?
