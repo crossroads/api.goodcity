@@ -12,7 +12,6 @@ module Api
         error 500, "Internal Server Error"
       end
 
-
       api :POST, "/v1/stocktake_revisions", "Create a stocktake revision"
       def create
         stocktake = Stocktake.find(stocktake_revision_params['stocktake_id'])

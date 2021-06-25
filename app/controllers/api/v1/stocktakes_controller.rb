@@ -51,7 +51,13 @@ module Api
 
       api :PUT, "/v1/stocktakes/:id/commit", "Processes a stocktake and tries to apply changes"
       def commit
-        Stocktake.process_stocktake(@stocktake)
+        raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) if @stocktake.closed? || @stocktake.cancelled?
+
+        if @stocktake.open?
+          @stocktake.mark_for_processing
+          StocktakeJob.perform_later(@stocktake.id)
+        end
+
         render json: @stocktake, serializer: serializer, status: 200
       end
 
