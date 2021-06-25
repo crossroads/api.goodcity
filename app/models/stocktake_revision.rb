@@ -50,7 +50,7 @@ class StocktakeRevision < ApplicationRecord
   # ---------------------
 
   def validate_open_stocktake
-    return if self.stocktake.open?
+    return if self.stocktake&.open?
 
     if self.new_record? || self.quantity_changed?
       errors.add(:base, Goodcity::InvalidStateError.new(I18n.t('stocktakes.cannot_edit_revision')))
