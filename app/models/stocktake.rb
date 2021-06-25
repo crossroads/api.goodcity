@@ -2,6 +2,7 @@ class Stocktake < ApplicationRecord
   include Watcher
   include StocktakeProcessor
   include PushUpdatesMinimal
+  include Secured
 
   has_many    :stocktake_revisions, dependent: :destroy
   belongs_to  :location
@@ -21,14 +22,22 @@ class Stocktake < ApplicationRecord
   # ---------------------
 
   state_machine :state, initial: :open do
-    state :open, :closed, :cancelled
+    state :open, :awaiting_process, :processing, :closed, :cancelled
 
     event :reopen do
-      transition [:closed, :cancelled] => :open
+      transition all => :open
+    end
+
+    event :mark_for_processing do
+      transition [:open] => :awaiting_process
+    end
+
+    event :start_processing do
+      transition [:open, :awaiting_process] => :processing
     end
 
     event :close do
-      transition open: :closed
+      transition [:open, :processing, :awaiting_process] => :closed
     end
 
     event :cancel do

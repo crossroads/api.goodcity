@@ -50,7 +50,7 @@ RSpec.describe StocktakeRevision, type: :model do
 
       expect {
         stocktake_revision.update(quantity: 888)
-      }.to change { 
+      }.to change {
         stocktake_revision.reload.dirty
       }.from(true).to(false)
     end
