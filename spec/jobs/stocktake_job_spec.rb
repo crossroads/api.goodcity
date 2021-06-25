@@ -33,7 +33,7 @@ describe StocktakeJob, :type => :job do
       stocktake.update(state: 'awaiting_process')
     end
 
-    it "calls the stocktake processor if the state is awaiting_process" do
+    it "calls the stocktake processor" do
       expect(Stocktake).to receive(:process_stocktake).once.with(stocktake).and_call_original
       StocktakeJob.new.perform(stocktake.id)
     end
@@ -56,6 +56,15 @@ describe StocktakeJob, :type => :job do
       expect {
         StocktakeJob.new.perform(stocktake.id)
       }.to change { stocktake.reload.state }.from('awaiting_process').to('closed')
+    end
+
+    it "reopens the stocktake if any error occurs" do
+      # Designating the package prevents its quantity from being lowered in the stocktake process
+      create(:orders_package, state: 'designated', package: package_2, quantity: 10)
+
+      expect {
+        StocktakeJob.new.perform(stocktake.id)
+      }.to change { stocktake.reload.state }.from('awaiting_process').to('open')
     end
   end
 end
