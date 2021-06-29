@@ -313,6 +313,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     let(:charity) { create :user, :charity }
     let(:staff) { reviewer }
     let(:offer) { create :offer, created_by: donor }
+    let(:offerResponse) { create :offer_response, user_id: charity.id }
 
     context 'a public message about an offer' do
       let(:message_params) { {
@@ -347,6 +348,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       context 'as a charity about an offer' do
+        let(:message_params) { {
+          :body=> "Lorem Ipsum",
+          :is_private=>false,
+          :messageable_id=> offerResponse.id,
+          :messageable_type=>"OfferResponse"
+        } }
         before { generate_and_set_token(charity) }
 
         context 'that has NOT been shared' do

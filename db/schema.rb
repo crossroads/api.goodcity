@@ -392,8 +392,8 @@ ActiveRecord::Schema.define(version: 2021_06_20_222418) do
   create_table "offer_responses", force: :cascade do |t|
     t.integer "user_id"
     t.integer "offer_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "offers", id: :serial, force: :cascade do |t|

@@ -3,7 +3,7 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
-      ALLOWED_SCOPES = %w[offer item order package].freeze
+      ALLOWED_SCOPES = %w[offer item order package offer_response].freeze
 
       resource_description do
         short "List, show, create and mark_read a message."
@@ -108,7 +108,7 @@ module Api
           messageable_type: options[:messageable_type]
         ) if options[:messageable_id].present? && options[:messageable_type].present?
 
-        %i[ids offer_id order_id item_id package_id].map do |f|
+        %i[ids offer_id order_id item_id offer_response_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
         end
         messages

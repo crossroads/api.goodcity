@@ -50,6 +50,7 @@ class Message < ApplicationRecord
   scope :filter_by_ids, ->(ids) { where(id: ids.split(",")) }
   scope :filter_by_offer_id, ->(offer_id) { where(messageable_id: offer_id.split(","), messageable_type: "Offer") }
   scope :filter_by_order_id, ->(order_id) { where(messageable_id: order_id.split(","), messageable_type: "Order") }
+  scope :filter_by_offer_response_id, ->(offer_response_id) { where(messageable_id: offer_response_id.split(","), messageable_type: "OfferResponse") }
   scope :filter_by_item_id, ->(item_id) { where(messageable_id: item_id.split(","), messageable_type: "Item") }
   scope :filter_by_package_id, ->(package_id) { where(messageable_id: package_id.split(","), messageable_type: "Package") }
   scope :from_humans, ->() { where.not(sender_id: non_human_senders) }
@@ -121,7 +122,7 @@ class Message < ApplicationRecord
       'Order' => ->(obj) { obj.try(:created_by_id) },
       'Item'  => ->(obj) { obj.try(:offer).try(:created_by_id) }
     }
-  
+
     resolvers[messageable_type].try(:call, messageable)
   end
 end

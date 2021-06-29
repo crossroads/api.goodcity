@@ -54,6 +54,7 @@ module Api
         printer_abilities
         offers_package_abilities
         canned_response_abilities
+        offer_response_abilities
         processing_destination_abilities
       end
 
@@ -96,7 +97,11 @@ module Api
       end
 
       def canned_response_abilities
-        can %I[index create update destroy show], CannedResponse if can_manage_canned_response?
+        can %i[index create update destroy show], CannedResponse if can_manage_canned_response?
+      end
+
+      def offer_response_abilities
+        can [:create, :index], OfferResponse
       end
 
       def computer_abilities
@@ -190,12 +195,13 @@ module Api
       def message_abilities
         can %i[index show create notifications], Message, messageable_type: 'Offer' if can_manage_offer_messages?
         can %i[index show create notifications], Message, messageable_type: 'Item' if can_manage_offer_messages?
+        can %i[index show create notifications], Message, messageable_type: 'OfferResponse'
         can %i[index show create notifications], Message, messageable_type: 'Order' if can_manage_order_messages?
         can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
         can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
-        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
-        can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order', 'OfferResponse'] }
+        can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order', 'OfferResponse'] }
 
         can :create, Message do |message|
           next false if (
