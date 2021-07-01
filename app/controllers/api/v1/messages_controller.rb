@@ -144,7 +144,8 @@ module Api
       def message_response(records, serializer)
         ActiveModel::ArraySerializer.new(records,
           each_serializer: serializer,
-          root: "messages"
+          root: "messages",
+          include_organisations_users: true
         ).as_json
       end
 

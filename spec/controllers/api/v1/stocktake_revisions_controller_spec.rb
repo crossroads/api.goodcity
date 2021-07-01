@@ -72,6 +72,16 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
         expect(response.status).to eq(409)
         expect(parsed_body['error']).to eq('A record already exists')
       end
+
+      it "fails to create a revision if the stocktake isnt open" do
+        stocktake.update(state: 'awaiting_process')
+
+        expect {
+          post :create, params:{ stocktake_revision: payload }
+        }.to change(StocktakeRevision, :count).by(0)
+
+        expect(response.status).to eq(422)
+      end
     end
   end
 
@@ -136,6 +146,16 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
         }.to change {
           stocktake_revision.reload.quantity
         }.from(initial_quantity).to(100)
+      end
+
+      it "fails to update the quantity if the stocktake isnt open" do
+        stocktake.update(state: 'awaiting_process')
+
+        expect {
+          put :update, params: { id: stocktake_revision.id, stocktake_revision: { quantity: 100 } }
+        }.not_to change { stocktake_revision.reload.quantity }
+
+        expect(response.status).to eq(422)
       end
     end
   end
