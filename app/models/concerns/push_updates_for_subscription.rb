@@ -27,6 +27,8 @@ module PushUpdatesForSubscription
       (self.user_id == created_by_id) ? BROWSE_APP : STOCK_APP
     elsif ["Offer", "Item"].include?(klass_name)
       (self.user_id == created_by_id) ? DONOR_APP : ADMIN_APP
+    elsif ["OfferResponse"].include?(klass_name)
+      (self.user_id == created_by_id) ? BROWSE_APP : ADMIN_APP
     elsif klass_name == "Package"
       STOCK_APP
     end

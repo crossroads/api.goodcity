@@ -119,10 +119,10 @@ class Message < ApplicationRecord
   def messageable_owner_id
     resolvers = {
       'Offer' => ->(obj) { obj.try(:created_by_id) },
+      'OfferResponse' => ->(obj) { obj.try(:user_id) },
       'Order' => ->(obj) { obj.try(:created_by_id) },
       'Item'  => ->(obj) { obj.try(:offer).try(:created_by_id) }
     }
-
     resolvers[messageable_type].try(:call, messageable)
   end
 end
