@@ -49,7 +49,7 @@ module MessageSubscriptions
     end
 
     if ['OfferResponse'].include?(klass)
-      return 'can_manage_offer_messages'
+      return 'can_manage_offer_responses'
     end
 
     "can_manage_#{klass.underscore}_messages"
