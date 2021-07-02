@@ -191,6 +191,12 @@ class Offer < ApplicationRecord
       offer.inactive_at = Time.now
     end
 
+    after_transition on: :cancel do |offer, _transition|
+      if User.current_user == offer.created_by
+        offer.expire_shareable_resource
+      end
+    end
+
     after_transition on: :submit do |offer, _transition|
       if offer.created_by
         offer.send_thank_you_message
@@ -256,6 +262,16 @@ class Offer < ApplicationRecord
 
     def offers_count_per_state(offer)
       offer.each { |key, value| offer[key] = value.count }
+    end
+  end
+
+  def expire_shareable_resource(expires_at=Time.now)
+    return if self.shareable.blank?
+    expires_at = DateTime.strptime(expires_at, '%d/%m/%y %H:%M %z') if expires_at.is_a?(String)
+    self.shareable.update(expires_at: expires_at)
+
+    if self.packages.present?
+      self.packages.each{ |record| record.shareable.update(expires_at: expires_at) }
     end
   end
 
