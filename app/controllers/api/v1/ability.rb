@@ -103,10 +103,10 @@ module Api
       def offer_response_abilities
         can :create, OfferResponse do |offer_response|
           offer_response.user_id == @user_id &&
-          Shareable.non_expired.find_by(
-            resource_type: 'Offer',
-            resource_id: offer_response.offer_id
-          ).present?
+            Shareable.non_expired.find_by(
+              resource_type: 'Offer',
+              resource_id: offer_response.offer_id
+            ).present?
         end
 
         can %i[index show], OfferResponse
@@ -217,7 +217,7 @@ module Api
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
             (message.recipient_id && message.recipient_id != @user_id) || # e.g donor is trying to contact another donor
-            (message.messageable_type== "OfferResponse" && !Shareable.shared_resource?(message.messageable.offer)) #e.g A charity user trying to discuss with the offer that is not shared
+            (message.messageable_type === "OfferResponse" && !Shareable.shared_resource?(message.messageable.offer)) # e.g A charity user trying to discuss with the offer that is not shared
           )
 
           #
