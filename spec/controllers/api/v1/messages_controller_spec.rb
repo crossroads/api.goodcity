@@ -4,7 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission, :with_can_manage_offer_responses_permission }
+  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission, :with_can_manage_offer_response_messages_permission }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     describe 'Multiple users discussing a single record' do
-      let(:reviewer) { create(:user, :with_token, :with_can_manage_offer_responses_permission,:with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
+      let(:reviewer) { create(:user, :with_token, :with_can_manage_offer_response_messages_permission, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
       let(:donor) { create(:user) }
       let(:offer) { create(:offer, created_by: donor) }
       let(:received_messages) { subject['messages'].map { |m| m['body'] } }

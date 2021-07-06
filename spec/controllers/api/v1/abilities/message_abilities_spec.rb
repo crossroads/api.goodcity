@@ -10,7 +10,7 @@ describe 'Message abilities' do
   let(:all_actions) { %i[index show create update destroy manage notifications] }
   let(:sender)      { create :user }
   let(:charity) { create(:user, :charity) }
-  let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_responses_permission, :with_can_manage_offer_messages_permission) }
+  let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_response_messages_permission, :with_can_manage_offer_messages_permission) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
   let(:offerResponse) { create(:offer_response, user_id: charity.id, offer_id: offer.id) }
@@ -162,7 +162,7 @@ describe 'Message abilities' do
 
     context 'when charity user tries to create' do
       context 'a public message' do
-        let(:message) { create(:message, messageable: offer, is_private: false) }
+        let(:message) { create(:message, messageable: offerResponse, is_private: false) }
 
         context 'about an record that has NOT been publicly shared' do
           it 'should succeed' do

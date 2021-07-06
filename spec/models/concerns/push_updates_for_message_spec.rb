@@ -7,6 +7,7 @@ context PushUpdatesForMessage do
   let(:charity_browse_channel) { "user_#{charity.id}_browse" }
   let(:donor) { create(:user) }
   let(:offer) { create(:offer, created_by: donor) }
+  let(:offerResponse) { create(:offer_response, offer_id: offer.id) }
   let!(:message) { create :message, sender: reviewer1, messageable: offer }
   let(:donor_app_channel) { "user_#{donor.id}" }
   let(:donor_browse_channel) { "user_#{donor.id}_browse" }
@@ -24,7 +25,7 @@ context PushUpdatesForMessage do
       let!(:message) { create :message, sender: reviewer1, messageable: offer, recipient: donor }
       let!(:reviewer2) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission } # create this user but don't use it
       let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
-      
+
       it "should send a push update to donor, message sender / offer reviewer, other reviewers" do
         expect(message).to receive(:send_update).with('unread', [donor_app_channel, donor_browse_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
@@ -39,10 +40,10 @@ context PushUpdatesForMessage do
     end
 
     context "when reviewer1 sends a message to a charity about an offer" do
-      let!(:message) { create :message, sender: reviewer1, messageable: offer, recipient: charity }
-      let!(:reviewer2) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission } # create this user but don't use it
+      let!(:message) { create :message, sender: reviewer1, messageable: offerResponse, recipient: charity }
+      let!(:reviewer2) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_offer_response_messages_permission } # create this user but don't use it
       let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
-      
+
       it "should send a push update to charity, message sender / offer reviewer, other reviewers" do
         expect(message).to receive(:send_update).with('unread', [charity_browse_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
@@ -130,7 +131,7 @@ context PushUpdatesForMessage do
 
   context "app_names_for_user" do
     subject { message.send(:app_names_for_user, user_id) }
-    
+
     context "when Order" do
       let(:message) { create :message, :with_order }
       context "creator" do

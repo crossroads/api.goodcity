@@ -51,7 +51,7 @@ Rails.application.routes.draw do
       resources :canned_responses, only: %i[index create update destroy]
       get 'canned_responses/:guid', to: 'canned_responses#show'
       resources :user_favourites, only: [:index]
-      resources :offer_responses, only: [:create, :index]
+      resources :offer_responses, only: %i[create index show]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
       resources :stocktakes, only: [:show, :index, :destroy, :create] do

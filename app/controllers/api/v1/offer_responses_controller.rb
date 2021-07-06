@@ -1,8 +1,7 @@
 module Api
   module V1
     class OfferResponsesController < Api::V1::ApiController
-      authorize_resource :offer_response, parent: false
-      load_resource :offer_response, only: [:index]
+      load_and_authorize_resource :offer_response, parent: false
 
       resource_description do
         formats ['json']
@@ -21,25 +20,24 @@ module Api
 
       api :POST, "/v1/offer_responses", "Create a Offer Response"
       def create
-        record = OfferResponse.find_or_create_by(offer_responses_params)
-
-        if record.save
-          render json: record, serializer: serializer, status: 201
-        else
-          render json: { errors: record.errors.full_messages }, status: 422
-        end
+        save_and_render_object_with_errors(@offer_response)
       end
 
       api :GET, "/v1/offer_responses"
       def index
-        @offer_responses = @offer_responses.where(user_id: offer_responses_params["user_id"]) if offer_responses_params["user_id"].present?
-        @offer_responses = @offer_responses.where(offer_id: offer_responses_params["offer_id"]) if offer_responses_params["offer_id"].present?
+        @offer_responses = @offer_responses.where(user_id: offer_response_params["user_id"]) if offer_response_params["user_id"].present?
+        @offer_responses = @offer_responses.where(offer_id: offer_response_params["offer_id"]) if offer_response_params["offer_id"].present?
         render json: @offer_responses, each_serializer: serializer
+      end
+
+      api :GET, "/v1/offer_responses/1"
+      def show
+        render json: @offer_response, serializer: serializer
       end
 
       private
 
-      def offer_responses_params
+      def offer_response_params
         params.require(:offer_response).permit(:user_id, :offer_id)
       end
 

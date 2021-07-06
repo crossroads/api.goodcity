@@ -108,7 +108,7 @@ module Api
           messageable_type: options[:messageable_type]
         ) if options[:messageable_id].present? && options[:messageable_type].present?
 
-        %i[ids offer_id order_id item_id offer_response_id package_id].map do |f|
+        %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
         end
         messages

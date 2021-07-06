@@ -127,7 +127,7 @@ module PushUpdatesForMessage
                           elsif object_class == 'Package'
                             ['can_manage_package_messages']
                           elsif object_class == 'OfferResponse'
-                            ['can_manage_offer_responses']
+                            ['can_manage_offer_response_messages']
                           else
                             []
                           end

@@ -20,11 +20,32 @@ RSpec.describe Api::V1::OfferResponsesController, type: :controller do
 
     context 'for authorized user' do
       before { generate_and_set_token(authorized_user) }
-      it 'creates new offer_response' do
-        expect {
-          post :create, params: { offer_response: offer_response_params }
-        }.to change(OfferResponse, :count).by(1)
-        expect(response).to have_http_status(:success)
+
+      context 'when offer id and user id is present and offer is not shared' do
+        it 'does not create new offer_response' do
+          expect {
+            post :create, params: { offer_response: offer_response_params }
+          }.to_not change { OfferResponse.count }
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      context 'when offer id and user id is present and offer is publicly shared' do
+        before { Shareable.publish(offer) }
+        it 'create new offer_response if params are correct' do
+          expect {
+            post :create, params: { offer_response: offer_response_params }
+          }.to change(OfferResponse, :count).by(1)
+          expect(response).to have_http_status(:success)
+        end
+
+        it 'does not create new offer_response if params are incorrect' do
+          expect {
+            post :create, params: { offer_response: { user_id: unauthorized_user.id, offer_id: offer.id
+            } }
+          }.to_not change { OfferResponse.count }
+          expect(response).to have_http_status(:forbidden)
+        end
       end
 
       context 'when offer id is not present' do
@@ -32,7 +53,7 @@ RSpec.describe Api::V1::OfferResponsesController, type: :controller do
           expect {
             post :create, params: { offer_response: { user_id:authorized_user.id } }
           }.to_not change { OfferResponse.count }
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:forbidden)
         end
       end
 
@@ -41,10 +62,36 @@ RSpec.describe Api::V1::OfferResponsesController, type: :controller do
           expect {
             post :create, params: { offer_response: { offer_id:offer.id } }
           }.to_not change { OfferResponse.count }
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:forbidden)
         end
       end
     end
+  end
+  describe "GET v1/offer_responses/1" do
+    context 'for unauthorized user' do
+      it 'cannot get offer_response' do
+        get :index
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+      context 'for authorized user' do
+        before do
+          generate_and_set_token(authorized_user)
+        end
+
+        it 'returns offer response if offer response id is provided' do
+          get :show, params: { id: offer_response.id }
+          expect(response).to have_http_status(:success)
+          expect(parsed_body['offer_response']['id']).to eq(offer_response.id)
+        end
+
+        it 'does not returns offer response if no offer response id is provided' do
+          get :show, params: { id: ""}
+          expect(parsed_body['offer_response']).to eq(nil)
+        end
+
+      end
   end
 
   describe 'GET v1/offer_responses' do

@@ -33,7 +33,7 @@ Reviewer:
 - can_update_my_printers
 - can_read_or_modify_user
 - can_manage_canned_response
-- can_manage_offer_responses
+- can_manage_offer_response_messages
 
 Supervisor:
 - can_manage_packages
@@ -64,7 +64,7 @@ Supervisor:
 - can_manage_user_roles
 - can_manage_printers
 - can_manage_canned_response
-- can_manage_offer_responses
+- can_manage_offer_response_messages
 
 Stock fulfilment: &stock_fulfilment
 - can_manage_packages
