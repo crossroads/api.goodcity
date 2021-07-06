@@ -203,8 +203,8 @@ zh-tw:
   email:
     subject:
       appointment:
-        confirmation: 'CROSSROADS APPOINTMENT NOTICE  %{code}'
+        confirmation: '國際十字路會預約親臨確認通知 %{code} (CROSSROADS APPOINTMENT NOTICE  %{code})'
       order:
-        submission_pickup_delivery: '跟進 %{booking_type} 事宜 %{code}'
-        confirmation_pickup_delivery: 'Crossroads Order Confirmation (%{code})'
+        submission_pickup_delivery: '跟進 %{booking_type} 事宜 %{code} (Next steps for %{booking_type} %{code})'
+        confirmation_pickup_delivery: '國際十字路會訂單確認通知 (%{code}) (Crossroads Order Confirmation (%{code}))'
       login: 好人好市一次性登入密碼

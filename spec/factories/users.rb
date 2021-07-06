@@ -86,11 +86,6 @@ FactoryBot.define do
       is_mobile_verified { false }
     end
 
-    trait :stockit_user do
-      first_name { 'Stockit' }
-      last_name { 'User' }
-    end
-
     trait :system do
       first_name { 'GoodCity' }
       last_name { 'Team' }

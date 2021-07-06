@@ -78,9 +78,7 @@ Email: local@crossroads.org.hk<br/>
 
 <br/>
 
-<div class="header"><h3>CROSSROAD'S GUIDELINES</h3></div>
-
-
+<h4>CROSSROAD'S GUIDELINES</h4>
 We look forward to serving you at Crossroads. Here are some guidelines for your visit. <br/>
 
 <h4>WHERE IS CROSSROADS?</h4>
@@ -103,11 +101,11 @@ Many of the goods available are used, but normally of good quality. We test all 
 <ul>
 <% if @email_property[:requests]%>
   <% @email_property[:requests].each do |request| %>
-  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
+  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
   <% end %>
 <% end %>
 </ul>
-<br/> <br/>
+<br/>
 
 <h4>SHOULD I RETURN BROKEN ELECTRICAL ITEMS? </h4>
 Due to the high value of electrical donations, to be eligible to apply for the same item again, we request that any faulty electrical items should be returned for testing. <br/> <br/>

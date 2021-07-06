@@ -21,8 +21,6 @@ module Labels
 
     private
 
-    def draw
-    end
-
+    def draw; end
   end
 end

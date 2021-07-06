@@ -9,7 +9,7 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_db_column(:other_terms_en).of_type(:string) }
     it { is_expected.to have_db_column(:other_terms_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:allow_pieces).of_type(:boolean) }
-    it { is_expected.to have_db_column(:allow_stock).of_type(:boolean) }
+    it { is_expected.to have_db_column(:allow_package).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_box).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_pallet).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_expiry_date).of_type(:boolean) }
@@ -27,8 +27,8 @@ RSpec.describe PackageType, type: :model do
 
   describe 'scope' do
     describe "visible" do
-      it "returns records with allow_stock true value" do
-        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"allow_stock\" = TRUE")
+      it "returns records with allow_package true value" do
+        expect(PackageType.visible.to_sql).to include( "WHERE (\"package_types\".\"allow_package\" = TRUE OR \"package_types\".\"allow_box\" = TRUE OR \"package_types\".\"allow_pallet\" = TRUE)")
       end
     end
   end

@@ -1,7 +1,6 @@
 class District < ApplicationRecord
   include CacheableJson
 
-
   belongs_to :territory, inverse_of: :districts
   has_many :addresses
   has_many :orders
@@ -11,7 +10,7 @@ class District < ApplicationRecord
 
   translates :name
 
-  CROSSROADS_ADDRESS = [22.3748365, 113.9931416, "Crossroads Foundation"]
+  CROSSROADS_ADDRESS = [22.3748365, 113.9931416, "Crossroads Foundation"].freeze
 
   default_scope do
     where("latitude IS NOT NULL AND longitude IS NOT NULL")

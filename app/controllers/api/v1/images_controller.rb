@@ -1,8 +1,8 @@
 module Api
   module V1
     class ImagesController < Api::V1::ApiController
-      load_and_authorize_resource :image, parent: false, except: [:generate_signature, :destroy]
-      skip_authorization_check only: [:generate_signature, :destroy]
+      load_and_authorize_resource :image, parent: false, except: %i[generate_signature destroy]
+      skip_authorization_check only: %i[generate_signature destroy]
 
       resource_description do
         short 'Manage images for items in an offer.'
@@ -31,7 +31,8 @@ module Api
           api_key:   cloudinary_config[:api_key],
           signature: signature,
           timestamp: unix_timestamp,
-          tags: tags }.to_json
+          tags: tags
+        }.to_json
       end
 
       api :POST, '/v1/images', "Create an image"
@@ -80,7 +81,7 @@ module Api
       def serialized_response(status = 200)
         if is_stock_app?
           render json: @image, serializer: StockitImageSerializer,
-            status: status, root: :image
+                 status: status, root: :image
         else
           render json: @image, serializer: serializer, status: status
         end

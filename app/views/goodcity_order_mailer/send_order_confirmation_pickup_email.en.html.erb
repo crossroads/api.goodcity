@@ -81,7 +81,7 @@
 <ul>
 <% if @email_property[:requests]%>
   <% @email_property[:requests].each do |request| %>
-  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%>. </li>
+  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
   <% end %>
 <% end %>
 </ul>

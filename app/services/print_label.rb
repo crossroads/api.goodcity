@@ -10,9 +10,8 @@ class PrintLabel
 
   def print
     Socket.tcp(@printer.host, @printer.port) do |sock|
-      sock.print @label.to_s 
+      sock.print @label.to_s
       sock.close_write
     end
   end
-
 end

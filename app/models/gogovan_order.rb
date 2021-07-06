@@ -125,8 +125,4 @@ class GogovanOrder < ApplicationRecord
   def order_completed?
     previous_changes.key?('status') && previous_changes['status'].last == 'completed'
   end
-
-  def pick_up_location
-    delivery.try(:contact).try(:address).try(:district).try(:name)
-  end
 end

@@ -11,13 +11,6 @@ RSpec.describe Location, type: :model do
   end
 
   describe 'class methods' do
-    describe '.multiple_location' do
-      it "returns location with building name multiple" do
-        location = create :location, :multiple
-        expect(Location.multiple_location).to eq location
-      end
-    end
-
     describe '.search' do
       let(:location) { create :location, building: "Central", area: "b" }
 

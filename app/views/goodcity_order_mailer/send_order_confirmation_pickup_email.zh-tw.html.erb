@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <p>
+    親愛的 <%= @email_property[:contact_name]%>,
+  </p>
+
+  <p>
+    NOTE: English version further down the page.
+  </p>
+
+  <p>
+    感謝您通過國際十字路會提交訂單 (<%= @email_property[:order_code]%>)。我們很高興能為您服務。
+    <br/>
+    <b> 請確認是次收貨的日期：<%= @email_property[:scheduled_at]%></b>
+  </p>
+
+  <p>
+    備註：一旦提交訂單，您將無法修改。如有任何疑問，請聯絡香港分派中心2272 9343。
+  </p>
+
+  <p>
+    請通知您的受助人以下事項：
+    <ul>
+      <li>
+         <strong>請帶備此確認信及其身份證明文件出席。</strong>
+      </li>
+      <li>
+        <strong>請依時到達本會。</strong>由於訂單眾多，我們通常未能於上述時段外提供服務。我們有權取消逾時預約。
+      </li>
+      <li>
+        若受助人未能出席，請聯絡我們。
+      </li>
+      <li>
+        請尊重我們的義工。
+      </li>
+      <li>
+        <strong>請安排受助人閱讀以下指南 (國際十字路會指南) 。</strong>請列印此副本給予受助人。若受助人無法閱讀，請向他們口述解釋。
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    我們期待為您提供協助！
+  </p>
+  <br/>
+
+  <div><strong>貨品詳情：</strong></div>
+
+  <ul>
+  <% if @email_property[:requests]%>
+    <% @email_property[:requests].each do |request| %>
+      <li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
+    <% end %>
+  <% end %>
+  </ul>
+
+  <p>
+    香港分派中心<br/>
+    國際十字路會  <br/>
+    聯絡電話: 2272 9343<br/>
+    聯絡電郵: local@crossroads.org.hk <br/>
+  </p>
+
+  <p>
+  <b>
+    國際十字路會指南
+  </b><br/>
+    我們很高興能為您服務！我們將會為您提供到訪指南。
+  </p>
+
+  <h4>
+  國際十字路會的地點在哪裡？
+  </h4>
+  <p>
+    地址：香港屯門青山公路2號國際十字路會（黃金海岸住宅一期對面）香港分派中心30座 <br/>
+    地圖及交通路線請參見本會網址： <a href="https://www.crossroads.org.hk/zh-hant/home/contact/">https://www.crossroads.org.hk/zh-hant/home/contact/</a>
+  </p>
+
+  <h4>
+    我可以在收貨的時候挑選其他物品嗎？
+  </h4>
+  <p>
+    不可以。網上訂單只接受於網上申請物品，不接受於倉庫內即時挑選物品。<br/>
+    社工及慈善機構職員可於本會網址:<a href=" https://charities.goodcity.hk/login?bookAppointment=true">https://charities.goodcity.hk/login?bookAppointment=true</a> 為其機構或受助人申請預約，並親臨我們的倉庫內挑選物品。 <br/>
+    備註：所有物品均為捐贈物資，只供個人使用，禁止在任何情況作出售之用。
+  </p>
+
+  <h4>
+    物品的質素良好嗎？
+  </h4>
+  <p>
+    捐贈物資大部分為二手物品，不過物品通常都處於良好狀態。我們已為所有電子產品進行測試。本會並非商業零售商，我們不會對物品中的損壞承擔任何責任。
+  </p>
+
+  <h4>
+    若收到的電子產品有損壞，我應該歸還嗎？
+  </h4>
+  <p>
+    由於電子產品價格不菲，若您希望重新申請該物品，請歸還已損壞之物品，以及供我們進行測試。
+  </p>
+  <p>
+    <strong>運送：</strong>
+    我們可以協助您安排運送 (電召貨車)。但很抱歉，我們不會負責任何運送費用。
+  </p>
+
+  <p>
+    <strong>額外幫助: </strong> 我們誠懇建議您攜同額外2–3人協助搬運大型物品。若您要求貨車司機提供卸載物品服務，司機可能會向您收取額外費用。
+  </p>
+
+  <h4>
+    若您未能準時出席或缺席是次預約，該怎麼辦？
+  </h4>
+  <p>
+   請致電香港分派中心2272 9343。由於受助人眾多，為盡量滿足所有人的要求，我們會嘗試安排您於當日之後的時段到訪。若情況不許可，我們可以為您重新排期。由於預約經常滿額，重新申請預約日期可能會延至兩個月後，我們對此深表歉意。
+  </p>
+
+  <p>
+    <strong>Attention:</strong> <%= @email_property[:contact_name]%> <br/>
+    <%= @email_property[:contact_organisation_name_en]%>   <br/>
+    <strong>Our Ref#: </strong> <%= @email_property[:order_code]%> <br/>
+    <% if @email_property[:client]%>
+      <strong>Client Name: </strong><%= @email_property[:client][:name]%> <br/>
+      <strong>Client contact: </strong> <%= @email_property[:client][:phone]%> <br/>
+      <strong><%= @email_property[:client][:id_type]%>: </strong>  ***<%= @email_property[:client][:id_no]%>(*) <br/>
+    <% end %>
+  </p>
+
+  <p>
+    Dear <%= @email_property[:contact_name]%>,
+  </p>
+
+  <p>
+    Thank you for ordering items from Crossroads. We are delighted to help in any way that we can. <br/>
+    This email is to <b>confirm that the goods can be collected on the <%= @email_property[:scheduled_at]%></b>
+  </p>
+
+  <p>
+    Note: You cannot modify confirmed appointments online. Please email or phone our staff (2272-9343) for assistance if changes are required.
+  </p>
+  <% if @email_property[:client] %>
+    <p>
+      Please ask your client to:
+      <ul>
+        <li>
+          <strong>bring this confirmation letter and their identity document</strong> (or note your reference number <%= @email_property[:order_code]%>)
+        </li>
+        <li>
+          <strong>arrive on time.</strong> We have many orders to process each day and cannot usually process an order outside its allotted time.
+        </li>
+        <li>
+          let us know if he/she cannot make it.
+        </li>
+        <li>
+          respect our volunteer staff.
+        </li>
+        <li>
+          <strong>read the guidelines below.</strong> Please give your client a copy of the guidelines and, if he or she cannot read, explain it to them.
+        </li>
+      </ul>
+    </p>
+  <% else %>
+  <p>
+    Please ensure you:
+    <ul>
+      <li>
+        <strong>bring this confirmation letter</strong> (or note your reference number <%= @email_property[:order_code]%>)
+      </li>
+      <li>
+        <strong>arrive on time or let us know if you are delayed.</strong> We have many people to care for each day so, if you are more than 30 minutes late, we may need to reschedule the appointment.
+      </li>
+      <li>
+        <strong>read the guidelines below</strong>
+      </li>
+    </ul>
+  </p>
+  <% end %>
+  <% if @email_property[:client] %>
+    <p>
+      We look forward to receiving your client and hope we may help!
+    </p>
+    <% else %>
+    <p>
+      We look forward to receiving you and hope we may help!
+    </p>
+  <% end %>
+  <br/> <br/>
+
+  <div><strong>ITEMS TO BE COLLECTED:</strong></div>
+
+  <ul>
+  <% if @email_property[:requests]%>
+    <% @email_property[:requests].each do |request| %>
+      <li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
+    <% end %>
+  <% end %>
+  </ul>
+  <p>
+    Yours sincerely, <br/>
+    Hong Kong Distribution <br/>
+    Office Tel: 2272 9343 <br/>
+    Email: local@crossroads.org.hk <br/>
+    CROSSROADS’ GUIDELINES <br/>
+  </p>
+  We look forward to serving you at Crossroads. Here are some guidelines for your visit. <br/>
+  <br/>
+
+  <h4>
+    WHERE IS CROSSROADS?
+  </h4>
+  <p>
+    Crossroads Village, 2 Castle Peak Road, Tuen Mun (opposite Gold Coast Phase 1). The Hong Kong Distribution office is located in Block 30
+    A map and transport directions can be found on our website: <a href="https://www.crossroads.org.hk/contact/">www.crossroads.org.hk/contact/</a>
+  </p>
+
+  <h4>
+    CAN I SELECT OTHER ITEMS WHEN COLLECTING THIS ORDER?
+  </h4>
+  <p>
+    No. When collecting items ordered online there is no opportunity to also browse other stock in our warehouse. <br/>
+    Social workers and charity staff may make an appointment to browse the warehouse for their organisation or their clients at https://browse.goodcity.hk <br/>
+    Please note that items donated by Crossroads for personal use are not to be sold under any circumstances.
+  </p>
+
+  <h4>
+    ARE THE ITEMS GOOD QUALITY?
+  </h4>
+  <p>
+    Many of the goods available are used, but normally of good quality. We test all electrical products but, unlike a retail shop selling new items, Crossroads cannot issue guarantees or be held liable for any faults in these donated items.
+  </p>
+
+  <h4>
+    SHOULD I RETURN BROKEN ELECTRICAL ITEMS?
+  </h4>
+  <p>
+    Due to the high value of electrical donations, to be eligible to apply for the same item again, we request that any faulty electrical items should be returned for testing.
+  </p>
+  <p>
+    <strong>TRANSPORTATION:</strong>
+    Crossroads sadly cannot assist with transport costs. Please ensure you are aware of the likely costs to hire a vehicle to transport your requested goods.
+  </p>
+
+  <p>
+    <strong>EXTRA HELP:</strong> We sincerely advise you to bring 2-3 other people to assist in moving any big items. The truck driver may be willing, but will charge you extra for lifting.
+  </p>
+
+  <h4>
+    WHAT IF YOU ARE RUNNING LATE, OR CANNOT MAKE YOUR APPOINTMENT?
+  </h4>
+  <p>
+    Please phone us on 2272-9343. We usually have other people waiting for the next appointment slots so it is best that you call and see if our team can still fit you in, to avoid disappointment. If not, they can make a new appointment but this may, regrettably, take two months as we are heavily booked.
+  </p>
+</body>
+</html>

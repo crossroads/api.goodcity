@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_07_050441) do
+ActiveRecord::Schema.define(version: 2021_06_02_085849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -623,7 +623,7 @@ ActiveRecord::Schema.define(version: 2021_04_07_050441) do
     t.boolean "visible_in_selects", default: false
     t.integer "location_id"
     t.boolean "allow_requests", default: true
-    t.boolean "allow_stock", default: false
+    t.boolean "allow_package", default: false
     t.boolean "allow_pieces", default: false
     t.string "subform"
     t.boolean "allow_box", default: false

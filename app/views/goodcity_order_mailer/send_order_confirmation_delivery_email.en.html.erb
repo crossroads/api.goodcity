@@ -73,7 +73,7 @@
     <strong>ITEMS:</strong> Your delivery includes the following items
     <% if @email_property[:goods]%>
       <% @email_property[:goods].each do |good| %>
-        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%>. </li>
+        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%> </li>
       <% end %>
     <% end %>
   </p>
@@ -122,7 +122,7 @@
 
     <p>
       <strong>LABOUR:</strong>
-       Our volunteers will load the van but we will not travel with the goods. We sincerely advise <you / beneficiary> to make arrangement for sufficient labour to unload the goods. The truck driver may be willing, but will charge extra for lifting.
+       Our volunteers will load the van but we will not travel with the goods. We sincerely advise you / beneficiary to make arrangement for sufficient labour to unload the goods. The truck driver may be willing, but will charge extra for lifting.
     </p>
 
     <h4>

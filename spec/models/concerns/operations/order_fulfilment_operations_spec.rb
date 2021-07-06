@@ -2,18 +2,10 @@ require 'rails_helper'
 
 context OrderFulfilmentOperations do
   let(:inventory_length_before) { PackagesInventory.count }
-  let(:dispatch_location) { create(:location, :dispatched) }
 
   subject {
     Class.new { include OrderFulfilmentOperations }
   }
-
-  before { touch(dispatch_location) }
-
-  after(:each) do
-    # We should never have the dispatched location referenced in the inventory
-    expect(PackagesInventory.pluck(:location_id).uniq).not_to include(dispatch_location.id)
-  end
 
   def inventory_rows_added
     PackagesInventory.count - inventory_length_before
@@ -67,11 +59,6 @@ context OrderFulfilmentOperations do
 
           def apply_dispatch!
             subject::Operations::dispatch(orders_package, from_location: location, quantity: orders_package.quantity)
-          end 
-
-          it 'does not move the packages to the dispatch location' do
-            apply_dispatch!
-            expect(PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)).to be_nil
           end
 
           it "removes the package's original location" do
@@ -149,10 +136,6 @@ context OrderFulfilmentOperations do
             subject::Operations::dispatch(orders_package, from_location: src_location, quantity: dispatched_qty)
           end
 
-          it 'does not move anything to the dispatch location' do
-            expect(PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)).to be_nil
-          end
-
           it "reduces quantity of the package's original location" do
             expect(pkg_loc.reload.quantity).to eq(27)
           end
@@ -204,7 +187,6 @@ context OrderFulfilmentOperations do
 
   describe 'Undispatching an orders_package' do
     let(:location) { create(:location) }
-    let(:dispatch_location) { create(:location, :dispatched) }
     let(:pkg) { create(:package, received_quantity: 30) }
     let(:order) { create(:order, :with_state_dispatching) }
     let(:pkg_loc) { pkg.packages_locations.first }
@@ -224,13 +206,6 @@ context OrderFulfilmentOperations do
     context 'entire quantity' do
       def undispatch_full
         subject::Operations::undispatch(orders_package, to_location: src_location, quantity: orders_package.quantity)
-      end
-
-      it 'doesnt have any side effects on any dispatched packages_location' do
-        expect(PackagesLocation.find_by(package: pkg, location: dispatch_location)).to be_nil
-        expect { undispatch_full }.not_to change {
-          PackagesLocation.find_by(package: pkg, location: dispatch_location)
-        }
       end
 
       it 'records an UNDISPATCH action in the inventory' do
@@ -257,13 +232,6 @@ context OrderFulfilmentOperations do
     context 'partial quantity' do
       def undispatch_partial
         subject::Operations::undispatch(orders_package, to_location: src_location, quantity: 5)
-      end
-
-      it 'doesnt have any side effects on any dispatched packages_location' do
-        expect(PackagesLocation.find_by(package: pkg, location: dispatch_location)).to be_nil
-        expect { undispatch_partial }.not_to change {
-          PackagesLocation.find_by(package: pkg, location: dispatch_location)
-        }
       end
 
       it 'records an UNDISPATCH action in the inventory' do
@@ -315,7 +283,7 @@ context OrderFulfilmentOperations do
       end
 
       it 'should dispatche correctly' do
-        expect {   
+        expect {
           OrdersPackage::Operations.dispatch(orders_package1.reload, quantity: 128, from_location: location)
         }.not_to raise_error
       end
