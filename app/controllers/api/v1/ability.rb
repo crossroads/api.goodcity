@@ -109,7 +109,7 @@ module Api
             ).present?
         end
 
-        can %i[index show], OfferResponse
+        can %i[index show], OfferResponse, { user_id: @user_id }
 
         can :manage, OfferResponse if can_manage_offer_response_messages?
       end

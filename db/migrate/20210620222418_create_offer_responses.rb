@@ -9,5 +9,6 @@ class CreateOfferResponses < ActiveRecord::Migration[6.1]
 
   add_foreign_key :offer_responses, :users, column: :user_id
   add_foreign_key :offer_responses, :offers, column: :offer_id
+  add_index :offer_responses, [:user_id, :offer_id], unique: true
   end
 end
