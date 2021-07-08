@@ -145,6 +145,15 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         expect(subject['messages'].map{|row| row["messageable_id"] }.uniq).to match_array([offer.id, offer2.id])
       end
 
+      it "invalid messageable params" do
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
+        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
+
+        get :index, params: { messageable_id: [offer.id,offer2.id] }
+
+        expect(subject["error"]).to eq("Please provide valid values for messageable_id and messageable_type")
+      end
+
       it "for one order" do
         3.times { create :message, sender: reviewer, messageable: order }
         3.times { create :message, sender: reviewer, messageable: order2 }
@@ -544,7 +553,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             .where(user: user, state: "unread", subscribable: package).first_or_create
         end
 
-        get :notifications, params: { messageable_type: ["package"], is_private: "true" }
+        get :notifications, params: { messageable_type: ["Package"], is_private: "true" }
 
         expect(response.status).to eq(200)
         expect(subject['messages'].length).to eq(1)
@@ -563,7 +572,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             .where(user: user, state: "unread", subscribable: package).first_or_create
         end
 
-        get :notifications, params: { messageable_type: ["package"], is_private: "false" }
+        get :notifications, params: { messageable_type: ["Package"], is_private: "false" }
 
         expect(response.status).to eq(200)
         expect(subject['messages'].length).to eq(2)

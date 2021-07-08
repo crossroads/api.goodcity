@@ -37,6 +37,8 @@ module Api
       param :recipient_id, String, desc: "Specific user id to fetch the messages of"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def index
+        return invalid_messageable_resource if params[:messageable_id].present? && params[:messageable_type].blank?
+
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.with_state_for_user(current_user, params[:state].split(",")) if params[:state].present?
@@ -100,6 +102,12 @@ module Api
       end
 
       private
+
+      def invalid_messageable_resource
+        render json: Goodcity::InvalidParamsError.with_text(
+          'Please provide valid values for messageable_id and messageable_type'
+        ), status: 403
+      end
 
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
