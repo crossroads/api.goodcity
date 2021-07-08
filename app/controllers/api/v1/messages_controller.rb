@@ -37,6 +37,8 @@ module Api
       param :recipient_id, String, desc: "Specific user id to fetch the messages of"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def index
+        return invalid_messageable_resource if params[:messageable_id].present? && params[:messageable_type].blank?
+
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.with_state_for_user(current_user, params[:state].split(",")) if params[:state].present?
@@ -78,7 +80,6 @@ module Api
       param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def notifications
-        @messages = apply_scope(@messages, params[:messageable_type]) if params[:messageable_type].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.joins(:subscriptions).where(subscriptions: {user_id: current_user.id})
         @messages = @messages.where(subscriptions: {state: params[:state]}) if params[:state].present?
@@ -101,12 +102,21 @@ module Api
 
       private
 
+      def invalid_messageable_resource
+        render json: Goodcity::InvalidParamsError.with_text(
+          'Please provide valid values for messageable_id and messageable_type'
+        ), status: 403
+      end
+
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
-        messages = messages.where(
-          messageable_id: options[:messageable_id],
-          messageable_type: options[:messageable_type]
-        ) if options[:messageable_id].present? && options[:messageable_type].present?
+
+        if options[:messageable_id].present? && options[:messageable_type].present?
+          messages = messages.where(messageable_id: options[:messageable_id],
+            messageable_type: options[:messageable_type])
+        elsif options[:messageable_type].present?
+          messages = messages.where(messageable_type: options[:messageable_type])
+        end
 
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
