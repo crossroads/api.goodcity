@@ -212,26 +212,48 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it "creates inventory rows to correct the quantities" do
-        expect {
-          put :commit, params: { id: stocktake.id }
-        }.to change(PackagesInventory, :count).by(2)
-
-        change_1, change_2 = PackagesInventory.last(2)
-        expect(change_1.package_id).to eq(package_1.id)
-        expect(change_1.quantity).to eq(2)
-        expect(change_2.package_id).to eq(package_2.id)
-        expect(change_2.quantity).to eq(-2)
+      it "queues up a Stocktake job" do
+        expect(StocktakeJob).to receive(:perform_later).with(stocktake.id).once
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(200)
       end
 
-      it "closes the stocktake" do
+      it "marks the stocktake as awaiting process" do
         expect {
           put :commit, params: { id: stocktake.id }
         }.to change {
           stocktake.reload.state
-        }.from('open').to('closed')
+        }.from('open').to('awaiting_process')
 
-        expect(parsed_body['stocktake']['state']).to eq('closed')
+        expect(parsed_body['stocktake']['state']).to eq('awaiting_process')
+      end
+
+      it "rejects a closed stocktake" do
+        stocktake.update(state: 'closed')
+        expect(StocktakeJob).not_to receive(:perform_later)
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(422)
+      end
+
+      it "rejects a cancelled stocktake" do
+        stocktake.update(state: 'cancelled')
+        expect(StocktakeJob).not_to receive(:perform_later)
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(422)
+      end
+
+      it "allows a stocktake awaiting process without queuing up a new job" do
+        stocktake.update(state: 'awaiting_process')
+        expect(StocktakeJob).not_to receive(:perform_later)
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(200)
+      end
+
+      it "allows a stocktake in process without queuing up a new job" do
+        stocktake.update(state: 'processing')
+        expect(StocktakeJob).not_to receive(:perform_later)
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(200)
       end
     end
   end

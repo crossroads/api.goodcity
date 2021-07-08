@@ -73,6 +73,13 @@ context StocktakeProcessor do
       ).to eq(0)
     end
 
+    it 'sets the state to processing at startup, and closes after' do
+      expect(stocktake).to receive(:start_processing).ordered.and_call_original
+      expect(stocktake).to receive(:close).ordered.and_call_original
+      subject.process_stocktake(stocktake)
+      expect(stocktake.reload.state).to eq('closed')
+    end
+
     it 'closes the stocktake' do
       expect {
         subject.process_stocktake(stocktake)
@@ -99,6 +106,11 @@ context StocktakeProcessor do
       expect { subject.process_stocktake(stocktake)  }.to raise_error(Goodcity::InvalidStateError).with_message('Some quantity revisions require a re-count')
     end
 
+    it 'calls computed_counters! only once' do
+      expect_any_instance_of(Stocktake).to receive(:compute_counters!).once.and_call_original
+      subject.process_stocktake(Stocktake.find(stocktake.id))
+    end
+
     describe 'when an error occurs' do
       before do
         # This quantity designated, therefore cannot be reduced in the inventory
@@ -118,6 +130,13 @@ context StocktakeProcessor do
         expect(stocktake_revision.reload.warning).to eq('')
         subject.process_stocktake(stocktake.reload)
         expect(stocktake_revision.reload.warning).to match(/please undesignate first/)
+      end
+
+      it 'restores the state back to open' do
+        expect(stocktake).to receive(:start_processing).ordered.and_call_original
+        expect(stocktake).to receive(:reopen).ordered.and_call_original
+        subject.process_stocktake(stocktake)
+        expect(stocktake.reload.state).to eq('open')
       end
     end
   end

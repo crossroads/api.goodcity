@@ -73,7 +73,7 @@
     <strong>ITEMS:</strong> Your delivery includes the following items
     <% if @email_property[:goods]%>
       <% @email_property[:goods].each do |good| %>
-        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%>. </li>
+        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%> </li>
       <% end %>
     <% end %>
   </p>
