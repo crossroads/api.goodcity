@@ -151,7 +151,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
         get :index, params: { messageable_id: [offer.id,offer2.id] }
 
-        expect(subject["errors"]).to eq("Please provide valid values for messageable_id and messageable_type")
+        expect(subject["error"]).to eq("Please provide valid values for messageable_id and messageable_type")
       end
 
       it "for one order" do

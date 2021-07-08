@@ -104,9 +104,9 @@ module Api
       private
 
       def invalid_messageable_resource
-        render json: {
-          errors: "Please provide valid values for messageable_id and messageable_type"
-        }, status: 403
+        render json: Goodcity::InvalidParamsError.with_text(
+          'Please provide valid values for messageable_id and messageable_type'
+        ), status: 403
       end
 
       def apply_filters(messages, options)
