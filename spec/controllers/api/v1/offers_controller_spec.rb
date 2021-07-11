@@ -413,11 +413,11 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "can set offer-sharing expires_at" do
         expect(in_review_offer).to be_under_review
         expect {
-          put :receive_offer, params: { id: in_review_offer.id, close_offer_message: "test", sharing_expires_at: "25/07/21 18:00 HKT" }
+          put :receive_offer, params: { id: in_review_offer.id, close_offer_message: "test", sharing_expires_at: "21/07/02 18:00 HKT" }
         }.to change(in_review_offer.messages, :count).by(1)
 
         expect(response.status).to eq(200)
-        expect(in_review_offer.shareable.expires_at.strftime('%d/%m/%y %H:%M')).to eq("25/07/21 18:00")
+        expect(in_review_offer.shareable.expires_at.strftime('%d/%m/%y %H:%M')).to eq("02/07/21 18:00")
         expect(in_review_offer.reload).to be_received
       end
     end

@@ -158,22 +158,24 @@ RSpec.describe Offer, type: :model do
   describe "#expire_shareable_resource" do
     before do
       @offer = create :offer, :receiving
+      @offer.packages << (@package = create :package)
+
       Shareable.publish(@offer)
+      Shareable.publish(@package)
       User.current_user = @offer.created_by
     end
 
     it "should set expired_at on shareable" do
       expect(@offer.shareable.expires_at).to be_nil
       @offer.expire_shareable_resource
-
-      expect(@offer.shareable.expires_at).not_to be_nil
+      expect(@offer.shareable.reload.expires_at).not_to be_nil
     end
 
     it "should set expired_at on shareable on cancelling offer" do
       expect(@offer.shareable.expires_at).to be_nil
       @offer.cancel
-
-      expect(@offer.shareable.expires_at).not_to be_nil
+      expect(@offer.shareable.reload.expires_at).not_to be_nil
+      expect(@package.shareable.reload.expires_at).not_to be_nil
     end
   end
 
