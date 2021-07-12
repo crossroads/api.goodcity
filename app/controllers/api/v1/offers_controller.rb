@@ -91,6 +91,7 @@ module Api
       param :saleable, [true, false], desc: "Can these items be sold?"
       def update
         @offer.update(offer_params)
+        @offer.expire_shareable_resource(params["offer"]["sharing_expires_at"]) if params["offer"]["sharing_expires_at"].present?
         render json: @offer, serializer: offer_serializer
       end
 
@@ -133,6 +134,7 @@ module Api
       def receive_offer
         @offer.update({ state_event: 'receive' })
         @offer.send_message(params["close_offer_message"], User.current_user)
+        @offer.expire_shareable_resource(params["sharing_expires_at"]) if params["sharing_expires_at"].present?
         render json: @offer, serializer: offer_serializer
       end
 
@@ -140,6 +142,7 @@ module Api
       def mark_inactive
         @offer.update({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
+        @offer.expire_shareable_resource(params["offer"]["sharing_expires_at"]) if params["offer"]["sharing_expires_at"].present?
         render json: @offer, serializer: offer_serializer
       end
 
