@@ -192,9 +192,7 @@ class Offer < ApplicationRecord
     end
 
     after_transition on: :cancel do |offer, _transition|
-      if User.current_user == offer.created_by
-        offer.expire_shareable_resource
-      end
+      offer.expire_shareable_resource
     end
 
     after_transition on: :submit do |offer, _transition|
