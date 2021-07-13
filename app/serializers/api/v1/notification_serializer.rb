@@ -4,8 +4,8 @@ module Api::V1
     attributes :shareable_public_id
 
     def shareable_public_id
-      if object.messageable_type == 'Offer'
-        Shareable.find_by(resource_id: object.messageable_id, resource_type: 'Offer').try(:public_uid)
+      if object.messageable_type == 'OfferResponse'
+        Shareable.find_by(resource_id: object.messageable.offer_id, resource_type: 'Offer').try(:public_uid)
       end
     end
 

@@ -32,6 +32,7 @@ class Offer < ApplicationRecord
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
   has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
+  has_many :offer_responses
   has_many :offers_packages
   has_many :packages, through: :offers_packages
   has_many :messages, -> {

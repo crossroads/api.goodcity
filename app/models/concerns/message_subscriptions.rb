@@ -13,7 +13,7 @@ module MessageSubscriptions
 
     # -> for subsequent messages, only include active staff members
     staff_ids ||= active_staff_members(messageable_type, obj, is_private)
-    
+
     # -> include staff members related to the object (reviewer, closer, etc...)
     admin_user_fields.each { |field| staff_ids << obj.try(field) }
 
@@ -47,7 +47,7 @@ module MessageSubscriptions
     if ['Offer', 'Item'].include?(klass)
       return 'can_manage_offer_messages'
     end
-    
+
     "can_manage_#{klass.underscore}_messages"
   end
 

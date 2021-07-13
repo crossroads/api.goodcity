@@ -4,10 +4,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission }
+  let(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission, :with_can_manage_order_messages_permission, :with_can_manage_offer_response_messages_permission }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
+  let(:charity_user) { create(:user, :charity) }
+  let(:charity_user2) { create(:user, :charity) }
+  let(:offerResponse) { create(:offer_response, user_id: charity_user.id, offer_id: offer.id) }
+  let(:offerResponse2) { create(:offer_response, user_id: charity_user2.id, offer_id: offer.id) }
   let(:item) { create(:item, offer: offer) }
   let(:item2) { create(:item, offer: offer) }
   let(:order) { create(:order, created_by: user) }
@@ -43,10 +47,8 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     describe 'Multiple users discussing a single record' do
-      let(:reviewer) { create(:user, :with_token, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
+      let(:reviewer) { create(:user, :with_token, :with_can_manage_offer_response_messages_permission, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
       let(:donor) { create(:user) }
-      let(:charity_user) { create(:user, :charity) }
-      let(:charity_user2) { create(:user, :charity) }
       let(:offer) { create(:offer, created_by: donor) }
       let(:received_messages) { subject['messages'].map { |m| m['body'] } }
 
@@ -54,9 +56,9 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         create(:message, sender: donor, body: 'Hi do you like my offer?', messageable: offer)
         create(:message, sender: reviewer, body: 'Yes we do', messageable: offer) # default recipient
         create(:message, sender: reviewer, body: 'Thank you for your offer', messageable: offer, recipient: donor)
-        create(:message, sender: charity_user, body: 'Iteresting offer, can I have it ?', messageable: offer)
-        create(:message, sender: charity_user2, body: 'I also want it', messageable: offer)
-        create(:message, sender: reviewer, body: 'of course you can', messageable: offer, recipient: charity_user)
+        create(:message, sender: charity_user, body: 'Iteresting offer, can I have it ?', messageable: offerResponse)
+        create(:message, sender: charity_user2, body: 'I also want it', messageable: offerResponse2)
+        create(:message, sender: reviewer, body: 'of course you can', messageable: offerResponse, recipient: charity_user)
       end
 
       context 'as a donor discussing my offer' do
@@ -196,13 +198,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe "GET message" do
     let(:donor) { create :user }
     let(:charity) { create :user, :charity }
+    let(:offerResponse2) { create(:offer_response, user: charity, offer: offer) }
     let(:staff) { reviewer }
     let(:offer) { create :offer, created_by: donor }
     let(:private_message_from_staff) { create :message, is_private: true, sender: staff, messageable: offer }
     let(:public_message_from_staff_to_donor) { create :message, is_private: false, sender: staff, messageable: offer }
-    let(:public_message_from_staff_to_charity) { create :message, is_private: false, sender: staff, messageable: offer, recipient: charity }
+    let(:public_message_from_staff_to_charity) { create :message, is_private: false, sender: staff, messageable: offerResponse, recipient: charity }
     let(:public_message_from_donor) { create :message, is_private: false, sender: donor, messageable: offer }
-    let(:public_message_from_charity) { create :message, is_private: false, sender: charity, messageable: offer }
+    let(:public_message_from_charity) { create :message, is_private: false, sender: charity, messageable: offerResponse }
 
     before do
       touch(donor, charity, staff, offer)
@@ -322,6 +325,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     let(:charity) { create :user, :charity }
     let(:staff) { reviewer }
     let(:offer) { create :offer, created_by: donor }
+    let(:offerResponse) { create(:offer_response, user_id: charity.id, offer_id: offer.id) }
 
     context 'a public message about an offer' do
       let(:message_params) { {
@@ -329,6 +333,13 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         :is_private=>false,
         :messageable_id=> offer.id,
         :messageable_type=>"Offer"
+      } }
+
+      let(:offer_response_message_params) { {
+        :body=> "Lorem Ipsum",
+        :is_private=>false,
+        :messageable_id=> offerResponse.id,
+        :messageable_type=>"OfferResponse"
       } }
 
       context 'as the donor' do
@@ -368,18 +379,25 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         context 'that has been publicly shared' do
           before { Shareable.publish(offer) }
 
-          it 'suceeds' do
-            expect {
-              post :create, params: { message: message_params }, as: :json
-            }.to change(Message, :count).by(1)
-            expect(response.status).to eq(201)
+          it 'does not suceed with messageable as Offer' do
+            post :create, params: { message: message_params }, as: :json
+            expect(response.status).to eq(403)
           end
 
           it 'doesnt set a recipient' do
             expect {
-              post :create, params: { message: message_params }, as: :json
+              post :create, params: { message: offer_response_message_params }, as: :json
             }.to change(Message, :count).by(1)
+
             expect(Message.last.recipient).to eq(nil)
+          end
+
+          it 'only succeed with OfferResponse as messageable' do
+            expect {
+              post :create, params: { message: offer_response_message_params }, as: :json
+            }.to change(Message, :count).by(1)
+
+            expect(response.status).to eq(201)
           end
 
           it 'fails if a third user is specified as recipient' do
@@ -411,13 +429,22 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             expect(new_message.recipient).to eq(charity)
           end
 
-          it 'defaults the recipient_id to the donor if missing' do
+          it 'defaults the recipient_id to the donor if missing when messageable is offer ' do
             post :create, params: { message: message_params }, as: :json
             expect(response.status).to eq(201)
             mid = subject['message']['id']
             new_message = Message.find_by(id: mid)
             expect(new_message).not_to be_nil
             expect(new_message.recipient).to eq(donor)
+          end
+
+          it 'defaults the recipient_id to the charity user if missing when messageable is offerResponse ' do
+            post :create, params: { message: offer_response_message_params }, as: :json
+            expect(response.status).to eq(201)
+            mid = subject['message']['id']
+            new_message = Message.find_by(id: mid)
+            expect(new_message).not_to be_nil
+            expect(new_message.recipient).to eq(charity)
           end
 
           context 'if the message is private' do
