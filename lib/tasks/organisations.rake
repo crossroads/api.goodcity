@@ -1,32 +1,9 @@
 require "goodcity/organisation_populator"
-require "goodcity/tasks/organisation_tasks"
 
 namespace :goodcity do
   desc " use 'rake goodcity:populate_organisations' to create or update organisation details from HK IRD database"
   task populate_organisations:  :environment do
     Goodcity::OrganisationPopulator.run
-  end
-
-  desc 'Initialize status field'
-  task initialize_status_field: :environment do
-    count = Goodcity::Tasks::OrganisationTasks.initialize_status_field!
-    puts("#{count} records processed")
-  end
-
-  desc 'Restore Charity Role'
-  task restore_charity_roles: :environment do
-    Goodcity::Tasks::OrganisationTasks.restore_charity_roles!
-  end
-
-  desc 'Delete Charity Role'
-  task delete_charity_role: :environment do
-    charity_role = Role.find_by(name: 'Charity')
-    if charity_role
-      ActiveRecord::Base.transaction do
-        UserRole.where(role: charity_role).destroy_all
-        charity_role.destroy!
-      end
-    end
   end
 
   # rake goodcity:add_organisations
