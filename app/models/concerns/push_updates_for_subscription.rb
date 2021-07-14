@@ -42,6 +42,7 @@ module PushUpdatesForSubscription
              item_id: item_id,
              author_id: message.sender_id,
              message_id: message.id,
+             offer_id: offer_id,
              messageable_id: message.messageable_id,
              messageable_type: message.messageable_type }
     data[identity] = message.related_object.id
@@ -50,6 +51,11 @@ module PushUpdatesForSubscription
 
   def message_body
     message.parsed_body.truncate(150, separator: ' ')
+  end
+
+  #Sending offer_id as params for in-app notification of offer responses
+  def offer_id
+    message.messageable.instance_of?(OfferResponse) && message.messageable.offer_id
   end
 
   # Deprication: This will be removed
