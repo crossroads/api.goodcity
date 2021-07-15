@@ -115,7 +115,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
 
     describe 'send_order_confirmation_pickup_email' do
       let(:mailer) { subject.send_order_confirmation_pickup_email }
-      let(:order) { create(:order, :with_goodcity_requests, created_by: user, order_transport: create(:order_transport)) }
+      let(:order) { create(:order, :with_designated_orders_packages, created_by: user, order_transport: create(:order_transport)) }
 
       it 'sets proper to and subject' do
         expect(mailer).to have_subject(I18n.t('email.subject.order.confirmation_pickup_delivery', code: order.code))
@@ -140,6 +140,12 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
         expect(mailer).to have_body_text("goods can be collected on the #{time}")
       end
 
+      it 'has quantity, type and description' do
+        quantity = order.orders_packages.first.quantity
+        type_en = order.orders_packages.first.package.package_type.name_en
+        expect(mailer).to have_body_text("#{quantity} x #{type_en}.")
+      end
+
       context 'when there are no beneficiary' do
         it 'does not have client details in params' do
           order.update(beneficiary: nil)
@@ -153,26 +159,14 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
         it 'has client name, phone and id_type details' do
           name = "#{order.beneficiary.first_name} #{order.beneficiary.last_name}"
           expect(mailer).to have_body_text("<strong>Client Name: </strong>#{name}")
-
           expect(mailer).to have_body_text("<strong>Client contact: </strong> #{order.beneficiary.phone_number}")
           expect(mailer).to have_body_text("***#{order.beneficiary.identity_number}(*)")
-        end
-      end
-
-      context 'when order has goodcity requests' do
-        let(:order) { create(:order, :with_goodcity_requests, created_by: user) }
-
-        it 'has quantity, type and description' do
-          quantity = order.goodcity_requests.count
-          type_en = order.goodcity_requests.first.package_type.name_en
-          description = order.goodcity_requests.first.description
-          expect(mailer).to have_body_text("#{quantity} x #{type_en}. #{description}")
         end
       end
     end
 
     describe 'send_order_confirmation_delivery_email' do
-      let(:order) { create(:order, created_by: user, order_transport: create(:order_transport)) }
+      let(:order) { create(:order, :with_designated_orders_packages, created_by: user, order_transport: create(:order_transport)) }
       let(:mailer) { subject.send_order_confirmation_delivery_email }
 
       it 'sets proper to and subject' do
@@ -183,6 +177,12 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
       it 'sets proper contact params' do
         expect(mailer).to have_body_text("<b>Attention: </b> #{user.first_name} #{user.last_name}")
         expect(mailer).to have_body_text(user.organisations.first.name_en)
+      end
+
+      it 'has quantity, type and description' do
+        quantity = order.orders_packages.first.quantity
+        type_en = order.orders_packages.first.package.package_type.name_en
+        expect(mailer).to have_body_text("#{quantity} x #{type_en}.")
       end
 
       it 'sets proper from address' do
