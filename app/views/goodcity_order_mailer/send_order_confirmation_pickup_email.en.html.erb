@@ -79,9 +79,9 @@
 <div><strong>ITEMS TO BE COLLECTED:</strong></div>
 
 <ul>
-<% if @email_property[:requests]%>
-  <% @email_property[:requests].each do |request| %>
-  	<li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
+<% if @email_property[:goods]%>
+  <% @email_property[:goods].each do |request| %>
+    <li> <%= request[:quantity] %> x <%= request[:type_en] %>. <%= request[:description]%> </li>
   <% end %>
 <% end %>
 </ul>
