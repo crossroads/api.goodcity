@@ -18,6 +18,7 @@ class Item < ApplicationRecord
   has_many   :expecting_packages, -> { where(state: 'expecting') }, class_name: "Package" # Used in Offer
   has_many   :missing_packages,   -> { where(state: 'missing') },   class_name: "Package" # Used in Offer
   has_many   :received_packages,  -> { where(state: 'received') },  class_name: "Package" # Used in Offer
+  has_many   :shared_packages,    -> { publicly_shared },           class_name: "Package" # Used in Offer
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   before_save :set_description
