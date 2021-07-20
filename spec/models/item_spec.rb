@@ -162,6 +162,18 @@ RSpec.describe Item, type: :model do
     end
   end
 
+  context "#shared_packages" do
+    before do
+      @item = create :item
+      @shared_packages = create_list :package, 2, item: @item
+      @shared_packages.each{ |pkg| Shareable.publish(pkg) }
+    end
+
+    it "should fetch only shared packages from offer" do
+      expect(@item.shared_packages.pluck(:id)).to match_array(@shared_packages.pluck(:id))
+    end
+  end
+
   context "messages association" do
     let(:donor) { create :user }
     let(:reviewer) { create :user, :reviewer }

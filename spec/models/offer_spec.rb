@@ -237,6 +237,19 @@ RSpec.describe Offer, type: :model do
         expect(subject).to_not include(submitted_offer)
       end
     end
+
+    context "shared_packages" do
+      before do
+        @offer = create :offer, :submitted
+        item = create :item, offer: @offer
+        @shared_packages = create_list :package, 2, item: item
+        @shared_packages.each{ |pkg| Shareable.publish(pkg) }
+      end
+
+      it "should fetch only shared packages from offer" do
+        expect(@offer.shared_packages.pluck(:id)).to match_array(@shared_packages.pluck(:id))
+      end
+    end
   end
 
   describe '#send_thank_you_message' do
