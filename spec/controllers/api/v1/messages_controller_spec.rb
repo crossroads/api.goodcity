@@ -192,6 +192,19 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           expect(m['messageable_id']).not_to be_nil
         end
       end
+
+      it "for a certain messageable_type of associated record" do
+        1.times { create :message, messageable: offer }
+        1.times { create :message, messageable: order }
+        4.times { create :message, messageable: item }
+
+        get :index, params: { messageable_type: 'Item' }
+        expect(subject['messages'].length).to eq(4)
+        subject['messages'].each do |m|
+          expect(m['messageable_type']).to eq('Item')
+          expect(m['messageable_id']).not_to be_nil
+        end
+      end
     end
   end
 
