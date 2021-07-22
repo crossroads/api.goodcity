@@ -30,6 +30,8 @@ class Offer < ApplicationRecord
   has_many :expecting_packages, class_name: 'Package', through: :items, source: :expecting_packages
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
+  has_many :shared_packages, -> { publicly_shared }, class_name: 'Package', through: :items
+
   has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offer_responses
