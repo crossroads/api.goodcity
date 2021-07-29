@@ -14,6 +14,7 @@ module Api
                  :company_id, :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
       format :public do
+        attribute(:expires_at) { |o| Shareable.find_by(resource: o).try(:expires_at) }
         attribute(:public_uid) { |o| Shareable.public_uid_of(o) }
         attribute(:district_id) { |o| o.try(:created_by).try(:address).try(:district_id) }
         attribute(:public_notes) { |o| Shareable.find_by(resource: o).try(:notes) }

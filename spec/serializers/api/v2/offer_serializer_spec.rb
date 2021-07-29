@@ -52,7 +52,7 @@ describe Api::V2::OfferSerializer do
       :created_by,
       :reviewed_by,
     ].each do |rel|
-      it "it has one #{rel}" do 
+      it "it has one #{rel}" do
         expect(relationships[rel.to_s]).not_to be_nil
         expect(relationships[rel.to_s]['data']['id']).to eq(offer.try(rel).id.to_s)
       end
@@ -65,7 +65,7 @@ describe Api::V2::OfferSerializer do
       it "it has #{rel}" do
         expect(relationships[rel.to_s]).not_to be_nil
         expect(relationships[rel.to_s]['data']).to be_an_instance_of(Array)
-        
+
         received_ids  = relationships[rel.to_s]['data'].map { |it| it['id'] }
         expected_ids  = offer.try(rel).map(&:id).map(&:to_s)
 
@@ -85,6 +85,10 @@ describe Api::V2::OfferSerializer do
 
       it 'includes the district_id' do
         expect(attributes['district_id']).to eq(offer.created_by.address.district_id)
+      end
+
+      it 'includes the expires_at' do
+        expect(attributes['expires_at']).to eq(shareable.expires_at)
       end
 
       it 'includes the shareable notes' do
