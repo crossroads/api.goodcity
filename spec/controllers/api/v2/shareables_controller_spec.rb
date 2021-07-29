@@ -514,7 +514,7 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           get :resource_index, params: { model: 'offers' }
           expect(response.status).to eq(200)
           expect(parsed_body['data'][0]['attributes'].keys).to match_array([
-            'id', 'state', 'notes', 'submitted_at', 'created_at', 'public_uid', 'district_id', 'public_notes', "public_notes_zh_tw"
+            'id', 'state', 'notes', 'submitted_at', 'expires_at', 'created_at', 'public_uid', 'district_id', 'public_notes', 'public_notes_zh_tw'
           ])
         end
 
