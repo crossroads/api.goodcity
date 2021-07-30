@@ -48,7 +48,7 @@
     <strong>物品詳情：</strong>
     <% if @email_property[:goods]%>
       <% @email_property[:goods].each do |good| %>
-        <li> <%= good[:quantity] %> x <%= good[:type_en] %>. <%= good[:description]%>. </li>
+        <li> <%= good[:quantity] %> x <%= good[:type_zh_tw] %>. <%= good[:description]%>. </li>
       <% end %>
     <% end %>
   </p>
