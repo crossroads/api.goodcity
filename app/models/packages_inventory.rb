@@ -81,6 +81,10 @@ class PackagesInventory < ApplicationRecord
     last.present? && !last.uninventory?
   end
 
+  def self.uninventorized?(package)
+    !inventorized?(package)
+  end
+
   def incremental?
     return quantity.positive? if UNRESTRICTED_ACTIONS.include?(action)
     INCREMENTAL_ACTIONS.include?(action)
