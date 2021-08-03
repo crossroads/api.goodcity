@@ -95,7 +95,7 @@ module Api
           quantity_changed = @package.received_quantity_changed?
           quantity_was = @package.received_quantity_was || 0
           if @package.valid? && @package.save
-            try_inventorize_package(@package) if @package.inventory_number.present?
+            try_inventorize_package(@package)
             true
           else
             false
@@ -129,7 +129,7 @@ module Api
 
         success = ActiveRecord::Base.transaction do
           if @package.valid? && @package.save
-            try_inventorize_package(@package) if location_id.present? && @package.inventory_number.present?
+            try_inventorize_package(@package)
             true
           else
             false
@@ -466,7 +466,8 @@ module Api
       end
 
       def try_inventorize_package(pkg)
-        unless PackagesInventory.inventorized?(pkg)
+        if pkg.inventory_number.present? && PackagesInventory.uninventorized?(pkg)
+          raise Goodcity::BadOrMissingField.new('location_id') if pkg.location_id.blank?
           Package::Operations.inventorize(pkg, location_id)
         end
       end

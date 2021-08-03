@@ -22,7 +22,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:package_params) do
     FactoryBot
       .attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
-      .except(:dispatched_quantity, :available_quantity, :on_hand_quantity, :designated_quantity)
+      .except(:dispatched_quantity, :available_quantity, :on_hand_quantity, :designated_quantity, :inventory_number)
       .merge({ quantity: 5 })
   end
 
@@ -515,7 +515,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             expect {
               post :create, params: { package: package_params }
               expect(response.status).to eq(422)
-              expect(parsed_body['error']).to match("Invalid or missing Location")
+              expect(parsed_body['error']).to match("Invalid or empty field 'location_id'")
             }.not_to change(Package, :count)
           end
         end
@@ -901,15 +901,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context "but without a location_id" do
-        it "does not create any packages_location" do
+        it "fails to update the package" do
           put :update, params: { id: uninventorized_package.id, package: package_params }
-          expect(response.status).to eq(200)
-          expect(updated_package.packages_locations.count).to eq(0)
+          expect(response.status).to eq(422)
+          expect(parsed_body['error']).to match("Invalid or empty field 'location_id'")
         end
 
-        it "does not create any packages_inventory record" do
+        it "does not update or create any packages_inventory record" do
           put :update, params: { id: uninventorized_package.id, package: package_params }
-          expect(response.status).to eq(200)
+          expect(response.status).to eq(422)
+          expect(parsed_body['error']).to match("Invalid or empty field 'location_id'")
           expect(PackagesInventory.count).to eq(0)
         end
       end
