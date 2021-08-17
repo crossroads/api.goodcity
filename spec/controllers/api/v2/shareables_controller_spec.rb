@@ -459,12 +459,6 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(parsed_body['data']['attributes']['district_id']).to eq(offer3.created_by.address.district_id)
         end
 
-        it "fails with 404 for a record that expired" do
-          shareable3.update(expires_at: 1.day.ago)
-          get :resource_show, params: { model: 'offers', public_uid: shareable3.public_uid }
-          expect(response.status).to eq(404)
-        end
-
         it "fails with 404 for a public_uid that doesn't exist" do
           get :resource_show, params: { model: 'offers', public_uid: 'i.dont.exist' }
           expect(response.status).to eq(404)
@@ -509,6 +503,13 @@ RSpec.describe Api::V2::ShareablesController, type: :controller do
           expect(parsed_body['data'].map { |r| r['id']}).to match_array([offer3.id.to_s, offer4.id.to_s])
         end
 
+        it "does not returns records that expired" do
+          shareable3.update(expires_at: 1.day.ago)
+          get :resource_index, params: { model: 'offers' }
+          expect(response.status).to eq(200)
+          expect(parsed_body['data'].length).to eq(1)
+          expect(parsed_body['data'].map { |r| r['id'] }).to eq([offer4.id.to_s])
+        end
 
         it "only returns whitelisted fields and the public id" do
           get :resource_index, params: { model: 'offers' }

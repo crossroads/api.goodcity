@@ -220,14 +220,13 @@ module Api
 
       def find_shared_record!(public_uid, klass)
         shareable = Shareable
-          .non_expired
           .of_type(klass.name)
           .where(public_uid: public_uid)
           .first
 
         raise Goodcity::NotFoundError unless shareable.present? && shareable.resource.present?
 
-        klass.find(shareable.resource_id)
+        klass.unscoped.find(shareable.resource_id)
       end
 
       def model_klass
