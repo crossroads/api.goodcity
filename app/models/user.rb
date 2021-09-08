@@ -43,7 +43,7 @@ class User < ApplicationRecord
   has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
   has_many :printers_users
   has_many :printers, through: :printers_users
-
+  has_many :offer_responses
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 

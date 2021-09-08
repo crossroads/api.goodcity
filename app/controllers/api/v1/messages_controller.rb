@@ -3,7 +3,7 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
-      ALLOWED_SCOPES = %w[offer item order package].freeze
+      ALLOWED_SCOPES = %w[offer item order package offer_response].freeze
 
       resource_description do
         short "List, show, create and mark_read a message."
@@ -80,7 +80,6 @@ module Api
       param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def notifications
-        @messages = apply_scope(@messages, params[:messageable_type]) if params[:messageable_type].present?
         @messages = apply_filters(@messages, params)
         @messages = @messages.joins(:subscriptions).where(subscriptions: {user_id: current_user.id})
         @messages = @messages.where(subscriptions: {state: params[:state]}) if params[:state].present?
@@ -111,10 +110,13 @@ module Api
 
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
-        messages = messages.where(
-          messageable_id: options[:messageable_id],
-          messageable_type: options[:messageable_type]
-        ) if options[:messageable_id].present? && options[:messageable_type].present?
+
+        if options[:messageable_id].present? && options[:messageable_type].present?
+          messages = messages.where(messageable_id: options[:messageable_id],
+            messageable_type: options[:messageable_type])
+        elsif options[:messageable_type].present?
+          messages = messages.where(messageable_type: options[:messageable_type])
+        end
 
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?

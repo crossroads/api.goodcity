@@ -30,8 +30,11 @@ class Offer < ApplicationRecord
   has_many :expecting_packages, class_name: 'Package', through: :items, source: :expecting_packages
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
+  has_many :shared_packages, -> { publicly_shared }, class_name: 'Package', through: :items
+
   has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
+  has_many :offer_responses
   has_many :offers_packages
   has_many :packages, through: :offers_packages
   has_many :messages, -> {
@@ -191,6 +194,10 @@ class Offer < ApplicationRecord
       offer.inactive_at = Time.now
     end
 
+    after_transition on: :cancel do |offer, _transition|
+      offer.expire_shareable_resource
+    end
+
     after_transition on: :submit do |offer, _transition|
       if offer.created_by
         offer.send_thank_you_message
@@ -256,6 +263,14 @@ class Offer < ApplicationRecord
 
     def offers_count_per_state(offer)
       offer.each { |key, value| offer[key] = value.count }
+    end
+  end
+
+  def expire_shareable_resource(expires_at=Time.current)
+    if Shareable.find_by(resource: self)
+      expires_at = DateTime.parse(expires_at) if expires_at.is_a?(String)
+      Shareable.expire(self, expires_at)
+      Shareable.expire(self.packages, expires_at) if self.packages.present?
     end
   end
 

@@ -54,6 +54,7 @@ module Api
         printer_abilities
         offers_package_abilities
         canned_response_abilities
+        offer_response_abilities
         processing_destination_abilities
       end
 
@@ -96,7 +97,21 @@ module Api
       end
 
       def canned_response_abilities
-        can %I[index create update destroy show], CannedResponse if can_manage_canned_response?
+        can %i[index create update destroy show], CannedResponse if can_manage_canned_response?
+      end
+
+      def offer_response_abilities
+        can :create, OfferResponse do |offer_response|
+          offer_response.user_id == @user_id &&
+            Shareable.non_expired.find_by(
+              resource_type: 'Offer',
+              resource_id: offer_response.offer_id
+            ).present?
+        end
+
+        can %i[index show], OfferResponse, { user_id: @user_id }
+
+        can :manage, OfferResponse if can_manage_offer_response_messages?
       end
 
       def computer_abilities
@@ -190,24 +205,25 @@ module Api
       def message_abilities
         can %i[index show create notifications], Message, messageable_type: 'Offer' if can_manage_offer_messages?
         can %i[index show create notifications], Message, messageable_type: 'Item' if can_manage_offer_messages?
+        can %i[index show create notifications], Message, messageable_type: 'OfferResponse' if can_manage_offer_response_messages?
         can %i[index show create notifications], Message, messageable_type: 'Order' if can_manage_order_messages?
         can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
         can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
-        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
-        can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order'] }
+        can [:show, :index, :notifications], Message, { is_private: false, recipient_id: @user_id, messageable_type: ['Item', 'Offer', 'Order', 'OfferResponse'] }
+        can [:show, :index], Message, { is_private: false, sender_id: @user_id, messageable_type: ['Item', 'Offer', 'Order', 'OfferResponse'] }
 
         can :create, Message do |message|
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
-            (message.recipient_id && message.recipient_id != @user_id) # e.g donor is trying to contact another donor
+            (message.recipient_id && message.recipient_id != @user_id) || # e.g donor is trying to contact another donor
+            (message.messageable_type === "OfferResponse" && !Shareable.shared_resource?(message.messageable.offer)) # e.g A charity user trying to discuss with the offer that is not shared
           )
 
           #
           # Normal users can talk about a resource if:
           #   - he/she owns the related object
-          #   - the resource has been publicly shared
-          message.messageable_owner_id == @user_id || Shareable.shared_resource?(message.messageable)
+          message.messageable_owner_id == @user_id
         end
       end
 

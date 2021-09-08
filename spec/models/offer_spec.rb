@@ -155,6 +155,30 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#expire_shareable_resource" do
+    before do
+      @offer = create :offer, :receiving
+      @offer.packages << (@package = create :package)
+
+      Shareable.publish(@offer)
+      Shareable.publish(@package)
+      User.current_user = @offer.created_by
+    end
+
+    it "should set expired_at on shareable" do
+      expect(@offer.shareable.expires_at).to be_nil
+      @offer.expire_shareable_resource
+      expect(@offer.shareable.reload.expires_at).not_to be_nil
+    end
+
+    it "should set expired_at on shareable on cancelling offer" do
+      expect(@offer.shareable.expires_at).to be_nil
+      @offer.cancel
+      expect(@offer.shareable.reload.expires_at).not_to be_nil
+      expect(@package.shareable.reload.expires_at).not_to be_nil
+    end
+  end
+
   describe 'scope' do
     let!(:closed_offer) { create :offer, :closed }
     let!(:received_offer) { create :offer, :received }
@@ -211,6 +235,19 @@ RSpec.describe Offer, type: :model do
         expect(subject).to include(closed_offer)
         expect(subject).to include(received_offer)
         expect(subject).to_not include(submitted_offer)
+      end
+    end
+
+    context "shared_packages" do
+      before do
+        @offer = create :offer, :submitted
+        item = create :item, offer: @offer
+        @shared_packages = create_list :package, 2, item: item
+        @shared_packages.each{ |pkg| Shareable.publish(pkg) }
+      end
+
+      it "should fetch only shared packages from offer" do
+        expect(@offer.shared_packages.pluck(:id)).to match_array(@shared_packages.pluck(:id))
       end
     end
   end

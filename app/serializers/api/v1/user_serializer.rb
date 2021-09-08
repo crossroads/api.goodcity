@@ -2,7 +2,9 @@ module Api::V1
   class UserSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :first_name, :last_name, :mobile, :title,
-      :created_at, :last_connected, :last_disconnected, :email, :user_roles_ids, :organisations_users_ids, :is_email_verified, :is_mobile_verified, :disabled, :preferred_language
+               :created_at, :last_connected, :last_disconnected, :email,
+               :user_roles_ids, :organisations_users_ids, :is_email_verified,
+               :is_mobile_verified, :disabled, :preferred_language
 
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
@@ -27,6 +29,7 @@ module Api::V1
 
     def include_attribute?
       return !@options[:user_summary] unless @options[:user_summary].nil?
+
       (User.current_user.try(:staff?) || User.current_user.try(:id) == id)
     end
 

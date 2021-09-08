@@ -10,13 +10,14 @@ describe 'Message abilities' do
   let(:all_actions) { %i[index show create update destroy manage notifications] }
   let(:sender)      { create :user }
   let(:charity) { create(:user, :charity) }
-  let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_messages_permission) }
+  let(:reviewer) { create(:user, :reviewer, :with_can_manage_offer_response_messages_permission, :with_can_manage_offer_messages_permission) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
+  let(:offerResponse) { create(:offer_response, user_id: charity.id, offer_id: offer.id) }
   let(:message) { create :message, messageable: offer, is_private: is_private }
 
   context 'when Supervisor or Reviewer' do
-    let(:user) { create(:user, :with_supervisor_role, :with_can_manage_offer_messages_permission) }
+    let(:user) { create(:user, :with_supervisor_role, :with_can_manage_offer_messages_permission, :with_can_manage_offer_messages_permission) }
 
     context 'and message is not is_private' do
       @can = %i[index show create notifications]
@@ -83,8 +84,8 @@ describe 'Message abilities' do
     context "when donor's offer is discussed by a charity" do
       let(:charity_user) { create(:user, :charity) }
       let(:reviewer) { create(:user, :reviewer) }
-      let(:message_from_charity) { create(:message, is_private: false, messageable: offer, sender: charity_user) }
-      let(:message_to_charity) { create(:message, is_private: false, messageable: offer, sender: reviewer, recipient: charity_user) }
+      let(:message_from_charity) { create(:message, is_private: false, messageable: offerResponse, sender: charity_user) }
+      let(:message_to_charity) { create(:message, is_private: false, messageable: offerResponse, sender: reviewer, recipient: charity_user) }
 
       it 'should not show messages sent by a charity regarding the offer' do
         is_expected.not_to be_able_to(:show, message_from_charity)
@@ -161,7 +162,7 @@ describe 'Message abilities' do
 
     context 'when charity user tries to create' do
       context 'a public message' do
-        let(:message) { create(:message, sender: charity, messageable: offer, is_private: false) }
+        let(:message) { create(:message, messageable: offerResponse, is_private: false) }
 
         context 'about an record that has NOT been publicly shared' do
           it 'should succeed' do
@@ -179,7 +180,7 @@ describe 'Message abilities' do
       end
 
       context 'a private message' do
-        let(:message) { create(:message, sender: charity, messageable: offer, is_private: true) }
+        let(:message) { create(:message, sender: charity, messageable: offerResponse, is_private: true) }
 
         before { Shareable.publish(offer) }
 

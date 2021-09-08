@@ -32,7 +32,7 @@ class Shareable < ApplicationRecord
 
     def shared_resource?(resource)
       return false unless resource.present?
-      Shareable.non_expired.where(resource: resource).limit(1).first.present?
+      Shareable.non_expired.find_by(resource: resource).present?
     end
 
     #
@@ -75,6 +75,17 @@ class Shareable < ApplicationRecord
     #
     def unpublish_by_id(resource_type, resource_id)
       Shareable.where(resource_type: resource_type, resource_id: resource_id).destroy_all
+    end
+
+    def expire(resource, expires_at=Time.current)
+      resources = resource.is_a?(Array) ? resource : [resource]
+
+      ActiveRecord::Base.transaction do
+        resources.each do |record|
+          shareable = Shareable.find_by(resource: record)
+          shareable.update(expires_at: expires_at) if shareable
+        end
+      end
     end
   end
 

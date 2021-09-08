@@ -99,6 +99,10 @@ module PushUpdatesForMessage
       return [owner_id == user_id ? BROWSE_APP : STOCK_APP]
     end
 
+    if object_class == 'OfferResponse'
+      return [user_id == recipient_id ? BROWSE_APP : ADMIN_APP]
+    end
+
     return [STOCK_APP] if object_class == 'Package'
 
     if %w[Offer Item].include?(object_class)
@@ -122,6 +126,8 @@ module PushUpdatesForMessage
                             ['can_manage_order_messages']
                           elsif object_class == 'Package'
                             ['can_manage_package_messages']
+                          elsif object_class == 'OfferResponse'
+                            ['can_manage_offer_response_messages']
                           else
                             []
                           end
