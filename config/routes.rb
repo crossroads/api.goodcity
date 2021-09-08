@@ -40,6 +40,10 @@ Rails.application.routes.draw do
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
 
+      resources :access_passes, only: [:create] do
+        put :refresh, on: :member
+      end
+
       resources :districts, only: [:index, :show]
       resources :identity_types, only: [:index, :show]
       resources :package_types, only: [:index]

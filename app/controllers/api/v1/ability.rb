@@ -14,6 +14,7 @@ module Api
       def define_abilities
         address_abilities
         appointment_slot_abilities
+        access_pass_abilities
         beneficiary_abilities
         contact_abilities
         deliveries_abilities
@@ -84,6 +85,12 @@ module Api
         return unless can_manage_settings?
         can [:create, :index, :destroy, :update], AppointmentSlotPreset
         can [:create, :index, :destroy, :update, :calendar], AppointmentSlot
+      end
+
+      def access_pass_abilities
+        if can_manage_access_passes?
+          can %i[create refresh], AccessPass, generated_by_id: @user_id
+        end
       end
 
       def beneficiary_abilities
