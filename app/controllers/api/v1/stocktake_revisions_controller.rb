@@ -29,7 +29,7 @@ module Api
         @stocktake_revision.assign_attributes(stocktake_revision_params)
 
         if @stocktake_revision.quantity_changed? || @stocktake_revision.dirty_changed?
-          @stocktake_revision.counted_by_ids = [*@stocktake_revision.counted_by_ids, User.current_user.id].flatten
+          @stocktake_revision.counted_by_ids = [*@stocktake_revision.counted_by_ids, User.current_user.id].uniq
         end
 
         save_and_render_object_with_errors(@stocktake_revision)
