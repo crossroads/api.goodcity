@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::StocktakeRevisionSerializer do
 
-  let(:record) { build(:stocktake_revision) }
+  let(:record) { build(:stocktake_revision, counted_by_ids: [1,2,3]) }
   let(:serializer) { Api::V1::StocktakeRevisionSerializer.new(record).as_json }
   let(:json) { JSON.parse( serializer.to_json ) }
 
@@ -11,6 +11,7 @@ describe Api::V1::StocktakeRevisionSerializer do
     expect(json['stocktake_revision']['package_id']).to eql(record.package_id)
     expect(json['stocktake_revision']['stocktake_id']).to eql(record.stocktake_id)
     expect(json['stocktake_revision']['quantity']).to eql(record.quantity)
+    expect(json['stocktake_revision']['counted_by_ids']).to eql(record.counted_by_ids)
   end
 
   it "Includes associations" do
