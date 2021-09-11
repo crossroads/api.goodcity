@@ -53,6 +53,16 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
         expect(parsed_body["stocktake_revision"]["stocktake_id"]).to eq(stocktake.id)
       end
 
+      it "adds the user id in the counted_by_ids field" do
+        expect {
+          post :create, params: { stocktake_revision: payload }
+        }.to change(StocktakeRevision, :count).by(1)
+
+        rev = StocktakeRevision.last
+        expect(rev.counted_by_ids).to be_an_instance_of(Array)
+        expect(rev.counted_by_ids).to eq([entitled_user.id])
+      end
+
       it "defaults to a 'pending' state if missing" do
         expect {
           post :create, params: { stocktake_revision: payload.except(:state) }
@@ -156,6 +166,38 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
         }.not_to change { stocktake_revision.reload.quantity }
 
         expect(response.status).to eq(422)
+      end
+
+      describe "Recording counts in counted_by_ids" do
+        before do
+          stocktake_revision.update(counted_by_ids: [other_user.id])
+        end
+
+        it "Adds the user id to counted_by_ids if the user modifies the quantity" do
+          expect {
+            put :update, params: { id: stocktake_revision.id, stocktake_revision: { quantity: 100 } }
+          }.to change {
+            stocktake_revision.reload.counted_by_ids
+          }.from([other_user.id]).to([other_user.id, entitled_user.id])
+        end
+
+        it "Adds the user id to counted_by_ids if the user modifies the dirty flag" do
+          stocktake_revision.update(dirty: true)
+
+          expect {
+            put :update, params: { id: stocktake_revision.id, stocktake_revision: { dirty: false } }
+          }.to change {
+            stocktake_revision.reload.counted_by_ids
+          }.from([other_user.id]).to([other_user.id, entitled_user.id])
+        end
+
+        it "Doesnt add the user id to counted_by_ids if the user modifies the state" do
+          expect {
+            put :update, params: { id: stocktake_revision.id, stocktake_revision: { state: 'processed' } }
+          }.not_to change {
+            stocktake_revision.reload.counted_by_ids
+          }
+        end
       end
     end
   end
