@@ -61,7 +61,8 @@ module Api
           return render_error(@mobile.errors.full_messages.join(". "))
         end
 
-        @user = User.find_by_mobile(@mobile.mobile)
+        @user = find_or_add_user
+
         @otp_auth_key = otp_auth_key_for(@user, refresh: true)
 
         if @user && @user.allowed_login?(app_name)
@@ -177,6 +178,14 @@ module Api
       end
 
       private
+
+      def find_or_add_user
+        user = User.find_by_mobile(@mobile.mobile)
+        if user.blank? && app_name == STOCK_APP
+          user = User.creation_with_auth({ mobile: @mobile.mobile }, app_name)
+        end
+        user
+      end
 
       def render_error(error_message)
         render json: {errors: error_message}, status: 422
