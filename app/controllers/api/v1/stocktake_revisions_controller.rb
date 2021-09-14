@@ -20,12 +20,18 @@ module Api
         raise Goodcity::DuplicateRecordError if exists.present?
 
         @stocktake_revision.created_by = current_user
+        @stocktake_revision.counted_by_ids = [current_user.id]
         save_and_render_object_with_errors(@stocktake_revision)
       end
 
       api :PUT, "/v1/stocktakes/:id", "Updates a revision"
       def update
         @stocktake_revision.assign_attributes(stocktake_revision_params)
+
+        if @stocktake_revision.quantity_changed? || @stocktake_revision.dirty_changed?
+          @stocktake_revision.counted_by_ids = [*@stocktake_revision.counted_by_ids, User.current_user.id].uniq
+        end
+
         save_and_render_object_with_errors(@stocktake_revision)
       end
 

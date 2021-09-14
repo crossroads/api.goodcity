@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_08_110918) do
+ActiveRecord::Schema.define(version: 2021_09_11_024837) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -959,6 +959,8 @@ ActiveRecord::Schema.define(version: 2021_09_08_110918) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "processed_delta", default: 0
+    t.jsonb "counted_by_ids", default: []
+    t.index ["counted_by_ids"], name: "index_stocktake_revisions_on_counted_by_ids"
     t.index ["package_id", "stocktake_id"], name: "index_stocktake_revisions_on_package_id_and_stocktake_id", unique: true
     t.index ["package_id"], name: "index_stocktake_revisions_on_package_id"
     t.index ["stocktake_id", "package_id"], name: "index_stocktake_revisions_on_stocktake_id_and_package_id", unique: true
