@@ -15,7 +15,12 @@ class AccessPass < ApplicationRecord
   end
 
   def is_valid_pass?
-    Time.curent < (self.generated_at + 30.seconds)
+    Time.current < (self.generated_at + 30.seconds)
+  end
+
+  def self.find_valid_pass(key)
+    pass = find_by(access_key: key)
+    pass.try(:is_valid_pass?) && pass
   end
 
   private

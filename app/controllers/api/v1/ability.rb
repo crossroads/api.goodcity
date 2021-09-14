@@ -436,7 +436,7 @@ module Api
 
       def user_abilities
         can [:current_user_profile], User
-        can %i[show update orders_count], User, id: @user_id
+        can %i[show update orders_count grant_access], User, id: @user_id
         can %i[index show], User if can_read_users?
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?

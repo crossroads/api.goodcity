@@ -184,7 +184,7 @@ class User < ApplicationRecord
   end
 
   def allowed_login?(app_name)
-    if [DONOR_APP, BROWSE_APP].include?(app_name)
+    if [DONOR_APP, BROWSE_APP, STOCK_APP].include?(app_name)
       return true
     else
       user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
@@ -328,6 +328,20 @@ class User < ApplicationRecord
       .destroy_all
 
     token
+  end
+
+  def grant_access_by_pass(pass)
+    pass.roles.each do |role|
+      assign_role(self.id, role.id, pass.access_expires_at)
+    end
+
+    assign_printer(pass.printer_id, "stock") if pass.printer_id
+  end
+
+  def assign_printer(printer_id, tag)
+    printer_user = self.printers_users.where(tag: tag).first_or_initialize
+    printer_user.printer_id = printer_id
+    printer_user.save
   end
 
   private
