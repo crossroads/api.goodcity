@@ -76,8 +76,8 @@ module OfferFiltering
 
     def self.shareable(include_expired_shareables)
       res = joins('INNER JOIN shareables ON shareables.resource_id=offers.id')
-
       return res if include_expired_shareables
+
       res.where('shareables.expires_at IS NULL OR shareables.expires_at > now()')
     end
 
