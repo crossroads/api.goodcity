@@ -508,15 +508,16 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
 
-    context "When a filter is applied" do
-      let!(:shareable1) {create :shareable, resource: reviewing_offer}
+    context "When a shareable filter is applied" do
+      let!(:shareable1) {create :shareable, resource: reviewing_offer,expires_at: 1.minute.ago}
       let!(:shareable2) {create :shareable, resource: submitted_offer}
+      let!(:shareable3) {create :shareable, resource: in_review_offer}
 
-      it "returns offers published on charity site" do
+      it "returns offers published on charity site that are not expired" do
         get :search, params: { shareable: true }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
-        expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable1.resource_id, shareable2.resource_id])
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable2.resource_id, shareable3.resource_id])
       end
 
       it "returns offers published on charity site of particular state" do
@@ -524,6 +525,15 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
         expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable2.resource_id])
+      end
+
+      context "when include expiry filter is applied" do
+        it "returns offers published on charity site including expired offers" do
+          get :search, params: { shareable: true, include_expiry: true }
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(3)
+          expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable1.resource_id, shareable2.resource_id, shareable3.resource_id])
+        end
       end
     end
 
