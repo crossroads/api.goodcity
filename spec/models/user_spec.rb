@@ -424,8 +424,8 @@ describe User, :type => :model do
         expect(order_fulfilment_user.allowed_login?(STOCK_APP)).to be_truthy
       end
 
-      it "returns false if user do not have stock login permission and app is stock app" do
-        expect(user.allowed_login?(STOCK_APP)).to be_falsey
+      it "returns true if user do not have stock login permission and app is stock app" do
+        expect(user.allowed_login?(STOCK_APP)).to be_truthy
       end
 
       it "returns false if user has stock login permission and app is admin app" do
@@ -458,8 +458,8 @@ describe User, :type => :model do
         expect(supervisor.allowed_login?(DONOR_APP)).to be_truthy
       end
 
-      it "returns false if user has admin login permission and app is stock app" do
-        expect(reviewer.allowed_login?(STOCK_APP)).to be_falsey
+      it "returns true if user has admin login permission and app is stock app" do
+        expect(reviewer.allowed_login?(STOCK_APP)).to be_truthy
       end
 
       it "returns true if user has admin app login permission and app browse app" do
@@ -476,16 +476,16 @@ describe User, :type => :model do
         expect(supervisor.allowed_login?(BROWSE_APP)).to be_truthy
       end
 
-      it "returns false if user have browse login permission and app is not browse app" do
-        expect(charity.allowed_login?(STOCK_APP)).to be_falsey
+      it "returns true if user have browse login permission and app is not browse app" do
+        expect(charity.allowed_login?(STOCK_APP)).to be_truthy
       end
 
       it "returns true if user have browse login permission app is donor app" do
         expect(charity.allowed_login?(DONOR_APP)).to be_truthy
       end
 
-      it "returns false if user has browse login permission and app is stock app" do
-        expect(charity.allowed_login?(STOCK_APP)).to be_falsey
+      it "returns true if user has browse login permission and app is stock app" do
+        expect(charity.allowed_login?(STOCK_APP)).to be_truthy
       end
     end
 

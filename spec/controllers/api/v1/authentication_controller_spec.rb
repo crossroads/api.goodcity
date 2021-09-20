@@ -112,13 +112,13 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(response.status).to eq(422)
       end
 
-      it 'returns unprocessable entity if donor is accessing stock app', :show_in_doc do
+      it 'should allow access to guest-user if he is accessing stock app', :show_in_doc do
         set_stock_app_header
         expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(user)
         expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
-        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
-        expect(response.status).to eq(422)
+
+        expect(response.status).to eq(200)
       end
 
       it 'allows user with order fulfilment user to access stock after sign-in', :show_in_doc do
@@ -172,6 +172,35 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(response.status).to eq(401)
       expect(parsed_body["error"]).to eq("You are not authorized.")
       expect(parsed_body['otp_auth_key']).to eql( nil )
+    end
+
+    context "Login for stock app" do
+      before { set_stock_app_header }
+
+      it "should return success where user does not exist" do
+        guest_mobile = "+85290990999"
+        expect(User).to receive(:find_by_mobile).with(guest_mobile).and_return(nil)
+        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
+
+        expect {
+          post :send_pin, params: { mobile: guest_mobile }
+        }.to change(User, :count).by(+1)
+
+        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+      end
+
+      it "should return success where user has expired-role" do
+        stock_user = create(:user, :"with_stock_fulfilment_role", :with_can_login_to_stock_permission, role_expiry: 5.days.ago)
+
+        expect(User).to receive(:find_by_mobile).with(stock_user.mobile).and_return(stock_user)
+        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
+
+        post :send_pin, params: { mobile: stock_user.mobile }
+
+        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+      end
     end
 
     context "signup for Browse app" do
