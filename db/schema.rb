@@ -21,20 +21,20 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
   create_table "access_pass_roles", force: :cascade do |t|
     t.bigint "access_pass_id"
     t.bigint "role_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["access_pass_id"], name: "index_access_pass_roles_on_access_pass_id"
     t.index ["role_id"], name: "index_access_pass_roles_on_role_id"
   end
 
   create_table "access_passes", force: :cascade do |t|
-    t.datetime "access_expires_at", precision: 6
-    t.datetime "generated_at", precision: 6
+    t.datetime "access_expires_at"
+    t.datetime "generated_at"
     t.integer "generated_by_id"
     t.integer "access_key"
     t.bigint "printer_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["access_key"], name: "index_access_passes_on_access_key", unique: true
     t.index ["printer_id"], name: "index_access_passes_on_printer_id"
   end
@@ -414,8 +414,8 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
   create_table "offer_responses", force: :cascade do |t|
     t.integer "user_id"
     t.integer "offer_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id", "offer_id"], name: "index_offer_responses_on_user_id_and_offer_id", unique: true
   end
 

@@ -106,6 +106,7 @@ module Api
       param :access_key, String, desc: 'AccessPass key to get access'
       def grant_access
         pass = AccessPass.find_valid_pass(params[:access_key])
+
         if pass
           current_user.grant_access_by_pass(pass)
           render json: @user, serializer: Api::V1::UserProfileSerializer
