@@ -716,6 +716,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   describe "GET /offers/summary" do
     let!(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
     let!(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
+    let!(:expired_shareable) {create :shareable, resource: reviewing_offer,expires_at: 1.minute.ago}
+    let!(:shareable) {create :shareable, resource: submitted_offer}
     let!(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
     let!(:scheduled_offer) { create :offer, :scheduled, notes: 'Test', reviewed_by_id: reviewer.id  }
     let!(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
@@ -739,6 +741,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       expect(parsed_body['priority_under_review']).to eq(1)
       expect(parsed_body['priority_submitted']).to eq(1)
       expect(parsed_body['submitted']).to eq(2)
+      expect(parsed_body['shareable_offers_count']).to eq(1)
     end
 
     it "returns count for active offers reviewed for logged in User" do
@@ -749,12 +752,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       expect(parsed_body['reviewer_under_review']).to eq(1)
       expect(parsed_body['reviewer_priority_reviewed']).to eq(1)
       expect(parsed_body['reviewer_priority_under_review']).to eq(1)
+      expect(parsed_body['shareable_offers_count']).to eq(1)
     end
 
     it "returns all total count active offers and for logged in Reviewer" do
       get :summary
       expect(parsed_body['offers_total_count']).to eq(8)
       expect(parsed_body['reviewer_offers_total_count']).to eq(4)
+      expect(parsed_body['shareable_offers_count']).to eq(1)
     end
   end
 
