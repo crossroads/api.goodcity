@@ -250,7 +250,7 @@ class Offer < ApplicationRecord
       res = {}
       res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: false, self_reviewer: self_reviewer })
       res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: true, self_reviewer: self_reviewer })
-      res.merge!( :shareable_offers_count => Shareable.non_expired.where(resource_type: "Offer").count )
+      res.merge!(shareable_offers_count: Shareable.non_expired.where(resource_type: "Offer").count)
       res
     end
 
