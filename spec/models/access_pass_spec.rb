@@ -27,13 +27,13 @@ RSpec.describe AccessPass, type: :model do
     end
   end
 
-  describe ".is_valid_pass?" do
+  describe ".valid_pass?" do
     it "should return boolean value based on access-key generation-time" do
       access_pass = create :access_pass
-      expect(access_pass.is_valid_pass?).to be_truthy
+      expect(access_pass.valid_pass?).to be_truthy
 
       access_pass.update_column(:generated_at, 10.minutes.ago)
-      expect(access_pass.is_valid_pass?).to be_falsy
+      expect(access_pass.valid_pass?).to be_falsy
     end
   end
 

@@ -19,7 +19,7 @@ module Api
 
       api :POST, '/v1/access_passes', "Create an access_pass"
       param :access_pass, Hash, required: true do
-        param :role_ids, String,  required: true,desc: "Array of Role Ids"
+        param :role_ids, String, required: true, desc: "Array of Role Ids"
         param :access_expires_at, String, required: true, desc: "access_expires_at"
         param :printer_id, String, desc: "Printer Id", allow_nil: true
       end

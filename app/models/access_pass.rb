@@ -1,5 +1,4 @@
 class AccessPass < ApplicationRecord
-
   before_create :set_access_key
 
   belongs_to :generated_by, class_name: 'User'
@@ -8,19 +7,19 @@ class AccessPass < ApplicationRecord
   has_many :roles, through: :access_pass_roles
 
   def refresh_pass
-    self.update(
+    update(
       access_key: generate_token,
       generated_at: Time.current
     )
   end
 
-  def is_valid_pass?
-    Time.current < (self.generated_at + 30.seconds)
+  def valid_pass?
+    Time.current < (generated_at + 30.seconds)
   end
 
   def self.find_valid_pass(key)
     pass = find_by(access_key: key)
-    pass.try(:is_valid_pass?) && pass
+    pass.try(:valid_pass?) && pass
   end
 
   private
