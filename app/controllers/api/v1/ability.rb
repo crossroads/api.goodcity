@@ -187,6 +187,7 @@ module Api
             record.imageable.offer.created_by_id == @user_id
           end
           can [:show], Image, { imageable_type: "Package", imageable: { order: { created_by_id: @user_id } } }
+          can :create, Image, { imageable_type: nil }
         end
         can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
           state: ['draft', 'submitted', 'scheduled'] }
