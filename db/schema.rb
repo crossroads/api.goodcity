@@ -1088,6 +1088,9 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
     t.index ["whodunnit"], name: "index_versions_on_whodunnit"
   end
 
+  add_foreign_key "access_pass_roles", "access_passes"
+  add_foreign_key "access_pass_roles", "roles"
+  add_foreign_key "access_passes", "printers"
   add_foreign_key "addresses", "districts", name: "addresses_district_id_fk"
   add_foreign_key "auth_tokens", "users", name: "auth_tokens_user_id_fk"
   add_foreign_key "beneficiaries", "identity_types"
