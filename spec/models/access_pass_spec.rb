@@ -4,7 +4,7 @@ RSpec.describe AccessPass, type: :model do
   describe 'Association' do
     it { is_expected.to belong_to :printer }
     it { is_expected.to belong_to :generated_by }
-    it { is_expected.to have_many :access_pass_roles }
+    it { is_expected.to have_many :access_passes_roles }
     it { is_expected.to have_many :roles }
   end
 
@@ -44,6 +44,16 @@ RSpec.describe AccessPass, type: :model do
 
       access_pass.update_column(:generated_at, 10.minutes.ago)
       expect(AccessPass.find_valid_pass(access_pass.access_key)).to be_falsy
+    end
+  end
+
+  describe "access_expires_at" do
+    it "should return valid non-expired pass" do
+      access_pass = build :access_pass, access_expires_at: 2.days.from_now
+      expect(access_pass.valid?).to be_truthy
+
+      access_pass = build :access_pass, access_expires_at: 15.days.from_now
+      expect(access_pass.valid?).to be_falsy
     end
   end
 end

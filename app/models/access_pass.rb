@@ -3,8 +3,11 @@ class AccessPass < ApplicationRecord
 
   belongs_to :generated_by, class_name: 'User'
   belongs_to :printer
-  has_many :access_pass_roles, dependent: :destroy
-  has_many :roles, through: :access_pass_roles
+  has_many :access_passes_roles, dependent: :destroy
+  has_many :roles, through: :access_passes_roles
+
+  validates :access_expires_at, presence: true
+  validate :access_expires_within_week
 
   def refresh_pass
     update(
@@ -14,7 +17,7 @@ class AccessPass < ApplicationRecord
   end
 
   def valid_pass?
-    Time.current < (generated_at + 30.seconds)
+    Time.current < (generated_at + ACCESS_PASS_VALIDITY_TIME)
   end
 
   def self.find_valid_pass(key)
@@ -23,6 +26,14 @@ class AccessPass < ApplicationRecord
   end
 
   private
+
+  def access_expires_within_week
+    return if access_expires_at.blank?
+
+    if 1.week.from_now < access_expires_at
+      errors.add(:end_date, "must be less than a week time.")
+    end
+  end
 
   def set_access_key
     self.access_key = generate_token

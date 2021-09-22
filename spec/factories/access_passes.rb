@@ -7,7 +7,7 @@ FactoryBot.define do
 
     trait :with_roles do
       after(:create) do |pass|
-        create :access_pass_role, access_pass: pass
+        create :access_passes_role, access_pass: pass
       end
     end
 

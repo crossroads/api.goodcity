@@ -27,7 +27,7 @@ module Api
         @access_pass.attributes = access_pass_params
 
         if @access_pass.save
-          set_roles_for_access_pass(@access_pass, params[:access_pass][:role_ids])
+          set_roles_for_access_pass(@access_pass, access_pass_params[:role_ids])
           render json: @access_pass, serializer: serializer, status: 201
         else
           render_errors
@@ -42,10 +42,12 @@ module Api
 
       def set_roles_for_access_pass(access_pass, role_ids)
         role_ids.split(",").each do |role_id|
-          access_pass.access_pass_roles.find_or_create_by(
-            access_pass: access_pass,
-            role_id: role_id.to_i
-          )
+          if AccessPassesRole::ALOWED_ROLES_IDS.include?(role_id)
+            access_pass.access_passes_roles.find_or_create_by(
+              access_pass: access_pass,
+              role_id: role_id.to_i
+            )
+          end
         end
       end
 

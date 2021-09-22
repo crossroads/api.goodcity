@@ -1,6 +1,6 @@
-class CreateAccessPassRoles < ActiveRecord::Migration[6.1]
+class CreateAccessPassesRoles < ActiveRecord::Migration[6.1]
   def change
-    create_table :access_pass_roles do |t|
+    create_table :access_passes_roles do |t|
       t.references :access_pass, foreign_key: true
       t.references :role, foreign_key: true
 

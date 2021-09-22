@@ -7,7 +7,7 @@ RSpec.describe Api::V1::AccessPassesController, type: :controller do
   let(:serialized_access_pass) { Api::V1::AccessPassSerializer.new(access_pass).as_json }
   let(:serialized_access_pass_json) { JSON.parse( serialized_access_pass.to_json ) }
   let(:parsed_body) { JSON.parse(response.body) }
-  let(:role) { create :role }
+  let(:role) { Role.find_by(name: Role::ROLE_NAMES[:stock_fulfilment]) }
   let(:printer) { create :printer }
 
   before { generate_and_set_token(user) }
