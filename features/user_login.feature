@@ -54,7 +54,7 @@ Feature: 'User logging'
     And I create GoodcitySetting
     Then I should get unauthorized error
 
-    Scenario: An old stock_fulfilment [expired role] can login to stock app
+    Scenario: A user without any active role [expired role] can login to stock app
     Given I am an old stock_fulfilment logging into "stock" app
     And I enter the mobile number
     Then I should be allowed to login

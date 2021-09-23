@@ -330,20 +330,6 @@ class User < ApplicationRecord
     token
   end
 
-  def grant_access_by_pass(pass)
-    pass.roles.each do |role|
-      assign_role(id, role.id, pass.access_expires_at)
-    end
-
-    assign_printer(pass.printer_id, "stock") if pass.printer_id
-  end
-
-  def assign_printer(printer_id, tag)
-    printer_user = printers_users.where(tag: tag).first_or_initialize
-    printer_user.printer_id = printer_id
-    printer_user.save
-  end
-
   private
 
   # required by PushUpdates module

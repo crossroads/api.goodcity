@@ -105,14 +105,15 @@ module Api
       api :PUT, 'v1/users/1/grant_access', "Grant access to user using access-pass-key"
       param :access_key, String, desc: 'AccessPass key to get access'
       def grant_access
-        pass = AccessPass.find_valid_pass(params[:access_key])
+        grant_access = GrantAccessPass.new(params[:access_key], current_user.id)
 
-        if pass
-          current_user.grant_access_by_pass(pass)
+        if grant_access.pass
+          grant_access.grant_access_by_pass
           render json: @user, serializer: Api::V1::UserProfileSerializer
         else
           render_error("Invalid Access Pass")
         end
+
       end
 
       private
