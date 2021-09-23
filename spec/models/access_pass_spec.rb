@@ -32,7 +32,7 @@ RSpec.describe AccessPass, type: :model do
       access_pass = create :access_pass
       expect(access_pass.valid_pass?).to be_truthy
 
-      access_pass.update_column(:generated_at, 10.minutes.ago)
+      access_pass.update_column(:generated_at, (Time.current - (ACCESS_PASS_VALIDITY_TIME * 10)))
       expect(access_pass.valid_pass?).to be_falsy
     end
   end
@@ -42,7 +42,7 @@ RSpec.describe AccessPass, type: :model do
       access_pass = create :access_pass
       expect(AccessPass.find_valid_pass(access_pass.access_key)).to eq(access_pass)
 
-      access_pass.update_column(:generated_at, 10.minutes.ago)
+      access_pass.update_column(:generated_at, (Time.current - (ACCESS_PASS_VALIDITY_TIME * 10)))
       expect(AccessPass.find_valid_pass(access_pass.access_key)).to be_falsy
     end
   end
