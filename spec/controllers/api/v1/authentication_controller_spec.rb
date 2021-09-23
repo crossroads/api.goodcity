@@ -174,35 +174,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body['otp_auth_key']).to eql( nil )
     end
 
-    context "Login for stock app" do
-      before { set_stock_app_header }
-
-      it "should return success where user does not exist" do
-        guest_mobile = "+85290990999"
-        expect(User).to receive(:find_by_mobile).with(guest_mobile).and_return(nil)
-        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
-
-        expect {
-          post :send_pin, params: { mobile: guest_mobile }
-        }.to change(User, :count).by(+1)
-
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-      end
-
-      it "should return success where user has expired-role" do
-        stock_user = create(:user, :"with_stock_fulfilment_role", :with_can_login_to_stock_permission, role_expiry: 5.days.ago)
-
-        expect(User).to receive(:find_by_mobile).with(stock_user.mobile).and_return(stock_user)
-        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
-
-        post :send_pin, params: { mobile: stock_user.mobile }
-
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-      end
-    end
-
     context "signup for Browse app" do
       it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
@@ -250,6 +221,38 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, params: { mobile: "+9101234567" }
         expect(response.status).to eq(422)
         expect(parsed_body['errors']).to eql( "Mobile is invalid" )
+      end
+    end
+  end
+
+  describe 'signup_and_send_pin' do
+    context "Login for stock app" do
+      before { set_stock_app_header }
+
+      it "should return success where user does not exist" do
+        guest_mobile = "+85290990999"
+        expect(User).to receive(:find_by_mobile).with(guest_mobile).and_return(nil)
+        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
+
+        expect {
+          post :signup_and_send_pin, params: { mobile: guest_mobile }
+        }.to change(User, :count).by(+1)
+
+        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+      end
+
+      it "should return success where user has expired-role" do
+        stock_user = create(:user, :"with_stock_fulfilment_role", :with_can_login_to_stock_permission, role_expiry: 5.days.ago)
+
+        expect(User).to receive(:find_by_mobile).with(stock_user.mobile).and_return(stock_user)
+        expect(AuthenticationService).to receive(:otp_auth_key_for).and_return( otp_auth_key )
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
+
+        post :signup_and_send_pin, params: { mobile: stock_user.mobile }
+
+        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+
       end
     end
   end

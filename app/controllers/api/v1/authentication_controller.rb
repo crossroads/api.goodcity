@@ -2,8 +2,10 @@ module Api
   module V1
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
-                                                 :current_user_rooms]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :hasura]
+                                                 :current_user_rooms, :signup_and_send_pin]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :hasura, :signup_and_send_pin]
+
+      before_action :validate_mobile, only: [:send_pin, :signup_and_send_pin]
 
       resource_description do
         short "Handle user login and registration"
@@ -56,13 +58,7 @@ module Api
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
       def send_pin
-        @mobile = Mobile.new(params[:mobile])
-        unless @mobile.valid?
-          return render_error(@mobile.errors.full_messages.join(". "))
-        end
-
-        @user = find_or_add_user
-
+        @user ||= User.find_by_mobile(@mobile.mobile)
         @otp_auth_key = otp_auth_key_for(@user, refresh: true)
 
         if @user && @user.allowed_login?(app_name)
@@ -71,6 +67,12 @@ module Api
           return render json: {error: "You are not authorized."}, status: 401
         end
         render json: { otp_auth_key: @otp_auth_key }
+      end
+
+      api :POST, "/v1/auth/signup_and_send_pin", "Register a new user"
+      def signup_and_send_pin
+        @user = find_or_add_user
+        send_pin
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"
@@ -179,9 +181,18 @@ module Api
 
       private
 
+      def validate_mobile
+        @mobile = Mobile.new(params[:mobile])
+
+        unless @mobile.valid?
+          return render_error(@mobile.errors.full_messages.join(". "))
+        end
+      end
+
       def find_or_add_user
         user = User.find_by_mobile(@mobile.mobile)
-        if user.blank? && app_name == STOCK_APP
+
+        if user.blank?
           user = User.creation_with_auth({ mobile: @mobile.mobile }, app_name)
         end
         user

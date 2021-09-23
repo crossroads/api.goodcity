@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
+      post "auth/signup_and_send_pin", to: "authentication#signup_and_send_pin"
 
       resources :access_passes, only: [:create] do
         put :refresh, on: :member
