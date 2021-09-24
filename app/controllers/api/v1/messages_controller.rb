@@ -55,7 +55,13 @@ module Api
       param_group :message
       def create
         @message.sender_id = current_user.id
-        save_and_render_object(@message)
+        if @message.save
+          # after_create hooks may set state_value to the wrong value so reset to 'read' for current_user
+          @message.state_value = 'read'
+          render json: @message, serializer: serializer_for(@message), status: 201
+        else
+          render json: @message.errors, status: 422
+        end
       end
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
