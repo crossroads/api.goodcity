@@ -109,7 +109,7 @@ module Api
       end
 
       def apply_filters(messages, options)
-        messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+        messages = messages.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
 
         if options[:messageable_id].present? && options[:messageable_type].present?
           messages = messages.where(messageable_id: options[:messageable_id],
