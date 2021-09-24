@@ -17,7 +17,7 @@ class Ability
     can_destroy_image_for_imageable_states can_destroy_contacts
     can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
-    can_manage_locations can_read_versions
+    can_manage_locations can_read_versions can_manage_access_passes
     can_manage_settings can_manage_companies can_manage_package_detail
     can_access_printers can_remove_offers_packages can_access_orders_process_checklists
     can_mention_users can_read_users can_manage_printers can_update_my_printers

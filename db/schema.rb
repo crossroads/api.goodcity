@@ -17,6 +17,36 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
 
+  create_table "access_pass_roles", force: :cascade do |t|
+    t.bigint "access_pass_id"
+    t.bigint "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_pass_id"], name: "index_access_pass_roles_on_access_pass_id"
+    t.index ["role_id"], name: "index_access_pass_roles_on_role_id"
+  end
+
+  create_table "access_passes", force: :cascade do |t|
+    t.datetime "access_expires_at"
+    t.datetime "generated_at"
+    t.integer "generated_by_id"
+    t.integer "access_key"
+    t.bigint "printer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_key"], name: "index_access_passes_on_access_key", unique: true
+    t.index ["printer_id"], name: "index_access_passes_on_printer_id"
+  end
+
+  create_table "access_passes_roles", force: :cascade do |t|
+    t.bigint "access_pass_id"
+    t.bigint "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_pass_id"], name: "index_access_passes_roles_on_access_pass_id"
+    t.index ["role_id"], name: "index_access_passes_roles_on_role_id"
+  end
+
   create_table "addresses", id: :serial, force: :cascade do |t|
     t.string "flat", limit: 255
     t.string "building", limit: 255
@@ -1067,6 +1097,9 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
     t.index ["whodunnit"], name: "index_versions_on_whodunnit"
   end
 
+  add_foreign_key "access_passes", "printers"
+  add_foreign_key "access_passes_roles", "access_passes"
+  add_foreign_key "access_passes_roles", "roles"
   add_foreign_key "addresses", "districts", name: "addresses_district_id_fk"
   add_foreign_key "auth_tokens", "users", name: "auth_tokens_user_id_fk"
   add_foreign_key "beneficiaries", "identity_types"

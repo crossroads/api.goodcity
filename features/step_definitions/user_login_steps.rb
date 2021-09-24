@@ -20,6 +20,11 @@ Given(/^I have expired role ([order_administrator | order_fulfilment]+) and perm
   create :user_role, user: @user, role: role, expires_at: 5.days.ago
 end
 
+Given(/^I am a guest user logging into "([^"]*)" app/) do |app|
+  @user = create(:user)
+  header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
+end
+
 And('I enter the mobile number') do
   request('api/v1/auth/send_pin', method: :post, params: { mobile: @user.mobile })
   @response = last_response

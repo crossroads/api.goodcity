@@ -33,3 +33,4 @@ PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
 DEFAULT_COUNTRY = 'China - Hong Kong (Special Administrative Region)'
 GOODCITY_FROM_EMAIL = 'GoodCity <contact@goodcity.hk>'
 GOODCITY_ORDER_FROM_EMAIL = 'GoodCity <local@crossroads.org.hk>'
+ACCESS_PASS_VALIDITY_TIME = 30.seconds

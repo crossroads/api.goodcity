@@ -281,233 +281,264 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
     end
+  end
 
-    describe 'Users Order Count ' do
-      before { generate_and_set_token(supervisor_user) }
-      TOTAL_REQUESTS_STATES.each do |state|
-        let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: supervisor_user.id, booking_type: booking_type }
-      end
-
-      it "returns 200", :show_in_doc do
-        get :orders_count, params: { id: supervisor_user.id }
-        expect(response.status).to eq(200)
-      end
-
-      it 'returns each orders count for user' do
-        get :orders_count, params: { id: supervisor_user.id }
-        expect(response.status).to eq(200)
-        expect(parsed_body['submitted']).to eq(1)
-        expect(parsed_body['awaiting_dispatch']).to eq(1)
-        expect(parsed_body['closed']).to eq(1)
-        expect(parsed_body['cancelled']).to eq(1)
-      end
+  describe 'get /orders_count ' do
+    before { generate_and_set_token(supervisor_user) }
+    TOTAL_REQUESTS_STATES.each do |state|
+      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: supervisor_user.id, booking_type: booking_type }
     end
 
-    context "get /recent_users" do
-      context "if user has order adminstrator or supervisor role" do
-        it "allows to fetch the recent users" do
-          [:order_administrator, :order_fulfilment, :supervisor].map do |role|
-            create(:user, role, :with_can_read_or_modify_user_permission)
-            generate_and_set_token(supervisor_user)
-            expect(response.status).to eq(200)
-          end
+    it "returns 200", :show_in_doc do
+      get :orders_count, params: { id: supervisor_user.id }
+      expect(response.status).to eq(200)
+    end
+
+    it 'returns each orders count for user' do
+      get :orders_count, params: { id: supervisor_user.id }
+      expect(response.status).to eq(200)
+      expect(parsed_body['submitted']).to eq(1)
+      expect(parsed_body['awaiting_dispatch']).to eq(1)
+      expect(parsed_body['closed']).to eq(1)
+      expect(parsed_body['cancelled']).to eq(1)
+    end
+  end
+
+  context "get /recent_users" do
+    context "if user has order adminstrator or supervisor role" do
+      it "allows to fetch the recent users" do
+        [:order_administrator, :order_fulfilment, :supervisor].map do |role|
+          create(:user, role, :with_can_read_or_modify_user_permission)
+          generate_and_set_token(supervisor_user)
+          expect(response.status).to eq(200)
         end
       end
     end
+  end
 
-    context "get /merge_users" do
-      context "if user has can_merge_users permission" do
-        it "allows to merge two users into one" do
-          [:order_administrator, :stock_administrator].map do |role|
-            user = create(:user, role, :with_can_merge_users_permission)
-            generate_and_set_token(user)
-
-            user1 = create(:user, :reviewer)
-            user2 = create(:user, :reviewer)
-            create_list :offer, 2, reviewed_by: user2
-
-            put :merge_users, params: { master_user_id: user1.id, merged_user_id: user2.id }
-
-            expect{
-              User.find(user2.id)
-            }.to raise_error(ActiveRecord::RecordNotFound)
-            expect(user1.reviewed_offers.count).to eq(2)
-          end
-        end
-
-        it "raises an error for invalid params" do
-          user = create(:user, :order_administrator, :with_can_merge_users_permission)
+  context "get /merge_users" do
+    context "if user has can_merge_users permission" do
+      it "allows to merge two users into one" do
+        [:order_administrator, :stock_administrator].map do |role|
+          user = create(:user, role, :with_can_merge_users_permission)
           generate_and_set_token(user)
+
           user1 = create(:user, :reviewer)
+          user2 = create(:user, :reviewer)
+          create_list :offer, 2, reviewed_by: user2
 
-          put :merge_users, params: { master_user_id: "#{user1.id}0", merged_user_id: user1.id }
+          put :merge_users, params: { master_user_id: user1.id, merged_user_id: user2.id }
 
-          expect(response.status).to eq(422)
-          expect(parsed_body["error"]).to eq("User #{user1.id}0 to be merged into does not exist")
+          expect{
+            User.find(user2.id)
+          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(user1.reviewed_offers.count).to eq(2)
+        end
+      end
+
+      it "raises an error for invalid params" do
+        user = create(:user, :order_administrator, :with_can_merge_users_permission)
+        generate_and_set_token(user)
+        user1 = create(:user, :reviewer)
+
+        put :merge_users, params: { master_user_id: "#{user1.id}0", merged_user_id: user1.id }
+
+        expect(response.status).to eq(422)
+        expect(parsed_body["error"]).to eq("User #{user1.id}0 to be merged into does not exist")
+      end
+    end
+  end
+
+  describe 'GET /mentionable_users' do
+    let!(:reviewer) { create(:user, :reviewer) }
+    let!(:donor) { create(:user) }
+    let(:supervisor) { create(:user, :with_supervisor_role, :with_can_mention_users_permission) }
+    let!(:order_administrator) { create(:user, :with_order_administrator_role, :with_can_mention_users_permission) }
+    let!(:stock_administrator) { create(:user, :with_stock_administrator_role, :with_can_mention_users_permission) }
+    let!(:stock_fulfilment) { create(:user, :with_stock_fulfilment_role, :with_can_mention_users_permission) }
+    let!(:charity) { create(:user, :charity) }
+    let!(:order_fulfilment) { create(:user, :order_fulfilment) }
+    let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
+    let!(:order) { create(:order, created_by: charity) }
+    before { generate_and_set_token(supervisor) }
+
+    it 'returns 200' do
+      get :mentionable_users, params: { offer_id: offer.id, is_private: false, roles: 'Reviewer' }
+      expect(response).to have_http_status(:success)
+    end
+
+    context 'if donor or browse app' do
+      %w[donor charity].map do |app|
+        it "returns unauthorized for #{app}" do
+          generate_and_set_token(eval(app))
+          get :mentionable_users, params: { offer_id: offer.id, is_private: false, roles: 'Reviewer' }
+          expect(response).to have_http_status(:forbidden)
         end
       end
     end
 
-    describe 'GET /mentionable_users' do
-      let!(:reviewer) { create(:user, :reviewer) }
-      let!(:donor) { create(:user) }
-      let(:supervisor) { create(:user, :with_supervisor_role, :with_can_mention_users_permission) }
-      let!(:order_administrator) { create(:user, :with_order_administrator_role, :with_can_mention_users_permission) }
-      let!(:stock_administrator) { create(:user, :with_stock_administrator_role, :with_can_mention_users_permission) }
-      let!(:stock_fulfilment) { create(:user, :with_stock_fulfilment_role, :with_can_mention_users_permission) }
-      let!(:charity) { create(:user, :charity) }
-      let!(:order_fulfilment) { create(:user, :order_fulfilment) }
-      let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
-      let!(:order) { create(:order, created_by: charity) }
-      before { generate_and_set_token(supervisor) }
+    context 'if invalid messageable_type is provided' do
+      it 'returns error' do
+        get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: offer.id,
+                                          messageable_type: 'SomethingElse' }
 
-      it 'returns 200' do
-        get :mentionable_users, params: { offer_id: offer.id, is_private: false, roles: 'Reviewer' }
-        expect(response).to have_http_status(:success)
+        expect(response).to have_http_status(422)
+        expect(parsed_body['error']).to eq('Invalid or missing messageable')
+      end
+    end
+
+    context 'if messageable_id is not found' do
+      it 'returns error' do
+        get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: 0,
+                                          messageable_type: 'Offer' }
+        expect(response).to have_http_status(422)
+        expect(parsed_body['error']).to eq('Invalid or missing messageable')
+      end
+    end
+
+    context 'if messageable_type is provided and messageable_id is not provided' do
+      it 'returns error' do
+        get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
+                                          messageable_type: 'Offer' }
+        expect(response).to have_http_status(422)
+        expect(parsed_body['error']).to eq('Invalid or missing messageable')
+      end
+    end
+
+    context 'if messageable_id is provided and messageable_type is not provided' do
+      it 'returns error' do
+        get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
+                                          messageable_id: offer.id }
+        expect(response).to have_http_status(422)
+        expect(parsed_body['error']).to eq('Invalid or missing messageable')
+      end
+    end
+
+    it 'does not allow to mention people whose roles are expired' do
+      expired_role_user = create(:user, :with_order_administrator_role)
+      UserRole.find_by(user: expired_role_user, role: expired_role_user.roles.first).update(expires_at: 5.days.ago)
+      get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
+      ids = parsed_body['users'].map{ |u| u['id'] }
+      expect(ids).not_to include(expired_role_user.id)
+    end
+
+    context 'admin app' do
+      it 'returns supervisors and reviewers' do
+        generate_and_set_token(supervisor)
+        get :mentionable_users, params: { messageable_id: offer.id, messageable_type: 'Offer',
+                                          roles: 'Supervisor, Reviewer' }
+        users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        expect(parsed_body['users']).to match_array(users)
+      end
+    end
+
+    context 'stock app' do
+      before do
+        generate_and_set_token(order_administrator)
       end
 
-      context 'if donor or browse app' do
-        %w[donor charity].map do |app|
-          it "returns unauthorized for #{app}" do
-            generate_and_set_token(eval(app))
-            get :mentionable_users, params: { offer_id: offer.id, is_private: false, roles: 'Reviewer' }
-            expect(response).to have_http_status(:forbidden)
-          end
-        end
-      end
-
-      context 'if invalid messageable_type is provided' do
-        it 'returns error' do
-          get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: offer.id,
-                                            messageable_type: 'SomethingElse' }
-
-          expect(response).to have_http_status(422)
-          expect(parsed_body['error']).to eq('Invalid or missing messageable')
-        end
-      end
-
-      context 'if messageable_id is not found' do
-        it 'returns error' do
-          get :mentionable_users, params: { is_private: false, roles: 'Reviewer', messageable_id: 0,
-                                            messageable_type: 'Offer' }
-          expect(response).to have_http_status(422)
-          expect(parsed_body['error']).to eq('Invalid or missing messageable')
-        end
-      end
-
-      context 'if messageable_type is provided and messageable_id is not provided' do
-        it 'returns error' do
-          get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
-                                            messageable_type: 'Offer' }
-          expect(response).to have_http_status(422)
-          expect(parsed_body['error']).to eq('Invalid or missing messageable')
-        end
-      end
-
-      context 'if messageable_id is provided and messageable_type is not provided' do
-        it 'returns error' do
-          get :mentionable_users, params: { is_private: false, roles: 'Reviewer',
-                                            messageable_id: offer.id }
-          expect(response).to have_http_status(422)
-          expect(parsed_body['error']).to eq('Invalid or missing messageable')
-        end
-      end
-
-      it 'does not allow to mention people whose roles are expired' do
-        expired_role_user = create(:user, :with_order_administrator_role)
-        UserRole.find_by(user: expired_role_user, role: expired_role_user.roles.first).update(expires_at: 5.days.ago)
+      it 'returns order_administrator and order_fulfilment users' do
         get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
-        ids = parsed_body['users'].map{ |u| u['id'] }
-        expect(ids).not_to include(expired_role_user.id)
+        users = [[User.order_administrators.map(&:id), User.order_fulfilments.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        expect(parsed_body['users']).to match_array(users)
       end
 
-      context 'admin app' do
-        it 'returns supervisors and reviewers' do
-          generate_and_set_token(supervisor)
-          get :mentionable_users, params: { messageable_id: offer.id, messageable_type: 'Offer',
-                                            roles: 'Supervisor, Reviewer' }
-          users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+      it 'returns stock_administrator,stock_fulfilment users' do
+        get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
+        users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+        expect(parsed_body['users']).to match_array(users)
+      end
+
+      context 'when is_private is true' do
+        it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                            is_private: true, messageable_id: order.id,
+                                            messageable_type: 'Order' }
+
+          users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
+        end
+
+        it 'does not return order owner' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: true, order_id: order.id }
+
+          expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
         end
       end
 
-      context 'stock app' do
-        before do
-          generate_and_set_token(order_administrator)
-        end
-
-        it 'returns order_administrator and order_fulfilment users' do
-          get :mentionable_users, params: { roles: 'Order administrator, Order fulfilment' }
-          users = [[User.order_administrators.map(&:id), User.order_fulfilments.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+      context 'when is_private is false' do
+        it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                            messageable_id: order.id,
+                                            messageable_type: 'Order',
+                                            is_private: false }
+          users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id), order.created_by_id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
 
-        it 'returns stock_administrator,stock_fulfilment users' do
-          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment' }
-          users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
-          expect(parsed_body['users']).to match_array(users)
-        end
+        it 'returns order owner' do
+          get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+                                            messageable_type: 'Order',
+                                            messageable_id: order.id,
+                                            is_private: false }
 
+          expect(parsed_body['users'].map { |u| u['id'] }).to include(order.created_by_id)
+        end
+      end
+
+      context 'when stock admin / stock fulfilment users try to mention client' do
+        before { generate_and_set_token(stock_administrator) }
         context 'when is_private is true' do
-          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
+          it 'does not allow them to mention client' do
             get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
-                                              is_private: true, messageable_id: order.id,
-                                              messageable_type: 'Order' }
-
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
-            expect(parsed_body['users']).to match_array(users)
-          end
-
-          it 'does not return order owner' do
-            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment', is_private: true, order_id: order.id }
-
+                                              messageable_type: 'Order',
+                                              messageable_id: order.id,
+                                              is_private: true }
             expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
           end
         end
 
         context 'when is_private is false' do
-          it 'returns Order administrator, Order fulfilment, Stock administrator, Stock fulfilment users' do
-            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
-                                              messageable_id: order.id,
-                                              messageable_type: 'Order',
-                                              is_private: false }
-            users = [[User.stock_fulfilments.map(&:id), User.stock_administrators.map(&:id), User.order_fulfilments.map(&:id), User.order_administrators.map(&:id), order.created_by_id].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
-            expect(parsed_body['users']).to match_array(users)
-          end
-
-          it 'returns order owner' do
-            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
+          it 'does not allow them to mention client' do
+            get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment',
                                               messageable_type: 'Order',
                                               messageable_id: order.id,
-                                              is_private: false }
-
-            expect(parsed_body['users'].map { |u| u['id'] }).to include(order.created_by_id)
-          end
-        end
-
-        context 'when stock admin / stock fulfilment users try to mention client' do
-          before { generate_and_set_token(stock_administrator) }
-          context 'when is_private is true' do
-            it 'does not allow them to mention client' do
-              get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment, Order administrator, Order fulfilment',
-                                                messageable_type: 'Order',
-                                                messageable_id: order.id,
-                                                is_private: true }
-              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
-            end
-          end
-
-          context 'when is_private is false' do
-            it 'does not allow them to mention client' do
-              get :mentionable_users, params: { roles: 'Stock administrator, Stock fulfilment',
-                                                messageable_type: 'Order',
-                                                messageable_id: order.id,
-                                                is_private: true }
-              expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
-            end
+                                              is_private: true }
+            expect(parsed_body['users'].map { |u| u['id'] }).not_to include(order.created_by_id)
           end
         end
       end
+    end
+  end
+
+  describe "PUT /grant_access" do
+    let(:user) { create :user }
+    before { generate_and_set_token(user)}
+
+    it "should assign roles and printer based on access-pass" do
+      pass = create :access_pass, :with_roles
+
+      put :grant_access, params: { id: user.id, access_key: pass.access_key }
+
+      expect(response.status).to eq(200)
+      expect(user.roles).to match_array(pass.roles)
+      expect(user.printers).to include(pass.printer)
+    end
+
+    it "should render error for invalid access-pass" do
+      put :grant_access, params: { id: user.id, access_key: '7678687989' }
+
+      expect(response.status).to eq(422)
+      expect(parsed_body["errors"][0]["message"]).to eq("Invalid Access Pass")
+    end
+
+    it "should render error for expired access-pass" do
+      pass = create :access_pass, :with_roles, :expired
+
+      put :grant_access, params: { id: user.id, access_key: pass.access_key }
+
+      expect(response.status).to eq(422)
+      expect(parsed_body["errors"][0]["message"]).to eq("Invalid Access Pass")
     end
   end
 end
