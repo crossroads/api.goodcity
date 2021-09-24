@@ -56,6 +56,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         create(:message, sender: donor, body: 'Hi do you like my offer?', messageable: offer)
         create(:message, sender: reviewer, body: 'Yes we do', messageable: offer) # default recipient
         create(:message, sender: reviewer, body: 'Thank you for your offer', messageable: offer, recipient: donor)
+        create(:message, sender: reviewer, body: 'Anyone available to review this offer?', messageable: offer, is_private: true)
         create(:message, sender: charity_user, body: 'Iteresting offer, can I have it ?', messageable: offerResponse)
         create(:message, sender: charity_user2, body: 'I also want it', messageable: offerResponse2)
         create(:message, sender: reviewer, body: 'of course you can', messageable: offerResponse, recipient: charity_user)
@@ -74,6 +75,13 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             'Thank you for your offer'
           ])
         end
+
+        it "returns empty array when tries to access private messages", :show_in_doc do
+          get :index, params: { is_private: true }
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(0)
+          expect(received_messages).to match_array([])
+        end
       end
 
       context "as a charity user discussing someone else's offer"  do
@@ -88,6 +96,13 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
             'of course you can'
           ])
         end
+
+        it "returns empty array when tries to access private messages", :show_in_doc do
+          get :index, params: { is_private: true }
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(0)
+          expect(received_messages).to match_array([])
+        end
       end
 
       context "as a staff member managing an offer"  do
@@ -96,14 +111,24 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         it "shows messages from everyone", :show_in_doc do
           get :index
           expect(response.status).to eq(200)
-          expect(received_messages.length).to eq(6)
+          expect(received_messages.length).to eq(7)
           expect(received_messages).to match_array([
             'Hi do you like my offer?',
             'Yes we do',
             'Thank you for your offer',
             'Iteresting offer, can I have it ?',
             'I also want it',
+            'Anyone available to review this offer?',
             'of course you can'
+          ])
+        end
+
+        it "shows private messages from staff members", :show_in_doc do
+          get :index, params: { is_private: true }
+          expect(response.status).to eq(200)
+          expect(received_messages.length).to eq(1)
+          expect(received_messages).to match_array([
+            'Anyone available to review this offer?'
           ])
         end
       end
