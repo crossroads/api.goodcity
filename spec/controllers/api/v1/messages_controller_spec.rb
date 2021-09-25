@@ -402,6 +402,11 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           post :create, params: { message: { **message_params, recipient_id: charity.id.to_s } }, as: :json
           expect(response.status).to eq(403)
         end
+
+        it 'sets the state to read for the creator' do
+          post :create, params: { message: message_params }, as: :json
+          expect(subject['message']['state']).to eql('read')
+        end
       end
 
       context 'as a charity about an offer' do

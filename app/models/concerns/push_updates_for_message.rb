@@ -65,10 +65,14 @@ module PushUpdatesForMessage
 
   # Need to inject subscription.state into message data
   #   because read/unread state is per subscription not per message
+  # Whilst a nasty hack, we ensure we reset state_value after altering it, to avoid unexpected behaviour
   def serialized_message(state)
-    message = tap { |m| m.state_value = state }
+    old_state_value = self.state_value
+    message = self.tap { |m| m.state_value = state }
     associations = Message.reflections.keys.map(&:to_sym)
-    Api::V1::MessageSerializer.new(message, { exclude: associations })
+    result = Api::V1::MessageSerializer.new(message, { exclude: associations })
+    self.state_value = old_state_value
+    result
   end
 
   def serialized_user(user)

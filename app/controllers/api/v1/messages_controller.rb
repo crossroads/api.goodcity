@@ -56,7 +56,7 @@ module Api
       def create
         @message.sender_id = current_user.id
         if @message.save
-          # after_create hooks may set state_value to the wrong value so reset to 'read' for current_user
+          # after_create hooks may set state_value to the wrong value so reset to 'read' for user who created the message
           @message.state_value = 'read'
           render json: @message, serializer: serializer_for(@message), status: 201
         else
