@@ -225,9 +225,12 @@ module Api
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
             (message.recipient_id && message.recipient_id != @user_id) || # e.g donor is trying to contact another donor
-            (message.messageable_type === "OfferResponse" && !Shareable.shared_resource?(message.messageable.offer)) # e.g A charity user trying to discuss with the offer that is not shared
-          )
+            (message.messageable_type === "OfferResponse" && !(# e.g A charity user trying to discuss with the offer that is not shared
+            Shareable.shared_resource?(message.messageable.offer) || message.messageable.messages.map(&:sender_id).include?(@user_id)
+            #User doesn't have an existing OfferResponse
+            ))
 
+          )
           #
           # Normal users can talk about a resource if:
           #   - he/she owns the related object
