@@ -102,7 +102,6 @@ context PushUpdatesForMessage do
     it do
       expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels).to eql(test_channels)
-        expect(data[:item].attributes[:state]).to eq(state)
         expect(data[:sender].attributes[:id]).to eq(reviewer1.id)
         expect(data[:operation]).to eql(:create)
       end
