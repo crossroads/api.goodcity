@@ -7,8 +7,8 @@ describe Api::V1::NotificationSerializer do
   let(:offerResponse)  { create(:offer_response, offer_id: offer.id) }
   let!(:shareable) { create :shareable, resource: offer }
   let(:package) { create :package }
-  let(:message) { create :message, messageable: offerResponse, is_private: true }
-  let(:message2) { create :message, messageable: offer, is_private: true }
+  let(:message) { create :message, messageable: offerResponse, is_private: true, sender: user }
+  let(:message2) { create :message, messageable: offer, is_private: true, sender: user }
   let(:serializer) { Api::V1::NotificationSerializer.new(message, root: "message").as_json }
   let(:json) { JSON.parse(serializer.to_json) }
 
@@ -21,7 +21,7 @@ describe Api::V1::NotificationSerializer do
   it "creates JSON" do
     expect(json["message"]["id"]).to eql(message.id)
     expect(json["message"]["body"]).to eql(message.body)
-    expect(json["message"]["state"]).to eql(message.state_value)
+    expect(json["message"]["state"]).to eql('read')
     expect(json["message"]["is_private"]).to eql(message.is_private)
     expect(json["message"]["sender_id"]).to eql(message.sender_id)
     expect(json["message"]["unread_count"]).to eql(1)
