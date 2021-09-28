@@ -7,7 +7,9 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
     before { generate_and_set_token(user) }
 
     it "returns all package_types", show_in_doc: true  do
-      create_list :base_package_type, 3
+      create(:base_package_type, allow_package: true, code: "AFO"),
+      create(:base_package_type, allow_package: true, code: "BBC"),
+      create(:base_package_type, allow_package: true, code: "BBM")
 
       get :index
 
