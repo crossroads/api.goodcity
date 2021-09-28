@@ -9,7 +9,7 @@ module Api::V1
                :rejected_items_count,
                :expecting_packages_count, :missing_packages_count,
                :received_packages_count,
-               :display_image_cloudinary_id, :notes
+               :display_image_cloudinary_id, :notes, :is_shared
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
@@ -27,6 +27,10 @@ module Api::V1
 
     def display_image_cloudinary_id
       object.images.first.try(:cloudinary_id)
+    end
+
+    def is_shared
+      Shareable.non_expired.find_by(resource: object).present?
     end
 
     def submitted_items_count
