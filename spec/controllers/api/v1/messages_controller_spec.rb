@@ -414,7 +414,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           end
         end
 
-        context 'that has been publicly shared' do
+        context 'that has been publicly shared and is not expired/deleted' do
           before { Shareable.publish(offer) }
 
           it 'does not suceed with messageable as Offer' do
@@ -441,6 +441,34 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           it 'fails if a third user is specified as recipient' do
             post :create, params: { message: { **message_params, recipient_id: donor.id } }, as: :json
             expect(response.status).to eq(403)
+          end
+        end
+
+        context 'that has been publicly shared and is expired/deleted' do
+          before {
+            Shareable.publish(offer,expiry: 5.minute.ago)
+            create(:message, sender: charity, body: 'Hi do you like my offer?', messageable: offerResponse)
+          }
+
+          context 'if new chat is intiated' do
+            before { generate_and_set_token(donor) }
+
+            it 'fails and throws error ' do
+              post :create, params: { message: { **offer_response_message_params, sender_id: donor.id } }, as: :json
+              expect(response.status).to eq(403)
+            end
+          end
+
+          context 'if offerResponse or chat messages are present' do
+            before { generate_and_set_token(charity) }
+
+            it 'permits chat to continue' do
+              expect {
+                post :create, params:  { message: { **offer_response_message_params, sender_id: charity.id } }, as: :json
+              }.to change(Message, :count).by(1)
+
+              expect(response.status).to eq(201)
+            end
           end
         end
       end
