@@ -141,7 +141,7 @@ class Offer < ApplicationRecord
     end
 
     event :start_receiving do
-      transition [:under_review, :reviewed, :scheduled, :cancelled, :received, :inactive] => :receiving
+      transition [:submitted, :under_review, :reviewed, :scheduled, :cancelled, :received, :inactive] => :receiving
     end
 
     event :re_review do
