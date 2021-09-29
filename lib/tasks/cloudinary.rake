@@ -1,3 +1,5 @@
+require 'uri'
+
 namespace :cloudinary do
   # tag value can be "development"/"staging"/"offer_#{id}"/
   # list of comma seperated tags: "offer_163, offer_164"
@@ -66,7 +68,7 @@ namespace :cloudinary do
 
         log(self, "Resizing image #{public_id}")
         open_file(file_path) do |fd|
-          fd << open(scaled_url(res)).read
+          fd << URI.open(scaled_url(res)).read
           Cloudinary::Uploader.upload(file_path, { public_id: public_id }) # Override existing one
         end
       end
@@ -134,7 +136,7 @@ namespace :cloudinary do
 
     FileUtils.mkdir_p folder_path.join('/') if folder_path.length.positive?
 
-    open(file_path, 'wb') do |file|
+    URI.open(file_path, 'wb') do |file|
       block.call(file)
     end
   end

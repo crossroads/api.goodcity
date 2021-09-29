@@ -55,7 +55,13 @@ module Api
       param_group :message
       def create
         @message.sender_id = current_user.id
-        save_and_render_object(@message)
+        if @message.save
+          # after_create hooks may set state_value to the wrong value so reset to 'read' for user who created the message
+          @message.state_value = 'read'
+          render json: @message, serializer: serializer_for(@message), status: 201
+        else
+          render json: @message.errors, status: 422
+        end
       end
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
@@ -109,7 +115,7 @@ module Api
       end
 
       def apply_filters(messages, options)
-        messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+        messages = messages.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
 
         if options[:messageable_id].present? && options[:messageable_type].present?
           messages = messages.where(messageable_id: options[:messageable_id],

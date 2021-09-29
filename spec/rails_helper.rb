@@ -62,6 +62,7 @@ RSpec.configure do |config|
 
   config.before(:all) do
     FactoryBot.create(:user, :system)
+    FactoryBot.create(:role, name: Role::ROLE_NAMES[:stock_fulfilment])
   end
 
   # Default app to be 'admin' in order to not use treat_user_as_donor

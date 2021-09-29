@@ -2,16 +2,6 @@ Feature: 'User logging'
 
     An app user should be allowed the login based only on their roles and permissions
 
-    Scenario: A supervisor cannot login to stock app
-    Given I am a supervisor logging into "stock" app
-    And I enter the mobile number
-    Then I should not be allowed to login
-
-    Scenario: A reviewer cannot login to stock app
-    Given I am a reviewer logging into "stock" app
-    And I enter the mobile number
-    Then I should not be allowed to login
-
     Scenario: A supervisor can login to admin app
     Given I am a supervisor logging into "admin" app
     And I enter the mobile number
@@ -55,11 +45,6 @@ Feature: 'User logging'
     And I enter the mobile number
     Then I should not be allowed to login
 
-    Scenario: An old stock_fulfilment [expired role] cannot login to stock app
-    Given I am an old stock_fulfilment logging into "stock" app
-    And I enter the mobile number
-    Then I should not be allowed to login
-
     Scenario: A order_fulfilment (and expired order_administrator role) can login to stock app
     Given I am a order_fulfilment logging into "stock" app
     Given I have expired role order_administrator and permission "can_manage_settings"
@@ -68,3 +53,14 @@ Feature: 'User logging'
     Then I should be allowed to login
     And I create GoodcitySetting
     Then I should get unauthorized error
+
+    Scenario: A user without any active role [expired role] can login to stock app
+    Given I am an old stock_fulfilment logging into "stock" app
+    And I enter the mobile number
+    Then I should be allowed to login
+
+    Scenario: A guest user (without any role) can login to stock app
+    Given I am a guest user logging into "stock" app
+    And I enter the mobile number
+    And I enter the pin
+    Then I should be allowed to login

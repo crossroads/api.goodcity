@@ -5,7 +5,7 @@ module Api::V1
     attributes :id, :first_name, :last_name, :mobile, :email,
                :last_connected, :last_disconnected, :is_email_verified,
                :is_mobile_verified, :disabled, :max_role_level,
-               :preferred_language
+               :preferred_language, :title
 
     has_one :address, serializer: AddressSerializer
     has_one :image, serializer: ImageSerializer

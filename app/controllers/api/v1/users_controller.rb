@@ -56,7 +56,6 @@ module Api
         param :last_connected, String, desc: "Time when user last connected to server.", allow_nil: true
         param :last_disconnected, String, desc: "Time when user disconnected from server.", allow_nil: true
       end
-
       def update
         @user.update(user_params)
         if @user.valid?
@@ -101,6 +100,20 @@ module Api
         else
           render json: merge_response[:user], serializer: serializer
         end
+      end
+
+      api :PUT, 'v1/users/1/grant_access', "Grant access to user using access-pass-key"
+      param :access_key, String, desc: 'AccessPass key to get access'
+      def grant_access
+        grant_access = GrantAccessPass.new(params[:access_key], current_user.id)
+
+        if grant_access.pass
+          grant_access.grant_access_by_pass
+          render json: @user, serializer: Api::V1::UserProfileSerializer
+        else
+          render_error("Invalid Access Pass")
+        end
+
       end
 
       private

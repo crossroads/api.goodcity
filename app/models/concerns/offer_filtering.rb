@@ -12,7 +12,7 @@ module OfferFiltering
     scope :filter_offers, lambda { |options = {}|
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
-      res = res.shareable if options[:shareable].present?
+      res = res.shareable(options[:include_expired_shareables]) if options[:shareable].present?
       res = res.select('offers.*, schedules.scheduled_at')
       res = res.where('offers.state IN (?)', options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
@@ -74,8 +74,11 @@ module OfferFiltering
       t
     end
 
-    def self.shareable
-      joins('INNER JOIN shareables ON shareables.resource_id=offers.id')
+    def self.shareable(include_expired_shareables)
+      res = joins("INNER JOIN shareables ON shareables.resource_id=offers.id AND shareables.resource_type = 'Offer'")
+      return res if include_expired_shareables
+
+      res.where('shareables.expires_at IS NULL OR shareables.expires_at > now()')
     end
 
     def self.assoicate_delivery_and_schedule

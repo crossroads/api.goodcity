@@ -14,6 +14,7 @@ module Api
       def define_abilities
         address_abilities
         appointment_slot_abilities
+        access_pass_abilities
         beneficiary_abilities
         contact_abilities
         deliveries_abilities
@@ -84,6 +85,12 @@ module Api
         return unless can_manage_settings?
         can [:create, :index, :destroy, :update], AppointmentSlotPreset
         can [:create, :index, :destroy, :update, :calendar], AppointmentSlot
+      end
+
+      def access_pass_abilities
+        if can_manage_access_passes?
+          can %i[create refresh], AccessPass, generated_by_id: @user_id
+        end
       end
 
       def beneficiary_abilities
@@ -180,6 +187,7 @@ module Api
             record.imageable.offer.created_by_id == @user_id
           end
           can [:show], Image, { imageable_type: "Package", imageable: { order: { created_by_id: @user_id } } }
+          can :create, Image, { imageable_type: nil }
         end
         can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
           state: ['draft', 'submitted', 'scheduled'] }
@@ -217,7 +225,10 @@ module Api
           next false if (
             (message.is_private) || # e.g donor trying to talk in the staff channel
             (message.recipient_id && message.recipient_id != @user_id) || # e.g donor is trying to contact another donor
-            (message.messageable_type === "OfferResponse" && !Shareable.shared_resource?(message.messageable.offer)) # e.g A charity user trying to discuss with the offer that is not shared
+            (message.messageable_type === "OfferResponse" && !( # e.g A charity user trying to discuss with the offer that is not shared
+            Shareable.shared_resource?(message.messageable.offer) || message.messageable.messages.map(&:sender_id).include?(@user_id)
+              # User doesn't have an existing OfferResponse
+            ))
           )
 
           #
@@ -429,7 +440,7 @@ module Api
 
       def user_abilities
         can [:current_user_profile], User
-        can %i[show update orders_count], User, id: @user_id
+        can %i[show update orders_count grant_access], User, id: @user_id
         can %i[index show], User if can_read_users?
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?
