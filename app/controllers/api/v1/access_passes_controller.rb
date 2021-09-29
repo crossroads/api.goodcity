@@ -42,7 +42,7 @@ module Api
 
       def set_roles_for_access_pass(access_pass, role_ids)
         role_ids.split(",").each do |role_id|
-          if AccessPassesRole.allowed_roles_ids.include?(role_id)
+          if AccessPassesRole.allowed_roles_ids.include?(role_id.to_i)
             access_pass.access_passes_roles.find_or_create_by(
               access_pass: access_pass,
               role_id: role_id.to_i
