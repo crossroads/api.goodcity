@@ -452,7 +452,7 @@ class Order < ApplicationRecord
       {
         quantity: gc.quantity,
         type_en: gc.package_type.name_en,
-        type_zh_tw: gc.package_type.name_zh_tw || gc.package_type.name_en,
+        type_zh_tw: gc.package_type.name_zh_tw.present? ? gc.package_type.name_zh_tw : gc.package_type.name_en,
         description: gc.description
       }
     end
@@ -460,7 +460,7 @@ class Order < ApplicationRecord
       {
         quantity: op.quantity,
         type_en: op.package.package_type.name_en,
-        type_zh_tw: op.package.package_type.name_zh_tw || op.package.package_type.name_en
+        type_zh_tw: op.package.package_type.name_zh_tw.present? ? op.package.package_type.name_zh_tw : op.package.package_type.name_en
       }
     end
     props

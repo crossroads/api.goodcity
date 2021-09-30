@@ -1028,8 +1028,8 @@ RSpec.describe Order, type: :model do
       end
       context "fallback to en" do
         before do
-          orders_package.package.package_type.update_column(:name_zh_tw, nil)
-          goodcity_request.package_type.update_column(:name_zh_tw, nil)
+          orders_package.package.package_type.update_column(:name_zh_tw, '')
+          goodcity_request.package_type.update_column(:name_zh_tw, '')
         end
         it do
           expect(subject["requests"].first[:type_zh_tw]).to eql(goodcity_request.package_type.name_en)
