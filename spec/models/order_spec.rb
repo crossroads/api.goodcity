@@ -1005,6 +1005,38 @@ RSpec.describe Order, type: :model do
         expect(order_transport2.order.send_submission_pickup_email?).to be_falsey
       end
     end
+
+    context "generating email properties" do
+      let(:order) { create(:order, :with_state_draft, :with_created_by, booking_type: appointment_type )}
+      let(:goodcity_request) { create :goodcity_request }
+      let(:orders_package) { create :orders_package, :with_state_designated }
+      let(:beneficiary) { create :beneficiary }
+      subject { order.email_properties }
+      before do
+        order.goodcity_requests << goodcity_request
+        order.orders_packages << orders_package
+        order.beneficiary = beneficiary
+      end
+      it do
+        expect(subject["order_code"]).to eql(order.code)
+        expect(subject["booking_type"]).to eql(appointment_type.name_en)
+        expect(subject["booking_type_zh"]).to eql(appointment_type.name_zh_tw)
+        expect(subject["client"][:name]).to eql(order.beneficiary.first_name + " " + order.beneficiary.last_name)
+        expect(subject["client"][:phone]).to eql(beneficiary.phone_number)
+        expect(subject["requests"].first[:type_zh_tw]).to eql(goodcity_request.package_type.name_zh_tw)
+        expect(subject["goods"].first[:type_zh_tw]).to eql(orders_package.package.package_type.name_zh_tw)
+      end
+      context "fallback to en" do
+        before do
+          orders_package.package.package_type.update_column(:name_zh_tw, '')
+          goodcity_request.package_type.update_column(:name_zh_tw, '')
+        end
+        it do
+          expect(subject["requests"].first[:type_zh_tw]).to eql(goodcity_request.package_type.name_en)
+          expect(subject["goods"].first[:type_zh_tw]).to eql(orders_package.package.package_type.name_en)
+        end
+      end
+    end
   end
 
   describe "Live updates" do
