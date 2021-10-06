@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.7.0'
+ruby '2.7.3'
 
 gem 'pg'
 gem 'rails', '~> 6.1.3'
@@ -20,7 +20,7 @@ gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'fake_email_validator'
 gem 'ffaker'
-# gem 'go_go_van_api', git: 'git@github.com:crossroads/go_go_van_api.git', branch: 'master'
+gem 'go_go_van_api', git: 'git@github.com:crossroads/go_go_van_api.git', branch: 'master'
 gem 'guid'
 gem 'http_accept_language'
 gem 'jwt', '~> 2.3.0'
