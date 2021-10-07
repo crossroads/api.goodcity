@@ -22,7 +22,7 @@ describe TokenValidatableFakeController do
       end
       it "should be authorized with enabled user" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to_not raise_error(Goodcity::UnauthorizedError)
+        expect{ subject.send(:validate_token) }.to_not raise_error
       end
     end
 
