@@ -23,7 +23,7 @@ gem 'ffaker'
 gem 'go_go_van_api', git: 'git@github.com:crossroads/go_go_van_api.git', branch: 'master'
 gem 'guid'
 gem 'http_accept_language'
-gem 'jwt', '~> 2.2.2'
+gem 'jwt', '~> 2.3.0'
 gem 'kaminari'
 gem 'lograge'
 gem 'loofah', '>= 2.3.1'
@@ -46,15 +46,15 @@ gem 'rollbar'
 gem 'rotp', '~> 3.3.1'
 gem 'rubyXL'
 gem 'sendgrid-ruby'
-gem 'sidekiq', '~> 6.1.1'
+gem 'sidekiq', '~> 6.2.2'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'
-gem 'twilio-ruby', '~> 5.11.0'
-gem 'whenever', '~>  0.9.5', require: false
+gem 'twilio-ruby', '~> 5.58'
+gem 'whenever', '~>  1.0', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 gem 'jsonapi-serializer-formats'
@@ -92,7 +92,7 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'shoulda-callback-matchers'
   gem 'shoulda-matchers'
-  gem 'simplecov', '~> 0.16.1', require: false
+  gem 'simplecov', '~> 0.21.0', require: false
   gem 'timecop'
   gem 'webmock'
 end

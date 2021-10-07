@@ -10,17 +10,16 @@ It provides a set of database models, validations, relationships, tests and JSON
 
 ## Prerequisties
 
-* ruby 2.2 ([rvm](http://rvm.io/) can make this easy)
-* [postgresql](http://www.postgresql.org/) (v9.4 or greater)
+* ruby 2.7 ([rvm](http://rvm.io/) can make this easy)
+* [postgresql](http://www.postgresql.org/) (v12 or greater)
 * [socket.io-webservice](https://github.com/crossroads/socket.io-webservice)
 * [redis](http://redis.io/)
-* [expect](http://expect.sourceforge.net/) (required for barcode printing)
-* cups-client (required for barcode printing)
 
 ## Installation
 
 Clone this repository and run the following commands:
 
+    sudo apt install libpq-dev
     bundle install
     rake db:create db:migrate db:seed
 
