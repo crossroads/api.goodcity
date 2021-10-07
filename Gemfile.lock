@@ -537,7 +537,7 @@ GEM
     traco (5.3.2)
       activerecord (>= 4.2)
     ttfunk (1.7.0)
-    twilio-ruby (5.58.3)
+    twilio-ruby (5.59.0)
       faraday (>= 0.9, < 2.0)
       jwt (>= 1.5, <= 2.5)
       nokogiri (>= 1.6, < 2.0)
@@ -642,7 +642,7 @@ DEPENDENCIES
   state_machine
   timecop
   traco
-  twilio-ruby (~> 5.58.0)
+  twilio-ruby (~> 5.58)
   webmock
   whenever (~> 0.9.5)
   with_advisory_lock

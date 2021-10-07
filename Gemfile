@@ -53,7 +53,7 @@ gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'
-gem 'twilio-ruby', '~> 5.58.0'
+gem 'twilio-ruby', '~> 5.58'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
