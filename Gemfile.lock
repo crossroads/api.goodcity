@@ -554,7 +554,7 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    whenever (0.9.7)
+    whenever (1.0.0)
       chronic (>= 0.6.3)
     with_advisory_lock (4.6.0)
       activerecord (>= 4.2)
@@ -644,7 +644,7 @@ DEPENDENCIES
   traco
   twilio-ruby (~> 5.58)
   webmock
-  whenever (~> 0.9.5)
+  whenever (~> 1.0)
   with_advisory_lock
 
 RUBY VERSION

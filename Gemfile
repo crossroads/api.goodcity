@@ -54,7 +54,7 @@ gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'
 gem 'twilio-ruby', '~> 5.58'
-gem 'whenever', '~>  0.9.5', require: false
+gem 'whenever', '~>  1.0', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 gem 'jsonapi-serializer-formats'
