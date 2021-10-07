@@ -8,7 +8,7 @@ gem 'rails', '~> 6.1.3'
 gem 'rake'
 
 gem 'active_model_otp'
-gem 'active_model_serializers', '~> 0.10.12'
+gem 'active_model_serializers', '~> 0.8.0'
 gem 'active_record_union'
 gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem 'bootsnap', require: false
