@@ -53,12 +53,7 @@ In development mode, use
 
 to start the sidekiq worker. Configuration is set in ```config/sidekiq.yml```
 
-You can also view the sidekiq jobs dashboard at ```/sidekiq``` but must first set
-
-    SIDEKIQ_USERNAME
-    SIDEKIQ_PASSWORD
-
-in the ```.env``` file. To prevent accidental data leakage, blank usernames and passwords are not accepted.
+You can also view the sidekiq jobs dashboard by running the crossroads/docker-sidekiq-web repo (see https://github.com/crossroads/docker-sidekiq-web).
 
 ## Foreman
 
