@@ -27,7 +27,7 @@ class PackageType < ApplicationRecord
   scope :pallet_types, -> { where(allow_pallet: true) }
 
   scope :with_eager_load, -> {
-    eager_load([:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types])
+    includes([:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types])
   }
 
   private
