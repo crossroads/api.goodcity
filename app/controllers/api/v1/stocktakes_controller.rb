@@ -15,7 +15,7 @@ module Api
       api :GET, "/v1/stocktakes", "List all stocktakes"
       def index
         render(
-          json: @stocktakes,
+          json: @stocktakes.with_eager_load,
           each_serializer: serializer,
           include_packages_locations: true,
           include_revisions: bool_param(:include_revisions, true)
