@@ -3,18 +3,13 @@ class PackageType < ApplicationRecord
 
   belongs_to :location
   has_many :subpackage_types
-  has_many :child_package_types, through: :subpackage_types,
-    source: :child_package_type
+  has_many :child_package_types, through: :subpackage_types, source: :child_package_type
 
-  has_many :default_subpackage_types, -> { where is_default: true },
-    class_name: :SubpackageType
-  has_many :default_child_package_types, through: :default_subpackage_types,
-    source: :default_child_package_type
+  has_many :default_subpackage_types, -> { where is_default: true }, class_name: :SubpackageType
+  has_many :default_child_package_types, through: :default_subpackage_types, source: :default_child_package_type
 
-  has_many :other_subpackage_types, -> { where is_default: false },
-    class_name: :SubpackageType
-  has_many :other_child_package_types, through: :other_subpackage_types,
-    source: :other_child_package_type
+  has_many :other_subpackage_types, -> { where is_default: false }, class_name: :SubpackageType
+  has_many :other_child_package_types, through: :other_subpackage_types, source: :other_child_package_type
 
   has_many :items, inverse_of: :package_type
   has_many :packages, inverse_of: :package_type
@@ -32,7 +27,7 @@ class PackageType < ApplicationRecord
   scope :pallet_types, -> { where(allow_pallet: true) }
 
   scope :with_eager_load, -> {
-    eager_load([:location])
+    eager_load([:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types])
   }
 
   private
