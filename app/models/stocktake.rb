@@ -8,6 +8,19 @@ class Stocktake < ApplicationRecord
   belongs_to  :location
   belongs_to  :created_by, class_name: "User"
 
+  scope :with_eager_load, -> {
+    includes([
+      {stocktake_revisions: 
+        {package: [ 
+          {package_type: [:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types]},
+          :images,
+          {packages_locations: :location},
+          :storage_type
+        ]}
+      }
+    ])
+  }
+
   alias_attribute :revisions, :stocktake_revisions
 
   # ---------------------
@@ -58,7 +71,7 @@ class Stocktake < ApplicationRecord
   end
 
   # ---------------------
-  # Methdos
+  # Methods
   # ---------------------
 
   #

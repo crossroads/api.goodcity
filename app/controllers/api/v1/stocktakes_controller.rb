@@ -24,6 +24,8 @@ module Api
 
       api :GET, "/v1/stocktakes/:id", "Get a stocktake by id"
       def show
+        # eager loading to optimize serializer
+        @stocktake = Stocktake.with_eager_load.find(@stocktake.id)
         render(
           json: @stocktake,
           serializer: serializer,
