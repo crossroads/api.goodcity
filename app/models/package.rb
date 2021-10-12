@@ -88,6 +88,14 @@ class Package < ApplicationRecord
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
+  # used on PackagesController#index
+  scope :with_eager_load, -> {
+    includes([
+      :images, :item, {packages_locations: :location}, :orders_packages, :storage_type,
+      package_type: [:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types]
+    ])
+  }
+
   accepts_nested_attributes_for :packages_locations, :detail, allow_destroy: true, limit: 1
 
   attr_accessor :skip_set_relation_update, :request_from_admin, :detail_attributes
