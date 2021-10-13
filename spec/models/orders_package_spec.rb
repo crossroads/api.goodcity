@@ -138,17 +138,14 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#dispatch_orders_package' do
-    before(:all) do
-      Timecop.freeze(Time.current)
-    end
-
+    before { Timecop.freeze(time) }
+    let(:time) { Time.current }
     let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it "sets today's date for sent_on column" do
-      todays_date = Date.today
       orders_package.dispatch_orders_package
-      expect(orders_package.reload.sent_on.to_date).to eq todays_date
+      expect(orders_package.reload.sent_on.to_date).to eq time.to_date
     end
 
     it 'updates state to dispatched' do
@@ -157,9 +154,7 @@ RSpec.describe OrdersPackage, type: :model do
         }.to change(orders_package, :state).to eq 'dispatched'
     end
 
-    after(:all) do
-      Timecop.return
-    end
+    after { Timecop.return }
   end
 
   describe '#undispatch_orders_package' do
