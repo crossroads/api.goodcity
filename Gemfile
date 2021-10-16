@@ -49,7 +49,6 @@ gem 'sendgrid-ruby'
 gem 'sidekiq', '~> 6.2.2'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-statistic'
-gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'

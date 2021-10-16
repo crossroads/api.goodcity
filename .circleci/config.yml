@@ -50,7 +50,7 @@ jobs:
       - image: cimg/ruby:2.7.3
       - image: circleci/postgres:9.6.9-alpine-ram
       - image: circleci/redis:4.0.9-alpine
-    parallelism: 4
+    parallelism: 3
     environment:
       RAILS_ENV: test
     steps:
@@ -99,7 +99,7 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
-            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 4 -o tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 3 -o tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
 
   audit:

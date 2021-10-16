@@ -44,6 +44,7 @@ module Api
       api :GET, "/v1/packages", "get all packages for the item"
 
       def index
+        @packages = @packages.with_eager_load
         @packages = @packages.browse_public_packages if is_browse_app?
         @packages = @packages.where(inventory_number: params[:inventory_number].split(",")) if params[:inventory_number].present?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
