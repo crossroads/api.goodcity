@@ -1,8 +1,17 @@
-# Required environment variables
+version: 2.1
+
+# ENV VARS required
+# AZURE_SP           - service principal given the Contributor role on the Azure Container Registry
+# AZURE_SP_PASSWORD  - service principal password
+# AZURE_SP_TENANT    - tenant of servie principal
+# AZURE_SUBSCRIPTION - name of Azure subscription with the container registry
+# AZURE_ACR_REGISTRY - name of Azure Container Registry
 # CC_TEST_REPORTER_ID   - for reporting code climate statistics
 # ROLLBAR_ACCESS_TOKEN  - for recording deployments
+# GITHUB_TOKEN - token for accessing private repos. See https://github.com/settings/tokens
 
-version: 2
+orbs:
+  azure-cli: circleci/azure-cli@1.2.0
 
 defaults: &defaults
   docker:
@@ -121,6 +130,17 @@ jobs:
       - run: |
           ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
 
+  build-and-deploy-docker-image:
+    executor: azure-cli/default
+    working_directory: ~/code
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - run: az account set --subscription $AZURE_SUBSCRIPTION
+      - run: az acr build --build-arg GITHUB_TOKEN --registry $AZURE_ACR_REGISTRY --image api.goodcity:$CIRCLE_BRANCH .
+
 workflows:
   version: 2
   build-test-audit-and-deploy:
@@ -145,3 +165,11 @@ workflows:
           filters:
             branches:
               only: /^(master|live|preview)$/
+      # NEW DEPLOYMENT
+      - build-and-deploy-docker-image:
+          requires:
+            - test
+            - audit
+          filters:
+            branches:
+              only: /^(master)$/
