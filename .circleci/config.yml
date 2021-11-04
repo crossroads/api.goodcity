@@ -132,7 +132,7 @@ jobs:
 
   build-and-deploy-docker-image:
     executor: azure-cli/default
-    working_directory: ~/code
+    working_directory: ~/api.goodcity
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
