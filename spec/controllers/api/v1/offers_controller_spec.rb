@@ -451,7 +451,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       let!(:merge_offer) { create :offer, :submitted, :with_items, created_by: donor }
       let!(:base_offer) { create :offer, :submitted, :with_items, created_by: donor }
       let!(:other_offer) { create :offer, :submitted, :with_items, created_by: create(:user) }
-      let!(:no_user_offer) { create :offer, :submitted, :with_items, created_by: nil }
       let!(:scheduled_offer) { create :offer, :scheduled, :with_items, created_by: donor }
 
       let(:offer_ids) { parsed_body["offers"].map { |o| o['id'] } }
@@ -463,11 +462,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "returns other offers from the same user" do
         expect(response.status).to eq(200)
         expect(offer_ids).to include(base_offer.id)
-      end
-
-      it "returns other offers from the a NIL user" do
-        expect(response.status).to eq(200)
-        expect(offer_ids).to include(no_user_offer.id)
       end
 
       it "returns scheduled offers" do

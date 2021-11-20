@@ -25,7 +25,6 @@ module Goodcity
         .where(state: base_offer_states)
         .where.not(id: offer.id)
         .where(created_by_id: offer.created_by_id)
-        .or(Offer.where(created_by_id: nil))
     end
 
     # Merges the items from one offer into another
