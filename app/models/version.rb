@@ -1,7 +1,6 @@
 require 'paper_trail/version'
 
 class Version < PaperTrail::Version
-  include PushUpdates
   belongs_to :related, polymorphic: true
 
   scope :by_user, ->(user_id) { where('whodunnit = ?', user_id.to_s) }
