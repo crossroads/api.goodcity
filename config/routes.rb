@@ -90,6 +90,7 @@ Rails.application.routes.draw do
           put :receive_offer
           put :mark_inactive
           put :merge_offer
+          get :mergeable_offers
           put :reopen_offer
           put :resume_receiving
         end

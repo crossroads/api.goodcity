@@ -12,6 +12,22 @@ module Goodcity
       end
     end
 
+    def self.base_offer_states
+      %w(submitted under_review reviewed scheduled)
+    end
+
+    def self.target_offer_states
+      %w(submitted under_review reviewed)
+    end
+
+    def self.mergeable_offers(offer)
+      Offer
+        .where(state: base_offer_states)
+        .where.not(id: offer.id)
+        .where(created_by_id: offer.created_by_id)
+        .or(Offer.where(created_by_id: nil))
+    end
+
     # Merges the items from one offer into another
     # - Returns true if successful and false if not
     # - Doesn't allow merges of offers from other users as this would lose contact details
@@ -26,8 +42,8 @@ module Goodcity
 
       # pre-flight checks
       proceed = offer.created_by_id == other_offer.created_by_id
-      proceed = proceed && %w(submitted under_review reviewed scheduled).include?(offer.state)
-      proceed = proceed && %w(submitted under_review reviewed).include?(other_offer.state)
+      proceed = proceed && base_offer_states.include?(offer.state)
+      proceed = proceed && target_offer_states.include?(other_offer.state)
 
       if proceed
         offer.transaction do

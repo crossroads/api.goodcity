@@ -158,6 +158,7 @@ module Api
         render json: @offer, serializer: offer_serializer
       end
 
+      api :GET, '/v1/offers/summary', "Returns general stats on current offers"
       def summary
         all_offers_count = Offer.offers_count_for(self_reviewer: false).merge(
           Offer.offers_count_for(self_reviewer: true)
@@ -165,9 +166,21 @@ module Api
         render json: all_offers_count
       end
 
+      api :PUT, '/v1/offers/1/merge_offer', "Merges current offer into the base offer"
       def merge_offer
         status = Goodcity::OfferUtils.merge_offer!(offer_id: params["base_offer_id"], other_offer_id: @offer.id)
         render json: { status: status }
+      end
+
+      api :GET, '/v1/offers/1/mergeable_offers', "Returns offers allowed to merge with"
+      def mergeable_offers
+        offers = Goodcity::OfferUtils.mergeable_offers(@offer)
+        render json: ActiveModel::ArraySerializer.new(offers.with_summary_eager_load, {
+          each_serializer: select_serializer,
+          include_orders_packages: false,
+          exclude_messages: true,
+          root: 'offers'
+        }).as_json
       end
 
       private
