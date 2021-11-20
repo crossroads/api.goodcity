@@ -9,6 +9,25 @@ context Goodcity::OfferUtils do
   let!(:other_offer) { create :offer, :reviewed, created_by: first_user }
   let!(:offer_created_by_other_user) { create :offer, :reviewed, created_by: other_user }
 
+  describe 'Mergeable offers' do
+    let!(:no_offer_user) { create :offer, :reviewed, created_by: nil }
+
+    it 'includes other offer from the same user' do
+      offers = Goodcity::OfferUtils.mergeable_offers(base_offer)
+      expect(offers).to include(other_offer)
+    end
+
+    it 'includes offers with a nil user' do
+      offers = Goodcity::OfferUtils.mergeable_offers(base_offer)
+      expect(offers).to include(no_offer_user)
+    end
+
+    it 'does not include offers from another user' do
+      offers = Goodcity::OfferUtils.mergeable_offers(base_offer)
+      expect(offers).not_to include(offer_created_by_other_user)
+    end
+  end
+
   context 'Merge two offers into one' do
 
     context '.merge_offer!' do
