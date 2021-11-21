@@ -488,6 +488,9 @@ GEM
     sidekiq-statistic (1.4.0)
       sidekiq (>= 5.0)
       tilt (~> 2.0)
+    sidekiq_alive (2.1.4)
+      sidekiq
+      webrick
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -622,6 +625,7 @@ DEPENDENCIES
   sidekiq (~> 6.2.2)
   sidekiq-scheduler
   sidekiq-statistic
+  sidekiq_alive
   simplecov (~> 0.21.0)
   slack-ruby-client
   spring

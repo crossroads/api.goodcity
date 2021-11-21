@@ -443,6 +443,41 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "GET offers/1/mergeable_offers" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+
+      let!(:donor) { create :user }
+      let!(:merge_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let!(:base_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let!(:other_offer) { create :offer, :submitted, :with_items, created_by: create(:user) }
+      let!(:scheduled_offer) { create :offer, :scheduled, :with_items, created_by: donor }
+
+      let(:offer_ids) { parsed_body["offers"].map { |o| o['id'] } }
+
+      before do
+        put :mergeable_offers, params: { id: merge_offer.id }
+      end
+
+      it "returns other offers from the same user" do
+        expect(response.status).to eq(200)
+        expect(offer_ids).to include(base_offer.id)
+      end
+
+      it "returns scheduled offers" do
+        # We are merging _into_ the scheduled offer
+        expect(response.status).to eq(200)
+        expect(offer_ids).to include(scheduled_offer.id)
+      end
+
+      it "does not return offers from another user" do
+        expect(response.status).to eq(200)
+        expect(offer_ids).not_to include(other_offer.id)
+      end
+    end
+  end
+
+
   describe "PUT offers/1/merge_offer" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }

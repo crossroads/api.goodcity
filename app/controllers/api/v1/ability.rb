@@ -248,7 +248,7 @@ module Api
 
         if can_manage_offers?
           can [:index, :show, :update, :complete_review, :close_offer, :search,
-            :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer, :resume_receiving], Offer
+            :destroy, :review, :mark_inactive, :merge_offer, :mergeable_offers, :receive_offer, :summary, :reopen_offer, :resume_receiving], Offer
         end
 
         can [:search], Offer if can_search_offers?

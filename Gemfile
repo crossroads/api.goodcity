@@ -57,6 +57,7 @@ gem 'whenever', '~>  1.0', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 gem 'jsonapi-serializer-formats'
+gem 'sidekiq_alive'
 
 group :development, :staging do
   gem 'grape-swagger-rails'

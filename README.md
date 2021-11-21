@@ -84,6 +84,27 @@ psql --host=<DB_HOST> --username=<DB_USER> -W goodcity_server_staging < /opt/rai
 systemctl start nginx sidekiq
 ```
 
+## Docker
+
+You can build the docker image using the following commands. You will need to enter a valid GITHUB_TOKEN which will provide access to the private repos. See https://github.com/settings/tokens
+
+```
+export GITHUB_TOKEN=...
+docker build --build-arg GITHUB_TOKEN -t api.goodcity .
+docker run -p 3000:3000 --env-file .env.staging api.goodcity
+
+docker login <registry>.azurecr.io
+docker tag api.goodcity <registry>.azurecr.io/api.goodcity:master
+docker push <registry>.azurecr.io/api.goodcity:master
+docker push <registry>.azurecr.io/api.goodcity:live
+```
+
+Alternatively, you can use the ACR cloud service to build the image.
+
+```
+az acr build --build-arg GITHUB_TOKEN --registry goodregistry --image api.goodcity:master .
+```
+
 ## Documentation
 
 * API documentation is available online at http://api.goodcity.hk/api/docs
