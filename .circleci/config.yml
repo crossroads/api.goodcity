@@ -128,7 +128,8 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
-          ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
+          STAGE=$(if [ "$CIRCLE_BRANCH" == "live" ]; then echo production; else echo staging; fi)
+          bundle exec cap ${STAGE} deploy
 
   build-and-deploy-docker-image:
     executor: azure-cli/default
@@ -164,8 +165,8 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(master|live|preview)$/
-      # NEW DEPLOYMENT
+              only: /^(live)$/
+      # NEW DEPLOYMENT NOT YET FOR LIVE
       - build-and-deploy-docker-image:
           requires:
             - test
