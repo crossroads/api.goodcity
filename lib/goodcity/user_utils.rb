@@ -51,21 +51,21 @@ module Goodcity
     end
 
     def self.reassign_offers(master_user, other_user)
-      other_user.offers.update(created_by_id: master_user.id)
-      other_user.reviewed_offers.update(reviewed_by_id: master_user.id)
+      other_user.offers.unscope(where: :deleted_at).update(created_by_id: master_user.id)
+      other_user.reviewed_offers.unscope(where: :deleted_at).update(reviewed_by_id: master_user.id)
 
       offer_columns = %w[closed_by_id received_by_id]
 
       offer_columns.each do |column|
-        Offer.where(column.to_sym => other_user.id).update(column.to_sym => master_user.id)
+        Offer.where(column.to_sym => other_user.id).unscope(where: :deleted_at).update(column.to_sym => master_user.id)
       end
     end
 
     def self.reassign_messages(master_user, other_user)
-      other_user.messages.update(sender_id: master_user.id)
+      other_user.messages.unscope(where: :deleted_at).update(sender_id: master_user.id)
       other_user.subscriptions.update(user_id: master_user.id)
 
-      Message.where(recipient_id: other_user.id).update(recipient_id: master_user.id)
+      Message.where(recipient_id: other_user.id).unscope(where: :deleted_at).update(recipient_id: master_user.id)
     end
 
     def self.reassign_packages(master_user, other_user)
@@ -154,7 +154,7 @@ module Goodcity
 
     def self.remove_unused_records(other_user)
       AuthToken.where(user_id: other_user.id).delete_all
-      other_user.address.try(:destroy)
+      Address.where(addressable: other_user).unscope(where: :deleted_at).destroy_all
     end
 
     def self.reassign_versions(master_user, other_user)
