@@ -79,6 +79,18 @@ context Goodcity::UserUtils do
         expect(master_user.offers.count).to eq(10)
       end
 
+      it "reassign deleted offers created by other-user" do
+        count_of_offers = other_user.offers.size
+        other_user.offers.first.destroy
+        expect(other_user.offers.size).to eql(count_of_offers - 1)
+        expect(other_user.offers.unscope(where: :deleted_at).size).to eql(count_of_offers)
+
+        Goodcity::UserUtils.reassign_offers(master_user, other_user)
+
+        expect(other_user.offers.size).to eq(0)
+        expect(master_user.offers.unscope(where: :deleted_at).size).to eq(10)
+      end
+
       it "reassign reviewed offers of other-user to master-user" do
         Goodcity::UserUtils.reassign_offers(master_user, other_user)
 
@@ -110,6 +122,20 @@ context Goodcity::UserUtils do
 
         expect(other_user.messages.count).to eq(0)
         expect(master_user.messages.count).to eq(10)
+      end
+
+      it "reassign deleted message of other-user to master-user" do
+        create_list :message, 5, sender: other_user
+        create_list :message, 5, sender: master_user
+
+        count_of_messages = other_user.messages.size
+        other_user.messages.first.destroy
+        expect(other_user.messages.size).to eql(count_of_messages - 1)
+        expect(other_user.messages.unscope(where: :deleted_at).size).to eql(count_of_messages)
+
+        Goodcity::UserUtils.reassign_messages(master_user, other_user)
+        expect(other_user.messages.size).to eq(0)
+        expect(master_user.messages.unscope(where: :deleted_at).size).to eq(10)
       end
 
       it "reassign sent messages of other-user to master-user" do
