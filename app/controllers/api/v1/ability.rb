@@ -333,6 +333,7 @@ module Api
         end
         if can_manage_stocktake_revisions?
           can [:create, :destroy, :update], StocktakeRevision
+          can [:index, :show], Stocktake
         end
       end
 
