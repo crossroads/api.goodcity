@@ -1,7 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::StocktakesController, type: :controller do
-  let(:entitled_user) { create(:user, :with_can_manage_stocktakes_permission) }
+  let(:stock_manager) { create(:user, :with_can_manage_stocktakes_permission) }
+  let(:stock_fulfilment_user) { create(:user, :with_can_manage_stocktake_revisions_permission) }
   let(:other_user) { create(:user) }
   let(:location) { create(:location) }
   let(:stocktake) { create(:stocktake, location: location) }
@@ -29,8 +30,35 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
       end
     end
 
-    context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+    context "as a user with 'can_manage_stocktake' permission" do
+      before { generate_and_set_token(stock_manager) }
+
+      it "returns 200" do
+        get :index
+        expect(response.status).to eq(200)
+      end
+
+      it "returns all stocktakes" do
+        get :index
+        expect(parsed_body["stocktakes"].length).to eq(1)
+        expect(parsed_body["stocktakes"].first["id"]).to eq(stocktake.id)
+      end
+
+      it "includes stocktake revisions" do
+        get :index
+        expect(parsed_body["stocktake_revisions"].length).to eq(3)
+      end
+
+      context "with ?include_revisions set to false" do
+        it "does not include stocktake revisions" do
+          get :index, params: { include_revisions: false }
+          expect(parsed_body["stocktake_revisions"]).to be_nil
+        end
+      end
+    end
+
+    context "as a user with 'can_manage_stocktake_revisions' permission" do
+      before { generate_and_set_token(stock_fulfilment_user) }
 
       it "returns 200" do
         get :index
@@ -68,7 +96,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     end
 
     context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+      before { generate_and_set_token(stock_manager) }
 
       it "returns 200" do
         get :show, params: { id: stocktake.id }
@@ -114,7 +142,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     end
 
     context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+      before { generate_and_set_token(stock_manager) }
 
       it "returns 201" do
         post :create, params: { stocktake: payload }
@@ -173,7 +201,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     end
 
     context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+      before { generate_and_set_token(stock_manager) }
 
       it "returns 200" do
         delete :destroy, params: { id: stocktake.id }
@@ -205,7 +233,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     end
 
     context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+      before { generate_and_set_token(stock_manager) }
 
       it "returns 200" do
         put :commit, params: { id: stocktake.id }
@@ -269,7 +297,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     end
 
     context "as a user with correct permissions" do
-      before { generate_and_set_token(entitled_user) }
+      before { generate_and_set_token(stock_manager) }
 
       it "returns 200" do
         put :cancel, params: { id: stocktake.id }
