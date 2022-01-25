@@ -35,7 +35,7 @@ description = "Sidekiq stats:"
  
 metrics = [
   ["enqueued", stats.enqueued, 20, 35],
-  ["retries", stats.retry_size, 1, 5],
+  ["retries", stats.retry_size, 5, 10],
   ["dead", stats.dead_size, 1, 5],
   ["scheduled", stats.scheduled_size, 10, 20]
 ]
