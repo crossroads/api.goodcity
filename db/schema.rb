@@ -10,30 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_11_024837) do
+ActiveRecord::Schema.define(version: 2022_01_30_120417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
 
-  create_table "access_pass_roles", force: :cascade do |t|
-    t.bigint "access_pass_id"
-    t.bigint "role_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["access_pass_id"], name: "index_access_pass_roles_on_access_pass_id"
-    t.index ["role_id"], name: "index_access_pass_roles_on_role_id"
-  end
-
   create_table "access_passes", force: :cascade do |t|
-    t.datetime "access_expires_at"
-    t.datetime "generated_at"
+    t.datetime "access_expires_at", precision: 6
+    t.datetime "generated_at", precision: 6
     t.integer "generated_by_id"
     t.integer "access_key"
     t.bigint "printer_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["access_key"], name: "index_access_passes_on_access_key", unique: true
     t.index ["printer_id"], name: "index_access_passes_on_printer_id"
   end
@@ -41,8 +32,8 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
   create_table "access_passes_roles", force: :cascade do |t|
     t.bigint "access_pass_id"
     t.bigint "role_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["access_pass_id"], name: "index_access_passes_roles_on_access_pass_id"
     t.index ["role_id"], name: "index_access_passes_roles_on_role_id"
   end
@@ -728,6 +719,7 @@ ActiveRecord::Schema.define(version: 2021_09_11_024837) do
     t.integer "on_hand_boxed_quantity", default: 0
     t.integer "on_hand_palletized_quantity", default: 0
     t.text "notes_zh_tw"
+    t.integer "max_order_quantity"
     t.index ["allow_web_publish"], name: "index_packages_on_allow_web_publish"
     t.index ["available_quantity"], name: "index_packages_on_available_quantity"
     t.index ["box_id"], name: "index_packages_on_box_id"

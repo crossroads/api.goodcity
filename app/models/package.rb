@@ -62,6 +62,7 @@ class Package < ApplicationRecord
   validates :package_type_id, presence: true
   validates :value_hk_dollar, presence: true, if: -> { !box_or_pallet? }
   validates :notes, presence: true
+  validates :max_order_quantity, numericality: { :allow_blank => true, greater_than_or_equal_to: 0 }
   validates :on_hand_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :available_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :designated_quantity, numericality: { greater_than_or_equal_to: 0 }
