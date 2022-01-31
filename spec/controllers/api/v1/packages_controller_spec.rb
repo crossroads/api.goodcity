@@ -858,6 +858,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it "max_order_quantity can be updated", :show_in_doc do
+      updated_params = { max_order_quantity: 5 }
+      expect(package.max_order_quantity).to be_nil
+      put :update, params: { id: package.id, package: package_params.merge(updated_params) }
+      expect(response.status).to eq(200)
+      expect(package.reload.max_order_quantity).to eq(5)
+    end
+
+    it "max_order_quantity can be set to nil", :show_in_doc do
+      pkg = create(:package, max_order_quantity: 5)
+      expect(pkg.max_order_quantity).to eq(5)
+      put :update, params: { id: pkg.id, package: { max_order_quantity: nil } }
+      expect(response.status).to eq(200)
+      expect(pkg.reload.max_order_quantity).to be_nil
+    end
+
     it "fails if the value_hk_dollar is invalid" do
       put :update, params: { id: package.id, package: { value_hk_dollar: nil } }
 

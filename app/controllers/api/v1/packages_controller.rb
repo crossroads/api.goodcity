@@ -30,6 +30,7 @@ module Api
           param :favourite_image_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
           param :donor_condition_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of donor-condition", allow_nil: true
           param :grade, String, allow_nil: true
+          param :max_order_quantity, lambda { |val| [String, Integer].include? val.class }, desc: "Package max order quantity", allow_nil: true
         end
       end
 
@@ -396,7 +397,7 @@ module Api
           :inventory_number, :item_id, :length, :location_id, :notes,
           :notes_zh_tw, :order_id, :package_type_id, :pallet_id, :pieces,
           :received_at, :saleable, :received_quantity, :rejected_at,
-          :state, :state_event, :stockit_designated_on,
+          :state, :state_event, :stockit_designated_on, :max_order_quantity,
           :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
