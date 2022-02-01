@@ -16,7 +16,7 @@ module Api::V1
                :sent_on, :offer_id, :designation_name, :grade,
                :donor_condition_id, :received_quantity, :allow_web_publish,
                :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
-               :designated_quantity, :dispatched_quantity, :quantity,
+               :designated_quantity, :dispatched_quantity, :quantity, :max_order_quantity,
                :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id,
                :on_hand_boxed_quantity, :on_hand_palletized_quantity,
                :notes_zh_tw
