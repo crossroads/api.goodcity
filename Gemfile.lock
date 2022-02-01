@@ -406,7 +406,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    redis (4.4.0)
+    redis (4.5.1)
     redis-actionpack (5.2.0)
       actionpack (>= 5, < 7)
       redis-rack (>= 2.1.0, < 3)
@@ -474,7 +474,7 @@ GEM
       activesupport (>= 3)
     shoulda-matchers (4.5.1)
       activesupport (>= 4.2.0)
-    sidekiq (6.2.2)
+    sidekiq (6.4.0)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
@@ -622,7 +622,7 @@ DEPENDENCIES
   sendgrid-ruby
   shoulda-callback-matchers
   shoulda-matchers
-  sidekiq (~> 6.2.2)
+  sidekiq (~> 6.4.0)
   sidekiq-scheduler
   sidekiq-statistic
   sidekiq_alive
