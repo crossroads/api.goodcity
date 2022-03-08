@@ -16,6 +16,7 @@ FactoryBot.define do
     available_quantity    { received_quantity }
     designated_quantity   { 0 }
     dispatched_quantity   { 0 }
+    max_order_quantity    { nil }
 
     received_at { nil }
     rejected_at { nil }

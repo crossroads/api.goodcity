@@ -43,6 +43,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:on_hand_quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:designated_quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:dispatched_quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:max_order_quantity).of_type(:integer)}
 
     it{ is_expected.not_to have_db_column(:quantity).of_type(:integer)}
   end
@@ -52,6 +53,8 @@ RSpec.describe Package, type: :model do
 
     it { is_expected.to validate_presence_of(:package_type_id) }
     it { is_expected.to validate_presence_of(:notes) }
+    it { is_expected.to allow_value(nil).for(:max_order_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:max_order_quantity) }
     it { is_expected.to_not allow_value(-1).for(:on_hand_quantity) }
     it { is_expected.to_not allow_value(-1).for(:available_quantity) }
     it { is_expected.to_not allow_value(-1).for(:designated_quantity) }
