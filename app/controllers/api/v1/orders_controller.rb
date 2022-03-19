@@ -176,7 +176,7 @@ module Api
       end
 
       def address_attributes
-        [:address_type, :district_id, :street, :flat, :building, :notes]
+        [:id, :address_type, :district_id, :street, :flat, :building, :notes]
       end
 
       def beneficiary_attributes
