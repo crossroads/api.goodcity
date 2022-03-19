@@ -27,25 +27,5 @@ RSpec.describe Api::V1::OrderTransportsController, type: :controller do
       post :create, params: { order_transport: { **transport_params, :order_id=>other_order.id } }, as: :json
       expect(response.status).to eq(403)
     end
-
-    describe "Address creation" do
-      let(:dummy_address) { build :address }
-      let(:params_with_addr) {
-        {
-          **transport_params,
-          :address_attributes => {
-            :street => dummy_address.street,
-            :flat => dummy_address.flat,
-            :building => dummy_address.building,
-            :district_id => dummy_address.district_id,
-          }
-        }
-      }
-
-      it "allows receiving address_attributes ", :show_in_doc do
-        post :create, params: { order_transport: params_with_addr }, as: :json
-        expect(response.status).to eq(201)
-      end
-    end
   end
 end
