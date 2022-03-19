@@ -281,13 +281,15 @@ module Api
       end
 
       def order_transport_abilities
-        can :create, OrderTransport
         if can_manage_order_transport?
+          can :create, OrderTransport
           can %i[create update index show], OrderTransport
         else
           can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
             transport.order.created_by_id == @user_id
           end
+          
+          can :create, OrderTransport, order: { created_by_id: @user_id }
 
           can :update, OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
             (%w[draft submitted processing awaiting_dispatch].include? transport.order.state) && (transport.order.created_by_id == @user_id)
