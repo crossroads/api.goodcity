@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_30_120417) do
+ActiveRecord::Schema.define(version: 2022_03_19_025019) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2022_01_30_120417) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.string "notes"
     t.index ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type"
     t.index ["district_id"], name: "index_addresses_on_district_id"
   end
@@ -475,6 +476,8 @@ ActiveRecord::Schema.define(version: 2022_01_30_120417) do
     t.boolean "need_over_6ft", default: false
     t.integer "gogovan_transport_id"
     t.string "remove_net"
+    t.bigint "address_id"
+    t.index ["address_id"], name: "index_order_transports_on_address_id"
     t.index ["contact_id"], name: "index_order_transports_on_contact_id"
     t.index ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id"
     t.index ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id"
