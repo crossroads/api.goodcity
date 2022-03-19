@@ -34,4 +34,4 @@ RUN cp /app/config/database.yml.docker /app/config/database.yml
 EXPOSE 3000 2222
 
 # CMD ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
-ENTRYPOINT [ "/app/docker-startup.sh" ]
+CMD ["bundle", "exec", "rails", "server", "-p", "3000", "-b", "0.0.0.0"]
