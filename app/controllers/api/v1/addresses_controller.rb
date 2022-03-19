@@ -21,6 +21,7 @@ module Api
           param :address_type, String, desc: "Type of address, usually 'Collection' or 'Profile'"
           param :addressable_type, String, desc: "Object the address belongs to: 'Contact' or 'User' (Polymorphic)"
           param :addressable_id, String, desc: "Object id of the associated polymorphic record. Use contact_id or user_id"
+          param :notes, String, desc: "Delivery instructions and other notes"
         end
       end
 
@@ -42,7 +43,7 @@ module Api
       end
 
       def address_params
-        params.require(:address).permit(:street, :flat, :building,
+        params.require(:address).permit(:street, :flat, :building, :notes,
           :district_id, :address_type, :addressable_id, :addressable_type)
       end
     end
