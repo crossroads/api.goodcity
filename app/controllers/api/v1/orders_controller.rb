@@ -20,7 +20,7 @@ module Api
           param :people_helped, :number
           param :detail_id, String, allow_nil: true
           param :beneficiary_id, String, allow_nil: true
-          param :address_id, String
+          param :address_id, String, allow_nil: true
           param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)', allow_nil: true
           param :staff_note, String, desc: 'Notes for internal use'
         end
