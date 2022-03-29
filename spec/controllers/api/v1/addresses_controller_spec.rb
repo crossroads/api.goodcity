@@ -18,6 +18,19 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
       }.to change(Address, :count).by(1)
       expect(response.status).to eq(201)
     end
+
+    it "sets the correct fields", :show_in_doc do
+      expect {
+        post :create, params: { address: address_params }
+      }.to change(Address, :count).by(1)
+    
+      record = parsed_body["address"]
+
+      expect(record["street"]).to eq(address_params[:street])
+      expect(record["building"]).to eq(address_params[:building])
+      expect(record["notes"]).to eq(address_params[:notes])
+      expect(record["flat"]).to eq(address_params[:flat])
+    end
   end
 
   describe "GET address" do

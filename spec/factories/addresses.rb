@@ -9,6 +9,7 @@ FactoryBot.define do
     address_type { 'Collection' }
     association :addressable, factory: :contact, strategy: :build
     addressable_type { 'Contact' }
+    notes { 'notes for driver' }
   end
 
   factory :profile_address, parent: :address do
