@@ -438,7 +438,7 @@ class Order < ApplicationRecord
     props["booking_type_zh"] = booking_type.name_zh_tw
     props["domain"] = Rails.env.staging? ? "browse-staging" : "browse"
     if order_transport
-      props["scheduled_at"] = order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p")
+      props["scheduled_at"] = order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %p")
     end
     if beneficiary.present?
       props["client"] = {
