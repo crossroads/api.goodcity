@@ -136,7 +136,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
       end
 
       it 'sets proper scheduled_at' do
-        time = order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %H:%M%p')
+        time = order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %p')
         expect(mailer).to have_body_text("goods can be collected on the #{time}")
       end
 
@@ -194,7 +194,7 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
       end
 
       it 'sets proper scheduled_at params' do
-        time = order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %H:%M%p')
+        time = order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %p')
         expect(mailer).to have_body_text("to be delivered on #{time}")
       end
 
