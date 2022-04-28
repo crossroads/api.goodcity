@@ -34,9 +34,9 @@ perf = ""
 description = "Sidekiq stats:"
  
 metrics = [
-  ["enqueued", stats.enqueued, 20, 35],
+  ["enqueued", stats.enqueued, 50, 100],
   ["retries", stats.retry_size, 5, 10],
-  ["dead", stats.dead_size, 1, 5],
+  ["dead", stats.dead_size, 5, 10],
   ["scheduled", stats.scheduled_size, 10, 20]
 ]
  
