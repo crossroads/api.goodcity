@@ -1,7 +1,6 @@
 # GoodCity API
 [![Circle CI](https://circleci.com/gh/crossroads/api.goodcity.svg?style=svg)](https://circleci.com/gh/crossroads/api.goodcity)
 [![Code Climate](https://codeclimate.com/github/crossroads/api.goodcity/badges/gpa.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
-[![Issue Count](https://codeclimate.com/github/crossroads/api.goodcity/badges/issue_count.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
 [![Test Coverage](https://codeclimate.com/github/crossroads/api.goodcity/badges/coverage.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
 
 The GoodCity server is a [rails-api](https://github.com/rails-api/rails-api) based JSON API server for the GoodCity.hk project.
@@ -31,10 +30,17 @@ In production mode, you will also need a local redis server, type one of the fol
     apt-get install redis (Debian)
     brew install redis (Mac OS X with Homebrew)
 
+## Development
+
+    rake db:create
+    rake db:schema:load / rake db:migrate
+    rake db:seed
+    rake db:demo
+
+
 ## Tests
 
-Simply run
-
+    RAILS_ENV=test rake db:schema:load / rake db:migrate
     rake
 
 For individual specs, use rspec
@@ -45,7 +51,7 @@ For individual specs, use rspec
 ## Background Jobs
 
 Using the ActiveJob gem, some jobs are queued in Redis and then run later using Sidekiq workers.
-For example, Twilio SMS, exception notification (airbrake) and email delivery.
+For example, Twilio SMS, exception notification (rollbar) and email delivery.
 
 In development mode, use
 
@@ -64,12 +70,20 @@ The following command will start the ```rails server```, ```sidekiq workers``` a
 
 ## Deployment
 
-Using capistrano, commit all changes to master branch and push to github. Then type:
+Commit all changes to master or live branch and push to GitHub. CircleCI will pick up the changes and run specs and deploy automatically.
+
+For manual deployment, ensure the code is pushed to GitHub and then type:
 
     bundle exec cap production deploy
     bundle exec cap staging deploy
 
-This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
+This will deploy changes to api.goodcity.hk or api-staging.goodcity.hk (make sure your ssh keys are loaded)
+
+You can also run rake tasks on staging or live using Capistrano. For example, to shrink uploaded Cloudinary images, use:
+
+    bundle exec cap production invoke:rake TASK=cloudinary:optimize
+
+
 
 ### Resetting up the staging database
 
@@ -85,6 +99,8 @@ systemctl start nginx sidekiq
 ```
 
 ## Docker
+
+Note: the staging environment currently runs on Azure as a suite of docker containers.
 
 You can build the docker image using the following commands. You will need to enter a valid GITHUB_TOKEN which will provide access to the private repos. See https://github.com/settings/tokens
 
@@ -108,7 +124,7 @@ az acr build --build-arg GITHUB_TOKEN --registry goodregistry --image api.goodci
 ## Documentation
 
 * API documentation is available online at http://api.goodcity.hk/api/docs
-* Generate model/controller documentation using the [railroady](https://github.com/preston/railroady) gem. (You must have [graphviz](http://www.graphviz.org/) packages installed on your machine first.)
+* Generate model/controller documentation using Railroady. Note: you must have [graphviz](http://www.graphviz.org/) packages installed on your machine first.
 
     gem install railroady
     rake diagram:all
@@ -127,6 +143,6 @@ To update specific model diagrams, use the following commands:
 
 ## License
 
-Copyright © 2014 by [Crossroads Foundation Ltd](https://www.crossroads.org.hk)
+Copyright © 2022 by [Crossroads Foundation Ltd](https://www.crossroads.org.hk)
 
 All rights reserved. No part of this software may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of Crossroads Foundation Ltd. For permission requests, write to Crossroads Foundation Ltd., addressed “Attention: CTO” using the general contact details found on [www.crossroads.org.hk](https://www.crossroads.org.hk).
