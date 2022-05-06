@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_19_025019) do
+ActiveRecord::Schema.define(version: 2022_04_06_071731) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -670,6 +670,7 @@ ActiveRecord::Schema.define(version: 2022_03_19_025019) do
     t.integer "width"
     t.integer "height"
     t.string "department"
+    t.decimal "customs_value_usd"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", opclass: :gin_trgm_ops, using: :gin
