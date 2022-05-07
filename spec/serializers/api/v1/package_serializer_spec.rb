@@ -7,10 +7,11 @@ describe Api::V1::PackageSerializer do
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do
+    pp json['package']['weight'].to_f
     expect(json['package']['length']).to eql(package.length)
     expect(json['package']['height']).to eql(package.height)
     expect(json['package']['width']).to eql(package.width)
-    expect(json['package']['weight']).to eql(package.weight)
+    expect(json['package']['weight'].to_f).to eql(package.weight.to_f)
     expect(json['package']['pieces']).to eql(package.pieces)
     expect(json['package']['received_quantity']).to eql(package.received_quantity)
     expect(json['package']['on_hand_quantity']).to eql(package.on_hand_quantity)
