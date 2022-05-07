@@ -32,6 +32,7 @@ module Api
           param :estimated_size, String, desc: "How big is the item?", allow_nil: true
           param :notes, String, desc: "Not yet used", allow_nil: true
           param :reviewed_by_id, String, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
+          param :district_id, String, allow_nil: true, desc: "The source district of the offer."
           param :delivered_by, String, allow_nil: true, desc: "The method used to deliver the offer to Crossroads, to be populated when closing an offer"
         end
       end
@@ -229,7 +230,7 @@ module Api
 
       def offer_params
         attributes = [:language, :origin, :stairs, :parking, :estimated_size,
-          :notes, :delivered_by, :state_event, :cancel_reason,
+          :notes, :delivered_by, :state_event, :cancel_reason, :district_id,
           :cancellation_reason_id, :saleable]
         attributes.concat [
           :created_at, :created_by_id, :submitted_at, :state,

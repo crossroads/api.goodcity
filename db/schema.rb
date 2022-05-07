@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_07_030819) do
+ActiveRecord::Schema.define(version: 2022_05_07_041725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -710,7 +710,7 @@ ActiveRecord::Schema.define(version: 2022_05_07_030819) do
     t.string "case_number"
     t.boolean "allow_web_publish"
     t.integer "received_quantity"
-    t.integer "weight"
+    t.decimal "weight"
     t.integer "pieces"
     t.integer "detail_id"
     t.string "detail_type"

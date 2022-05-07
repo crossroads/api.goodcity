@@ -3,9 +3,10 @@ require 'rails_helper'
 RSpec.describe Api::V1::OffersController, type: :controller do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:user) { create(:user, :with_token) }
+  let(:district) { create(:district) }
   let(:reviewer) { create(:user, :with_can_manage_offers_permission, role_name: 'Reviewer') }
   let(:supervisor) { create(:user, :with_can_manage_offers_permission, role_name: 'Supervisor') }
-  let(:offer) { create(:offer, :with_transport, created_by: user) }
+  let(:offer) { create(:offer, :with_transport, :with_district, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
   let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review', reviewed_by: reviewer) }
   # let(:received_offer) { create(:offer, created_by: user, state: 'received') }
@@ -253,6 +254,15 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(user)
+        end
+
+        it "sets the district" do
+          post :create, params: { offer: {
+            **offer_params,
+            district_id: district.id.to_s
+           } }, as: :json
+          expect(response.status).to eq(201)
+          expect(created_offer.district_id).to eq(district.id)
         end
 
         it "ignore posted properties that require elevated rights" do

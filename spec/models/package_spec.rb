@@ -28,7 +28,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:length).of_type(:integer)}
     it{ is_expected.to have_db_column(:width).of_type(:integer)}
     it{ is_expected.to have_db_column(:height).of_type(:integer)}
-    it{ is_expected.to have_db_column(:weight).of_type(:integer)}
+    it{ is_expected.to have_db_column(:weight).of_type(:decimal)}
     it{ is_expected.to have_db_column(:pieces).of_type(:integer)}
     it{ is_expected.to have_db_column(:notes).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
