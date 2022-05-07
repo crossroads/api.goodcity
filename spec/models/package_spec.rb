@@ -165,7 +165,7 @@ RSpec.describe Package, type: :model do
   describe "before_save" do
     it "should set default values" do
       item = create :item
-      package = build :package, item: item
+      package = build(:package, item: item, donor_condition: nil)
       expect {
         package.save
       }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
