@@ -29,10 +29,10 @@ booking_types.each do |identifier, value|
     name_zh_tw: value[:name_zh_tw] )
 end
 
+# Will also create territories
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
-  # FactoryBot creates the correct territory for us
-  FactoryBot.create :district, name_en: name_en, latitude: value[:latitude], longitude: value[:longitude]
+  FactoryBot.create(:district, name_en: name_en)
 end
 
 timeslots = [["10:30am-1pm", "上午10:30時至下午1時"], ["2PM-4PM", "下午2時至下午4時"]]

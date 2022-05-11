@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TerritoriesController, type: :controller do
-  let(:territory) { create(:territory_districts) }
+  let(:territory) { create(:district).territory }
   let(:serialized_territory) { Api::V1::TerritorySerializer.new(territory) }
   let(:parsed_body) { JSON.parse(response.body) }
 
