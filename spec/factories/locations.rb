@@ -17,7 +17,7 @@ FactoryBot.define do
 
   sequence(:building_and_area) do |n|
     locations = FactoryBot.generate(:locations)
-    locations[n-1%locations.size]
+    locations[n%locations.size]
   end
 
 end
