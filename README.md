@@ -37,7 +37,6 @@ In production mode, you will also need a local redis server, type one of the fol
     rake db:seed
     rake db:demo
 
-
 ## Tests
 
     RAILS_ENV=test rake db:schema:load / rake db:migrate
@@ -82,7 +81,7 @@ This will deploy changes to api.goodcity.hk or api-staging.goodcity.hk (make sur
 You can also run rake tasks on staging or live using Capistrano. For example, to shrink uploaded Cloudinary images, use:
 
     bundle exec cap production invoke:rake TASK=cloudinary:optimize
-
+    bundle exec cap production invoke:rake TASK=db:demo MULTIPLE=100
 
 
 ### Resetting up the staging database

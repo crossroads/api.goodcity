@@ -33,34 +33,45 @@ FactoryBot.define do
 
     trait :with_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_requested)
+        order.orders_packages << create_list(:orders_package, 3, :with_state_requested, :with_inventory_record, order: order)
         order.save
       end
     end
 
     trait :with_designated_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_designated)
+        order.orders_packages << create_list(:orders_package, 3, :with_state_designated, :with_inventory_record, order: order)
         order.save
       end
     end
 
     trait :with_cancelled_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_cancelled)
+        order.orders_packages << create_list(:orders_package, 3, :with_state_cancelled, :with_inventory_record, order: order)
         order.save
       end
     end
 
     trait :with_dispatched_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_dispatched)
+        order.orders_packages << create_list(:orders_package, 3, :with_state_dispatched, :with_inventory_record, order: order)
         order.save
       end
     end
 
     trait :with_goodcity_requests do
-      goodcity_requests { create_list :goodcity_request, 1}
+      after(:create) do |order|
+        order.goodcity_requests << create_list(:goodcity_request, 1, order: order)
+        order.save
+      end
+    end
+
+    trait :with_order_transport_ggv do
+      association :order_transport, transport_type: 'ggv', strategy: :build
+    end
+
+    trait :with_order_transport_self do
+      association :order_transport, transport_type: 'self', strategy: :build
     end
 
     trait :with_state_submitted do
@@ -118,9 +129,12 @@ FactoryBot.define do
 
   factory :online_order, parent: :order do
     booking_type { create :booking_type, :online_order }
+    :with_order_transport_ggv
   end
 
   factory :appointment, parent: :order do
     booking_type { create :booking_type, :appointment }
+    :with_order_transport_self
   end
+
 end

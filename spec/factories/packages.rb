@@ -1,4 +1,5 @@
 # frozen_String_literal: true
+require Rails.root.join('spec', 'support', 'inventory_initializer.rb')
 
 FactoryBot.define do
   factory :package do

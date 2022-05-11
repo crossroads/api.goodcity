@@ -27,3 +27,5 @@ coverage
 **/*.sql
 
 .solargraph.yml
+
+config/database.yml.*
