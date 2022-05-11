@@ -64,11 +64,11 @@ context PushUpdatesForMessage do
       let!(:message) { create :message, sender: order_fulfilment1, messageable: order }
       let!(:order_fulfilment2) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission } # create this user but don't use it
       let(:order_fulfilment2_channel) { "user_#{order_fulfilment2.id}_stock" }
-      it "should send a push update to order recipicharityent, order_fulfilment1 and order_fulfilment2" do
+      it "should send a push update to order's creator (charity), order_fulfilment1 and order_fulfilment2" do
         expect(message).to receive(:send_update).with('unread', [charity_browse_channel])
         expect(message).to receive(:send_update).with('read', [order_fulfilment1_channel])
         expect(message).to receive(:send_update).with('never-subscribed', [order_fulfilment2_channel])
-        message.update_client_store
+        message.reload.update_client_store
       end
     end
 
