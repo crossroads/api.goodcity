@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :base_package_type, class: :PackageType do
-    code               { generate(:package_types).keys.sample }
+    sequence(:code)    { |n| generate(:package_types).keys.sort[n%generate(:package_types).keys.size] }
     name_en            { generate(:package_types)[code][:name_en] }
     name_zh_tw         { generate(:package_types)[code][:name_zh_tw] }
     other_terms_en     { generate(:package_types)[code][:other_terms_en] }

@@ -79,7 +79,7 @@ FactoryBot.define do
   end
 
   sequence :mobile do |n|
-    "+852" << (%w(5 6 9).sample) << (1..7).map{rand(9)}.join
+    "+852" << (%w(5 6 9).sample) << ("%07d" % n)
   end
 
   sequence :phone_number do |n|

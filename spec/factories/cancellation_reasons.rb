@@ -2,9 +2,9 @@
 
 FactoryBot.define do
   factory :cancellation_reason do
-    name_en         { generate(:cancellation_reasons).keys.sample }
-    name_zh_tw      { generate(:cancellation_reasons)[name_en][:name_zh_tw] }
-    visible_to_offer { generate(:cancellation_reasons)[name_en][:visible_to_offer] }
+    sequence(:name_en) { |n| generate(:cancellation_reasons).keys.sort[n%generate(:cancellation_reasons).keys.size] }
+    name_zh_tw         { generate(:cancellation_reasons)[name_en][:name_zh_tw] }
+    visible_to_offer   { generate(:cancellation_reasons)[name_en][:visible_to_offer] }
 
     trait :visible_to_offer do
       visible_to_offer { true }

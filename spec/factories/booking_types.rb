@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :booking_type do
-    identifier   { "abc" }
+    identifier   { "online-order" }
     name_zh_tw   { identifier }
     name_en      { identifier }
 

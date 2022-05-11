@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :crossroads_transport do
-    name_en    { generate(:crossroads_transports).keys.sample }
+    sequence(:name_en) { |n| generate(:crossroads_transports).keys.sort[n%generate(:crossroads_transports).keys.size] }
     name_zh_tw { generate(:crossroads_transports)[name_en][:name_zh_tw] }
     cost       { generate(:crossroads_transports)[name_en][:cost] }
     truck_size { generate(:crossroads_transports)[name_en][:truck_size] }

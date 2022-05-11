@@ -31,7 +31,7 @@ FactoryBot.define do
     association :image
 
     transient do
-      role_name { generate(:permissions_roles).keys.sample }
+      sequence(:role_name)    { |n| generate(:permissions_roles).keys.sort[n%generate(:permissions_roles).keys.size] }
       roles_and_permissions { }
     end
 

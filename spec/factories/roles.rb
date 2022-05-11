@@ -9,7 +9,7 @@
 #
 FactoryBot.define do
   factory :role do
-    name            { generate(:permissions_roles).keys.sample }
+    sequence(:name) { |n| generate(:permissions_roles).keys.sort[n%generate(:permissions_roles).keys.size] }
     level           { 10 }
     initialize_with { Role.find_or_initialize_by(name: name) } # avoid duplicate roles
 
