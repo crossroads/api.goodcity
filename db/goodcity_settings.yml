@@ -1,11 +1,11 @@
 ---
 -
   key: "stock.enable_box_pallet_creation"
-  value: "false"
+  value: "true"
   description: "Manages the settings for allowance of box pallet creation"
 -
   key: "stock.allow_box_pallet_item_addition"
-  value: "false"
+  value: "true"
   description: "Manages the settings for addition/removal of items to box"
 -
   key: "api.appointments.prevent_booking_until"
@@ -13,5 +13,5 @@
   description: "If a date value is set (DD-MM-YYYY), no appointment will be allowed before that date"
 -
   key: "stock.allow_item_actions"
-  value: "false"
+  value: "true"
   description: "Manages the settings for allowance of package (stock-item) actions."

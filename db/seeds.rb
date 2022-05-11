@@ -61,6 +61,8 @@ holidays.each do |key, value|
     holiday: date_value
   ).first_or_create
 end
+FactoryBot.create :holiday, name: "Christmas Day", holiday: Time.new(Time.now.year,12,25).to_date, year: Time.now.year
+FactoryBot.create :holiday, name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year
 
 organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
 organisation_types.each do |key, value|
@@ -176,9 +178,9 @@ valuation_matrix.each do |valuation|
 end
 
 # Identity types
-id_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
-id_types.each_value do |record|
-  IdentityType.find_or_create_by(record)
+identity_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
+identity_types.each do |identifer, record|
+  FactoryBot.create(:identity_type, identifer: identifer)
 end
 
 FactoryBot.create(:country, name_en: "China - Hong Kong (Special Administrative Region)")

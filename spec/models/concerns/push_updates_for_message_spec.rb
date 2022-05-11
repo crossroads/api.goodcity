@@ -68,7 +68,7 @@ context PushUpdatesForMessage do
         expect(message).to receive(:send_update).with('unread', [charity_browse_channel])
         expect(message).to receive(:send_update).with('read', [order_fulfilment1_channel])
         expect(message).to receive(:send_update).with('never-subscribed', [order_fulfilment2_channel])
-        message.reload.update_client_store
+        message.update_client_store
       end
     end
 
