@@ -115,7 +115,8 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
 
     describe 'send_order_confirmation_pickup_email' do
       let(:mailer) { subject.send_order_confirmation_pickup_email }
-      let(:order) { create(:order, :with_designated_orders_packages, created_by: user, order_transport: create(:order_transport)) }
+      let(:booking_type) { create(:booking_type, :appointment) }
+      let(:order) { create(:order, :with_designated_orders_packages, booking_type: booking_type, created_by: user, order_transport: create(:order_transport)) }
 
       it 'sets proper to and subject' do
         expect(mailer).to have_subject(I18n.t('email.subject.order.confirmation_pickup_delivery', code: order.code))
@@ -135,9 +136,21 @@ RSpec.describe GoodcityOrderMailer, type: :mailer do
         expect(mailer).to deliver_from(GOODCITY_ORDER_FROM_EMAIL)
       end
 
-      it 'sets proper scheduled_at' do
-        time = order.order_transport.scheduled_at.in_time_zone.strftime('%e %b %Y %p')
-        expect(mailer).to have_body_text("goods can be collected on the #{time}")
+      context "sets proper scheduled_at for" do
+        context "appointment" do
+          let(:booking_type) { create(:booking_type, :appointment) }
+          it do
+            time = order.order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p")
+            expect(mailer).to have_body_text("goods can be collected on the #{time}")
+          end
+        end
+        context "online-order" do
+          let(:booking_type) { create(:booking_type, :online_order) }
+          it do
+            time = order.order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %p")
+            expect(mailer).to have_body_text("goods can be collected on the #{time}")
+          end
+        end
       end
 
       it 'has quantity, type and description' do
