@@ -63,11 +63,11 @@ FactoryBot.define do
 
     factory :demo_item, parent: :item do
       transient do
-        demo_key { generate(:cloudinary_demo_images).keys.sample } # e.g. red_chair
+        demo_key { generate(:image_demo_names) } # e.g. red_chair
       end
       state { 'accepted' }
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
-      images            { create_list(:demo_image, rand(3)+1, demo_key.to_sym, favourite: true) }
+      images            { [create(:image, demo_key.to_sym, favourite: true)] }
       packages          { create_list(:package, rand(3)+1, notes: donor_description) }
       after(:create) do |item|
         item.packages.each do |pkg|
