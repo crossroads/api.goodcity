@@ -57,9 +57,9 @@ RSpec.describe UserFavourite, type: :model do
 
     context 'when package_type is updated for package' do
       it 'should create new UserFavourite for that package' do
-        package = create :package, package_type: package_type, location_id: location.id
+        package = create :package, package_type: create(:package_type, code: "AFO"), location_id: location.id
         expect {
-          package.update(package_type: create(:package_type))
+          package.update(package_type: create(:package_type, code: "BBC"))
         }.to change(UserFavourite, :count).by(1)
       end
     end
