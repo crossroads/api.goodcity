@@ -41,7 +41,7 @@ FactoryBot.define do
   end
 
   sequence :identity_types do |n|
-    @beneficiaries ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
+    @identity_types ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
   end
 
   sequence :item_types do |n|

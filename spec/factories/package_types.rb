@@ -11,7 +11,7 @@ FactoryBot.define do
     visible_in_selects { true }
     initialize_with    { PackageType.find_or_initialize_by(code: code) }
     association        :location
-    allow_package        { false }
+    allow_package      { true }
 
     trait :allow_expiry_date do
       allow_expiry_date { true }

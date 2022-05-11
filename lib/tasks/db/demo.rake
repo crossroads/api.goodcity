@@ -152,7 +152,7 @@ namespace :db do
       { mobile: "+85281111113", first_name: "Scarlett", last_name: "Safa97" },
       { mobile: "+85281111114", first_name: "Sky", last_name: "Sandro98" },
     ]
-    supervisor_attributes.each {|attr| FactoryBot.create(:user, :supervisor, attr); print '.' }
+    supervisor_attributes.each {|attr| FactoryBot.create(:user, :supervisor, :order_administrator, attr); print '.' }
 
     charity_attributes = [
       { mobile: "+85252222221", first_name: "Chris", last_name: "Chan521" },
@@ -164,7 +164,7 @@ namespace :db do
       { mobile: "+85242222223", first_name: "Cathie", last_name: "Chen527" },
       { mobile: "+85242222224", first_name: "Cally", last_name: "Chung528" },
     ]
-    charity_attributes.each {|attr| FactoryBot.create(:user, :charity, attr); print '.' }
+    charity_attributes.each {|attr| FactoryBot.create(:user, :charity, :with_email, attr); print '.' }
 
     order_fulfiler_attributes = [
       { mobile: "+85262222221", first_name: "Olive", last_name: "Oakley621" },

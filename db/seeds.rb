@@ -190,8 +190,8 @@ FactoryBot.create(:user, :system)
 # Create API User
 FactoryBot.create(:user, :api_write, first_name: "api", last_name: "write")
 
-
-
-# Might be worth adding the following rake tasks:
-#   rake goodcity:import_swd_organisations
-#   rake goodcity:populate_organisations
+# Appointment Slot Presets: Tuesday to Saturday
+(2..6).each do |day|
+  FactoryBot.create :appointment_slot_preset, :morning, day: day
+  FactoryBot.create :appointment_slot_preset, :afternoon, day: day
+end
