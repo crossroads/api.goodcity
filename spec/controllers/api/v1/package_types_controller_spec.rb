@@ -24,7 +24,7 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
         create(:base_package_type, allow_package: true, code: "BBC"),
         create(:base_package_type, allow_package: true, code: "BBM")
       ]
-      package_type = create :base_package_type, code: "BCS"
+      package_type = create(:base_package_type, allow_package: false, code: "BCS")
 
       get :index, params: { stock: true }, format: 'json'
 
