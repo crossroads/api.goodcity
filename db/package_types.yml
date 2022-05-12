@@ -1,7 +1,7 @@
 ---
 AFO:
   :default_packages: AFO
-  :other_packages: 
+  :other_packages:
   :name_en: Food (uncategorized)
   :name_zh_tw: '食品（未分類）'
   :other_terms_en: Tinned
@@ -17,7 +17,7 @@ BBC:
   :default_value_hk_dollar: 1500.00
 BBM:
   :default_packages: BBM
-  :other_packages: 
+  :other_packages:
   :name_en: Baby Crib, Mattress
   :name_zh_tw: '嬰兒床，床褥'
   :other_terms_en: Cot
@@ -36,15 +36,15 @@ BCB:
   :other_packages: FXX
   :name_en: Child bed, Base
   :name_zh_tw: '兒童床，床架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 BCM:
   :default_packages: BCM
-  :other_packages: 
+  :other_packages:
   :name_en: Child bed, Mattress
   :name_zh_tw: '兒童床，床褥'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
 BCS:
@@ -52,7 +52,7 @@ BCS:
   :other_packages: FXX
   :name_en: Child bed, Set (base, mattress)
   :name_zh_tw: '兒童床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 BCX:
@@ -60,7 +60,7 @@ BCX:
   :other_packages: FXX
   :name_en: Child bed, Other
   :name_zh_tw: '兒童床，其他'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 BDB:
@@ -68,15 +68,15 @@ BDB:
   :other_packages: FXX
   :name_en: Double bed, Base
   :name_zh_tw: '雙人床，床架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 BDM:
   :default_packages: BDM
-  :other_packages: 
+  :other_packages:
   :name_en: Double bed, Mattress
   :name_zh_tw: '雙人床，床褥'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2290.00
 BDS:
@@ -84,7 +84,7 @@ BDS:
   :other_packages: BDX, FXX
   :name_en: Double bed, Set (base, mattress)
   :name_zh_tw: '雙人床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3290.00
 BDX:
@@ -92,7 +92,7 @@ BDX:
   :other_packages: FXX
   :name_en: Double bed, Other
   :name_zh_tw: '雙人床，其他'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 BKB:
@@ -100,7 +100,7 @@ BKB:
   :other_packages: FXX
   :name_en: Bunk bed, Base
   :name_zh_tw: '雙層床，床架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 BKS:
@@ -108,7 +108,7 @@ BKS:
   :other_packages: BDM, BCM, BKX, FXX
   :name_en: Bunk bed, Set (base, mattress)
   :name_zh_tw: '雙層床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3500.00
 BKX:
@@ -116,7 +116,7 @@ BKX:
   :other_packages: FXX
   :name_en: Bunk bed, Other
   :name_zh_tw: '雙層床，其他'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 BLS:
@@ -124,7 +124,7 @@ BLS:
   :other_packages: BDM, BCM, BKX, FXX
   :name_en: Loft bed, Set (base, mattress)
   :name_zh_tw: '高架床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3000.00
 BSB:
@@ -132,7 +132,7 @@ BSB:
   :other_packages: FXX
   :name_en: Single bed, Base
   :name_zh_tw: '單人床，床架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1650.00
 BSF:
@@ -140,15 +140,15 @@ BSF:
   :other_packages: FXX
   :name_en: Folding bed
   :name_zh_tw: '折疊床'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 BSM:
   :default_packages: BSM
-  :other_packages: 
+  :other_packages:
   :name_en: Single bed, Mattress
   :name_zh_tw: '單人床，床褥'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1490.00
 BSS:
@@ -156,7 +156,7 @@ BSS:
   :other_packages: BSX, FXX
   :name_en: Single bed, Set (base, mattress)
   :name_zh_tw: '單人床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3140.00
 BSX:
@@ -164,7 +164,7 @@ BSX:
   :other_packages: FXX
   :name_en: Single bed, Other
   :name_zh_tw: '單人床，其他'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 BTB:
@@ -172,15 +172,15 @@ BTB:
   :other_packages: FXX
   :name_en: Trundle bed, Base
   :name_zh_tw: '子母床，床架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1650.00
 BTM:
   :default_packages: BTM
-  :other_packages: 
+  :other_packages:
   :name_en: Trundle bed, Mattress
   :name_zh_tw: '子母床，床褥'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1490.00
 BTS:
@@ -188,7 +188,7 @@ BTS:
   :other_packages: FXX
   :name_en: Trundle bed, Set
   :name_zh_tw: '子母床，套裝（床架及床褥）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3140.00
 BX:
@@ -196,12 +196,12 @@ BX:
   :other_packages: FXX
   :name_en: Uncategorised bed
   :name_zh_tw: '床（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 CBX:
   :default_packages: CBX
-  :other_packages: 
+  :other_packages:
   :name_en: Bedding - sheets, blankets, other
   :name_zh_tw: '床具－床單，被子，其他'
   :other_terms_en: pillow, pillow cover
@@ -209,7 +209,7 @@ CBX:
   :default_value_hk_dollar: 750.00
 CHX:
   :default_packages: CHX
-  :other_packages: 
+  :other_packages:
   :name_en: Curtains, towels, other household textiles
   :name_zh_tw: '窗簾，毛巾，其他家用紡織品'
   :other_terms_en: 'curtain, fabric, craft, carpet, rug, cushions, linen, towels'
@@ -217,7 +217,7 @@ CHX:
   :default_value_hk_dollar: 1200.00
 CL:
   :default_packages: CL
-  :other_packages: 
+  :other_packages:
   :name_en: Clothing & accessories (uncategorized)
   :name_zh_tw: '衣物及飾品'
   :other_terms_en: shoes, clothes, belts, bags, summer, winter, baby, child, mens, womens
@@ -225,10 +225,10 @@ CL:
   :default_value_hk_dollar: 4200.00
 DD:
   :default_packages: DD
-  :other_packages: 
+  :other_packages:
   :name_en: Hand tools
   :name_zh_tw: '工具'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 DE:
@@ -236,7 +236,7 @@ DE:
   :other_packages: EXX
   :name_en: Power tools
   :name_zh_tw: '電動工具'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 EHA:
@@ -260,7 +260,7 @@ EHD:
   :other_packages: EXX
   :name_en: Dehumidifier
   :name_zh_tw: '抽濕機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2400.00
 EHF:
@@ -268,7 +268,7 @@ EHF:
   :other_packages: EXX
   :name_en: Fan
   :name_zh_tw: '電動風扇'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 300.00
 EHH:
@@ -276,7 +276,7 @@ EHH:
   :other_packages: EXX
   :name_en: Heater
   :name_zh_tw: '電暖爐'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
 EHI:
@@ -284,7 +284,7 @@ EHI:
   :other_packages: EXX
   :name_en: Iron
   :name_zh_tw: '熨斗'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 EHL:
@@ -292,7 +292,7 @@ EHL:
   :other_packages: EXX
   :name_en: Lighting / Lamp
   :name_zh_tw: '照明/燈'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 300.00
 EHW:
@@ -308,7 +308,7 @@ EHX:
   :other_packages: EXX
   :name_en: Other household electrical items
   :name_zh_tw: '其他家電'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 425.00
 EHY:
@@ -316,7 +316,7 @@ EHY:
   :other_packages: EXX
   :name_en: Clothes dryer
   :name_zh_tw: '乾衣機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4000.00
 EKC:
@@ -332,7 +332,7 @@ EKD:
   :other_packages: EXX
   :name_en: Dishwasher
   :name_zh_tw: '洗碗機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 5840.00
 EKF:
@@ -340,7 +340,7 @@ EKF:
   :other_packages: EXX
   :name_en: Freezer
   :name_zh_tw: '冰箱'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4200.00
 EKH:
@@ -348,7 +348,7 @@ EKH:
   :other_packages: EXX
   :name_en: Range hood
   :name_zh_tw: '抽油煙機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2775.00
 EKI:
@@ -356,7 +356,7 @@ EKI:
   :other_packages: EXX
   :name_en: Rice cooker
   :name_zh_tw: '電飯煲'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1450.00
 EKJ:
@@ -364,7 +364,7 @@ EKJ:
   :other_packages: EXX
   :name_en: Fruit juicer / Blender
   :name_zh_tw: '搾汁機/攪拌機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 EKK:
@@ -372,7 +372,7 @@ EKK:
   :other_packages: EXX
   :name_en: Kettle
   :name_zh_tw: '熱水壺'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 EKL:
@@ -380,7 +380,7 @@ EKL:
   :other_packages: EXX
   :name_en: Water cooler / Water Heater
   :name_zh_tw: '飲水機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
 EKM:
@@ -388,7 +388,7 @@ EKM:
   :other_packages: EXX
   :name_en: Microwave / Toaster oven
   :name_zh_tw: '微波爐/焗爐'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3500.00
 EKP:
@@ -396,7 +396,7 @@ EKP:
   :other_packages: EXX
   :name_en: Pot / Urn
   :name_zh_tw: '壺/甕'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 EKR:
@@ -420,7 +420,7 @@ EKT:
   :other_packages: EXX
   :name_en: Toaster / Toaster oven
   :name_zh_tw: '多士爐'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 600.00
 EKX:
@@ -428,7 +428,7 @@ EKX:
   :other_packages: EXX
   :name_en: Other small appliances
   :name_zh_tw: '其他小型電器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1800.00
 EOF:
@@ -436,7 +436,7 @@ EOF:
   :other_packages: EXX
   :name_en: FAX machine
   :name_zh_tw: '傳真機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1790.00
 EOP:
@@ -444,7 +444,7 @@ EOP:
   :other_packages: EXX
   :name_en: Photocopier
   :name_zh_tw: '影印機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 7500.00
 EOT:
@@ -452,7 +452,7 @@ EOT:
   :other_packages: EXX
   :name_en: Telephone
   :name_zh_tw: '電話'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 300.00
 EOW:
@@ -460,7 +460,7 @@ EOW:
   :other_packages: EXX
   :name_en: Typewriter
   :name_zh_tw: '打字機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1675.00
 EOX:
@@ -468,7 +468,7 @@ EOX:
   :other_packages: EXX
   :name_en: Other office / communication items
   :name_zh_tw: '其他辦公室用品'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 EUD:
@@ -492,7 +492,7 @@ EUK:
   :other_packages: EXX
   :name_en: Music keyboard
   :name_zh_tw: '電子琴'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 EUM:
@@ -500,7 +500,7 @@ EUM:
   :other_packages: EXX
   :name_en: Amplifier
   :name_zh_tw: '擴音器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4750.00
 EUR:
@@ -508,7 +508,7 @@ EUR:
   :other_packages: EXX
   :name_en: Radio
   :name_zh_tw: '收音機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 200.00
 EUS:
@@ -516,7 +516,7 @@ EUS:
   :other_packages: EXX
   :name_en: Speaker
   :name_zh_tw: '揚聲器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '喇叭'
   :default_value_hk_dollar: 1200.00
 EUX:
@@ -524,7 +524,7 @@ EUX:
   :other_packages: EXX
   :name_en: Other audio appliances
   :name_zh_tw: '其他音響儀器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3000.00
 EVA:
@@ -540,7 +540,7 @@ EVD:
   :other_packages: EXX
   :name_en: DVD / VCD player
   :name_zh_tw: '視訊光碟放映器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: 'DVD/VCD 播放機'
   :default_value_hk_dollar: 1000.00
 EVP:
@@ -548,7 +548,7 @@ EVP:
   :other_packages: EXX
   :name_en: Overhead projector
   :name_zh_tw: '高影機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 EVQ:
@@ -556,7 +556,7 @@ EVQ:
   :other_packages: EXX
   :name_en: Video projector
   :name_zh_tw: '影像投影機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 8000.00
 EVS:
@@ -564,7 +564,7 @@ EVS:
   :other_packages: EXX
   :name_en: Slide projector
   :name_zh_tw: '幻燈片投影機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 7500.00
 EVT:
@@ -572,7 +572,7 @@ EVT:
   :other_packages: EXX
   :name_en: Television, TV
   :name_zh_tw: '電視'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4000.00
 EVX:
@@ -580,7 +580,7 @@ EVX:
   :other_packages: EXX
   :name_en: Other visual appliances
   :name_zh_tw: '其他影像儀器'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 EX:
@@ -588,7 +588,7 @@ EX:
   :other_packages: EXX
   :name_en: Uncategorised electrical items
   :name_zh_tw: '電器（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 EXB:
@@ -596,7 +596,7 @@ EXB:
   :other_packages: EXX
   :name_en: Bodycare appliances
   :name_zh_tw: '身體護理用品'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
 EXS:
@@ -604,7 +604,7 @@ EXS:
   :other_packages: EXX
   :name_en: Sewing machine
   :name_zh_tw: '縫紉機'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '衣車'
   :default_value_hk_dollar: 2500.00
 FBB:
@@ -612,7 +612,7 @@ FBB:
   :other_packages: FXX
   :name_en: Bedside cabinet
   :name_zh_tw: '床頭櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 400.00
 FBC:
@@ -620,7 +620,7 @@ FBC:
   :other_packages: FXX
   :name_en: Bedroom chest of drawers
   :name_zh_tw: '抽屜櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1590.00
 FBD:
@@ -628,7 +628,7 @@ FBD:
   :other_packages: FXX
   :name_en: Bedroom wardrobe
   :name_zh_tw: '衣櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 3200.00
 FBK:
@@ -636,7 +636,7 @@ FBK:
   :other_packages: FXX
   :name_en: Kitchen cabinet
   :name_zh_tw: '廚櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 FBL:
@@ -644,7 +644,7 @@ FBL:
   :other_packages: FXX
   :name_en: Living room cabinet
   :name_zh_tw: '客廳櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 FBO:
@@ -652,7 +652,7 @@ FBO:
   :other_packages: FXX
   :name_en: Office file cabinet
   :name_zh_tw: '辦公室文件櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1485.00
 FBP:
@@ -660,7 +660,7 @@ FBP:
   :other_packages: FXX
   :name_en: Office drawer unit
   :name_zh_tw: '可動式文件櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1250.00
 FBR:
@@ -668,7 +668,7 @@ FBR:
   :other_packages: FXX
   :name_en: Office cupboard
   :name_zh_tw: '辦公室櫥櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 FBS:
@@ -676,7 +676,7 @@ FBS:
   :other_packages: FXX
   :name_en: Display cabinet
   :name_zh_tw: '展示櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1595.00
 FBT:
@@ -684,7 +684,7 @@ FBT:
   :other_packages: FXX
   :name_en: Shoe cabinet
   :name_zh_tw: '鞋櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FBV:
@@ -700,7 +700,7 @@ FBX:
   :other_packages: FXX
   :name_en: Other cabinet
   :name_zh_tw: '其他櫃'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1775.00
 FCC:
@@ -708,7 +708,7 @@ FCC:
   :other_packages: FXX
   :name_en: Children's chair
   :name_zh_tw: '兒童椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 200.00
 FCD:
@@ -716,7 +716,7 @@ FCD:
   :other_packages: FXX
   :name_en: Dining chair
   :name_zh_tw: '餐椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 485.00
 FCF:
@@ -724,7 +724,7 @@ FCF:
   :other_packages: FXX
   :name_en: Folding chair
   :name_zh_tw: '折疊椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 150.00
 FCH:
@@ -732,7 +732,7 @@ FCH:
   :other_packages: FXX
   :name_en: Stacking chair
   :name_zh_tw: '堆疊椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 275.00
 FCI:
@@ -740,7 +740,7 @@ FCI:
   :other_packages: FXX
   :name_en: Stool
   :name_zh_tw: '圓椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 150.00
 FCL:
@@ -748,7 +748,7 @@ FCL:
   :other_packages: FXX
   :name_en: Living room chair
   :name_zh_tw: '客廳椅子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1310.00
 FCO:
@@ -756,7 +756,7 @@ FCO:
   :other_packages: FXX
   :name_en: Office chair
   :name_zh_tw: '辦公室椅子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 850.00
 FCQ:
@@ -764,7 +764,7 @@ FCQ:
   :other_packages: FXX
   :name_en: School chair
   :name_zh_tw: '學校椅子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 200.00
 FCS:
@@ -772,7 +772,7 @@ FCS:
   :other_packages: FXX
   :name_en: Sofa / Lounge sofa
   :name_zh_tw: '沙發'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '梳化'
   :default_value_hk_dollar: 4000.00
 FCT:
@@ -788,7 +788,7 @@ FCU:
   :other_packages: FXX
   :name_en: Outdoor chair
   :name_zh_tw: '戶外椅子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
 FCX:
@@ -796,7 +796,7 @@ FCX:
   :other_packages: FXX
   :name_en: Other chair
   :name_zh_tw: '其他椅子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
 FDC:
@@ -804,7 +804,7 @@ FDC:
   :other_packages: FXX
   :name_en: Children's desk
   :name_zh_tw: '兒童書桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 FDH:
@@ -812,7 +812,7 @@ FDH:
   :other_packages: FXX
   :name_en: Household desk
   :name_zh_tw: '家用書桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
 FDO:
@@ -820,7 +820,7 @@ FDO:
   :other_packages: FXX
   :name_en: Office desk
   :name_zh_tw: '辦公室書桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1650.00
 FDP:
@@ -828,7 +828,7 @@ FDP:
   :other_packages: FXX
   :name_en: Computer desk
   :name_zh_tw: '電腦桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FDQ:
@@ -836,7 +836,7 @@ FDQ:
   :other_packages: FXX
   :name_en: School desk
   :name_zh_tw: '學校書桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1200.00
 FDX:
@@ -844,7 +844,7 @@ FDX:
   :other_packages: FXX
   :name_en: Other desk
   :name_zh_tw: '其他書桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 FSB:
@@ -852,7 +852,7 @@ FSB:
   :other_packages: FXX
   :name_en: Bookshelf
   :name_zh_tw: '書架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FSC:
@@ -860,7 +860,7 @@ FSC:
   :other_packages: FXX
   :name_en: Children's shelf
   :name_zh_tw: '兒童書架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 650.00
 FSD:
@@ -868,7 +868,7 @@ FSD:
   :other_packages: FXX
   :name_en: Display shelf
   :name_zh_tw: '展示架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1045.00
 FSO:
@@ -876,7 +876,7 @@ FSO:
   :other_packages: FXX
   :name_en: Office shelf
   :name_zh_tw: '辦公室書架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1225.00
 FSR:
@@ -884,7 +884,7 @@ FSR:
   :other_packages: FXX
   :name_en: Rack - CD, Magazine, Shoe
   :name_zh_tw: '架子－光碟，雜誌，鞋履'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 400.00
 FSS:
@@ -892,7 +892,7 @@ FSS:
   :other_packages: FXX
   :name_en: Storage shelf
   :name_zh_tw: '儲物架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 FSX:
@@ -900,7 +900,7 @@ FSX:
   :other_packages: FXX
   :name_en: Other shelf
   :name_zh_tw: '其他架子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 FTA:
@@ -908,7 +908,7 @@ FTA:
   :other_packages: FXX
   :name_en: Baby-change table
   :name_zh_tw: '嬰兒尿布台'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1825.00
 FTC:
@@ -916,7 +916,7 @@ FTC:
   :other_packages: FXX
   :name_en: Children's table
   :name_zh_tw: '兒童桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 400.00
 FTD:
@@ -924,7 +924,7 @@ FTD:
   :other_packages: FXX
   :name_en: Dining table
   :name_zh_tw: '餐桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2300.00
 FTE:
@@ -932,7 +932,7 @@ FTE:
   :other_packages: FXX
   :name_en: Coffee table
   :name_zh_tw: '茶几'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FTF:
@@ -940,7 +940,7 @@ FTF:
   :other_packages: FXX
   :name_en: Folding table
   :name_zh_tw: '摺疊式桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
 FTK:
@@ -948,7 +948,7 @@ FTK:
   :other_packages: FXX
   :name_en: Kitchen table
   :name_zh_tw: '廚房桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2200.00
 FTO:
@@ -956,7 +956,7 @@ FTO:
   :other_packages: FXX
   :name_en: Office conference table
   :name_zh_tw: '會議室桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4700.00
 FTU:
@@ -964,7 +964,7 @@ FTU:
   :other_packages: FXX
   :name_en: Outdoor table
   :name_zh_tw: '戶外桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1350.00
 FTV:
@@ -980,7 +980,7 @@ FTW:
   :other_packages: FXX
   :name_en: Workbench
   :name_zh_tw: '工作台'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 FTX:
@@ -988,7 +988,7 @@ FTX:
   :other_packages: FXX
   :name_en: Other table
   :name_zh_tw: '其他桌子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 FWT:
@@ -996,7 +996,7 @@ FWT:
   :other_packages: FCC, FCD, FCF, FCH, FCI, FCH, FCI, FCO, FCQ, FCU, FCX, FXX, FTF, FTK, FTO, FTU, FTX
   :name_en: Table and chairs set
   :name_zh_tw: '桌椅套裝'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1750.00
 FX:
@@ -1004,7 +1004,7 @@ FX:
   :other_packages: FXX
   :name_en: Uncategorised furniture
   :name_zh_tw: '家具（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1750.00
 FXA:
@@ -1012,7 +1012,7 @@ FXA:
   :other_packages: FXX
   :name_en: Artwork - wall pictures, frames
   :name_zh_tw: '藝術品－掛畫'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
 FXB:
@@ -1020,7 +1020,7 @@ FXB:
   :other_packages: FXX
   :name_en: Writing board / notice board
   :name_zh_tw: '書寫板/告示板'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FXH:
@@ -1028,7 +1028,7 @@ FXH:
   :other_packages: FXX
   :name_en: Clothes hanging racks
   :name_zh_tw: '掛衣架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
 FXM:
@@ -1036,7 +1036,7 @@ FXM:
   :other_packages: FXX
   :name_en: Mirror
   :name_zh_tw: '鏡子'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 200.00
 FXP:
@@ -1044,7 +1044,7 @@ FXP:
   :other_packages: FXX
   :name_en: Office partitions
   :name_zh_tw: '辦公室屏風'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 FXT:
@@ -1052,7 +1052,7 @@ FXT:
   :other_packages: FXX
   :name_en: Trolley
   :name_zh_tw: '手推車'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 850.00
 FXU:
@@ -1060,87 +1060,87 @@ FXU:
   :other_packages: FCU, FTU, FXX
   :name_en: Outdoor furniture
   :name_zh_tw: '戶外家具'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 FXX:
   :default_packages: FXX
-  :other_packages: 
+  :other_packages:
   :name_en: Furniture parts
   :name_zh_tw: '家具散件'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
 HPB:
   :default_packages: HPB
-  :other_packages: 
+  :other_packages:
   :name_en: Baby bath / toilet
   :name_zh_tw: '嬰兒浴盆/便盆'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
 HPC:
   :default_packages: HPC
-  :other_packages: 
+  :other_packages:
   :name_en: Car seat (child safety)
   :name_zh_tw: '汽車安全椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 HPH:
   :default_packages: HPH
-  :other_packages: 
+  :other_packages:
   :name_en: Baby high chair
   :name_zh_tw: '嬰兒餐椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 350.00
 HPS:
   :default_packages: HPS
-  :other_packages: 
+  :other_packages:
   :name_en: Stroller
   :name_zh_tw: '嬰兒手推車'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1560.00
 HPT:
   :default_packages: HPT
-  :other_packages: 
+  :other_packages:
   :name_en: Travel cot
   :name_zh_tw: '旅行嬰兒床'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
 HPW:
   :default_packages: HPW
-  :other_packages: 
+  :other_packages:
   :name_en: Baby swing / walker / jumper
   :name_zh_tw: '嬰兒搖床/學行車/跳跳椅'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 650.00
 HPX:
   :default_packages: HPX
-  :other_packages: 
+  :other_packages:
   :name_en: Child stairgate, Safety items, Other
   :name_zh_tw: '樓梯門欄，兒童安全設備'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 300.00
 MDV:
   :default_packages: MDV
-  :other_packages: 
+  :other_packages:
   :name_en: Medical devices (uncategorised)
   :name_zh_tw: '醫療器材（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 6000.00
 MEW:
   :default_packages: MEW
-  :other_packages: 
+  :other_packages:
   :name_en: Eye glasses & frames (uncategorized)
   :name_zh_tw: '眼鏡，鏡片及鏡框（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4800.00
 MFB:
@@ -1148,7 +1148,7 @@ MFB:
   :other_packages: MFC, MFD
   :name_en: Hospital bed
   :name_zh_tw: '病床'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '醫院床'
   :default_value_hk_dollar: 12000.00
 MFC:
@@ -1156,7 +1156,7 @@ MFC:
   :other_packages: FXX
   :name_en: Hospital bed parts
   :name_zh_tw: '病床零件'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 MFD:
@@ -1164,7 +1164,7 @@ MFD:
   :other_packages: FXX
   :name_en: Hospital bed mattress
   :name_zh_tw: '病床床褥'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
 MFE:
@@ -1172,7 +1172,7 @@ MFE:
   :other_packages: FXX
   :name_en: Hospital bed over table
   :name_zh_tw: '醫院跨床桌'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1200.00
 MFX:
@@ -1180,20 +1180,20 @@ MFX:
   :other_packages: FXX
   :name_en: Medical furniture (uncategorized)
   :name_zh_tw: '醫療家具（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2500.00
 MGX:
   :default_packages: MGX
-  :other_packages: 
+  :other_packages:
   :name_en: Medical supplies (uncategorized)
   :name_zh_tw: '醫療用品（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 300.00
 NXX:
   :default_packages: NXX
-  :other_packages: 
+  :other_packages:
   :name_en: Stationery (uncategorized)
   :name_zh_tw: '文具（未分類）'
   :other_terms_en: Office, school
@@ -1201,7 +1201,7 @@ NXX:
   :default_value_hk_dollar: 250.00
 PXX:
   :default_packages: PXX
-  :other_packages: 
+  :other_packages:
   :name_en: Books / publications (uncategorised)
   :name_zh_tw: '書藉/出版刊物（未分類）'
   :other_terms_en: books magazines, textbooks
@@ -1220,7 +1220,7 @@ REC:
   :other_packages: RXX
   :name_en: Large exercise equipment
   :name_zh_tw: '健身器材'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 5000.00
 REE:
@@ -1228,7 +1228,7 @@ REE:
   :other_packages: RXX
   :name_en: Small exercise aids
   :name_zh_tw: '運動輔助器材'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
 RMP:
@@ -1252,7 +1252,7 @@ RPA:
   :other_packages: RXX
   :name_en: Bicycles - Adult
   :name_zh_tw: '自行車－成人'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '單車－成人'
   :default_value_hk_dollar: 2000.00
 RPB:
@@ -1260,7 +1260,7 @@ RPB:
   :other_packages: RXX
   :name_en: Bicycles - Children
   :name_zh_tw: '自行車－兒童'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: '單車－兒童'
   :default_value_hk_dollar: 600.00
 RPC:
@@ -1268,7 +1268,7 @@ RPC:
   :other_packages: RXX
   :name_en: Climbing frame
   :name_zh_tw: '攀登架'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 6000.00
 RPP:
@@ -1276,7 +1276,7 @@ RPP:
   :other_packages: RXX
   :name_en: Play house / station
   :name_zh_tw: '玩具屋'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 RPR:
@@ -1284,7 +1284,7 @@ RPR:
   :other_packages: RXX
   :name_en: Ride-on toy / scooter
   :name_zh_tw: '騎乘玩具/滑板車'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 350.00
 RPS:
@@ -1300,7 +1300,7 @@ RPX:
   :other_packages: RXX
   :name_en: Other playground items
   :name_zh_tw: '其他操場設備'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
 RX:
@@ -1308,12 +1308,12 @@ RX:
   :other_packages: RXX
   :name_en: Uncategorised recreation equipment
   :name_zh_tw: '休閒用品（未分類）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
 TXX:
   :default_packages: TXX
-  :other_packages: 
+  :other_packages:
   :name_en: Toys (uncategorized)
   :name_zh_tw: '玩具（未分類）'
   :other_terms_en: Educational, games, puzzles
@@ -1327,22 +1327,25 @@ VA:
   :other_terms_en: mouse, keyboard, USB, HDD, storage
   :other_terms_zh_tw: '滑鼠，鍵盤，USB隨身碟，硬碟'
   :default_value_hk_dollar: 500.00
+  :subform: 'computer_accessory'
 VCD:
   :default_packages: VCD
   :other_packages: VXX
   :name_en: Desktop computer (CPU only)
   :name_zh_tw: '座枱電腦（主機）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 5000.00
+  :subform: 'computer'
 VCL:
   :default_packages: VCL
   :other_packages: VXX
   :name_en: Laptop computer
   :name_zh_tw: '筆記型電腦'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 5000.00
+  :subform: 'computer'
 VCS:
   :default_packages: VCD, VMF
   :other_packages: VXX, VA
@@ -1359,6 +1362,7 @@ VMF:
   :other_terms_en: screen, LCD, LED
   :other_terms_zh_tw: '螢幕'
   :default_value_hk_dollar: 1300.00
+  :subform: 'computer_accessory'
 VP:
   :default_packages: VP
   :other_packages: VXX
@@ -1367,6 +1371,7 @@ VP:
   :other_terms_en: Laser, Bubble jet
   :other_terms_zh_tw: '雷射打印機'
   :default_value_hk_dollar: 1200.00
+  :subform: 'computer_accessory'
 VB:
   :default_packages: VB
   :other_packages: VXX
@@ -1378,15 +1383,16 @@ VB:
   :allow_box: true
 VXX:
   :default_packages: VXX
-  :other_packages: 
+  :other_packages:
   :name_en: Other computer equipment
   :name_zh_tw: '其他電腦裝備'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 500.00
+  :subform: 'computer_accessory'
 XX:
   :default_packages: XX
-  :other_packages: 
+  :other_packages:
   :name_en: Mixed small goods
   :name_zh_tw: '雜物'
   :other_terms_en: Books, toys, clothes, electical, household, kitchen
@@ -1394,17 +1400,133 @@ XX:
   :default_value_hk_dollar: 1000.00
 EXX:
   :default_packages: EXX
-  :other_packages: 
+  :other_packages:
   :name_en: Electrical Parts
   :name_zh_tw: '電子零件'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1500.00
 RXX:
   :default_packages: RXX
-  :other_packages: 
+  :other_packages:
   :name_en: Parts for recreational goods
   :name_zh_tw: '休閒用品（散件）'
-  :other_terms_en: 
+  :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 100.00
+C:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of Sorted Clothing"
+  :name_zh_tw: "已分類的衣服 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+E:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of Sorted Electrical"
+  :name_zh_tw: "已分類的電子工具 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+H:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of Sorted Household"
+  :name_zh_tw: "已分類的家具物品 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+M:
+  :default_packages:
+  :other_packages:
+  :name_en: "Pallet of Sorted Medical items"
+  :name_zh_tw: "已分類的醫療物品 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+N:
+  :default_packages:
+  :other_packages:
+  :name_en: "Pallet of Sorted Stationery"
+  :name_zh_tw: "已分類的文具 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+P:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of Sorted Books"
+  :name_zh_tw: "已分類書籍/刊物 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+T:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of Sorted Toys"
+  :name_zh_tw: "已分類的玩具 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+V:
+  :default_packages:
+  :other_packages:
+  :name_en: "PALLET of tested Computer equipment"
+  :name_zh_tw: "已分類的電腦 , 一卡板"
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_package: true
+  :allow_pallet: true
+EB:
+  :default_packages:
+  :other_packages:
+  :name_en: ""
+  :name_zh_tw: ""
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_box: true
+  :length: 49
+  :width: 49
+  :height: 46
+MB:
+  :default_packages:
+  :other_packages:
+  :name_en: ""
+  :name_zh_tw: ""
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_box: true
+  :length: 49
+  :width: 49
+  :height: 46
+VB:
+  :default_packages:
+  :other_packages:
+  :name_en: ""
+  :name_zh_tw: ""
+  :other_terms_en:
+  :other_terms_zh_tw:
+  :default_value_hk_dollar:
+  :allow_box: true
+  :length: 60
+  :width: 30
+  :height: 40

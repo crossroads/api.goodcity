@@ -8,6 +8,7 @@ FactoryBot.define do
     purpose_description { FFaker::Lorem.sentence }
 
     detail_type     { 'GoodCity' }
+    shipment_date   { detail_type != 'GoodCity' ? Date.current : nil }
     people_helped   { rand(10) + 1 }
     booking_type    { create :booking_type, :online_order }
     association     :stockit_organisation
@@ -20,17 +21,14 @@ FactoryBot.define do
 
     trait :shipment do
       detail_type   { 'Shipment' }
-      shipment_date { Date.current }
     end
 
     trait :carry_out do
       detail_type   { 'CarryOut' }
-      shipment_date { Date.current }
     end
 
     trait :stockit_local_order do
       detail_type   { 'StockitLocalOrder' }
-      shipment_date { Date.current }
     end
 
     trait :with_orders_packages do
