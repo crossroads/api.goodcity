@@ -1,11 +1,26 @@
 ---
-1:
+-
   :name_en:  "NGO"
   :name_zh_tw: "NGO"
   :category_en: "NGO"
   :category_zh_tw: "NGO"
-2:
+-
   :name_en: "SWD"
   :name_zh_tw: "SWD"
   :category_en: "SWD"
   :category_zh_tw: "SWD"
+-
+  :name_en:  "Government School"
+  :name_zh_tw: "Government School"
+  :category_en: "Government School"
+  :category_zh_tw: "Government School"
+-
+  :name_en:  "Social Enterprise"
+  :name_zh_tw: "Social Enterprise"
+  :category_en: "Social Enterprise"
+  :category_zh_tw: "Social Enterprise"
+-
+  :name_en:  "Other"
+  :name_zh_tw: "Other"
+  :category_en: "Other"
+  :category_zh_tw: "Other"
