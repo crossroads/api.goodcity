@@ -84,7 +84,26 @@ end
 
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
-  FactoryBot.create(:package_type, code: code)
+  PackageType.create(
+    code: code,
+    name_en: value[:name_en],
+    name_zh_tw: value[:name_zh_tw],
+    other_terms_en: value[:other_terms_en],
+    other_terms_zh_tw: value[:other_terms_zh_tw],
+    allow_expiry_date: value[:allow_expiry_date],
+    visible_in_selects: value[:visible_in_selects],
+    allow_package: value[:allow_package],
+    default_value_hk_dollar: value[:default_value_hk_dollar],
+    allow_box: value[:allow_box],
+    allow_pallet: value[:allow_pallet],
+    description_en: value[:description_en],
+    description_zh_tw: value[:description_zh_tw],
+    length: value[:length],
+    width: value[:width],
+    height: value[:height],
+    customs_value_usd: value[:customs_value_usd],
+    subform: value[:subform]
+  )
 end
 
 package_types.each do |code, value|
