@@ -28,7 +28,14 @@ FactoryBot.define do
           'electrical'
         end
     end
-    initialize_with         { PackageType.find_or_initialize_by(code: code) }
+
+    # Ensures FactoryBot.create(:package_type, code: 'BBC', default_value_hk_dollar: 100) actually returns a record
+    #   from the DB if exists whilst also applying our custom attributes
+    # https://dev.to/jooeycheng/factorybot-findorcreateby-3h8k
+    to_create do |instance|
+      instance.id = PackageType.where(code: instance.code).first_or_create(instance.attributes).id
+      instance.instance_variable_set('@new_record', false) # could use reload instead
+    end
 
     transient do
       pt { generate(:package_types) }
