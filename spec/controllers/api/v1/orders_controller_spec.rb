@@ -578,9 +578,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context 'Processing checklist' do
-        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
+        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type, text_en: 'Item 1' }
+        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type, text_en: 'Item 2' }
+        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type, text_en: 'Item 3' }
 
         let(:payload) do
           payload = {}

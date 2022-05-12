@@ -858,9 +858,9 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Processing checklist' do
-    let!(:checklist_it1) { create :process_checklist, booking_type: online_type }
-    let!(:checklist_it2) { create :process_checklist, booking_type: online_type }
-    let!(:checklist_it3) { create :process_checklist, booking_type: online_type }
+    let!(:checklist_it1) { create :process_checklist, booking_type: online_type, text_en: 'Item 1' }
+    let!(:checklist_it2) { create :process_checklist, booking_type: online_type, text_en: 'Item 2' }
+    let!(:checklist_it3) { create :process_checklist, booking_type: online_type, text_en: 'Item 3' }
     let!(:checklist_unrequired) { create :process_checklist, booking_type: appointment_type }
     let!(:order) { create :order, booking_type: online_type, state: "processing", description: "", process_checklists: [checklist_it1] }
 
@@ -879,7 +879,7 @@ RSpec.describe Order, type: :model do
       expect(order.process_checklists.count).to eq(3)
       expect(order.can_transition).to eq(true) # 3/3, can transition
 
-      create :process_checklist, booking_type: online_type
+      create :process_checklist, booking_type: online_type, text_en: 'Item 4'
       expect(order.can_transition).to eq(false) # 3/4
     end
   end
