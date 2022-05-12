@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :order do
-    state               { submitted }
+    state               { "submitted" }
     submitted_at        { Time.now }
     description         { FFaker::Lorem.sentence }
     purpose_description { FFaker::Lorem.sentence }
