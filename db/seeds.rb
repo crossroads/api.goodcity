@@ -74,7 +74,7 @@ FactoryBot.create :holiday, name: "Christmas Day", holiday: Time.new(Time.now.ye
 FactoryBot.create :holiday, name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year
 
 organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
-organisation_types.each do |key, value|
+organisation_types.each do |value|
   OrganisationType.create(
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
@@ -114,7 +114,7 @@ end
 
 purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
 purposes.each do |key, value|
-  holiday = Purpose.where(
+  Purpose.where(
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
   ).first_or_create
@@ -181,8 +181,8 @@ end
 
 # Identity types
 identity_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
-identity_types.each do |identifer, record|
-  FactoryBot.create(:identity_type, identifer: identifer)
+identity_types.each do |identifier, record|
+  IdentityType.create(identifier: identifier, name_en: record[:name_en], name_zh_tw: record[:name_zh_tw])
 end
 
 FactoryBot.create(:country, name_en: "China - Hong Kong (Special Administrative Region)")
