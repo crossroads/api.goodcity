@@ -218,3 +218,9 @@ FactoryBot.create(:user, :api_write, first_name: "api", last_name: "write")
   FactoryBot.create :appointment_slot_preset, :morning, day: day
   FactoryBot.create :appointment_slot_preset, :afternoon, day: day
 end
+
+# Load views
+# This does NO SQL sanitization so run advisedly.
+Dir[File.join(Rails.root, "db", "views", "*.sql")].each do |file|
+  ActiveRecord::Base.connection.execute( File.read(file) )
+end
