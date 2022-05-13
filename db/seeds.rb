@@ -263,7 +263,8 @@ unless ENV['LIVE'] == "true"
   order_administrator_attributes.each {|attr| FactoryBot.create(:user, :order_administrator, attr) }
 end
 
-
-# Might be worth adding the following rake tasks:
-#   rake goodcity:import_swd_organisations
-#   rake goodcity:populate_organisations
+# Load views
+# This does NO SQL sanitization so run advisedly.
+Dir[File.join(Rails.root, "db", "views", "*.sql")].each do |file|
+  ActiveRecord::Base.connection.execute( File.read(file) )
+end
