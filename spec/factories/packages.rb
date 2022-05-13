@@ -22,6 +22,7 @@ FactoryBot.define do
     rejected_at { nil }
 
     association :package_type
+    association :donor_condition
 
     trait :with_item do
       association :item

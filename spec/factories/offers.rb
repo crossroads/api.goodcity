@@ -12,6 +12,10 @@ FactoryBot.define do
     saleable       { true }
     association    :created_by, factory: :user
 
+    trait :with_district do
+      association    :district
+    end
+
     trait :admin_offer do
       scheduled
       reviewed_at { Time.now }

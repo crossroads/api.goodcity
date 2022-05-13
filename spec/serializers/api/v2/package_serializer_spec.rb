@@ -21,7 +21,7 @@ describe Api::V2::PackageSerializer do
       expect(attributes['length']).to eq(package[:length])
       expect(attributes['width']).to eq(package[:width])
       expect(attributes['height']).to eq(package[:height])
-      expect(attributes['weight']).to eq(package[:weight])
+      expect(attributes['weight'].to_f).to eq(package[:weight])
       expect(attributes['pieces']).to eq(package[:pieces])
       expect(attributes['notes']).to eq(package[:notes])
       expect(attributes['item_id']).to eq(package[:item_id])

@@ -20,6 +20,7 @@ class Offer < ApplicationRecord
   belongs_to :crossroads_transport
   belongs_to :cancellation_reason
   belongs_to :company
+  belongs_to :district
   has_many :subscriptions, as: :subscribable, dependent: :destroy
 
   has_many :items, inverse_of: :offer, dependent: :destroy
@@ -88,7 +89,7 @@ class Offer < ApplicationRecord
     where(state: states.uniq)
   }
 
-  before_create :set_language
+  before_create :set_default_values
   after_initialize :set_initial_state
 
   # Workaround to set initial state fror the state_machine
@@ -337,9 +338,10 @@ class Offer < ApplicationRecord
     text + I18n.t("offer.ggv_cancel_message", time: time, locale: "zh-tw")
   end
 
-  # Set a default offer language if it hasn't been set already
-  def set_language
+  def set_default_values
+    # Set a default offer language if it hasn't been set already
     self.language = I18n.locale.to_s unless self.language.present?
+    self.district = self.created_by.try(:address).try(:district) unless self.district.present?
   end
 
   # required by PusherUpdates module

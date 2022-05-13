@@ -22,10 +22,9 @@ Rails.application.configure do
       'Cache-Control' => "public, max-age=#{2.days.to_i}"
     }
   else
-  config.action_controller.perform_caching = false
-
-  config.cache_store = :null_store
-end
+    config.action_controller.perform_caching = false
+    config.cache_store = :null_store
+  end
 
   # Store uploaded files on the local file system (see config/storage.yml for options)
   config.active_storage.service = :local
@@ -58,9 +57,6 @@ end
 
   config.action_view.raise_on_missing_translations = true
 
-  # Places email in tmp/mails/
-  config.action_mailer.delivery_method = :file
-
   # Enable bullet logging in development mode
   # Bullet logs a scope of n+1 query improvements
   config.after_initialize do
@@ -70,29 +66,17 @@ end
     Bullet.rails_logger = true
   end
 
-  # Since we are now using ActionMailer, we can even test email on Dev envionment
-  # Steps:
-  # 1. Uncomment the below config
-  # 2. Add the user_name and password
-  # 3. Go to https://www.google.com/settings/security/lesssecureapps and turn off "Allow less secure apps"
-  #
-  # Its advisible to turn off 2 Face Auth if using Gmail
-  # In case if any other SMPT services are need to be used,
-  # replace only 'smtp.gmail.com' with any available SMTP
-  #
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address:              'smtp.gmail.com',
-  #   port:                 587,
-  #   domain:               'example.com',
-  #   user_name:            '<email>',
-  #   password:             '<password>',
-  #   authentication:       'plain',
-  #   enable_starttls_auto: true
-  # }
   # This config will save the mails in the temp folder
   # If you need to test the delivery to SMTP, comment the below lines
   # and make use of above config
-  ActionMailer::Base.delivery_method = :file
-  ActionMailer::Base.file_settings = { :location => Rails.root.join('tmp/mail') }
+  # ActionMailer::Base.delivery_method = :file
+  # ActionMailer::Base.file_settings = { :location => Rails.root.join('tmp/mail') }
+
+  # Sends email to MailCatcher
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :address  => "localhost",
+    :port  => 1025,
+  }
+
 end

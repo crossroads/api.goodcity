@@ -10,6 +10,7 @@ RSpec.describe Offer, type: :model do
 
   describe "Associations" do
     it { is_expected.to belong_to :created_by }
+    it { is_expected.to belong_to :district }
     it { is_expected.to have_many :messages }
     it { is_expected.to have_many :items }
   end
@@ -23,6 +24,7 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:estimated_size).of_type(:string) }
     it { is_expected.to have_db_column(:notes).of_type(:text) }
     it { is_expected.to have_db_column(:created_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:district_id).of_type(:integer) }
 
     it { is_expected.to have_db_column(:submitted_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
@@ -31,7 +33,6 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:received_by_id).of_type(:integer) }
     it { is_expected.to have_db_column(:start_receiving_at).of_type(:datetime) }
-
   end
 
   describe "validations" do
@@ -358,6 +359,22 @@ RSpec.describe Offer, type: :model do
       it 'within a `with_versioning` block it will be turned on' do
         expect(PaperTrail).to be_enabled
       end
+    end
+  end
+
+  describe "default values" do
+    let(:district) { create :district }
+    let(:address) { create :address, district: district }
+    let(:user) { create :user, address: address }
+
+    it "uses the donor's district by default" do
+      offer = create(:offer, created_by: user)
+      expect(offer.district).to eq(district)
+    end
+
+    it "nulls the district if there's no created_by user" do
+      offer = create(:offer, created_by: nil)
+      expect(offer.district).to eq(nil)
     end
   end
 

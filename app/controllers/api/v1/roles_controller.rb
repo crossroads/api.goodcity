@@ -4,7 +4,7 @@ module Api
       load_and_authorize_resource :role, parent: false
 
       def index
-        render json: Role.visible.cached_json
+        render json: Role.visible.includes(role_permissions: :permission).cached_json
       end
 
       def show
