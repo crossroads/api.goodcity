@@ -23,10 +23,6 @@ FactoryBot.define do
     @package_types ||= YAML.load_file("#{Rails.root}/db/package_types.yml")
   end
 
-  sequence :crossroads_transports do |n|
-    @crossroads_options ||= YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
-  end
-
   sequence :random_chinese_string do |n|
     %w( 蒏葝葮 賌輈鄍 毄滱漮歅 駓駗潣 譋轐鏕 厊圪妀 裌覅峬峿鋡鬵鵛嚪袀豇貣 珝砯砨慖 磏磑禠 獛獡獚弰捃吪吙餀 駽髾髽 倱哻圁蛶 鬖鰝鰨 浞浧浵 僄塓塕鵹鵿 衒袟狅妵妶 馻噈嫶鉾 覟魆魦魵 鍌鍗鍷鰩鷎 ).sample
   end

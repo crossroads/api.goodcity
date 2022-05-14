@@ -90,24 +90,30 @@ gogovan_transports.each do |name, value|
   )
 end
 
+# Crossroads Transports
 crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
 crossroads_transports.each do |name, value|
-  FactoryBot.create :crossroads_transport, name_en: name, name_zh_tw: value[:name_zh_tw], cost: value[:cost], truck_size: value[:truck_size]
+  CrossroadsTransport.create(
+    name_en: name,
+    name_zh_tw: value[:name_zh_tw],
+    cost: value[:cost],
+    truck_size: value[:truck_size],
+    is_van_allowed: value[:is_van_allowed]
+  )
 end
 
-CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
-
+# Holidays
 holidays = YAML.load_file("#{Rails.root}/db/holidays.yml")
 holidays.each do |key, value|
   date_value = DateTime.parse(value[:holiday]).in_time_zone(Time.zone)
-  holiday = Holiday.where(
+  holiday = Holiday.create(
     name: value[:name],
     year: value[:year],
     holiday: date_value
-  ).first_or_create
+  )
 end
-FactoryBot.create :holiday, name: "Christmas Day", holiday: Time.new(Time.now.year,12,25).to_date, year: Time.now.year
-FactoryBot.create :holiday, name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year
+Holiday.create(name: "Christmas Day", holiday: Time.new(Time.now.year,12,25).to_date, year: Time.now.year)
+Holiday.create(name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year)
 
 organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
 organisation_types.each do |value|
