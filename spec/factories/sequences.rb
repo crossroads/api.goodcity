@@ -11,15 +11,6 @@ FactoryBot.define do
     rand(1000000).to_s.rjust(6,'0')
   end
 
-  sequence :timeslots do |n|
-    [["9AM-11AM", "上午9時至上午11時"], ["11AM-1PM", "午11時至下午1時"],
-      ["2PM-4PM", "下午2時至下午4時"], ["4PM-6PM", "下午4時至下午6時"]].sample
-  end
-
-  sequence :cancellation_reasons do |n|
-    @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
-  end
-
   sequence :identity_types do |n|
     @identity_types ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
   end
@@ -30,10 +21,6 @@ FactoryBot.define do
 
   sequence :package_types do |n|
     @package_types ||= YAML.load_file("#{Rails.root}/db/package_types.yml")
-  end
-
-  sequence :gogovan_transports do |n|
-    @gogovan_options ||= YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
   end
 
   sequence :crossroads_transports do |n|

@@ -2,6 +2,7 @@
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 # Use rake db:demo for test data once this task has run
 
+# Donor Conditions
 donor_conditions = YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
 donor_conditions.each do |name, value|
   DonorCondition.create(
@@ -11,6 +12,7 @@ donor_conditions.each do |name, value|
   )
 end
 
+# Rejection Reasons
 rejection_reasons = YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
 rejection_reasons.each do |name_en, value|
   RejectionReason.create(
@@ -19,11 +21,13 @@ rejection_reasons.each do |name_en, value|
   )
 end
 
+# Cancellation Reasons
 cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
 cancellation_reasons.each do |name_en, attrs|
   CancellationReason.create!(name_en: name_en, **attrs)
 end
 
+# Booking Types
 booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
 booking_types.each do |identifier, value|
   BookingType.create(
@@ -67,14 +71,23 @@ districts.each do |name_en, value|
   )
 end
 
+# Timeslots
 timeslots = [["10:30am-1pm", "上午10:30時至下午1時"], ["2PM-4PM", "下午2時至下午4時"]]
-timeslots.each do |name|
-  FactoryBot.create :timeslot, name_en: name.first, name_zh_tw: name.last
+timeslots.each do |timeslot|
+  Timeslot.create(
+    name_en: timeslot.first,
+    name_zh_tw: timeslot.last
+  )
 end
 
+# GogovanTransports
 gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
 gogovan_transports.each do |name, value|
-  FactoryBot.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw], disabled: value[:disabled]
+  GogovanTransport.create(
+    name_en: name,
+    name_zh_tw: value[:name_zh_tw],
+    disabled: value[:disabled]
+  )
 end
 
 crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
