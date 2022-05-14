@@ -20,14 +20,6 @@ FactoryBot.define do
     @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
   end
 
-  sequence :districts do |n|
-    @districts ||= YAML.load_file("#{Rails.root}/db/districts.yml")
-  end
-
-  sequence :territories do |n|
-    @territories ||= YAML.load_file("#{Rails.root}/db/territories.yml")
-  end
-
   sequence :identity_types do |n|
     @identity_types ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
   end
