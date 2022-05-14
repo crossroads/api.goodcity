@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :package_category, aliases: [:parent_package_category] do
-    name_en    { FFaker::Lorem.characters(5) }
-    name_zh_tw { FFaker::Lorem.characters(5) }
+    sequence(:name_en) { |n| "Package category #{n}" }
+    name_zh_tw         { name_en }
 
     factory :child_package_category do
       after(:build) do |category|
