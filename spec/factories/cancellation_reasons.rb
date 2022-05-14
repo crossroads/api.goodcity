@@ -15,7 +15,7 @@ FactoryBot.define do
     end
 
     trait :invisible do
-      name_en { 'Unwanted' }
+      name_en          { 'Unwanted' }
       visible_to_offer { false }
     end
 
