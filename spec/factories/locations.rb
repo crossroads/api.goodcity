@@ -2,22 +2,11 @@
 
 FactoryBot.define do
   factory :location do
-    building        { building_and_area["building"] }
-    area            { building_and_area["area"] }
-    initialize_with { Location.find_or_initialize_by(area: area, building: building) }
-
-    transient do
-      building_and_area { generate(:building_and_area) }
-    end
+    sequence(:building) { |n| ("A".."Z").to_a[n%26] << "#{n}" }
+    sequence(:area)     { |n| n }
 
     trait :multiple do
       building { 'Multiple' }
     end
   end
-
-  sequence(:building_and_area) do |n|
-    locations = FactoryBot.generate(:locations)
-    locations[n%locations.size]
-  end
-
 end

@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :goodcity_setting do
-    key { "stock.page.#{('a'..'z').to_a.shuffle.join}.setting" }
-    value { '10' }
-    description { 'A sample' }
+    sequence(:key)  { |n| "stock.page.setting#{n}" }
+    value           { rand(100) }
+    description     { "Description" }
   end
 end

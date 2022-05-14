@@ -2,9 +2,9 @@
 
 FactoryBot.define do
   factory :lookup do
-    name { 'MyString' }
-    key { 'MyString' }
-    label_en { 'MyString' }
-    label_zh_tw { 'MyString' }
+    sequence(:name)     { |n| "Lookup #{n}" }
+    sequence(:key)      { |n| "Key #{n}" }
+    sequence(:label_en) { |n| "Label #{n}" }
+    label_zh_tw         { label_en }
   end
 end

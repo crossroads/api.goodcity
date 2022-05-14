@@ -49,8 +49,4 @@ FactoryBot.define do
     (1..8).map { rand(9) }.join
   end
 
-  sequence :locations do |n|
-    @locations ||= YAML.load_file("#{Rails.root}/db/locations.yml")
-  end
-
 end

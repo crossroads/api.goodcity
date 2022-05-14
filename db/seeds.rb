@@ -115,15 +115,18 @@ end
 Holiday.create(name: "Christmas Day", holiday: Time.new(Time.now.year,12,25).to_date, year: Time.now.year)
 Holiday.create(name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year)
 
+# Organisation Types
 organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
 organisation_types.each do |value|
   OrganisationType.create(
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
     category_en: value[:category_en],
-    category_zh_tw: value[:category_zh_tw] )
+    category_zh_tw: value[:category_zh_tw]
+  )
 end
 
+# Package Types
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
   PackageType.create(
@@ -173,29 +176,35 @@ package_types.each do |code, value|
   end
 end
 
+# Purposes
 purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
 purposes.each do |key, value|
-  Purpose.where(
+  Purpose.create(
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
-  ).first_or_create
+    identifier: value[:identifier]
+  )
 end
 
+# GoodCity Settings
 goodcity_settings = YAML.load_file("#{Rails.root}/db/goodcity_settings.yml")
 goodcity_settings.each do |record|
   GoodcitySetting.find_or_create_by(record)
 end
 
+# Lookups
 lookups = YAML.load_file("#{Rails.root}/db/lookups.yml")
 lookups.each do |record|
   Lookup.find_or_create_by(record)
 end
 
+# Printers
 printers = YAML.load_file("#{Rails.root}/db/printers.yml")
 printers.each do |record|
   Printer.find_or_create_by(record)
 end
 
+# Locations
 locations = YAML.load_file("#{Rails.root}/db/locations.yml")
 locations.each do |record|
   Location.find_or_create_by(record)
