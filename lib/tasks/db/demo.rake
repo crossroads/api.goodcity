@@ -69,7 +69,7 @@ namespace :db do
         package.mark_received
       end
     end
-    offer.update(delivered_by: FactoryBot.generate(:delivered_by))
+    offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
   end
 
   def create_orders
