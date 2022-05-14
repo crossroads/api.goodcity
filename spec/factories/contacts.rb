@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :contact do
-    name { FFaker::Name.name }
+    name   { FFaker::Name.name }
     mobile { generate(:mobile) }
   end
 
