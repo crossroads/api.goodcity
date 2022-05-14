@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::V1::PrintersController, type: :controller do
   let!(:user) { create(:user, :reviewer, :with_can_access_printers_permission) }
-  let!(:active_printer) { create(:printer, :active) }
-  let!(:inactive_printer) { create(:printer) }
+  let!(:active_printer) { create(:printer, active: true) }
+  let!(:inactive_printer) { create(:printer, active: false) }
 
   let(:subject) { JSON.parse(response.body) }
 
