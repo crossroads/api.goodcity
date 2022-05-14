@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :stockit_activity do
-    name {FFaker::Name.first_name}
+    sequence(:name) { |n| "Stockit activity #{n}" }
   end
 end

@@ -9,17 +9,16 @@ describe ValuationCalculationHelper do
 
   describe '#calculate' do
     it 'calculates the default package valuation based on the parameters' do
-      valuation = ValuationCalculationHelper.new(donor_condition.id,'A', package_type.id)
-      value = valuation.calculate
-      expect(value).to eq(valuation_matrix.multiplier.to_f * package_type.default_value_hk_dollar.to_f)
+      calculated_valuation = ValuationCalculationHelper.new(donor_condition.id, 'A', package_type.id).calculate
+      expected_value = valuation_matrix.multiplier.to_f * package_type.default_value_hk_dollar.to_f
+      expect(calculated_valuation).to be_within(0.1).of(expected_value)
     end
 
     context 'if multiplier value is 0 for the parameter' do
       it 'returns 0' do
         valuation_matrix.update(multiplier: 0)
-        valuation = ValuationCalculationHelper.new(donor_condition.id,'A', package_type.id)
-        value = valuation.calculate
-        expect(value).to eq(0)
+        calculated_valuation = ValuationCalculationHelper.new(donor_condition.id, 'A', package_type.id).calculate
+        expect(calculated_valuation).to eq(0)
       end
     end
   end

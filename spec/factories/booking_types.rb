@@ -2,10 +2,10 @@
 
 FactoryBot.define do
   factory :booking_type do
-    identifier      { "online-order" }
-    name_zh_tw      { identifier }
-    name_en         { identifier }
-    initialize_with { BookingType.find_or_initialize_by(identifier: identifier) }
+    sequence(:identifier) { |n| "identifier-#{n}" }
+    name_zh_tw            { identifier }
+    name_en               { identifier }
+    initialize_with       { BookingType.find_or_initialize_by(identifier: identifier) } # avoid duplicates with traits below
 
     trait :online_order do
       identifier  { 'online-order' }
