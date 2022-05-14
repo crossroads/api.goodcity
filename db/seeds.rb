@@ -265,8 +265,10 @@ identity_types.each do |identifier, record|
 end
 
 # Countries
-Country.create(name_en: "China - Hong Kong (Special Administrative Region)")
-100.times{ FactoryBot.create(:country) }
+countries = YAML.load_file("#{Rails.root}/db/countries.yml")
+countries.each do |name_en|
+  Country.create(name_en: name_en)
+end
 
 # Create System User
 User.create(
@@ -278,8 +280,18 @@ User.create(
 
 # Appointment Slot Presets: Tuesday to Saturday
 (2..6).each do |day|
-  FactoryBot.create :appointment_slot_preset, :morning, day: day
-  FactoryBot.create :appointment_slot_preset, :afternoon, day: day
+  AppointmentSlotPreset.create(
+    day: day,
+    quota: 3,
+    hours: 10,
+    minutes: 0
+  )
+  AppointmentSlotPreset.create(
+    day: day,
+    quota: 3,
+    hours: 14,
+    minutes: 0
+  )
 end
 
 # Load views
