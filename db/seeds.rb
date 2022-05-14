@@ -4,16 +4,19 @@
 
 donor_conditions = YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
 donor_conditions.each do |name, value|
-  FactoryBot.create(:donor_condition,
+  DonorCondition.create(
     name_en: name,
-    name_zh_tw: value[:name_zh_tw] )
+    name_zh_tw: value[:name_zh_tw],
+    visible_to_donor: value[:visible_to_donor]
+  )
 end
 
 rejection_reasons = YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
 rejection_reasons.each do |name_en, value|
-  FactoryBot.create(:rejection_reason,
+  RejectionReason.create(
     name_en: name_en,
-    name_zh_tw: value[:name_zh_tw] )
+    name_zh_tw: value[:name_zh_tw]
+  )
 end
 
 cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")

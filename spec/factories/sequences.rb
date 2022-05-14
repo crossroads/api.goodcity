@@ -16,14 +16,6 @@ FactoryBot.define do
       ["2PM-4PM", "下午2時至下午4時"], ["4PM-6PM", "下午4時至下午6時"]].sample
   end
 
-  sequence :rejection_reasons do |n|
-    @rejection_reasons ||= YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
-  end
-
-  sequence :booking_types do |n|
-    @booking_types  ||= YAML.load_file("#{Rails.root}/db/booking_types.yml")
-  end
-
   sequence :cancellation_reasons do |n|
     @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
   end
