@@ -210,6 +210,7 @@ locations.each do |record|
   Location.find_or_create_by(record)
 end
 
+# Storage Types
 storage_types = YAML.load_file("#{Rails.root}/db/storage_types.yml")
 storage_types.each do |storage_type|
   StorageType.where(name: storage_type["name"]).first_or_create(storage_type)
@@ -221,6 +222,7 @@ PackageCategoryImporter.import
 # Create PackageCategoriesPackageType
 PackageCategoryImporter.import_package_relation
 
+# Roles
 roles = YAML.load_file("#{Rails.root}/db/roles.yml")
 roles.each do |role_name, attrs|
   if (role = Role.where(name: role_name).first_or_initialize)
@@ -244,25 +246,35 @@ end
 # Valuation matrix
 valuation_matrix = YAML.load_file("#{Rails.root}/db/valuation_matrix.yml")
 valuation_matrix.each do |valuation|
-  donor_condition_id = DonorCondition.where(name_en: valuation['donor_condition_name_en']).first.id
-  ValuationMatrix.find_or_create_by(donor_condition_id: donor_condition_id,
-    grade: valuation['grade'], multiplier: valuation['multiplier'])
+  donor_condition_id = DonorCondition.find_by_name_en(valuation['donor_condition_name_en']).id
+  ValuationMatrix.find_or_create_by(
+    donor_condition_id: donor_condition_id,
+    grade: valuation['grade'],
+    multiplier: valuation['multiplier']
+  )
 end
 
 # Identity types
 identity_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
 identity_types.each do |identifier, record|
-  IdentityType.create(identifier: identifier, name_en: record[:name_en], name_zh_tw: record[:name_zh_tw])
+  IdentityType.create(
+    identifier: identifier,
+    name_en: record[:name_en],
+    name_zh_tw: record[:name_zh_tw]
+  )
 end
 
-FactoryBot.create(:country, name_en: "China - Hong Kong (Special Administrative Region)")
+# Countries
+Country.create(name_en: "China - Hong Kong (Special Administrative Region)")
 100.times{ FactoryBot.create(:country) }
 
 # Create System User
-FactoryBot.create(:user, :system)
-
-# Create API User
-FactoryBot.create(:user, :api_write, first_name: "api", last_name: "write")
+User.create(
+  first_name: "GoodCity",
+  last_name: "Team",
+  mobile: SYSTEM_USER_MOBILE,
+  role_ids: [Role.find_by_name("System").id]
+)
 
 # Appointment Slot Presets: Tuesday to Saturday
 (2..6).each do |day|

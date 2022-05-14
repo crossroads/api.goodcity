@@ -11,10 +11,6 @@ FactoryBot.define do
     rand(1000000).to_s.rjust(6,'0')
   end
 
-  sequence :identity_types do |n|
-    @identity_types ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
-  end
-
   sequence :item_types do |n|
     @item_types ||= YAML.load_file("#{Rails.root}/db/item_types.yml")
   end
