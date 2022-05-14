@@ -3,10 +3,6 @@ FactoryBot.define do
     ['Gogovan','Crossroads truck','Dropped off'].sample
   end
 
-  sequence :donor_conditions do |n|
-    @donor_conditions ||= YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
-  end
-
   sequence :code do |n|
     "#{(65 + Random.rand(26)).chr}#{Random.rand(5)}"
   end
