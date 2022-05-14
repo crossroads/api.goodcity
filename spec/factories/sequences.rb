@@ -11,10 +11,6 @@ FactoryBot.define do
     @package_types ||= YAML.load_file("#{Rails.root}/db/package_types.yml")
   end
 
-  sequence :schedules do |n|
-    @schedules ||= YAML.load_file("#{Rails.root}/db/schedules.yml")
-  end
-
   sequence :roles do |n|
     @roles ||= YAML.load_file("#{Rails.root}/db/roles.yml")
   end

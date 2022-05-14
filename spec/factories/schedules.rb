@@ -2,24 +2,24 @@
 
 FactoryBot.define do
   factory :schedule do
-    zone { generate(:schedules).keys.sample }
-    resource { generate(:schedules)[zone][:resource] }
-    slot { generate(:schedules)[zone][:slot] }
-    slot_name { generate(:schedules)[zone][:slot_name] }
-    scheduled_at { (Time.now + 1.weeks).to_s }
+    sequence(:zone)      { |n| "Zone #{n}" }
+    sequence(:resource)  { |n| "Truck #{n}" }
+    sequence(:slot)      { |n| n }
+    sequence(:slot_name) { |n| "Slot #{n}" }
+    scheduled_at         { (Time.now + 1.weeks).to_s }
 
     factory :gogovan_schedule, parent: :schedule do
-      resource { nil }
-      slot { nil }
+      zone      { nil }
+      resource  { nil }
+      slot      { nil }
       slot_name { '1:00 PM' }
-      zone { nil }
     end
 
     factory :drop_off_schedule, parent: :schedule do
-      resource { nil }
-      slot { nil }
+      zone      { nil }
+      resource  { nil }
+      slot      { nil }
       slot_name { '2PM-4PM' }
-      zone { nil }
     end
   end
 end
