@@ -58,7 +58,6 @@ RSpec.configure do |config|
   # Create system_user
   config.before(:suite) do
     FactoryBot.create(:user, :system)
-    # FactoryBot.create(:role, name: Role::ROLE_NAMES[:stock_fulfilment])
   end
 
   # Clean up system_user at end of specs

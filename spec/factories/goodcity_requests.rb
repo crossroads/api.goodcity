@@ -2,10 +2,10 @@
 
 FactoryBot.define do
   factory :goodcity_request do
-    association :order
-    association :package_type
-    quantity { 1 }
-    description { 'MyText' }
+    quantity      { 1 }
+    description   { 'Description' }
     created_by_id { order&.created_by_id }
+    order
+    package_type
   end
 end

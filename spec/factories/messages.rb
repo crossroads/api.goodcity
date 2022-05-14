@@ -3,16 +3,16 @@
 FactoryBot.define do
   factory :message do
     body        { generate(:message_body) }
-    sender      { |m| m.association(:user) }
     is_private  { false }
+    association :sender, factory: :user
     association :messageable, factory: :order
 
     trait :reviewer_message do
-      sender   { |m| m.association(:user, :reviewer) }
+      sender   { association(:user, :reviewer) }
     end
 
     trait :supervisor_message do
-      sender   { |m| m.association(:user, :supervisor) }
+      sender   { association(:user, :supervisor) }
     end
 
     trait :subscribe_to_message do

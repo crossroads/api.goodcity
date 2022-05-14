@@ -4,8 +4,8 @@ FactoryBot.define do
   factory :order do
     state               { "submitted" }
     submitted_at        { Time.now }
-    description         { FFaker::Lorem.sentence }
-    purpose_description { FFaker::Lorem.sentence }
+    description         { "Description" }
+    purpose_description { "Purpose description" }
 
     detail_type     { 'GoodCity' }
     shipment_date   { detail_type != 'GoodCity' ? Date.current : nil }
@@ -79,7 +79,7 @@ FactoryBot.define do
     end
 
     trait :with_state_processing do
-      state { 'processing' }
+      state        { 'processing' }
       processed_at { Time.now }
       with_process_checklist
     end
@@ -104,9 +104,9 @@ FactoryBot.define do
     end
 
     trait :with_state_cancelled do
-      state        { 'cancelled' }
-      processed_at { Time.now }
-      cancelled_at { Time.now }
+      state         { 'cancelled' }
+      processed_at  { Time.now }
+      cancelled_at  { Time.now }
       cancel_reason { "Client didn't turn up" }
       cancellation_reason_id { create(:cancellation_reason, :no_show).id }
     end
@@ -121,7 +121,7 @@ FactoryBot.define do
     end
 
     trait :awaiting_dispatch do
-      state { 'awaiting_dispatch' }
+      state                { 'awaiting_dispatch' }
       with_processed_by
       with_process_checklist
       with_process_completed_by

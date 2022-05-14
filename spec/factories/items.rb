@@ -61,6 +61,7 @@ FactoryBot.define do
       rejection_comments { FFaker::Lorem.sentence }
     end
 
+    # Used by lib/tasks/db/demo.rake
     factory :demo_item, parent: :item do
       transient do
         demo_key { generate(:image_demo_names) } # e.g. red_chair
