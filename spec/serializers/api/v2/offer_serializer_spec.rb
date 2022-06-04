@@ -2,7 +2,9 @@ require 'rails_helper'
 
 describe Api::V2::OfferSerializer do
 
-  let(:offer)             { create(:offer) }
+  let(:district)          { create(:district) }
+  let(:offer)             { create(:offer, district_id: district.id) }
+  let(:offer_no_district) { create(:offer, district_id: nil) }
   let(:json)              { Api::V2::OfferSerializer.new(offer, Api::V2::GoodcitySerializer.parse_include_paths(:offer, '*')).as_json }
   let(:attributes)        { json['data']['attributes'] }
   let(:relationships)     { json['data']['relationships'] }
@@ -84,7 +86,13 @@ describe Api::V2::OfferSerializer do
       end
 
       it 'includes the district_id' do
-        expect(attributes['district_id']).to eq(offer.created_by.address.district_id)
+        expect(attributes['district_id']).to eq(offer.district_id)
+      end
+
+      it 'includes the district_id of the donor when none is set' do
+        output = Api::V2::OfferSerializer.new(offer_no_district, { params: { format: :public } }).as_json
+        attrs = output['data']['attributes']
+        expect(attrs['district_id']).to eq(offer_no_district.created_by.address.district_id)
       end
 
       it 'includes the expires_at' do

@@ -11,6 +11,7 @@ describe Api::V1::OfferSerializer do
     expect(json['offer']['id']).to eql(offer.id)
     expect(json['offer']['language']).to eql(offer.language)
     expect(json['offer']['state']).to eql(offer.state)
+    expect(json['offer']['district_id']).to eql(offer.district_id)
   end
 
   context "Driver" do

@@ -16,9 +16,11 @@ module Api
       format :public do
         attribute(:expires_at) { |o| Shareable.find_by(resource: o).try(:expires_at) }
         attribute(:public_uid) { |o| Shareable.public_uid_of(o) }
-        attribute(:district_id) { |o| o.try(:created_by).try(:address).try(:district_id) }
         attribute(:public_notes) { |o| Shareable.find_by(resource: o).try(:notes) }
         attribute(:public_notes_zh_tw) { |o| Shareable.find_by(resource: o).try(:notes_zh_tw) }
+        attribute(:district_id) do |o|
+          o.district_id || o.try(:created_by).try(:address).try(:district_id)
+        end
       end
 
       # ----------------------------
