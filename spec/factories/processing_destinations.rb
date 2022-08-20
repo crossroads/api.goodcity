@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :processing_destination do
-    name { FFaker::Lorem.word }
+    sequence(:name) { |n| "Processing destination #{n}" }
   end
 end

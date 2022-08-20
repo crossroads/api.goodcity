@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :restriction do
-    name_en { FFaker::Lorem.word }
-    name_zh_tw { FFaker::Lorem.word }
+    sequence(:name_en) { |n| "Restriction #{n}" }
+    name_zh_tw         { name_en }
   end
 end

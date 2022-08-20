@@ -1,15 +1,15 @@
 ---
 1:
   :name_en: Organisation
-  :name_zh_tw:
-  :identifier: 'organisation'
+  :name_zh_tw: Organisation
+  :identifier: organisation
 
 2:
   :name_en: Client
-  :name_zh_tw:
-  :identifier: 'client'
+  :name_zh_tw: Client
+  :identifier: client
 
 3:
   :name_en: Trade
-  :name_zh_tw:
-  :identifier: 'trade'
+  :name_zh_tw: Trade
+  :identifier: trade

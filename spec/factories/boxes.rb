@@ -2,9 +2,9 @@
 
 FactoryBot.define do
   factory :box do
-    box_number   { 'MyString' }
-    description  { 'MyString' }
-    comments     { 'MyText' }
+    sequence(:box_number) { |n| "Box number #{n}" }
+    description           { 'Description' }
+    comments              { 'Comments' }
     pallet
   end
 end

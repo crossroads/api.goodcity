@@ -221,8 +221,8 @@ RSpec.describe OrdersPackage, type: :model do
   describe '#search_and_filter' do
     let!(:order) { create :order }
     let!(:order2) { create :order }
-    let!(:orders_package1) { create(:orders_package,order_id: order.id, state: "designated") }
-    let!(:orders_package2) { create(:orders_package,order_id: order2.id, state: "cancelled") }
+    let!(:orders_package1) { create(:orders_package, order_id: order.id, state: "designated") }
+    let!(:orders_package2) { create(:orders_package, order_id: order2.id, state: "cancelled") }
 
     it "returns orders_packages sorted as per given sort_column"  do
       orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: []})

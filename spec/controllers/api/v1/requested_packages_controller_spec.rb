@@ -193,10 +193,11 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       end
     end
 
-    def create_requested_packges_for(user, order)
+    def create_requested_packages_for(user, order)
       packages = order.orders_packages.map(&:package)
       packages.map do |p|
-        create(:requested_package, :with_available_package, package: p, user: user)
+        p.publish
+        create(:requested_package, package: p, user: user)
       end
     end
 
@@ -212,12 +213,12 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         let(:awaiting_dispatch_order) { create(:online_order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
 
         before do
-          3.times.map { create(:requested_package) } # requested_packages for other users
+          3.times { create(:requested_package) } # requested_packages for other users
           generate_and_set_token(user)
         end
 
         context 'for draft_order' do
-          let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
+          let(:requested_packages) { 3.times.map { create(:requested_package, user: user).tap{|r| r.package.reload} } }
           before { initialize_inventory(requested_packages.map(&:package)) }
 
           it "returns a submitted order" do
@@ -240,7 +241,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         context 'submitted order' do
-          let(:requested_packages) { create_requested_packges_for(user, submitted_order) }
+          let(:requested_packages) { create_requested_packages_for(user, submitted_order) }
           before { initialize_inventory(requested_packages.map(&:package)) }
 
           it "doesn't modify the state of a submitted order" do
@@ -254,7 +255,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         context 'for processing_order' do
-          let(:requested_packages) { create_requested_packges_for(user, processing_order) }
+          let(:requested_packages) { create_requested_packages_for(user, processing_order) }
           before { initialize_inventory(requested_packages.map(&:package)) }
 
           it "doesn't modify the state of a processing order" do
@@ -268,7 +269,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         context 'if ignore_unavailable is set' do
-          let(:requested_packages) { create_requested_packges_for(user, submitted_order) }
+          let(:requested_packages) { create_requested_packages_for(user, submitted_order) }
           it 'ignores unavailable packages' do
             requested_packages[0].package.update!(allow_web_publish: false)
 
@@ -292,7 +293,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "clears the requested packages" do
-          requested_packages = create_requested_packges_for(user, draft_order)
+          requested_packages = create_requested_packages_for(user, draft_order)
           expect {
             post :checkout, params: { order_id: draft_order.id }
           }.to change(RequestedPackage, :count).by(- requested_packages.length)
@@ -331,7 +332,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "fails if one of the packages is no longer available" do
-          requested_packages = 3.times.map { create(:requested_package, :with_available_package, user: user) }
+          requested_packages = 3.times.map { create(:requested_package, user: user) }
           requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, params: { order_id: draft_order.id }
           expect(response.status).to eq(422)

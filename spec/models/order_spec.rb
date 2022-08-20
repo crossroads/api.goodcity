@@ -2,8 +2,6 @@ require 'rails_helper'
 require "rspec/mocks/standalone"
 
 RSpec.describe Order, type: :model do
-  ALL_ORDER_STATES = ["draft", "submitted", "processing", "awaiting_dispatch", "dispatching", "cancelled", "closed"]
-  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled", "draft"].freeze
 
   let(:user) { create :user }
   let!(:appointment_type) { create(:booking_type, :appointment) }
@@ -100,7 +98,7 @@ RSpec.describe Order, type: :model do
   describe '.counts_for' do
     let(:user) { create :user }
     let(:user1) { create :user }
-    TOTAL_REQUESTS_STATES.each do |state|
+    ["submitted", "awaiting_dispatch", "closed", "cancelled", "draft"].each do |state|
       let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
     end
 
@@ -135,7 +133,7 @@ RSpec.describe Order, type: :model do
     let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }
     let(:authorised_by_user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
-    ALL_ORDER_STATES.each do |state|
+    ["draft", "submitted", "processing", "awaiting_dispatch", "dispatching", "cancelled", "closed"].each do |state|
       let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id, booking_type: online_type }
       let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  nil, booking_type: online_type }
     end
@@ -860,9 +858,9 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Processing checklist' do
-    let!(:checklist_it1) { create :process_checklist, booking_type: online_type }
-    let!(:checklist_it2) { create :process_checklist, booking_type: online_type }
-    let!(:checklist_it3) { create :process_checklist, booking_type: online_type }
+    let!(:checklist_it1) { create :process_checklist, booking_type: online_type, text_en: 'Item 1' }
+    let!(:checklist_it2) { create :process_checklist, booking_type: online_type, text_en: 'Item 2' }
+    let!(:checklist_it3) { create :process_checklist, booking_type: online_type, text_en: 'Item 3' }
     let!(:checklist_unrequired) { create :process_checklist, booking_type: appointment_type }
     let!(:order) { create :order, booking_type: online_type, state: "processing", description: "", process_checklists: [checklist_it1] }
 
@@ -881,7 +879,7 @@ RSpec.describe Order, type: :model do
       expect(order.process_checklists.count).to eq(3)
       expect(order.can_transition).to eq(true) # 3/3, can transition
 
-      create :process_checklist, booking_type: online_type
+      create :process_checklist, booking_type: online_type, text_en: 'Item 4'
       expect(order.can_transition).to eq(false) # 3/4
     end
   end

@@ -17,21 +17,21 @@ FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
 
-    title { ["Mr", "Mrs", "Miss", "Ms"].sample }
-    first_name { FFaker::Name.first_name }
-    last_name { FFaker::Name.last_name }
-    mobile { generate(:mobile) }
-    email { "#{rand(1000)}#{FFaker::Internet.email}" }
-    last_connected { 2.days.ago }
-    last_disconnected { 1.day.ago }
-    disabled { false }
+    title                { ["Mr", "Mrs", "Miss", "Ms"].sample }
+    first_name           { FFaker::Name.first_name }
+    last_name            { FFaker::Name.last_name }
+    mobile               { generate(:mobile) }
+    email                { "#{rand(1000)}#{FFaker::Internet.email}" }
+    last_connected       { 2.days.ago }
+    last_disconnected    { 1.day.ago }
+    disabled             { false }
     sms_reminder_sent_at { nil }
-    initialize_with { User.find_or_initialize_by(mobile: mobile) }
+    initialize_with      { User.find_or_initialize_by(mobile: mobile) }
 
     association :image
 
     transient do
-      role_name { generate(:permissions_roles).keys.sample }
+      sequence(:role_name)    { |n| generate(:permissions_roles).keys.sort[n%generate(:permissions_roles).keys.size] }
       roles_and_permissions { }
     end
 

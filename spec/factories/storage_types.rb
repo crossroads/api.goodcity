@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :storage_type do
-    name { 'Box' }
+    name              { 'Box' }
     max_unit_quantity { ["Box", "Pallet"].include?(name) ? 1 : nil }
   end
 

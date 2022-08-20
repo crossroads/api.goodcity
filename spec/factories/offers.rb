@@ -8,7 +8,7 @@ FactoryBot.define do
     stairs         { [false, true].sample }
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
-    notes          { FFaker::Lorem.paragraph }
+    notes          { "Notes" }
     saleable       { true }
     association    :created_by, factory: :user
 
@@ -19,7 +19,7 @@ FactoryBot.define do
     trait :admin_offer do
       scheduled
       reviewed_at { Time.now }
-      created_by { nil }
+      created_by  { nil }
     end
 
     trait :submitted do
@@ -38,46 +38,46 @@ FactoryBot.define do
       under_review
       review_completed_at { Time.now }
       with_transport
-      state       { 'reviewed' }
+      state               { 'reviewed' }
     end
 
     trait :scheduled do
       reviewed
       with_delivery
-      state { 'scheduled' }
+      state         { 'scheduled' }
     end
 
     trait :receiving do
       scheduled
       start_receiving_at { Time.now }
-      association :received_by, :reviewer, factory: :user
-      state { 'receiving' }
+      association        :received_by, :reviewer, factory: :user
+      state              { 'receiving' }
     end
 
     trait :received do
       receiving
       received_at { Time.now }
-      state { 'received' }
+      state       { 'received' }
     end
 
     trait :closed do
       received
       association :closed_by, :reviewer, factory: :user
-      state { 'closed' }
+      state       { 'closed' }
     end
 
     trait :cancelled do
       reviewed
-      cancelled_at { Time.now }
-      state { 'cancelled' }
-      association :cancellation_reason
+      cancelled_at  { Time.now }
+      state         { 'cancelled' }
+      association   :cancellation_reason
       cancel_reason { 'This offer is cancelled because it is not suitable.' }
     end
 
     trait :inactive do
       submitted
       inactive_at { Time.now }
-      state { 'inactive' }
+      state       { 'inactive' }
     end
 
     trait :with_items do
@@ -89,6 +89,7 @@ FactoryBot.define do
       end
     end
 
+    # Used by lib/tasks/db/demo.rake
     trait :with_demo_items do
       transient do
         items_count { rand(3)+1 }

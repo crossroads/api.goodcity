@@ -55,14 +55,14 @@ RSpec.configure do |config|
 
   FactoryBot.use_parent_strategy = false
 
-  # Clean up system_user at end of specs
-  config.after(:all) do
-    User.system.destroy_all
+  # Create system_user
+  config.before(:suite) do
+    FactoryBot.create(:user, :system)
   end
 
-  config.before(:all) do
-    FactoryBot.create(:user, :system)
-    FactoryBot.create(:role, name: Role::ROLE_NAMES[:stock_fulfilment])
+  # Clean up system_user at end of specs
+  config.after(:suite) do
+    User.system.destroy_all
   end
 
   # Default app to be 'admin' in order to not use treat_user_as_donor

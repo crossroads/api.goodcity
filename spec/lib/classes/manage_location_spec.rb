@@ -22,10 +22,7 @@ describe ManageLocation do
     end
 
     it "should return false when it has package-types" do
-      package_type = create :package_type
-      package_type.location = location
-      package_type.save
-
+      package_type = create(:package_type, location: location)
       expect(manage_location.empty_location?).to eq(false)
     end
 
@@ -76,10 +73,7 @@ describe ManageLocation do
     end
 
     it "should merge package_type" do
-      package_type = create :package_type
-      package_type.location = location
-      package_type.save
-
+      package_type = create(:package_type, location: location)
       ManageLocation.merge_location(location, target_location)
 
       expect(package_type.reload.location).to eq(target_location)

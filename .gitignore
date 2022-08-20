@@ -25,3 +25,5 @@ coverage
 .vscode
 
 .solargraph.yml
+
+config/database.yml.*

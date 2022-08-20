@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :identity_type do
-    identifier { 'HKID' }
-    name_en { 'Hong Kong Identity Card' }
-    name_zh_tw { '香港身份證' }
+    sequence(:identifier) { |n| "Identity Type #{n}" }
+    name_en               { identifier }
+    name_zh_tw            { identifier }
   end
 end

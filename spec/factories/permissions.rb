@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :permission do
-    name            { generate(:permissions_roles).values.flatten.uniq.sample }
+    sequence(:name) { |n| generate(:permissions_roles).keys.sort[n%generate(:permissions_roles).keys.size] }
     initialize_with { Permission.find_or_initialize_by(name: name) } # avoid duplicate roles
 
     trait :api_write do

@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
-  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
-
   let(:booking_type) { create :booking_type, :online_order }
   let(:supervisor_user) { create(:user, :with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles_permission, role_name: 'Supervisor') }
   let(:reviewer_user) { create(:user, :with_token, :with_can_create_donor_permission, role_name: "Reviewer") }
@@ -285,7 +283,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   describe 'get /orders_count ' do
     before { generate_and_set_token(supervisor_user) }
-    TOTAL_REQUESTS_STATES.each do |state|
+    ["submitted", "awaiting_dispatch", "closed", "cancelled"].each do |state|
       let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: supervisor_user.id, booking_type: booking_type }
     end
 

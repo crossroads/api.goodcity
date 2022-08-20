@@ -1,4 +1,5 @@
 # frozen_String_literal: true
+require Rails.root.join('spec', 'support', 'inventory_initializer.rb')
 
 FactoryBot.define do
   factory :package do
@@ -7,7 +8,7 @@ FactoryBot.define do
     height                { rand(199) + 1 }
     weight                { rand(199) + 1 }
     pieces                { rand(199) + 1 }
-    notes                 { FFaker::Lorem.paragraph }
+    notes                 { "Notes" }
     state                 { 'expecting' }
     value_hk_dollar       { [10, 20, 30].sample }
 
@@ -65,13 +66,8 @@ FactoryBot.define do
       end
     end
 
-    trait :stockit_package do
-      with_inventory_number
-    end
-
     trait :received do
       with_inventory_record
-      stockit_package
       state { 'received' }
       received_at { Time.now }
     end
@@ -94,10 +90,6 @@ FactoryBot.define do
       after(:create) do |package, evaluator|
         package.requested_packages << (create :requested_package, package_id: package.id)
       end
-    end
-
-    trait :with_lightly_used_donor_condition do
-      donor_condition { create(:donor_condition, name_en: "Lightly Used") }
     end
 
     factory :browseable_package, traits: [:published, :with_inventory_number, :received]

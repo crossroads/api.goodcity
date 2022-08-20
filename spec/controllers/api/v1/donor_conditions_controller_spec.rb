@@ -23,15 +23,12 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
 
   describe "GET donor_conditions" do
     before do
-      # Generate all transport options for listing in API docs
-      generate(:donor_conditions).keys.each do |name_en|
-        create(:donor_condition, name_en: name_en)
-      end
+      2.times { create(:donor_condition) }
     end
     it "return serialized donor_conditions", :show_in_doc do
       get :index
       expect(response.status).to eq(200)
-      expect( parsed_body['donor_conditions'].length ).to eq(DonorCondition.count)
+      expect( parsed_body['donor_conditions'].length ).to eq(2)
     end
 
     it "returns 'visible_to_donor' in serialized response" do

@@ -4,8 +4,8 @@ FactoryBot.define do
   factory :organisations_user do
     association :organisation, factory: :organisation
     association :user, factory: :user
-    position { 'MyString' }
-    status { 'pending' }
+    position    { 'Employee' }
+    status      { 'approved' }
     preferred_contact_number { generate(:phone_number) }
 
     [:pending, :approved, :expired, :denied].each do |status_name|

@@ -2,11 +2,10 @@
 
 FactoryBot.define do
   factory :district do
-    name_en         { generate(:districts).keys.sample }
-    name_zh_tw      { generate(:districts)[name_en][:name_zh_tw] }
-    territory       { create(:territory, name_en: generate(:districts)[name_en][:territory_name_en]) }
-    initialize_with { District.find_or_initialize_by(name_en: name_en) }
-    latitude        { 22.5029632 }
-    longitude       { 114.1277213 }
+    sequence(:name_en) { |n| "District #{n}" }
+    name_zh_tw         { name_en }
+    latitude           { FFaker::Geolocation.lat }
+    longitude          { FFaker::Geolocation.lng }
+    territory
   end
 end
