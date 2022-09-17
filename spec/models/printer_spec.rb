@@ -17,8 +17,8 @@ RSpec.describe Printer, type: :model do
   end
 
   describe "scope: active" do
-    let!(:active_printer) { create :printer, :active }
-    let!(:inactive_printer) { create :printer }
+    let!(:active_printer) { create :printer, active: true }
+    let!(:inactive_printer) { create :printer, active: false }
 
     it "return records having visible_to_admin as true" do
       active_printers = Printer.active
@@ -27,4 +27,3 @@ RSpec.describe Printer, type: :model do
     end
   end
 end
-

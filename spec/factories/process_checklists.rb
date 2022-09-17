@@ -1,9 +1,18 @@
 FactoryBot.define do
   factory :process_checklist do
-    booking_type do
-      BookingType.first || association(:booking_type)
+
+    sequence(:text_en) { |n| "Process Checklist #{n}" }
+    text_zh_tw         { text_en }
+    booking_type
+
+    trait :online_order do
+      booking_type { association :booking_type, :online_order }
     end
-    text_en { FFaker::Lorem.characters(5) }
-    text_zh_tw { FFaker::Lorem.characters(5) }
+
+    trait :appointment do
+      booking_type { association :booking_type, :appointment }
+    end
+
   end
+
 end

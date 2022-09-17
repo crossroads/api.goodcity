@@ -5,9 +5,8 @@ RSpec.describe Api::V1::BookingTypesController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   before do
-    generate(:booking_types).keys.each do |identifier|
-      create(:booking_type, identifier: identifier)
-    end
+    create(:booking_type, :online_order)
+    create(:booking_type, :appointment)
   end
 
   describe "GET booking_type" do

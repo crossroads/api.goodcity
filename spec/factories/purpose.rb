@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :purpose do
-    name_en { FFaker::Lorem.word }
-    name_zh_tw { FFaker::Lorem.word }
-    identifier { FFaker::Lorem.word }
+    sequence(:name_en)    { |n| "Purpose #{n}" }
+    name_zh_tw            { name_en }
+    sequence(:identifier) { |n| "Identifier #{n}" }
   end
 end

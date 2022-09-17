@@ -4,7 +4,7 @@
 #
 FactoryBot.define do
   factory :auth_token do
-    association :user
+    association     :user
     otp_code_expiry { Time.now + 10.hours }
   end
 

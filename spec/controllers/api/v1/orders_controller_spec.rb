@@ -240,8 +240,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can return a single order of type #{type}" do
             create :appointment, :with_state_submitted, description: "IPhone 100s"
             create :online_order, :awaiting_dispatch, description: "IPhone 100s", order_transport: ggv_transport
-            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "Shipment", code: "S1234"
-            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "CarryOut", code: "C2234"
+            create :order, :shipment, :with_state_processing, description: "IPhone 100s", code: "S1234"
+            create :order, :carry_out, :with_state_processing, description: "IPhone 100s", code: "C2234"
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other" , code: "2345"
 
             get :index, params: { searchText: "iphone", type: type }
@@ -578,9 +578,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context 'Processing checklist' do
-        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
+        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type, text_en: 'Item 1' }
+        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type, text_en: 'Item 2' }
+        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type, text_en: 'Item 3' }
 
         let(:payload) do
           payload = {}

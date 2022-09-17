@@ -1,7 +1,5 @@
 ---
 -
   active: true
-  name: "Printer 1"
--
-  active: false
-  name: "Printer 2"
+  name: "GoodCity Office"
+  host: "10.10.28.13"

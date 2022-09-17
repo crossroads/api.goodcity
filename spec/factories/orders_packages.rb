@@ -36,7 +36,6 @@ FactoryBot.define do
     end
   end
 
-
   trait :with_state_requested do
     state { 'requested' }
   end

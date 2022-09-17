@@ -10,10 +10,7 @@ RSpec.describe Api::V1::GogovanTransportsController, type: :controller do
     before { generate_and_set_token(reviewer) }
 
     it "returns 200", :show_in_doc do
-      # Generate all transport options for listing in API docs
-      generate(:gogovan_transports).keys.each do |name_en|
-        create(:gogovan_transport, name_en: name_en)
-      end
+      2.times { create(:gogovan_transport) }
       get :index
       expect(response.status).to eq(200)
     end
