@@ -67,15 +67,14 @@ module Api
 
       api :GET, '/v1/users/1/can_delete', "Can this user be deleted?"
       def can_delete
-        #TODO security - who can call this method
         user_id = params["id"]
-        can_delete = Goodcity::UserSafeDelete.new(user_id).can_delete
+        user = User.find(user_id)
+        can_delete = Goodcity::UserSafeDelete.new(user).can_delete
         render json: can_delete, status: 200
       end
 
       api :DELETE, '/v1/users/1', "Delete user"
       def destroy
-        #TODO security - who can call this method
         user_id = params["id"]
         UserSafeDeleteJob.perform_later(user_id)
         render json: "User scheduled for deletion", status: 200
