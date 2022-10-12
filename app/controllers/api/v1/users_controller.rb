@@ -65,6 +65,21 @@ module Api
         end
       end
 
+      api :GET, '/v1/users/1/can_delete', "Can this user be deleted?"
+      def can_delete
+        user_id = params["id"]
+        user = User.find(user_id)
+        can_delete = Goodcity::UserSafeDelete.new(user).can_delete
+        render json: can_delete, status: 200
+      end
+
+      api :DELETE, '/v1/users/1', "Delete user"
+      def destroy
+        user_id = params["id"]
+        UserSafeDeleteJob.perform_later(user_id)
+        render json: "User scheduled for deletion", status: 200
+      end
+
       def recent_users
         @users = User.recent_orders_created_for(User.current_user.id)
         render json: @users, each_serializer: serializer

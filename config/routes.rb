@@ -136,10 +136,11 @@ Rails.application.routes.draw do
       resources :goodcity_settings, only: [:index, :create, :update, :destroy]
       resources :donor_conditions, only: [:index, :show]
       resources :companies, only: [:create, :update, :show, :index]
-      resources :users, only: [:index, :show, :update, :create] do
+      resources :users, only: [:index, :show, :update, :create, :destroy] do
         member do
           get :orders_count
           put :grant_access
+          get :can_delete
         end
 
         collection do
