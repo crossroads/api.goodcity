@@ -316,7 +316,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
     end
     context "called by a Supervisor" do
-      let(:supervisor) { create(:user, :supervisor, :with_can_manage_users_permission) }
+      let(:supervisor) { create(:user, :supervisor, :with_can_destroy_users_permission) }
       before { generate_and_set_token(supervisor) }
       it 'when user exists' do
         expect(User.current_user).to eql(supervisor)
@@ -358,7 +358,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
     end
     context "called by a Supervisor" do
-      let(:supervisor) { create(:user, :supervisor, :with_can_manage_users_permission) }
+      let(:supervisor) { create(:user, :supervisor, :with_can_destroy_users_permission) }
       before { generate_and_set_token(supervisor) }
       it do
         expect(User.current_user).to eql(supervisor)
