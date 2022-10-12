@@ -10,6 +10,14 @@ version: 2.1
 # ROLLBAR_ACCESS_TOKEN  - for recording deployments
 # GITHUB_TOKEN - token for accessing private repos. See https://github.com/settings/tokens
 
+aliases:
+  - &restore-bundler-cache
+      key: v1-bundle-{{ checksum "Gemfile.lock" }}
+  - &save-bundler-cache
+      key: v1-bundle-{{ checksum "Gemfile.lock" }}
+      paths:
+        - vendor/bundle
+
 orbs:
   azure-cli: circleci/azure-cli@1.2.0
   browser-tools: circleci/browser-tools@1.4.0
@@ -33,16 +41,12 @@ jobs:
     <<: *defaults
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: gem install bundler
+      - run: gem install bundler:2.2.27
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-         key: v1-bundle-{{ checksum "Gemfile.lock" }}
-      - run: bundle check --path=vendor/bundle || bundle install --deployment --jobs=4 --retry=3
-      - save_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
+      - restore_cache: *restore-bundler-cache
+      - run: bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
+      - save_cache: *save-bundler-cache
       - run:
           name: Download Code Climate test reporter
           command: |
@@ -76,13 +80,12 @@ jobs:
             wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
             sudo apt update
             sudo apt-get install postgresql-client-9.6
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - attach_workspace:
           at: ~/api.goodcity/tmp
-      - run: bundle install --path vendor/bundle
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache: *restore-bundler-cache
+      - run: gem install bundler:2.2.27 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - run:
           name: Wait for DB and Redis containers to start
           command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
@@ -130,9 +133,8 @@ jobs:
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}
-      - run: bundle --path vendor/bundle
+      - restore_cache: *restore-bundler-cache
+      - run: gem install bundler:2.2.27 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - run: |
           STAGE=$(if [ "$CIRCLE_BRANCH" == "live" ]; then echo production; else echo staging; fi)
           bundle exec cap ${STAGE} deploy
