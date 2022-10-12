@@ -25,7 +25,7 @@ class Ability
     can_manage_stocktakes can_manage_stocktake_revisions
     can_manage_package_messages can_manage_organisations can_manage_user_roles
     can_manage_canned_response can_merge_users can_manage_offer_response_messages
-    can_manage_users
+    can_destroy_users
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|

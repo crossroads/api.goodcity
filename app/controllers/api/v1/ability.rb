@@ -449,7 +449,7 @@ module Api
         can %i[create show], User if can_create_donor?
         can %i[mentionable_users], User if can_mention_users?
         can %i[merge_users], User if can_merge_users?
-        can %i[can_delete destroy], User if can_manage_users?
+        can %i[can_delete destroy], User if can_destroy_users?
       end
 
       def user_role_abilities
