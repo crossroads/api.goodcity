@@ -12,10 +12,11 @@ version: 2.1
 
 orbs:
   azure-cli: circleci/azure-cli@1.2.0
+  browser-tools: circleci/browser-tools@1.4.0
 
 defaults: &defaults
   docker:
-    - image: circleci/ruby:2.7.3
+    - image: cimg/ruby:2.7.3
   working_directory: ~/api.goodcity
 
 jobs:
@@ -56,13 +57,14 @@ jobs:
   test:
     <<: *defaults
     docker:
-      - image: cimg/ruby:2.7.3
+      - image: cimg/ruby:2.7.3-browsers
       - image: circleci/postgres:9.6.9-alpine-ram
       - image: circleci/redis:4.0.9-alpine
     parallelism: 3
     environment:
       RAILS_ENV: test
     steps:
+      - browser-tools/install-browser-tools
       - run:
           name: Install PostgreSQL Client (required to run migrations)
           command: |
