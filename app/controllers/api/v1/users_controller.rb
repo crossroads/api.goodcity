@@ -4,19 +4,19 @@ module Api
   module V1
     class UsersController < Api::V1::ApiController
       load_and_authorize_resource :user, parent: false
-      skip_load_resource :user, :only => [:orders_count]
+      skip_load_resource :user, only: [:orders_count]
 
       resource_description do
         short 'List Users'
         formats ['json']
-        error 401, "Unauthorized"
-        error 404, "Not Found"
-        error 422, "Validation Error"
-        error 500, "Internal Server Error"
+        error 401, 'Unauthorized'
+        error 404, 'Not Found'
+        error 422, 'Validation Error'
+        error 500, 'Internal Server Error'
       end
 
-      api :GET, '/v1/users', "List all users"
-      param :ids, Array, desc: "Filter by user ids e.g. ids = [1,2,3,4]"
+      api :GET, '/v1/users', 'List all users'
+      param :ids, Array, desc: 'Filter by user ids e.g. ids = [1,2,3,4]'
       description <<-EOS
         Note: in accordance with permissions, users will only be able to list users they are allowed to see.
         For a donor, this will be just themselves. For administrators, this will be all users.
@@ -30,54 +30,54 @@ module Api
         render json: @users.with_eager_loading, each_serializer: serializer
       end
 
-      api :POST, '/v1/users', "Create user"
+      api :POST, '/v1/users', 'Create user'
       def create
         @user.assign_attributes(user_params)
 
         if @user.save
-          if params["user"]["organisations_users_ids"].present?
-            @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
+          if params['user']['organisations_users_ids'].present?
+            @user.organisations << Organisation.find_by(id: params['user']['organisations_users_ids'])
           end
 
           render json: @user, serializer: serializer, include_user_roles: true, status: 201
         else
-          render_error(@user.errors.full_messages.join(". "))
+          render_error(@user.errors.full_messages.join('. '))
         end
       end
 
-      api :GET, '/v1/users/1', "List a user"
-      description "Returns information about a user. Note image may be empty if user is not a reviewer."
+      api :GET, '/v1/users/1', 'List a user'
+      description 'Returns information about a user. Note image may be empty if user is not a reviewer.'
       def show
         render json: @user, serializer: Api::V1::UserDetailsSerializer, root: 'user'
       end
 
-      api :PUT, '/v1/users/1', "Update user"
+      api :PUT, '/v1/users/1', 'Update user'
       param :user, Hash, required: true do
-        param :last_connected, String, desc: "Time when user last connected to server.", allow_nil: true
-        param :last_disconnected, String, desc: "Time when user disconnected from server.", allow_nil: true
+        param :last_connected, String, desc: 'Time when user last connected to server.', allow_nil: true
+        param :last_disconnected, String, desc: 'Time when user disconnected from server.', allow_nil: true
       end
       def update
         @user.update(user_params)
         if @user.valid?
           render json: @user, serializer: serializer
         else
-          render_error(@user.errors.full_messages.join(". "))
+          render_error(@user.errors.full_messages.join('. '))
         end
       end
 
-      api :GET, '/v1/users/1/can_delete', "Can this user be deleted?"
+      api :GET, '/v1/users/1/can_delete', 'Can this user be deleted?'
       def can_delete
-        user_id = params["id"]
+        user_id = params['id']
         user = User.find(user_id)
         can_delete = Goodcity::UserSafeDelete.new(user).can_delete
         render json: can_delete, status: 200
       end
 
-      api :DELETE, '/v1/users/1', "Delete user"
+      api :DELETE, '/v1/users/1', 'Delete user'
       def destroy
-        user_id = params["id"]
+        user_id = params['id']
         UserSafeDeleteJob.perform_later(user_id)
-        render json: "User scheduled for deletion", status: 200
+        render json: 'User scheduled for deletion', status: 200
       end
 
       def recent_users
@@ -104,9 +104,9 @@ module Api
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
-      api :PUT, '/v1/users/merge_users', "Merge one user details into another user"
-      param :master_user_id, String, desc: "Id of user in which other user will be merged"
-      param :merged_user_id, String, desc: "Id of user which needs to be merged and removed."
+      api :PUT, '/v1/users/merge_users', 'Merge one user details into another user'
+      param :master_user_id, String, desc: 'Id of user in which other user will be merged'
+      param :merged_user_id, String, desc: 'Id of user which needs to be merged and removed.'
       def merge_users
         merge_response = Goodcity::UserUtils.merge_user!(params[:master_user_id], params[:merged_user_id])
 
@@ -117,7 +117,7 @@ module Api
         end
       end
 
-      api :PUT, 'v1/users/1/grant_access', "Grant access to user using access-pass-key"
+      api :PUT, 'v1/users/1/grant_access', 'Grant access to user using access-pass-key'
       param :access_key, String, desc: 'AccessPass key to get access'
       def grant_access
         grant_access = GrantAccessPass.new(params[:access_key], current_user.id)
@@ -126,9 +126,8 @@ module Api
           grant_access.grant_access_by_pass
           render json: @user, serializer: Api::V1::UserProfileSerializer
         else
-          render_error("Invalid Access Pass")
+          render_error('Invalid Access Pass')
         end
-
       end
 
       private
@@ -141,7 +140,8 @@ module Api
         records = @users.limit(25)
         records = records.filter_users(params)
 
-        data = ActiveModel::ArraySerializer.new(records,
+        data = ActiveModel::ArraySerializer.new(
+          records,
           each_serializer: Api::V1::UserDetailsSerializer,
           include_user_roles: true,
           root: 'users'
@@ -151,10 +151,10 @@ module Api
 
       def user_params
         attributes = %i[image_id first_name last_name email receive_email
-          other_phone title mobile printer_id preferred_language]
-        attributes.concat([address_attributes: [:district_id, :address_type]])
+                        other_phone title mobile printer_id preferred_language]
+        attributes.concat([address_attributes: %i[district_id address_type]])
         attributes.concat([:disabled]) if current_user.can_disable_user?(params[:id])
-        attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
+        attributes.concat(%i[last_connected last_disconnected]) if User.current_user.id == params['id']&.to_i
         params.require(:user).permit(attributes)
       end
 
