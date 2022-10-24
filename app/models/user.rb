@@ -39,8 +39,12 @@ class User < ApplicationRecord
 
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: 'OrganisationsUser'
-  has_many :active_organisations, class_name: 'Organisation', through: :active_organisations_users, source: 'organisation'
+  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) },
+           class_name: 'OrganisationsUser'
+  has_many :active_organisations,
+           class_name: 'Organisation',
+           through: :active_organisations_users,
+           source: 'organisation'
   has_many :printers_users
   has_many :printers, through: :printers_users
   has_many :offer_responses
@@ -48,7 +52,7 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
 
   has_many :active_user_roles, -> { where('expires_at IS NULL OR expires_at >= ?', Time.now.in_time_zone) },
-            class_name: 'UserRole'
+           class_name: 'UserRole'
   has_many :active_roles, class_name: 'Role', through: :active_user_roles, source: 'role'
 
   belongs_to :image, dependent: :destroy

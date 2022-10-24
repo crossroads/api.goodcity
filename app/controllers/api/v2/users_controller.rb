@@ -20,7 +20,10 @@ module Api
         * 200 - returned regardless of whether mobile number exists or not
         * 401 - returned if unauthenticated
       EOS
-      param :include, String, required: false, desc: 'A comma separated list of the attributes/relationships to include in the response'
+      param :include,
+            String,
+            required: false,
+            desc: 'A comma separated list of the attributes/relationships to include in the response'
       error 401, 'Unauthorized'
       def me
         render json: serialize(current_user)
