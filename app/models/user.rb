@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  has_paper_trail versions: { class_name: "Version" }
+  has_paper_trail versions: { class_name: 'Version' }
   include PushUpdates
 
   include ManageUserRoles
@@ -27,34 +27,38 @@ class User < ApplicationRecord
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
-  has_many :reviewed_offers, foreign_key: :reviewed_by_id, inverse_of: :reviewed_by, class_name: "Offer"
-  has_many :messages, class_name: "Message", foreign_key: :sender_id, inverse_of: :sender
+  has_many :reviewed_offers, foreign_key: :reviewed_by_id, inverse_of: :reviewed_by, class_name: 'Offer'
+  has_many :messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
 
   has_many :requested_packages, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
-  has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: "offer"
+  has_many :offers_subscription, class_name: 'Offer', through: :subscriptions, source: 'offer'
 
-  has_many :unread_subscriptions, -> { where state: "unread" }, class_name: "Subscription"
+  has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: 'Subscription'
   has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
 
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: "OrganisationsUser"
-  has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
+  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) },
+           class_name: 'OrganisationsUser'
+  has_many :active_organisations,
+           class_name: 'Organisation',
+           through: :active_organisations_users,
+           source: 'organisation'
   has_many :printers_users
   has_many :printers, through: :printers_users
   has_many :offer_responses
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.now.in_time_zone) },
-            class_name: "UserRole"
-  has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
+  has_many :active_user_roles, -> { where('expires_at IS NULL OR expires_at >= ?', Time.now.in_time_zone) },
+           class_name: 'UserRole'
+  has_many :active_roles, class_name: 'Role', through: :active_user_roles, source: 'role'
 
   belongs_to :image, dependent: :destroy
-  has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
-  has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
-  has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
+  has_many :moved_packages, class_name: 'Package', foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
+  has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: 'Location', through: :moved_packages, source: :location
+  has_many :created_orders, -> { order 'id DESC' }, class_name: 'Order', foreign_key: :created_by_id
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
@@ -62,16 +66,16 @@ class User < ApplicationRecord
   # Validations
   # --------------------
 
-  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
-  validates :mobile, presence: true, if: lambda { email.blank? && !disabled }
-  validates :mobile, uniqueness: true, if: lambda { mobile.present? }
+  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: -> { mobile.present? }
+  validates :mobile, presence: true, if: -> { email.blank? && !disabled }
+  validates :mobile, uniqueness: true, if: -> { mobile.present? }
 
   validates :email, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
-  validates :email, uniqueness: true, if: lambda { email.present? }
-  validates :email, fake_email: true, :if => lambda { Rails.env.production? }
+  validates :email, uniqueness: true, if: -> { email.present? }
+  validates :email, fake_email: true, if: -> { Rails.env.production? }
 
-  validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
+  validates :title, inclusion: { in: TITLE_OPTIONS }, allow_nil: true
   validates :preferred_language,
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
@@ -84,8 +88,8 @@ class User < ApplicationRecord
 
   before_validation :downcase_email
 
-  before_save :reset_email_verification_flag, if: lambda { email_changed? && !new_record? }
-  before_save :reset_mobile_verification_flag, if: lambda { mobile_changed? && !new_record? }
+  before_save :reset_email_verification_flag, if: -> { email_changed? && !new_record? }
+  before_save :reset_mobile_verification_flag, if: -> { mobile_changed? && !new_record? }
 
   before_destroy :delete_auth_tokens
 
@@ -93,16 +97,16 @@ class User < ApplicationRecord
   # Scopes
   # --------------------
 
-  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
-  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
-  scope :stock_fulfilments, -> { where(roles: {name: "Stock fulfilment"}).joins(:active_roles) }
+  scope :reviewers, -> { where(roles: {name: 'Reviewer'}).joins(:active_roles) }
+  scope :supervisors, -> { where(roles: {name: 'Supervisor'}).joins(:active_roles) }
+  scope :stock_fulfilments, -> { where(roles: {name: 'Stock fulfilment'}).joins(:active_roles) }
   scope :stock_administrators, -> { where(roles: { name: 'Stock administrator' }).joins(:active_roles) }
-  scope :order_fulfilments, -> { where(roles: {name: "Order fulfilment"}).joins(:active_roles) }
+  scope :order_fulfilments, -> { where(roles: {name: 'Order fulfilment'}).joins(:active_roles) }
   scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:active_roles) }
-  scope :system, -> { where(roles: {name: "System"}).joins(:active_roles) }
+  scope :system, -> { where(roles: {name: 'System'}).joins(:active_roles) }
 
-  scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:active_roles) }
-  scope :except_stockit_user, -> { where.not(first_name: "Stockit").where.not(last_name: "User") }
+  scope :staff, -> { where(roles: { name: %w[Supervisor Reviewer] }).joins(:active_roles) }
+  scope :except_stockit_user, -> { where.not(first_name: 'Stockit').where.not(last_name: 'User') }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
@@ -110,8 +114,8 @@ class User < ApplicationRecord
   scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
   scope :with_permissions, ->(perm) {
     active.joins(roles: [:permissions])
-      .where(permissions: { name: perm } )
-      .where('user_roles.expires_at > now() OR user_roles.expires_at IS NULL')
+          .where(permissions: { name: perm })
+          .where('user_roles.expires_at > now() OR user_roles.expires_at IS NULL')
   }
 
   # --------------------
@@ -121,14 +125,14 @@ class User < ApplicationRecord
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
 
-  #added to allow sign_up without mobile number from stock app.
+  # added to allow sign_up without mobile number from stock app.
   attr_accessor :request_from_stock, :request_from_browse
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params, app_name)
-    mobile = user_params["mobile"].presence
-    email = user_params["email"].presence
+    mobile = user_params['mobile'].presence
+    email = user_params['email'].presence
     user = find_user_by_mobile_or_email(mobile, email)
     AuthenticationService.otp_auth_key_for(user, refresh: true) if user.present?
     user ||= new(user_params)
@@ -141,21 +145,17 @@ class User < ApplicationRecord
 
   def self.find_user_by_mobile_or_email(mobile, email)
     if mobile.present?
-      return find_by_mobile(mobile)
+      find_by_mobile(mobile)
     elsif email.present?
       find_by('LOWER(users.email) = ?', email.downcase)
-    else
-      nil
     end
   end
 
   def send_sms(app_name, mobile = nil)
-    begin
-      TwilioService.new(self, mobile).sms_verification_pin(app_name)
-    rescue Twilio::REST::RequestError => e
-      msg = e.message.try(:split, ".").try(:first)
-      self.errors.add(:base, msg)
-    end
+    TwilioService.new(self, mobile).sms_verification_pin(app_name)
+  rescue Twilio::REST::RequestError => e
+    msg = e.message.try(:split, '.').try(:first)
+    errors.add(:base, msg)
   end
 
   def send_verification_pin(app_name, mobile, email = nil)
@@ -167,13 +167,13 @@ class User < ApplicationRecord
 
   def set_verified_flag(pin_for)
     return unless pin_for.present?
+
     update_column(:is_email_verified, true)   if pin_for.to_sym.eql?(:email)
     update_column(:is_mobile_verified, true)  if pin_for.to_sym.eql?(:mobile)
   end
 
   def self.recent_orders_created_for(user_id)
-    joins(:created_orders).where(orders: {submitted_by_id: user_id})
-      .order("orders.id DESC").limit(5)
+    joins(:created_orders).where(orders: { submitted_by_id: user_id }).order('orders.id DESC').limit(5)
   end
 
   def self.filter_users(opts)
@@ -184,11 +184,9 @@ class User < ApplicationRecord
   end
 
   def allowed_login?(app_name)
-    if [DONOR_APP, BROWSE_APP, STOCK_APP].include?(app_name)
-      return true
-    else
-      user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
-    end
+    return true if [DONOR_APP, BROWSE_APP, STOCK_APP].include?(app_name)
+
+    user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
   end
 
   def user_permissions_names
@@ -200,7 +198,7 @@ class User < ApplicationRecord
   end
 
   def full_name
-    [first_name, last_name].reject(&:blank?).map(&:capitalize).join(" ")
+    [first_name, last_name].reject(&:blank?).map(&:capitalize).join(' ')
   end
 
   def staff?
@@ -218,6 +216,7 @@ class User < ApplicationRecord
   def has_role?(role_key)
     name = Role::ROLE_NAMES[role_key]
     return false if name.blank?
+
     user_role_names.include?(name)
   end
 
@@ -246,7 +245,7 @@ class User < ApplicationRecord
   end
 
   def can_disable_user?(id = nil)
-    has_permission?("can_disable_user") && User.current_user.id != id&.to_i
+    has_permission?('can_disable_user') && User.current_user.id != id&.to_i
   end
 
   def downcase_email
@@ -258,12 +257,11 @@ class User < ApplicationRecord
   end
 
   def api_user?
-    user_role_names.include?("api-write")
+    user_role_names.include?('api-write')
   end
 
   def online?
-    (last_connected && last_disconnected) ?
-      (last_connected > last_disconnected) : false
+    last_connected && last_disconnected ? (last_connected > last_disconnected) : false
   end
 
   def self.current_user
@@ -291,7 +289,7 @@ class User < ApplicationRecord
   end
 
   def self.stockit_user
-    find_by(first_name: "Stockit", last_name: "User")
+    find_by(first_name: 'Stockit', last_name: 'User')
   end
 
   def recent_active_offer_id
@@ -300,11 +298,11 @@ class User < ApplicationRecord
 
   def email_properties
     props = {}
-    props["contact_name"] = "#{first_name} #{last_name}"
+    props['contact_name'] = "#{first_name} #{last_name}"
     org = organisations.first
     if org
-      props["contact_organisation_name_en"] = org.name_en
-      props["contact_organisation_name_zh_tw"] = org.name_zh_tw
+      props['contact_organisation_name_en'] = org.name_en
+      props['contact_organisation_name_zh_tw'] = org.name_zh_tw
     end
     props
   end
@@ -319,7 +317,7 @@ class User < ApplicationRecord
 
   def refresh_auth_token!
     # Create new token
-    token = auth_tokens.create!(user_id: self.id)
+    token = auth_tokens.create!(user_id: id)
 
     # Delete old ones
     AuthToken
