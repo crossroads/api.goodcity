@@ -523,7 +523,7 @@ GEM
     thwait (0.2.0)
       e2mmap
     tilt (2.0.10)
-    timecop (0.9.4)
+    timecop (0.9.5)
     traco (5.3.2)
       activerecord (>= 4.2)
     ttfunk (1.7.0)
