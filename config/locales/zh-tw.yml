@@ -208,3 +208,5 @@ zh-tw:
         submission_pickup_delivery: '跟進 %{booking_type} 事宜 %{code} (Next steps for %{booking_type} %{code})'
         confirmation_pickup_delivery: '國際十字路會訂單確認通知 (%{code}) (Crossroads Order Confirmation (%{code}))'
       login: 好人好市一次性登入密碼
+  users_controller:
+    delete_scheduled: "User scheduled for deletion"

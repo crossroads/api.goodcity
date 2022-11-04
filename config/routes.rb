@@ -140,7 +140,6 @@ Rails.application.routes.draw do
         member do
           get :orders_count
           put :grant_access
-          get :can_delete
         end
 
         collection do

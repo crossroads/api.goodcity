@@ -443,13 +443,13 @@ module Api
 
       def user_abilities
         can [:current_user_profile], User
-        can %i[show update orders_count grant_access can_delete destroy], User, id: @user_id
+        can %i[show update orders_count grant_access destroy], User, id: @user_id
         can %i[index show], User if can_read_users?
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?
         can %i[mentionable_users], User if can_mention_users?
         can %i[merge_users], User if can_merge_users?
-        can %i[can_delete destroy], User if can_destroy_users?
+        can %i[destroy], User if can_destroy_users?
       end
 
       def user_role_abilities
