@@ -210,3 +210,5 @@ en:
         submission_pickup_delivery: 'Next steps for %{booking_type} %{code}'
         confirmation_pickup_delivery: 'Crossroads Order Confirmation (%{code})'
       login: GoodCity.HK pin code
+  users_controller:
+    delete_scheduled: "User scheduled for deletion"

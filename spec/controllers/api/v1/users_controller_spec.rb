@@ -281,56 +281,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  context "GET /users/1/can_delete" do
-    let(:user) { create(:user) }
-    let(:user2) { create(:user) }
-    context "called by anonymous user" do
-      it do
-        expect(User.current_user).to be_nil
-        get :can_delete, params: { id: user.id }
-        expect(response.status).to eql(401)
-      end
-    end
-    context "called by themself" do
-      before { generate_and_set_token(user) }
-      it 'returns true'do
-        expect(User.current_user).to eql(user)
-        get :can_delete, params: { id: user.id }
-        expect(response.status).to eql(200)
-        expect(parsed_body['result']).to eql(true)
-      end
-      it 'returns false' do
-        allow_any_instance_of(Goodcity::UserSafeDelete).to receive(:can_delete).and_return({result: false, reason: 'User has roles'})
-        expect(User.current_user).to eql(user)
-        get :can_delete, params: { id: user.id }
-        expect(response.status).to eql(200)
-        expect(parsed_body['result']).to eql(false)
-      end
-    end
-    context "called by another user" do
-      before { generate_and_set_token(user) }
-      it do
-        expect(User.current_user).to eql(user)
-        get :can_delete, params: { id: user2.id }
-        expect(response.status).to eql(403)
-      end
-    end
-    context "called by a Supervisor" do
-      let(:supervisor) { create(:user, :supervisor, :with_can_destroy_users_permission) }
-      before { generate_and_set_token(supervisor) }
-      it 'when user exists' do
-        expect(User.current_user).to eql(supervisor)
-        get :can_delete, params: { id: user.id }
-        expect(response.status).to eql(200)
-      end
-      it "when user doesn't exist" do
-        expect(User.current_user).to eql(supervisor)
-        get :can_delete, params: { id: User.maximum(:id) + 42 }
-        expect(response.status).to eql(404)
-      end
-    end
-  end
-
   context "DELETE /users/1" do
     let(:user) { create(:user) }
     let(:user2) { create(:user) }
@@ -343,10 +293,19 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
     context "called by themself" do
       before { generate_and_set_token(user) }
-      it do
+      it 'can be deleted' do
         expect(User.current_user).to eql(user)
         delete :destroy, params: { id: user.id }
         expect(response.status).to eql(200)
+      end
+      it 'cannot be deleted' do
+        allow_any_instance_of(Goodcity::UserSafeDelete).to receive(:can_delete).
+          and_return({ result: false, reason: "User has roles" })
+        expect(User.current_user).to eql(user)
+        delete :destroy, params: { id: user.id }
+        expect(response.status).to eql(422)
+        expect(parsed_body["result"]).to eql(false)
+        expect(parsed_body["reason"]).to eql("User has roles")
       end
     end
     context "called by another user" do
