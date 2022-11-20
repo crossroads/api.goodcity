@@ -72,7 +72,7 @@ module Api
         can_delete = Goodcity::UserSafeDelete.new(user).can_delete
         if can_delete[:result] == true
           UserSafeDeleteJob.perform_later(user_id)
-          render json: I18n.t('users_controller.delete_scheduled'), status: 200
+          render json: { result: true, message: I18n.t('users_controller.delete_scheduled') }, status: 200
         else
           render json: can_delete, status: 422
         end
