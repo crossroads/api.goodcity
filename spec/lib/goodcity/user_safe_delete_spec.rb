@@ -25,7 +25,7 @@ context Goodcity::UserSafeDelete do
       end
       it do
         expect(subject.can_delete[:result]).to eql(false)
-        expect(subject.can_delete[:reason]).to eql("User has active offers")
+        expect(subject.can_delete[:reason]).to eql("We're sorry but we're unable to delete your account because you have an active offer. Please close or cancel it first. If you have any questions, please in-app message us and we will assist you.")
       end
     end
 
@@ -39,7 +39,7 @@ context Goodcity::UserSafeDelete do
       end
       it do
         expect(subject.can_delete[:result]).to eql(false)
-        expect(subject.can_delete[:reason]).to eql("User has orders")
+        expect(subject.can_delete[:reason]).to eql("We're sorry but we're unable to delete your account because you have an active order. Please close or cancel it first. If you have any questions, please in-app message us and we will assist you.")
       end
     end
 
@@ -54,7 +54,7 @@ context Goodcity::UserSafeDelete do
       let(:user) { create(:user, :order_administrator )}
       it do
         expect(subject.can_delete[:result]).to eql(false)
-        expect(subject.can_delete[:reason]).to eql("User has roles")
+        expect(subject.can_delete[:reason]).to eql("We're sorry but we're unable to delete your account because you have some important system roles assigned. Please contact us and we will assist you with account deletion.")
       end
     end
 
