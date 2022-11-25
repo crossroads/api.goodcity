@@ -297,7 +297,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(User.current_user).to eql(user)
         delete :destroy, params: { id: user.id }
         expect(response.status).to eql(200)
-        expect(parsed_body).to eql({"result"=>true, "message"=>"User scheduled for deletion"})
+        expect(parsed_body).to eql({"result"=>true, "reason"=>"User scheduled for deletion"})
       end
       it 'cannot be deleted' do
         allow_any_instance_of(Goodcity::UserSafeDelete).to receive(:can_delete).
