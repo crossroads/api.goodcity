@@ -50,9 +50,9 @@ module Goodcity
       # Are all offers draft, cancelled, or resolved?
       # Any orders owned by this user?
       # Has user ever used admin or stock apps?
-      return { result: false, reason: "User has active offers" } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
-      return { result: false, reason: "User has orders" } if Order.where(created_by_id: @user.id).any?
-      return { result: false, reason: "User has roles" } if @user.roles.any?
+      return { result: false, reason: I18n.t('user_safe_delete.user_has_active_offers') } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
+      return { result: false, reason: I18n.t('user_safe_delete.user_has_active_orders') } if Order.where(created_by_id: @user.id).any?
+      return { result: false, reason: I18n.t('user_safe_delete.user_has_roles') } if @user.roles.any?
       
       return { result: true, reason: "OK" }
     end
@@ -83,7 +83,7 @@ module Goodcity
       }
       image_id = @user.image_id
       @user.update(attributes)
-      Image.find(image_id)&.really_destroy!
+      Image.find(image_id)&.really_destroy! if image_id.present?
     end
 
     def delete_messages
