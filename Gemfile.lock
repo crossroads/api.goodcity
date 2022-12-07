@@ -469,6 +469,11 @@ GEM
       fugit (~> 1.1, >= 1.1.6)
     sendgrid-ruby (6.5.1)
       ruby_http_client (~> 3.4)
+    sentry-rails (5.7.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.7.0)
+    sentry-ruby (5.7.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     shellany (0.0.1)
     shoulda-callback-matchers (1.1.4)
       activesupport (>= 3)
@@ -620,6 +625,8 @@ DEPENDENCIES
   ruby-graphviz
   rubyXL
   sendgrid-ruby
+  sentry-rails
+  sentry-ruby
   shoulda-callback-matchers
   shoulda-matchers
   sidekiq (~> 6.4.0)
