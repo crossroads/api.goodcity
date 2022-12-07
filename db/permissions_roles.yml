@@ -51,7 +51,7 @@ Supervisor:
 - can_read_schedule
 - can_access_packages_locations
 - can_read_versions
-- can_manage_users
+- can_destroy_users
 - can_perform_message_crud
 - can_read_or_modify_user
 - can_destroy_image

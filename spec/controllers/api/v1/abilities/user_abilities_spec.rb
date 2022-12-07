@@ -4,13 +4,13 @@ require 'cancan/matchers'
 describe "User abilities" do
 
   subject(:ability) { Api::V1::Ability.new(user) }
-  let(:all_actions) { %i[index show create update destroy manage current_user_profile can_read_or_modify_user] }
+  let(:all_actions) { %i[index show create update destroy manage current_user_profile] }
 
   context "when Supervisor" do
-    let(:user) { create(:user, :with_supervisor_role, :with_can_mention_users_permission, :with_can_read_or_modify_user_permission) }
+    let(:user) { create(:user, :with_supervisor_role, :with_can_mention_users_permission, :with_can_read_or_modify_user_permission, :with_can_destroy_users_permission) }
     let(:person) { create :user }
-    let(:can)    { %i[create index show update current_user_profile mentionable_users] }
-    let(:cannot) { %i[destroy manage] }
+    let(:can)    { %i[create index show update current_user_profile mentionable_users destroy] }
+    let(:cannot) { %i[manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
     end}
@@ -48,8 +48,8 @@ describe "User abilities" do
   context "when Owner" do
     let(:user)   { create :user }
     let(:person) { user }
-    let(:can)    { %i[show update current_user_profile] }
-    let(:cannot) { %i[index create destroy manage mentionable_users] }
+    let(:can)    { %i[show update current_user_profile destroy] }
+    let(:cannot) { %i[index create manage mentionable_users] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
     end}

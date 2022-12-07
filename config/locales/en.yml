@@ -210,3 +210,9 @@ en:
         submission_pickup_delivery: 'Next steps for %{booking_type} %{code}'
         confirmation_pickup_delivery: 'Crossroads Order Confirmation (%{code})'
       login: GoodCity.HK pin code
+  users_controller:
+    delete_scheduled: "This user account has been scheduled for deletion."
+  user_safe_delete:
+    user_has_active_offers: "We're sorry but we're unable to delete your account because you have an active offer. Please close or cancel it first. If you have any questions, please in-app message us and we will assist you."
+    user_has_active_orders: "We're sorry but we're unable to delete your account because you have an active order. Please close or cancel it first. If you have any questions, please in-app message us and we will assist you."
+    user_has_roles: "We're sorry but we're unable to delete your account because you have some important system roles assigned. Please contact us and we will assist you with account deletion."
