@@ -4,4 +4,4 @@ Sentry.init do |config|
   # of transactions for performance monitoring.
   # We recommend adjusting this value in production.
   config.traces_sample_rate = 1.0
-ends
+end
