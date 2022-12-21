@@ -173,12 +173,11 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(live)$/
-      # NEW DEPLOYMENT NOT YET FOR LIVE
-      - build-and-deploy-docker-image:
-          requires:
-            - test
-            - audit
-          filters:
-            branches:
-              only: /^(master)$/
+              only: /^(master|live)$/
+      # - build-and-deploy-docker-image:
+      #     requires:
+      #       - test
+      #       - audit
+      #     filters:
+      #       branches:
+      #         only: /^(master)$/
