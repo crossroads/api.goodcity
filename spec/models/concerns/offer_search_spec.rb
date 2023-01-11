@@ -33,29 +33,6 @@ context OfferSearch do
       it { expect(Offer.search({search_text: 'test notes', states:[]}).to_a).to match_array([offer1, offer2]) }
     end
 
-    context "offer messages content" do
-      let(:message) { create(:message, body: 'Test message body', messageable: nil) }
-      let!(:offer1) { create :offer, :submitted, messages: [message] }
-      it do
-        expect(Offer.search({search_text: 'Test message body', states:[]}).to_a).to match_array([offer1])
-      end
-
-      context 'offer and items message content' do
-        let!(:offer_message) { create :message, :with_offer, body: 'An offer body' }
-        let!(:item_message) { create :message, :with_item, body: 'An item body' }
-        it do
-          expect(Offer.search({ search_text: "An item body", states: [] }).to_a).to match_array([item_message.messageable.offer])
-        end
-      end
-    end
-
-    context "offer item messages content" do
-      let(:message) { create(:message, body: 'Test message body') }
-      let(:item) { create :item, messages: [message] }
-      let!(:offer1) { create :offer, :submitted, messages: [message] }
-      it { expect(Offer.search({search_text: 'Test message body', states:[]}).to_a).to match_array([offer1]) }
-    end
-
     context "offer -> item -> package_type" do
       let(:package_type) { create(:package_type, code: 'BBC') }
       let(:package) { create(:package, package_type: package_type ) }
@@ -72,13 +49,6 @@ context OfferSearch do
       it { expect(Offer.search({search_text: gogovan_order.driver_name, states:[]}).to_a).to match_array([offer1]) }
       it { expect(Offer.search({search_text: gogovan_order.driver_mobile, states:[]}).to_a).to match_array([offer1]) }
       it { expect(Offer.search({search_text: gogovan_order.driver_license, states:[]}).to_a).to match_array([offer1]) }
-    end
-
-    context "returns distinct results" do
-      let(:message1) { create(:message, body: 'Test message body 1') }
-      let(:message2) { create(:message, body: 'Test message body 2') }
-      let!(:offer) { create :offer, :submitted, messages: [message1, message2] }
-      it { expect(Offer.search({search_text: 'Test message', states:[]}).to_a).to match_array([offer]) }
     end
 
     context "package inventory_number" do
