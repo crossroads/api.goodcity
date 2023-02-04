@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_07_041725) do
+ActiveRecord::Schema.define(version: 2023_02_04_035910) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -242,7 +242,16 @@ ActiveRecord::Schema.define(version: 2022_05_07_041725) do
     t.datetime "updated_at", precision: 6
     t.float "latitude"
     t.float "longitude"
+    t.bigint "districts_official_id"
+    t.index ["districts_official_id"], name: "index_districts_on_districts_official_id"
     t.index ["territory_id"], name: "index_districts_on_territory_id"
+  end
+
+  create_table "districts_official", force: :cascade do |t|
+    t.string "name"
+    t.string "name_zh_tw"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "donor_conditions", id: :serial, force: :cascade do |t|
