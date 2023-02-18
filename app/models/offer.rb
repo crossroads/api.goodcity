@@ -7,6 +7,8 @@ class Offer < ApplicationRecord
   include OfferSearch
   include OfferFiltering
 
+  SUBMITTED_THANK_YOU_MESSAGE_GUID = "submitted-thank-you-message"
+
   NOT_ACTIVE_STATES = %w[received closed cancelled inactive].freeze
   ACTIVE_OFFERS = %w[submitted under_review reviewed scheduled receiving].freeze
   SUBSCRIPTIONS_REMINDER_STATES = %w[under_review submitted reviewed scheduled receiving
@@ -294,7 +296,10 @@ class Offer < ApplicationRecord
 
   def send_thank_you_message
     I18n.with_locale(offer.created_by.locale) do
-      send_message(I18n.t('offer.thank_message'), User.system_user)
+      custom_message = CannedResponse.find_by(guid: SUBMITTED_THANK_YOU_MESSAGE_GUID)
+      custom_message.present? ?
+        send_message(custom_message.content, User.system_user) :
+        send_message(I18n.t('offer.thank_message'), User.system_user)
     end
   end
 
