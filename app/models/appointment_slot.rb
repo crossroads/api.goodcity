@@ -64,8 +64,6 @@ class AppointmentSlot < ApplicationRecord
       sl.quota.positive?
     } unless slots.empty?
 
-    return [] if Holiday.is_holiday?(date)
-
     # wday is 0-indexed and starts on Sunday, as opposed to our data which is 1-indexed and start on Monday
     # we convert Sundays which are 0 into 7 to handle that
     day = date.wday
