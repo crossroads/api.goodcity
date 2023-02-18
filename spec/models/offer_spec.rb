@@ -275,6 +275,17 @@ RSpec.describe Offer, type: :model do
         end
       end
     end
+
+    it "falls back to the other language if the content of the CannedResponse is empty" do
+      locale = "zh-tw"
+      user = create(:user, preferred_language: locale)
+      offer = create(:offer, created_by: user)
+      record = create(:canned_response, :system, guid: "submitted-thank-you-message", content_en: "something en", content_zh_tw: "")
+      offer.submit
+      expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.body).to eq("something en")
+      expect(offer.messages.last.sender).to eq(User.system_user)
+    end
   end
 
   describe "#send_message" do
