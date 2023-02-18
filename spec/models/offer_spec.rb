@@ -265,6 +265,14 @@ RSpec.describe Offer, type: :model do
           expect(offer.messages.last.body).to eq(I18n.t('offer.thank_message', locale: locale))
           expect(offer.messages.last.sender).to eq(User.system_user)
         end
+
+        it "allows overriding the content using a CannedResponse record" do
+          record = create(:canned_response, :system, guid: "submitted-thank-you-message", content_en: "text en", content_zh_tw: "text zh-tw")
+          offer.submit
+          expect(offer.messages.count).to eq(1)
+          expect(offer.messages.last.body).to eq("text " + locale)
+          expect(offer.messages.last.sender).to eq(User.system_user)
+        end
       end
     end
   end

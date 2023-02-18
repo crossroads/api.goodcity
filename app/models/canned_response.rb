@@ -15,6 +15,7 @@ class CannedResponse < ApplicationRecord
   validates_presence_of :name_en
   validates_presence_of :content_en
   validates :guid, uniqueness: true, allow_nil: true
+  translates :content
 
   before_destroy :prevent_delete_for_system_message
 
