@@ -133,6 +133,15 @@ describe User, :type => :model do
     it { expect(User.search("goodcity@gmail.com")).not_to include(user) }
     it { expect(User.search("goodcity@team")).to include(user) }
     it { expect(User.search("87655678")).to include(user) }
+
+    context 'without a first or last name' do
+      let(:user) { create :user, first_name: "", last_name: "", email: "goodcity@team.com", mobile: "+85287655678" }
+
+      before { touch(user) }
+
+      it { expect(User.search("goodcity")).to include(user) }
+      it { expect(User.search("87655678")).to include(user) }
+    end
   end
 
   # describe ".recent_orders_created_for" do

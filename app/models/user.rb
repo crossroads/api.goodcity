@@ -106,7 +106,7 @@ class User < ApplicationRecord
   scope :system, -> { where(roles: {name: 'System'}).joins(:active_roles) }
 
   scope :staff, -> { where(roles: { name: %w[Supervisor Reviewer] }).joins(:active_roles) }
-  scope :except_stockit_user, -> { where.not(first_name: 'Stockit').where.not(last_name: 'User') }
+  scope :exclude_system_users, -> { where.not(id: [User.system_user.try(:id), User.stockit_user.try(:id)].compact) }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }

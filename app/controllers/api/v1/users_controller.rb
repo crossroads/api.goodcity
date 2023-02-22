@@ -22,7 +22,7 @@ module Api
         For a donor, this will be just themselves. For administrators, this will be all users.
       EOS
       def index
-        @users = @users.except_stockit_user
+        @users = @users.exclude_system_users
         return search_user_and_render_json if params[:searchText].present?
 
         @users = @users.with_roles(params[:roles]) if params[:roles].present?
