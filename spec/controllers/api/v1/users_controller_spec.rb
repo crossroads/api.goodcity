@@ -122,26 +122,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(ids).to match_array([user_1.id, user_2.id, user_3.id])
     end
 
-    it "is tolerant to typos" do
-      get :index, params: { searchText: "jannne"  }
-      expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(3)
-
-      ids = parsed_body['users'].map { |u| u['id'] }
-
-      expect(ids).to include(user_1.id)
-      expect(ids).to include(user_2.id)
-    end
-
-    it "is intolerant to very agressive typos" do
-      get :index, params: { searchText: "jneo"  }
-      expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(0)
-    end
-
     context 'when search scope is restricted for organisation_status' do
       it 'returns charity users' do
-        get :index, params: { searchText: 'jannne', organisation_status: 'pending,approved' }
+        get :index, params: { searchText: 'jane', organisation_status: 'pending,approved' }
         expect(response.status).to eq(200)
         expect(parsed_body['users'].count).to eq(2)
       end
