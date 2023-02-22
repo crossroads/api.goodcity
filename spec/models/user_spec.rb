@@ -116,54 +116,31 @@ describe User, :type => :model do
   end
 
   describe ".search" do
-    before do
-      sample_role = create :role, name: "Sample"
-      charity_users.each { |u| sample_role.grant(u) }
-    end
+    let(:user) { create :user, first_name: "Abul", last_name: "Asar", email: "goodcity@team.com", mobile: "+85287655678" }
 
-    it "will return users based on firstname from search text" do
-      expect(User.search(charity_users.first.first_name)).to include(charity_users.first)
-    end
+    before { touch(user) }
 
-    it "will return users based on lastname from search text" do
-      expect(User.search(charity_users.first.last_name)).to include(charity_users.first)
-    end
+    it { expect(User.search("")).not_to include(user) }
+    it { expect(User.search("@@@@")).not_to include(user) }
+    it { expect(User.search("Abul")).to include(user) }
+    it { expect(User.search("Asar")).to include(user) }
+    it { expect(User.search("Abul Asar")).to include(user) }
+    it { expect(User.search("abul asar")).to include(user) }
+    it { expect(User.search("ul as")).to include(user) }
+    it { expect(User.search("goodcity")).to include(user) }
+    it { expect(User.search("123@890.com")).not_to include(user) }
+    it { expect(User.search("good@890.hk")).not_to include(user) }
+    it { expect(User.search("goodcity@gmail.com")).not_to include(user) }
+    it { expect(User.search("goodcity@team")).to include(user) }
+    it { expect(User.search("87655678")).to include(user) }
 
-    it "will return users based on email from search text" do
-      charity_users.first.update(email: "charity@abc.com")
-      expect(User.search(charity_users.first.email)).to include(charity_users.first)
-    end
-
-    it "will return users based on mobile from search text" do
-      expect(User.search(charity_users.first.mobile)).to include(charity_users.first)
-    end
-
-    it "will return nothing if searchText does not match any users" do
-      expect(User.search("zzzzz").length).to eq(0)
-    end
-
-    context 'typo tolerance' do
-      let(:user) { create :user, first_name: "Abul", last_name: "Asar", email: "goodcity@team.com", mobile: "+85287655678" }
+    context 'without a first or last name' do
+      let(:user) { create :user, first_name: "", last_name: "", email: "goodcity@team.com", mobile: "+85287655678" }
 
       before { touch(user) }
 
-      it { expect(User.search("")).not_to include(user) }
-      it { expect(User.search("@@@@")).not_to include(user) }
-      it { expect(User.search("Abl Asr")).to include(user) }
-      it { expect(User.search("Abul Aar")).to include(user) }
-      it { expect(User.search("Aar Abul")).to include(user) }
-      it { expect(User.search("A Abul")).to include(user) }
-      it { expect(User.search("goodcity@team.com")).to include(user) }
-      it { expect(User.search("goodcity@tmea.com")).to include(user) }
-      it { expect(User.search("goodCITY@tmea.com")).to include(user) }
-      it { expect(User.search("123@890.com")).not_to include(user) }
-      it { expect(User.search("good@890.hk")).not_to include(user) }
-      it { expect(User.search("goodcity@gmail.com")).to include(user) }
-      it { expect(User.search("goodcity@team")).to include(user) }
-      it { expect(User.search("+85287655678")).to include(user) }
-      it { expect(User.search("+87655678")).to include(user) }
-      it { expect(User.search("87665578")).to include(user) }
-      it { expect(User.search("87655679")).to include(user) }
+      it { expect(User.search("goodcity")).to include(user) }
+      it { expect(User.search("87655678")).to include(user) }
     end
   end
 

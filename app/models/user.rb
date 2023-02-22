@@ -3,22 +3,22 @@ class User < ApplicationRecord
   include PushUpdates
 
   include ManageUserRoles
-  include FuzzySearch
+  # include FuzzySearch
   include Mentionable
 
   # --------------------
   # Configuration
   # --------------------
 
-  configure_search(
-    props: [
-      :first_name,
-      :last_name,
-      :email,
-      :mobile
-    ],
-    default_tolerance: 0.8
-  )
+  # configure_search(
+  #   props: [
+  #     :first_name,
+  #     :last_name,
+  #     :email,
+  #     :mobile
+  #   ],
+  #   default_tolerance: 0.8
+  # )
 
   # --------------------
   # Relationships
@@ -106,7 +106,7 @@ class User < ApplicationRecord
   scope :system, -> { where(roles: {name: 'System'}).joins(:active_roles) }
 
   scope :staff, -> { where(roles: { name: %w[Supervisor Reviewer] }).joins(:active_roles) }
-  scope :except_stockit_user, -> { where.not(first_name: 'Stockit').where.not(last_name: 'User') }
+  scope :exclude_system_users, -> { where.not(id: [User.system_user.try(:id), User.stockit_user.try(:id)].compact) }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
@@ -181,6 +181,30 @@ class User < ApplicationRecord
     res = res.with_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
     res = res.with_roles(opts['role_name']) if opts['role_name'].present?
     res
+  end
+
+  # search_param = 'r'
+  # User.joins(:frameworks).where("frameworks.name ILIKE '%#{search_param}%'").uniq
+  def self.search(str)
+    # Ultra basic
+    # User.where("first_name ILIKE '%#{str}%' OR last_name ILIKE '%#{str}%' OR email ILIKE '%#{str}%' OR mobile ILIKE '%#{str}%'")
+
+    # Short-circuit
+    return User.none if str.empty?
+    
+    # Improve name searching across first_name / last_name boundaries
+    str = "%#{str}%"
+    query =
+      "WITH searchable_users_list AS (
+        SELECT id, first_name || ' ' || last_name AS user_full_name, email, mobile
+        FROM users
+      )
+      SELECT * from searchable_users_list
+      WHERE user_full_name ILIKE :str OR email ILIKE :str OR mobile ILIKE :str"
+    # query is sanitized inside find_by_sql
+    # find_by_sql doesn't return actual objects, so lookup using id
+    results = User.find_by_sql([query, {:str => str} ])
+    User.where(id: results.map(&:id).compact.uniq)
   end
 
   def allowed_login?(app_name)

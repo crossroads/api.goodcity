@@ -49,7 +49,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it "return serialized users" do
       get :index
       body = JSON.parse(response.body)
-      expect( body['users'].length ).to eq(User.count)
+      expect( body['users'].length ).to eq(User.exclude_system_users.count)
     end
   end
 
@@ -63,6 +63,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:user_4) { create(:user, :charity, first_name: "Foo", last_name: 'Bar') }
     let(:user_5) { create(:user, :charity, first_name: "Stephen", last_name: 'K') }
     let(:user_6) { create(:user, first_name: 'Jango', last_name: 'Charlie') }
+    let(:user_7) { create(:user, first_name: nil, last_name: nil, email: 'test@example.com') }
 
     let(:supervisor) { create :user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor', first_name: 'Jane', last_name: 'Brown' }
 
@@ -75,8 +76,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       role_1.grant(user_3)
       role_1.grant(user_4)
       role_2.grant(user_5)
+      role_2.grant(user_6)
+      role_2.grant(user_7)
 
-      expect(User.count).to eq(6)
+      expect(User.count).to eq(8)
     end
 
     it "returns searched user according to params" do
@@ -122,26 +125,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(ids).to match_array([user_1.id, user_2.id, user_3.id])
     end
 
-    it "is tolerant to typos" do
-      get :index, params: { searchText: "jannne"  }
-      expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(3)
-
-      ids = parsed_body['users'].map { |u| u['id'] }
-
-      expect(ids).to include(user_1.id)
-      expect(ids).to include(user_2.id)
-    end
-
-    it "is intolerant to very agressive typos" do
-      get :index, params: { searchText: "jneo"  }
-      expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(0)
-    end
-
     context 'when search scope is restricted for organisation_status' do
       it 'returns charity users' do
-        get :index, params: { searchText: 'jannne', organisation_status: 'pending,approved' }
+        get :index, params: { searchText: 'jane', organisation_status: 'pending,approved' }
         expect(response.status).to eq(200)
         expect(parsed_body['users'].count).to eq(2)
       end
@@ -151,9 +137,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it 'returns users matching the searchText' do
         get :index, params: { searchText: 'jan' }
         expect(response.status).to eq(200)
-        expect(parsed_body['users'].count).to eq(3)
+        expect(parsed_body['users'].count).to eq(4)
       end
     end
+
+    context 'when first_name and last_name are null' do
+      it 'returns users matching the searchText on mobile or email' do
+        get :index, params: { searchText: 'test@example.com' }
+        expect(response.status).to eq(200)
+        expect(parsed_body['users'].count).to eq(1)
+      end
+    end
+
   end
 
   describe "POST users" do
