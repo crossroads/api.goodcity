@@ -42,6 +42,10 @@ module Api::V1
       @options[:include_order]
     end
 
+    def include_orders_packages?
+      @options[:include_orders_packages] != false # accept if true or nil
+    end
+
     alias_method :include_designation_id?, :include_order?
 
     def designation_id
