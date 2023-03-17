@@ -80,16 +80,15 @@ module Goodcity
         FactoryBot.create(:online_order, :with_orders_packages, :with_state_submitted, :with_goodcity_requests, :with_order_transport_ggv, created_by: charity_user, processed_by: order_reviewer); print '.'
         FactoryBot.create(:online_order, :with_designated_orders_packages, :with_state_processing, :with_goodcity_requests, :with_order_transport_ggv, created_by: charity_user, processed_by: order_reviewer); print '.'
         FactoryBot.create(:online_order, :with_dispatched_orders_packages, :with_state_dispatching, :with_goodcity_requests, :with_order_transport_ggv, created_by: charity_user, processed_by: order_reviewer); print '.'
-
       end
       puts
 
       # large qty order
       # create large quantity package, designate 90% to orders (1 per order)
       quantity = 100
-      print "Creating large quantity package and designating to #{quantity} orders"
+      print "Creating large quantity package and designating to #{(quantity * 0.9).to_i} orders"
       donor_condition = DonorCondition.order(Arel.sql('RANDOM()')).first
-      package = FactoryBot.create(:package, :received, :with_item, :package_with_locations, received_quantity: quantity) # inventorized
+      package = FactoryBot.create(:package, :received, :with_item, received_quantity: quantity) # inventorized
       (quantity * 0.9).to_i.times do
         order = FactoryBot.create(:online_order, :with_state_processing, created_by: charity_user, processed_by: order_reviewer)
         Package::Operations.designate(package, quantity: 1, to_order: order)
@@ -119,7 +118,7 @@ module Goodcity
         demo_images.each do |image_key, attrs|
           quantity = rand(1..10)
           package_type = PackageType.find_by_code(attrs[:package_type_name])
-          package = FactoryBot.create(:package, :received, :with_item, :package_with_locations, received_quantity: quantity, package_type: package_type, notes: attrs[:donor_description]) # inventorized
+          package = FactoryBot.create(:package, :received, :with_item, received_quantity: quantity, package_type: package_type, notes: attrs[:donor_description]) # inventorized
           package.images << FactoryBot.create(:image, image_key)
           print '.'
         end
