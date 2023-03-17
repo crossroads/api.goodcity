@@ -21,12 +21,12 @@ module Goodcity
     end
 
     def generate!
-      create_organisations
-      create_contacts
-      create_users
-      create_offers
-      create_orders
-      create_inventory
+      # create_organisations
+      # create_contacts
+      # create_users
+      # create_offers
+      # create_orders
+      # create_inventory
       create_stocktakes
     end
 
@@ -86,7 +86,7 @@ module Goodcity
 
       # large qty order
       # create large quantity package, designate 90% to orders (1 per order)
-      quantity = 500
+      quantity = 100
       print "Creating large quantity package and designating to #{quantity} orders"
       donor_condition = DonorCondition.order(Arel.sql('RANDOM()')).first
       package = FactoryBot.create(:package, :received, :with_item, :package_with_locations, received_quantity: quantity) # inventorized
@@ -113,9 +113,9 @@ module Goodcity
     ############################## Inventory ##############################
 
     def create_inventory
-      print "Creating additional available inventory packages"
       demo_images = FactoryBot.generate(:cloudinary_demo_images)
-      (multiple * 10).times do
+      print "Creating #{demo_images.size * multiple} inventory packages"
+      multiple.times do
         demo_images.each do |image_key, attrs|
           quantity = rand(1..10)
           package_type = PackageType.find_by_code(attrs[:package_type_name])
@@ -195,14 +195,16 @@ module Goodcity
       # Stocktake half of all locations with packages
       locations_with_at_least_one_package = Location.joins(:packages).where('packages_locations.quantity > 0')
       total = (locations_with_at_least_one_package.size / 2).to_i
-      locations_with_at_least_one_package.take(total) do |location|
-        FactoryBot.create(:stocktake, location: location, comment: "Demo stocktake", user: stock_administrator)
+      print "Creating #{total} stocktakes for 50% of all locations with packages"
+      locations_with_at_least_one_package.take(total).each do |location|
+        stocktake = FactoryBot.create(:stocktake, location: location, comment: "Demo stocktake", created_by: stock_administrator)
         location.packages.each do |package|
           quantity = PackagesInventory::Computer.package_quantity(package, location: location)
-          raise 'Quantity error' if quantity < 1
-          FactoryBot.create(:stocktake_revision, quantity: quantity, package: package)
+          FactoryBot.create(:stocktake_revision, quantity: quantity, package: package, stocktake: stocktake)
         end
+        print '.'
       end
+      puts
     end
   
 
