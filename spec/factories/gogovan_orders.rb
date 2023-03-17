@@ -18,6 +18,10 @@ FactoryBot.define do
       status { 'cancelled' }
     end
 
+    trait :pending do
+      status { 'pending' }
+    end
+
     trait :with_delivery do
       after(:create) do |order|
         create :gogovan_delivery, gogovan_order: order
