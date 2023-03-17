@@ -21,12 +21,12 @@ module Goodcity
     end
 
     def generate!
-      # create_organisations
-      # create_contacts
-      # create_users
-      # create_offers
-      # create_orders
-      # create_inventory
+      create_organisations
+      create_contacts
+      create_users
+      create_offers
+      create_orders
+      create_inventory
       create_stocktakes
     end
 
