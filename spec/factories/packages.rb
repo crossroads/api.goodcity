@@ -18,6 +18,7 @@ FactoryBot.define do
     designated_quantity   { 0 }
     dispatched_quantity   { 0 }
     max_order_quantity    { nil }
+    association :storage_type, :with_pkg
 
     received_at { nil }
     rejected_at { nil }
@@ -83,7 +84,7 @@ FactoryBot.define do
     end
 
     trait :with_images do
-      images { create_list(:image, 2) }
+      images { create_list(:image, 1) }
     end
 
     trait :in_user_cart do

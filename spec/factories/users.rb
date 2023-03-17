@@ -95,7 +95,12 @@ FactoryBot.define do
       end
     end
 
+    trait :donor do
+      is_mobile_verified { true }
+    end
+
     trait :charity do
+      with_email
       after(:create) do |user|
         user.organisations_users << (create :organisations_user, :approved, user_id: user.id)
       end

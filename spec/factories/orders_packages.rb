@@ -5,9 +5,8 @@ FactoryBot.define do
     association   :order
     association   :package, :with_inventory_record
     association   :updated_by, factory: :user, strategy: :build
-    state         { %w[requested cancelled designated received dispatched].sample }
+    state         { %w[requested cancelled designated received].sample }
     quantity      { 2 }
-    dispatched_quantity { state.eql?("dispatched") ? quantity : 0 }
 
     trait :with_package_item do
       association :package, :with_item
@@ -24,6 +23,7 @@ FactoryBot.define do
     trait :with_state_dispatched do
       dispatched_quantity { quantity }
       state { 'dispatched' }
+      sent_on { Time.now }
     end
 
     trait :with_inventory_record do

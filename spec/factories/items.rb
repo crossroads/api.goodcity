@@ -69,7 +69,8 @@ FactoryBot.define do
       state { 'accepted' }
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
       images            { [create(:image, demo_key.to_sym, favourite: true)] }
-      packages          { create_list(:package, rand(3)+1, notes: donor_description) }
+      packages          { create_list(:package, rand(3)+1, notes: donor_description, donor_condition: donor_condition) }
+      donor_condition   { DonorCondition.order(Arel.sql('RANDOM()')).first }
       after(:create) do |item|
         item.packages.each do |pkg|
           pkg.package_type = item.package_type.child_package_types.sample

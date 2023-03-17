@@ -3,33 +3,44 @@
 red_chair:
   :donor_description: "A 1 person red chair."
   :cloudinary_id: "1652280851/test/red_chair.jpg"
+  :package_type_name: FCX
 pots_and_pans:
   :donor_description: "Pots and pans for use in kitchen. Never used."
   :cloudinary_id: "1652280851/test/pots_and_pans.jpg"
+  :package_type_name: XX
 high_chair:
   :donor_description: "Baby high chair. 1 previous owner"
   :cloudinary_id: "1652280851/test/high_chair.jpg"
+  :package_type_name: HPH
 wooden_chair:
   :donor_description: "Single wooden chair. Slightly broken"
   :cloudinary_id: "1652280850/test/wooden_chair.jpg"
+  :package_type_name: FCC
 kitchen_sink:
   :donor_description: "Toy kitchen sink comes with plastic food"
   :cloudinary_id: "1652280850/test/kitchen_sink.jpg"
+  :package_type_name: TXX
 couch:
   :donor_description: "Large couch suitable for 3 persons"
   :cloudinary_id: "1652280850/test/couch.jpg"
+  :package_type_name: FCS
 piano:
   :donor_description: "Grand piano. Worth $500,000"
   :cloudinary_id: "1652280850/test/piano.jpg"
+  :package_type_name: RMP
 kiprosh_mug:
   :donor_description: "Exclusive Kiprosh mug. Limited numbers available."
   :cloudinary_id: "1652280850/test/kiprosh_mug.jpg"
+  :package_type_name: XX
 dining_table_chair_set:
   :donor_description: "Dining table and chair set"
   :cloudinary_id: "1652280850/test/dining_table_and_chair_set.jpg"
+  :package_type_name: FTD
 baby_chair:
   :donor_description: "Baby chair. Brand new"
   :cloudinary_id: "1652280851/test/baby_chair.jpg"
+  :package_type_name: HPH
 office_chair:
   :donor_description: "Office chair. Black"
   :cloudinary_id: "1652280851/test/office_chair.jpg"
+  :package_type_name: FCO
