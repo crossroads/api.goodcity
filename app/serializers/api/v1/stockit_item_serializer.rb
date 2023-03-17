@@ -46,6 +46,17 @@ module Api::V1
       @options[:include_orders_packages] != false # accept if true or nil
     end
 
+    # if this package is being fetched in the context of an order, only return relevent orders_packages
+    # e.g. during designation of a package to a specific order
+    def orders_packages
+      if @options[:order_id].present?
+        object.orders_packages.where(order_id: @options[:order_id])
+      else
+        # return all orders_packages (potentially very large)
+        object.orders_packages
+      end
+    end
+
     alias_method :include_designation_id?, :include_order?
 
     def designation_id

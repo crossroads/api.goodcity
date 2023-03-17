@@ -299,7 +299,8 @@ module Api
             root: "item",
             include_order: true,
             include_packages: false,
-            include_orders_packages: (params[:action] != 'designate'),
+            include_orders_packages: true,
+            order_id: params[:order_id],
             include_allowed_actions: true,
             include_images: @package.package_set_id.blank?
           )
