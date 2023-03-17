@@ -5,8 +5,8 @@ module Api::V1
                :dispatched_quantity, :sent_on, :designation_id,
                :item_id, :created_at, :allowed_actions, :shipping_number, :updated_by_id
 
-    has_one  :updated_by, serializer: UserSummarySerializer, root: :user               
-    has_one :package, serializer: PackageSerializer
+    has_one :updated_by, serializer: UserSummarySerializer, root: :user
+    has_one :package, serializer: PackageShallowSerializer
     has_one :order, serializer: OrderShallowSerializer, root: 'designation'
 
     def designation_id
