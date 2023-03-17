@@ -102,6 +102,7 @@ Stock administrator:
 - can_manage_user_roles
 - can_merge_users
 - can_manage_access_passes
+- can_read_or_modify_user
 
 Order fulfilment: &order_fulfilment
 - can_manage_packages
