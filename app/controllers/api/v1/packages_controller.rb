@@ -295,10 +295,18 @@ module Api
       def send_package_operation_response
         @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
-          render json: Api::V1::PackageOperationsSerializer.new(@package,
-            root: "item",
-            action: params[:action],
-            order_id: params[:order_id]
+          # render json: Api::V1::PackageOperationsSerializer.new(@package,
+          #   root: "item",
+          #   action: params[:action],
+          #   order_id: params[:order_id]
+          # )
+          render json: stock_serializer.new(@package,
+            include_order: true,
+            include_packages: false,
+            include_orders_packages: true,
+            order_id: params[:order_id],
+            include_allowed_actions: true,
+            include_images: @package.package_set_id.blank?
           )
         else
           render json: { errors: @package.errors.full_messages }, status: 422
