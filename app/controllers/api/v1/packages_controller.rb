@@ -72,7 +72,7 @@ module Api
 
       def stockit_item_details
         render json: stock_serializer
-          .new(@package,
+          .new(Package.where(id: @package.id).includes([{orders_packages: [{order: [:country]}, :updated_by]}]).first,
                serializer: stock_serializer,
                root: 'item',
                include_order: true,
@@ -247,7 +247,7 @@ module Api
       def split_package
         package_splitter = PackageSplitter.new(@package, qty_to_split)
         package_splitter.split!
-        send_stock_item_response
+        send_package_operation_response
       end
 
       api :PUT, "/v1/packages/1/move", "Move a package's quantity to an new location"
@@ -255,7 +255,7 @@ module Api
       def move
         quantity = params[:quantity].to_i
         Package::Operations.move(quantity, @package, from: params[:from], to: params[:to])
-        send_stock_item_response
+        send_package_operation_response
       end
 
       api :PUT, "/v1/packages/1/designate", "Designate a package's quantity to an order"
@@ -269,7 +269,7 @@ module Api
           quantity: quantity,
           to_order: order_id,
           shipping_number: shipping_number)
-        send_stock_item_response
+        send_package_operation_response
       end
 
       api :PUT, "/v1/packages/1/actions/:action_name", "Executes an action on a package"
@@ -283,7 +283,7 @@ module Api
           source: source,
           description: params[:description])
 
-        send_stock_item_response
+        send_package_operation_response
       end
 
       def remove_from_set
@@ -292,17 +292,13 @@ module Api
           include_order: false
       end
 
-      def send_stock_item_response
+      def send_package_operation_response
         @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
-          render json: stock_serializer.new(@package,
+          render json: Api::V1::PackageOperationsSerializer.new(@package,
             root: "item",
-            include_order: true,
-            include_packages: false,
-            include_orders_packages: true,
-            order_id: params[:order_id],
-            include_allowed_actions: true,
-            include_images: @package.package_set_id.blank?
+            action: params[:action],
+            order_id: params[:order_id]
           )
         else
           render json: { errors: @package.errors.full_messages }, status: 422
