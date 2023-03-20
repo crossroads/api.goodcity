@@ -72,7 +72,7 @@ module Api
           render json: @orders_package.errors, status: 422
         else
           render json: serializer.new(
-            @orders_package,
+            OrdersPackage.where(id: @orders_package.id).includes([ { package: [ :locations, {package_type: [:location]}, :images] } ]).first,
             include_package: true,
             include_order: true,
             include_allowed_actions: true,
