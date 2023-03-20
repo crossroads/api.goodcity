@@ -8,7 +8,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
   let(:offer) { create(:offer, state: 'scheduled', delivery: delivery) }
   let(:delivery) { create(:gogovan_delivery, gogovan_order: ggv_order)}
-  let(:ggv_order) { create(:gogovan_order) }
+  let(:ggv_order) { create(:gogovan_order, :pending) }
   let(:order_attributes) {
     {
       "pickupTime" => "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",

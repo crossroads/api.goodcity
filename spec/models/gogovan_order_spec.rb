@@ -61,7 +61,7 @@ RSpec.describe GogovanOrder, type: :model do
   end
 
   describe "notify_order_completed" do
-    let(:order) { create :gogovan_order, :with_delivery }
+    let(:order) { create :gogovan_order, :with_delivery, :pending }
 
     it "notify supervisors about GGV order completed" do
       expect(order).to receive(:notify_order_completed)

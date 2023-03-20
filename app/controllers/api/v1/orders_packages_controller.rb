@@ -72,7 +72,7 @@ module Api
           render json: @orders_package.errors, status: 422
         else
           render json: serializer.new(
-            @orders_package,
+            OrdersPackage.where(id: @orders_package.id).includes([ { package: [ :locations, {package_type: [:location]}, :images] } ]).first,
             include_package: true,
             include_order: true,
             include_allowed_actions: true,
@@ -83,7 +83,7 @@ module Api
       end
 
       def orders_package_by_order_id
-        orders_packages = @orders_packages.with_eager_load.for_order(params["order_id"])
+        orders_packages = @orders_packages.where(order_id: params["order_id"])
         @orders_packages = apply_filters(orders_packages).page(page).per(per_page)
         render json: { meta: { total_pages: @orders_packages.total_pages, orders_packages_count: orders_packages.size } }.merge(serialized_orders_packages)
       end

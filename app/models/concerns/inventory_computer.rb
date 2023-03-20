@@ -45,10 +45,26 @@ module InventoryComputer
         res.as_of_now
       end
 
-      def designated_quantity_of(package, to_order: nil)
+      def designated_quantity_of_old(package, to_order: nil)
         query = OrdersPackage.where(package: package).where.not(state: OrdersPackage::States::CANCELLED)
         query = query.where(order: to_order) if to_order.present?
         query.reduce(0) { |sum, op| sum + op.quantity - dispatched_quantity(orders_package: op) }
+      end
+
+      # Get the orders_packages related to this package and order (optional)
+      # Using PackagesInventory, get dispatched quantities for each of these orders_packages and build a mapping table
+      #   {orders_package_id => dispatched qty } e.g. {21=>-2, 23=>-1, 28=>-5}
+      # For each orders_package: subtract the Packages Inventory dispatched quantity from the designated quantity
+      #   to work out the overall remainder that is designated
+      def designated_quantity_of(package, to_order: nil)
+        op_query = OrdersPackage.where(package: package).where.not(state: OrdersPackage::States::CANCELLED)
+        op_query = op_query.where(order: to_order) if to_order.present?
+        dispatched_quantity_map = Hash[
+          PackagesInventory.select('source_id, sum(quantity)')
+            .where(action: DISPATCHING_ACTIONS)
+            .where(source_type: 'OrdersPackage', source_id: op_query.pluck('id'))
+            .group('source_id').map{|o| [o['source_id'], o['sum'].abs] } ]
+        op_query.reduce(0) { |sum, op| sum + op.quantity - (dispatched_quantity_map[op.id] || 0) }
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)

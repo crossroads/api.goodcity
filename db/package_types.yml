@@ -279,6 +279,7 @@ EHH:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
+  :allow_requests: true
 EHI:
   :default_packages: EHI
   :other_packages: EXX
@@ -287,6 +288,7 @@ EHI:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
+  :allow_requests: true
 EHL:
   :default_packages: EHL
   :other_packages: EXX
@@ -303,6 +305,7 @@ EHW:
   :other_terms_en: Clothes washer
   :other_terms_zh_tw: '洗衣機'
   :default_value_hk_dollar: 6000.00
+  :allow_requests: true
 EHX:
   :default_packages: EHX
   :other_packages: EXX
@@ -343,6 +346,7 @@ EKF:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 4200.00
+  :allow_requests: true
 EKH:
   :default_packages: EKH
   :other_packages: EXX
@@ -375,6 +379,7 @@ EKK:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 750.00
+  :allow_requests: true
 EKL:
   :default_packages: EKL
   :other_packages: EXX
@@ -383,6 +388,7 @@ EKL:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 800.00
+  :allow_requests: true
 EKM:
   :default_packages: EKM
   :other_packages: EXX
@@ -423,6 +429,7 @@ EKT:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 600.00
+  :allow_requests: true
 EKX:
   :default_packages: EKX
   :other_packages: EXX
@@ -439,6 +446,7 @@ EOF:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1790.00
+  :allow_requests: true
 EOP:
   :default_packages: EOP
   :other_packages: EXX
@@ -487,6 +495,7 @@ EUH:
   :other_terms_en: Stereo
   :other_terms_zh_tw: '音響設備'
   :default_value_hk_dollar: 3200.00
+  :allow_requests: true
 EUK:
   :default_packages: EUK
   :other_packages: EXX
@@ -775,6 +784,7 @@ FCS:
   :other_terms_en:
   :other_terms_zh_tw: '梳化'
   :default_value_hk_dollar: 4000.00
+  :allow_requests: true
 FCT:
   :default_packages: FCT
   :other_packages: FXX
@@ -791,6 +801,7 @@ FCU:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 250.00
+  :allow_requests: true
 FCX:
   :default_packages: FCX
   :other_packages: FXX
@@ -815,6 +826,7 @@ FDH:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 2000.00
+  :allow_requests: true
 FDO:
   :default_packages: FDO
   :other_packages: FXX
@@ -831,6 +843,7 @@ FDP:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
+  :allow_requests: true
 FDQ:
   :default_packages: FDQ
   :other_packages: FXX
@@ -855,6 +868,7 @@ FSB:
   :other_terms_en:
   :other_terms_zh_tw: ''
   :default_value_hk_dollar: 1000.00
+  :allow_requests: true
 FSC:
   :default_packages: FSC
   :other_packages: FXX
@@ -1422,7 +1436,6 @@ C:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 E:
   :default_packages:
@@ -1432,7 +1445,6 @@ E:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 H:
   :default_packages:
@@ -1442,7 +1454,6 @@ H:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 M:
   :default_packages:
@@ -1452,7 +1463,6 @@ M:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 N:
   :default_packages:
@@ -1462,7 +1472,6 @@ N:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 P:
   :default_packages:
@@ -1472,7 +1481,6 @@ P:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 T:
   :default_packages:
@@ -1482,7 +1490,6 @@ T:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 V:
   :default_packages:
@@ -1492,7 +1499,6 @@ V:
   :other_terms_en:
   :other_terms_zh_tw:
   :default_value_hk_dollar:
-  :allow_package: true
   :allow_pallet: true
 EB:
   :default_packages:

@@ -27,6 +27,18 @@ cancellation_reasons.each do |name_en, attrs|
   CancellationReason.create!(name_en: name_en, **attrs)
 end
 
+# Canned Responses
+canned_responses = YAML.load_file("#{Rails.root}/db/canned_responses.yml")
+canned_responses.each do |id, attrs|
+  CannedResponse.create!(**attrs)
+end
+
+# Restrictions
+restrictions = YAML.load_file("#{Rails.root}/db/restrictions.yml")
+restrictions.each do |id, attrs|
+  Restriction.create!(**attrs)
+end
+
 # Booking Types
 booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
 booking_types.each do |identifier, value|
@@ -136,11 +148,12 @@ package_types.each do |code, value|
     other_terms_en: value[:other_terms_en],
     other_terms_zh_tw: value[:other_terms_zh_tw],
     allow_expiry_date: value[:allow_expiry_date],
-    visible_in_selects: value[:visible_in_selects],
-    allow_package: value[:allow_package],
+    visible_in_selects: value[:visible_in_selects] || true,
+    allow_package: value[:allow_package] || true,
     default_value_hk_dollar: value[:default_value_hk_dollar],
     allow_box: value[:allow_box],
     allow_pallet: value[:allow_pallet],
+    allow_requests: value[:allow_requests],
     description_en: value[:description_en],
     description_zh_tw: value[:description_zh_tw],
     length: value[:length],

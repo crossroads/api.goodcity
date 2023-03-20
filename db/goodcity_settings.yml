@@ -15,3 +15,58 @@
   key: "stock.allow_item_actions"
   value: "true"
   description: "Manages the settings for allowance of package (stock-item) actions."
+-
+  key: "stock.params_not_to_be_copied"
+  value: ""
+  description: "Mention the labels of the subform fields which should not be duplicated separated by commas( , ) . Eg  Serial Number , Model etc.."
+-
+  key: "api.appointments.prevent_booking_until"
+  value: "15/09/2020"
+  description: "If a date value is set (DD-MM-YYYY), no appointment will be allowed before that date"
+-
+  key: "browse.allow_appointments"
+  value: "TRUE"
+  description: "Allow or disable booking appointments with true/false"
+-
+  key: "stock.allow_box_pallet_item_addition"
+  value: "TRUE"
+  description: "Manages the settings for addition/removal of items to box"
+-
+  key: "stock.allow_partial_operations"
+  value: "TRUE"
+  description: "If disabled, dispatch/move/designate can only operate on a package's entire quantity"
+-
+  key: "stock.only_publish_singletons"
+  value: "FALSE"
+  description: "Prevents multi-quantity packages from being published"
+-
+  key: "stock.only_designate_singletons"
+  value: "FALSE"
+  description: "Prevents multi-qty items from being designated"
+-
+  key: "stock.allow_item_actions"
+  value: "TRUE"
+-
+  key: "browse.appointment_warning_en"
+  value: ""
+  description: "Warning messages shown on the browse app regarding appointments"
+-
+  key: "browse.appointment_warning_zh_tw"
+  value: ""
+  description: "Warning message shown on the browse app regarding appointments"
+-
+  key: "browse.online_order_warning_en"
+  value: ""
+  description: "Warning message shown on the browse app regarding online orders"
+-
+  key: "browse.online_order_warning_zh_tw"
+  value: ""
+  description: "Warning message shown on the browse app regarding online orders"
+-
+  key: "stock.enable_box_pallet_creation"
+  value: "TRUE"
+  description: "Manages the settings for allowance of box pallet creation"
+-
+  key: "browse.online_order.timeslots.booking_margin"
+  value: "2"
+  description: "To allow time to prepare orders, we set a safety margin of operating quota slots in which clients cannot book anything."

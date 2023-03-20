@@ -1,22 +1,40 @@
-# Adding Dummy Data
-# TODO: Fill it with accurate data
-
-# Format:
-# <any_identifier>:
-#                  field_1: value
-#                  field_2: value
-#
-
+---
 1:
-  name_en: Where is your location?
-  name_zh_tw: 您的位置在哪里？
-  content_en: Our warehouse is at 221B Baker Street
-  content_zh_tw: 我们的仓库在贝克街221B号
+  name_en: Logistics - Complete Review Message
+  name_zh_tw: 
+  content_en: Your offer has been reviewed. Please [click_here|transport_page] to arrange transportation.
+  content_zh_tw: 已完成審查閣下的捐獻項目， 請 [click_here|transport_page] 安排遞送服務。
+  message_type: SYSTEM
+  guid: logistics-complete-review-message
+
 2:
-  name_en: What are your working hours?
-  name_zh_tw: 您的工作时间是几点？
-  content_en: Crossroads is open for deliveries from 10AM to 5PM
-  content_zh_tw: Crossroads 的营业时间为上午10点至下午5点
+  name_en: Review offer - Close offer message
+  name_zh_tw: 
+  content_en: We have finished processing your offer. Unfortunately we are unable to receive your items this time. We hope we can place items you offer in the future.
+  content_zh_tw: 閣下的捐贈項目處理完畢，但我們現時無法接收閣下的物資，請見諒，還望下次有機會為閣下的物資找到合適的安置。
+  message_type: SYSTEM
+  guid: review-offer-close-offer-message
+
 3:
-  name_en: How long will donation process take?
-  content_en: Usually donation takes upto 3 to 5 days
+  name_en: Review offer - Missing offer message
+  name_zh_tw: 
+  content_en: The delivery arrived at Crossroads but expected items were missing. We may follow up with you to confirm what happened.
+  content_zh_tw: 貨車已抵達十字路會，惟未見物資，我們或會和你跟進，確認事件狀況。
+  message_type: SYSTEM
+  guid: review-offer-missing-offer-message
+
+4:
+  name_en: Review offer - Receive offer message
+  name_zh_tw: 
+  content_en: Your offer was received, thank you. Please  [use our feedback form |feedback_form] to share your feedback.
+  content_zh_tw: 已經收到你捐贈的物資，謝謝。迎填寫我們的[回饋表 |feedback_form]!
+  message_type: SYSTEM
+  guid: review-offer-receive-offer-message
+
+5:
+  name_en: Offer Submitted Thank you
+  name_zh_tw: 
+  content_en: Thank you for your offer, we are currently closed for team week our team will start reviewing your offer on 22nd March. The reviewer will message you if they have questions about any of the items. We apologies if we cannot accept some items. Storage is limited and needs in the community change daily. Once the review is complete you will be able to arrange transport for any accepted items. If you have questions feel free to reply to this message.
+  content_zh_tw: "感謝您的捐獻。 請留意 : 由3月10日 - 18日，是我們團隊的建設周，因此會對外關閉，至3月22日再開始審核你的捐贈，不便之處，敬請原諒。"
+  message_type: SYSTEM
+  guid: submitted-thank-you-message

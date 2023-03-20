@@ -1,6 +1,8 @@
 class StorageType < ApplicationRecord
   has_many :packages
 
+  validates :name, uniqueness: true, presence: true
+
   TYPES = {
     box: 'Box',
     pallet: 'Pallet',

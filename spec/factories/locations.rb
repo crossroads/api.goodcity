@@ -2,11 +2,17 @@
 
 FactoryBot.define do
   factory :location do
-    sequence(:building) { |n| ("A".."Z").to_a[n%26] << "#{n}" }
-    sequence(:area)     { |n| n }
+    sequence(:building) { |n|  seq[n%seq.size]['building'] }
+    sequence(:area)     { |n|  seq[n%seq.size]['area'] }
+    initialize_with     { Location.find_or_initialize_by(building: building, area: area) } # avoid duplicates
+
+    transient do
+      seq { @locations ||= YAML.load_file("#{Rails.root}/db/locations.yml") }
+    end
 
     trait :multiple do
-      building { 'Multiple' }
+      building          { 'Multiple' }
+      sequence(:area)   { |n| n }
     end
   end
 end

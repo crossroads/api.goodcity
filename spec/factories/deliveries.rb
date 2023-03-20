@@ -12,7 +12,7 @@ FactoryBot.define do
     factory :gogovan_delivery do
       association :contact, factory: :gogovan_contact
       association :schedule, factory: :gogovan_schedule
-      gogovan_order
+      association :gogovan_order, :pending
       delivery_type { "Gogovan" }
     end
 

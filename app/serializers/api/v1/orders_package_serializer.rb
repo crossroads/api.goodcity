@@ -5,9 +5,10 @@ module Api::V1
                :dispatched_quantity, :sent_on, :designation_id,
                :item_id, :created_at, :allowed_actions, :shipping_number, :updated_by_id
 
-    has_one  :updated_by, serializer: UserSummarySerializer, root: :user               
-    has_one :package, serializer: PackageSerializer
+    has_one :updated_by, serializer: UserSummarySerializer, root: :user
+    has_one :package, serializer: PackageShallowSerializer
     has_one :order, serializer: OrderShallowSerializer, root: 'designation'
+    has_many :packages_locations, serializer: PackagesLocationSerializer
 
     def designation_id
       object.order_id
@@ -15,6 +16,15 @@ module Api::V1
 
     def item_id
       object.package_id
+    end
+
+    def packages_locations
+      object.package.packages_locations
+    end
+
+    def include_packages_locations?
+      # if cancelling or dispatching then location qty is affected
+      @options[:include_packages_locations]
     end
 
     def allowed_actions

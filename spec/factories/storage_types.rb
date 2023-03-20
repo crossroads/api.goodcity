@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :storage_type do
     name              { 'Box' }
     max_unit_quantity { ["Box", "Pallet"].include?(name) ? 1 : nil }
+    initialize_with { StorageType.find_or_initialize_by(name: name) } # avoid duplicate storage types
   end
 
   trait :with_box do
