@@ -301,6 +301,7 @@ module Api
           #   order_id: params[:order_id]
           # )
           render json: stock_serializer.new(@package,
+            root: "item",
             include_order: true,
             include_packages: false,
             include_orders_packages: true,
