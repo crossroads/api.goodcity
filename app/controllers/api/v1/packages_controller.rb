@@ -76,11 +76,11 @@ module Api
                serializer: stock_serializer,
                root: 'item',
                include_order: true,
-               include_orders_packages: true,
+               include_orders_packages: bool_param(:include_orders_packages, true),
                include_packages_locations: true,
                include_package_set: true,
                include_images: true,
-               include_allowed_actions: true).as_json
+               include_allowed_actions: bool_param(:include_allowed_actions, true)).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"

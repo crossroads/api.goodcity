@@ -20,7 +20,7 @@ class OrdersPackage < ApplicationRecord
   managed_hook :save, :before, :assert_availability!
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
-  scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
+  scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and orders_packages.state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, ->(order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
   scope :designated, ->{ where(state: 'designated') }
   scope :dispatched, ->{ where(state: 'dispatched') }
@@ -37,7 +37,7 @@ class OrdersPackage < ApplicationRecord
   }
 
   def self.search_and_filter(options)
-    orders_packages = joins(package: [:package_type])
+    orders_packages = joins(package: [:package_type]).joins(order: [:organisation])
     orders_packages = orders_packages.select("orders_packages.*, package_types.code, package_types.name_en, packages.inventory_number")
     orders_packages = orders_packages.search(options) if options[:search_text]
     orders_packages = orders_packages.by_state(options[:state_names]) if options[:state_names]&.any?

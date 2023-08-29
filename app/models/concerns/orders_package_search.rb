@@ -1,6 +1,6 @@
 module OrdersPackageSearch
   extend ActiveSupport::Concern
-  SEARCH_ATTRIBUTES = ['package_types.code', 'package_types.name_en', 'packages.inventory_number'].freeze
+  SEARCH_ATTRIBUTES = ['package_types.code', 'package_types.name_en', 'packages.inventory_number', 'orders.code', 'organisations.name_en'].freeze
 
   included do
     scope :search, ->(options = {}) {
