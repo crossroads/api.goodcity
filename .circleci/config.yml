@@ -72,7 +72,11 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: "postgres://postgres@localhost:5432/goodcity_server_test"
     steps:
-      - browser-tools/install-browser-tools
+      - run: sudo apt update && sudo apt -y upgrade libu2f-udev
+      - browser-tools/install-chrome:
+          replace-existing: true
+          chrome-version: 116.0.5845.96
+      - browser-tools/install-chromedriver
       - run:
           name: Install PostgreSQL Client (required to run migrations)
           command: |
