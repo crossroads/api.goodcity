@@ -72,6 +72,7 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: "postgres://postgres@localhost:5432/goodcity_server_test"
     steps:
+      - run: sudo apt update && sudo apt -y upgrade libu2f-udev
       - browser-tools/install-chrome:
           replace-existing: true
           chrome-version: 116.0.5845.96
