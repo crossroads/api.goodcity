@@ -16,9 +16,14 @@ module Api::V1
                :shipment_date
 
     has_many :messages, serializer: MessageSerializer
+    has_one :organisation, serializer: OrganisationNamesSerializer, root: 'organisation'
 
     def include_messages?
       @options[:include_messages]
+    end
+
+    def include_organisation?
+      @options[:include_organisation]
     end
 
     def local_order_id

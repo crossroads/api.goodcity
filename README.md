@@ -20,7 +20,7 @@ Clone this repository and run the following commands:
 
     sudo apt install libpq-dev
     bundle install
-    rake db:create db:migrate db:seed
+    rake db:create db:migrate db:seed sidekiq:clear
 
 Then bootup your rails console and you should have a DB with data.
 

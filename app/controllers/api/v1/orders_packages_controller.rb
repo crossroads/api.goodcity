@@ -26,7 +26,7 @@ module Api
         return search if params['search_by_order_id'].present?
         return search_by_package_id if params['search_by_package_id'].present?
         # needs to be removed as it makes unwanted orders_packages request and makes the app slow
-        return all_orders_packages if params['all_orders_packages'].present?
+        # return all_orders_packages if params['all_orders_packages'].present?
         return orders_package_by_order_id if params['order_id'].present?
       end
 
@@ -46,14 +46,9 @@ module Api
         end
       end
 
-      def all_orders_packages
-        render json: @orders_packages, each_serializer: serializer
-      end
-
-      def search_by_package_id
-        @orders_packages = @orders_packages.get_designated_and_dispatched_packages(params["search_by_package_id"])
-        render json: @orders_packages, each_serializer: serializer
-      end
+      # def all_orders_packages
+      #   render json: @orders_packages, each_serializer: serializer
+      # end
 
       def search
         @orders_packages = @orders_packages.get_records_associated_with_order_id(params["search_by_order_id"])
@@ -82,6 +77,28 @@ module Api
         end
       end
 
+      # Returns the orders_packages associated with a particular package
+      def search_by_package_id
+        @orders_packages = @orders_packages.where(package_id: params["search_by_package_id"])
+        @orders_packages = @orders_packages.includes(order: [:organisation, :country]).includes([:package]).includes([:updated_by])
+        @orders_packages = apply_filters(@orders_packages).page(page).per(per_page)
+        serialized_ops = ActiveModel::ArraySerializer.new(@orders_packages, each_serializer: serializer,
+            root: 'orders_packages',
+            include_order: true,
+            include_allowed_actions: true,
+            include_organisation: true,
+            include_description_en: false,
+            include_description_zh_tw: false,
+            include_registration: false,
+            include_website: false,
+            include_organisation_type_id: false,
+            include_district_id: false,
+            include_country_id: false
+          ).as_json
+        render json: { meta: { total_pages: @orders_packages.total_pages, orders_packages_count: @orders_packages.size } }.merge(serialized_ops)
+      end
+      
+      # Returns the orders_packages associated with a particular order
       def orders_package_by_order_id
         orders_packages = @orders_packages.where(order_id: params["order_id"])
         @orders_packages = apply_filters(orders_packages).page(page).per(per_page)

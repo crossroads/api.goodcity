@@ -14,6 +14,7 @@ module Api
 
       api :GET, "/v1/stocktakes", "List all stocktakes"
       def index
+        @stocktakes = @stocktakes.where(state: params["state"]) if params["state"]
         render(
           json: @stocktakes.with_eager_load,
           each_serializer: serializer,
