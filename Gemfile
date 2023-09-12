@@ -60,6 +60,7 @@ gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 gem 'jsonapi-serializer-formats'
 gem 'sidekiq_alive'
+gem 'azure-storage-blob'
 
 group :development, :staging do
   gem 'grape-swagger-rails'

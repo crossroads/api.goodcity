@@ -112,6 +112,14 @@ GEM
       activerecord (>= 3.2, < 7.0)
       rake (>= 10.4, < 14.0)
     aws_cf_signer (0.1.3)
+    azure-storage-blob (2.0.3)
+      azure-storage-common (~> 2.0)
+      nokogiri (~> 1, >= 1.10.8)
+    azure-storage-common (2.0.4)
+      faraday (~> 1.0)
+      faraday_middleware (~> 1.0, >= 1.0.0.rc1)
+      net-http-persistent (~> 4.0)
+      nokogiri (~> 1, >= 1.10.8)
     barby (0.6.8)
     bootsnap (1.9.1)
       msgpack (~> 1.0)
@@ -331,6 +339,8 @@ GEM
     multi_test (0.1.2)
     multipart-post (2.1.1)
     nenv (0.3.0)
+    net-http-persistent (4.0.2)
+      connection_pool (~> 2.2)
     net-imap (0.3.7)
       date
       net-protocol
@@ -583,6 +593,7 @@ DEPENDENCIES
   active_record_union
   annotate
   apipie-rails!
+  azure-storage-blob
   bootsnap
   bullet
   by_star!
