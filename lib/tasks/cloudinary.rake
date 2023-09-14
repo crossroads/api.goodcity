@@ -83,11 +83,9 @@ namespace :cloudinary do
 
   # rake cloudinary:archive
   desc "Archive images from Cloudinary to Azure Storage"
-    task archive: :environment do
-      Goodcity::ImageArchiver.new(min_age: 2.years.ago).process!
-    end
+  task archive: :environment do
+    Goodcity::ImageArchiver.new(min_age: 2.years.ago).process_dispatched_packages
   end
-
 
   #
   # ---- HELPERS
