@@ -71,8 +71,7 @@ module Api
       end
 
       def delete_cloudinary_image
-        key = params["cloudinary_id"].split("/").last.split(".").first rescue nil
-        CloudinaryImageCleanupJob.perform_later(key) if key
+        ImageCleanupJob.perform_later(params["cloudinary_id"])
         render nothing: true, status: 204
       end
 
