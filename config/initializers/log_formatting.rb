@@ -38,8 +38,5 @@ if %w(staging production).include?(Rails.env)
       ActiveJob::Base.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new("#{Rails.root}/log/active-job-#{Rails.env}.log", level: :warn))
     end
 
-    # Turn down Sidekiq's verbose logging
-    # https://github.com/mperham/sidekiq/wiki/Logging#default-logger-and-verboseness
-    Sidekiq.logger.level = Logger::WARN
   end
 end
