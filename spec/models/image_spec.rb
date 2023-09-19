@@ -24,6 +24,37 @@ RSpec.describe Image, type: :model do
     end
   end
 
+  describe "cloudinary_id_version" do
+    let(:image) { create :image, cloudinary_id: cloudinary_id }
+    context do
+      let(:cloudinary_id) { "1652280851/test/office_chair.jpg" }
+      it { expect( image.cloudinary_id_version ).to eql( "1652280851" ) }
+    end
+    context do
+      let(:cloudinary_id) { "1652280851/office_chair.jpg" }
+      it { expect( image.cloudinary_id_version ).to eql( "1652280851" ) }
+    end
+    context do
+      let(:cloudinary_id) { "1652280851/test/office_chair.jpg.undefined" }
+      it { expect( image.cloudinary_id_version ).to eql( "1652280851" ) }
+    end
+  end
+
+  describe "cloudinary_id_public_id" do
+    let(:image) { create :image, cloudinary_id: cloudinary_id }
+    context do
+      let(:cloudinary_id) { "1652280851/test/office_chair.jpg" }
+      it { expect( image.cloudinary_id_public_id ).to eql( "test/office_chair" ) }
+    end
+    context do
+      let(:cloudinary_id) { "1652280851/office_chair.jpg" }
+      it { expect( image.cloudinary_id_public_id ).to eql( "office_chair" ) }
+    end
+    context do
+      let(:cloudinary_id) { "1652280851/test/office_chair.jpg.undefined" }
+      it { expect( image.cloudinary_id_public_id ).to eql( "test/office_chair.jpg" ) }
+    end
+  end
 
   describe "handle heic images" do
     it "converts heic image to jpg before save" do

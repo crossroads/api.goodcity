@@ -1,4 +1,5 @@
 require 'uri'
+require 'goodcity/image_archiver'
 
 namespace :cloudinary do
   # tag value can be "development"/"staging"/"offer_#{id}"/
@@ -47,7 +48,7 @@ namespace :cloudinary do
   MAX_SIZE_MB = 1
   MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
   MAX_SIZE = 1920
-  OPTIMIZE_PAGE_SIZE = 1000
+  OPTIMIZE_PAGE_SIZE = 500 # max page size on Cloudinary is 500
 
   desc "Optimize image sizes"
   task optimize: :environment do
@@ -78,6 +79,12 @@ namespace :cloudinary do
     rescue Exception => e
       Rails.logger.info(class: self.class.name, msg: e)
     end
+  end
+
+  # rake cloudinary:archive
+  desc "Archive images from Cloudinary to Azure Storage"
+  task archive: :environment do
+    Goodcity::ImageArchiver.new(min_age: 2.years.ago).process_dispatched_packages
   end
 
   #
@@ -148,14 +155,16 @@ namespace :cloudinary do
     #
     # Remove the prepended version and the image extension
     # 1557819448/y1nxuenyyvix7gw3dyuy.jpg -> y1nxuenyyvix7gw3dyuy
+    # 1557819448/test/y1nxuenyyvix7gw3dyuy.jpg -> test/y1nxuenyyvix7gw3dyuy
+    # 1557819448/y1nxuenyyvix7gw3dyuy.jpg.undefined -> y1nxuenyyvix7gw3dyuy.jpg
     #
-    trimmed_id = im.cloudinary_id
+    public_id = im.cloudinary_id
       .sub(/^\d+\//, '')
-      .sub(/(\.jpg|\.jpeg\.png)$/, '')
+      .sub(/\.[^\.]+$/, '')
 
     begin
       # Images that have been deleted are marked as 'placeholder'
-      res = Cloudinary::Uploader.explicit(trimmed_id, :type => "upload")
+      res = Cloudinary::Uploader.explicit(public_id, :type => "upload")
       return res['resource_type'] == 'image' && is_placeholder(res)
     rescue
       # Something happened, we don't know for sure that the image has been deleted

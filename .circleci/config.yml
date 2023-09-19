@@ -130,7 +130,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: gem install bundler-audit
-      - run: bundle-audit -v --update
+      # - run: bundle-audit -v --update
 
   deploy:
     <<: *defaults

@@ -1,9 +1,18 @@
+#
+# Images are uploaded directly to Cloudinary
+# Once a package has no remaining quantity (nothing left in stock) and some time has passed,
+#   we will move the image and some thumbnails from Cloudinary to Azure Storage
+# Note that many Packages are duplicated from Items (as part of an offer) and therefore share the same cloudinary image.
 class Image < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid
   include PushUpdatesMinimal
   include ShareSupport
+
+  AZURE_THUMBNAILS = [ {width: 300, height: 300} ] # What thumbnail sizes to store on Azure
+  AZURE_STORAGE_CONTAINER = "images-#{Rails.env}" # name of the blob container in Azure Storage
+  AZURE_IMAGE_PREFIX = 'azure-' # prefix used in 'cloudinary_id' field to distinguish Azure from Cloudinary
 
   has_one :user, inverse_of: :image
   belongs_to :item
@@ -12,7 +21,7 @@ class Image < ApplicationRecord
   belongs_to :imageable, polymorphic: true
 
   before_save :handle_heic_image
-  before_destroy :delete_image_from_cloudinary, unless: :has_multiple_items
+  before_destroy :delete_image_from_storage, unless: :has_multiple_items
   after_update :clear_unused_transformed_images
 
   after_update :reset_favourite, if: :saved_change_to_favourite?
@@ -36,8 +45,14 @@ class Image < ApplicationRecord
     channels
   end
 
-  def public_image_id
-    cloudinary_id.split("/").last.split(".").first rescue nil
+  # "1652280851/test/office_chair.jpg" returns "1652280851"
+  def cloudinary_id_version
+    cloudinary_id.split('/')[0]
+  end
+
+  # "1652280851/test/office_chair.jpg" returns "test/office_chair"
+  def cloudinary_id_public_id
+    cloudinary_id.split('/').drop(1).join('/').sub(/\.[^\.]+$/, '')
   end
 
   # required by PushUpdates and PaperTrail modules
@@ -53,14 +68,12 @@ class Image < ApplicationRecord
   private
 
   def clear_unused_transformed_images
-    image_id = public_image_id
-    CloudinaryCleanTransformedImagesJob.perform_later(image_id, id) if image_id
+    CloudinaryCleanTransformedImagesJob.perform_later(id)
     true
   end
 
-  def delete_image_from_cloudinary
-    image_id = public_image_id
-    CloudinaryImageCleanupJob.perform_later(image_id) if image_id
+  def delete_image_from_storage
+    ImageCleanupJob.perform_later(cloudinary_id)
     true
   end
 
