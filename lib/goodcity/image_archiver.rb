@@ -36,6 +36,17 @@ module Goodcity
     #   - package images are not already archived
     def process_dispatched_packages
       # TODO / WIP
+      # old_dispatched_orders_packages_package_ids = OrdersPackage.dispatched.where("sent_on < ?", @options[:min_age].to_s(:db)).select('package_id')
+      # Package.where(id: old_dispatched_orders_packages_package_ids).where(on_hand_quantity: 0)
+
+      # Package
+      #   .joins(:orders_packages)
+      #   .where('packages.on_hand_quantity = 0')
+      #   .where("orders_packages.sent_on < ?", @options[:min_age].to_s(:db))
+      #   .where("orders_packages.state = 'dispatched'")
+
+      # images = Image.joins("LEFT JOIN packages ON packages.id=images.imageable_id AND images.imageable_type='Package'").joins("LEFT JOIN orders_packages ON orders_packages.package_id=packages.id").where("packages.on_hand_quantity = 0").where("orders_packages.sent_on < ?", @options[:min_age].to_s(:db)).where("orders_packages.state = 'dispatched'").where.not("images.cloudinary_id LIKE '?%', Image::AZURE_IMAGE_PREFIX")
+
       images = []
 
       images.find_each do |image|
@@ -75,12 +86,12 @@ module Goodcity
       end
 
       # Generate mapping of image and thumbnail Cloudinary URLs to Azure Storage paths
-      # E.g. { "http://res.cloudinary.com/ddoadcjjl/image/upload/v1652280851/test/office_chair.jpg" => "test/office_chair.jpg", 
+      # E.g. { "http://res.cloudinary.com/ddoadcjjl/image/upload/a_0/v1652280851/test/office_chair.jpg" => "test/office_chair.jpg", 
       #        "http://res.cloudinary.com/ddoadcjjl/image/upload/a_0,c_fill,fl_progressive,w_300,h_300/v1652280851/test/office_chair.jpg" => "test/office_chair-300x300.jpg"}
-      image_cloudinary_url = image_metadata["url"]
-      image_mappings = { image_cloudinary_url => cloudinary_id }
+      image_cloudinary_url = image_metadata["secure_url"]
+      image_mappings = { image_cloudinary_url.sub('upload', "upload/a_#{image.angle || 0}") => cloudinary_id }
       Image::AZURE_THUMBNAILS.each do |thumb|
-        thumb_cloudinary_url = image_cloudinary_url.sub('upload', "upload/a_0,c_fill,fl_progressive,w_#{thumb[:width]},h_#{thumb[:height]}")
+        thumb_cloudinary_url = image_cloudinary_url.sub('upload', "upload/a_#{image.angle || 0},c_fill,fl_progressive,w_#{thumb[:width]},h_#{thumb[:height]}")
         thumb_blob_filename = cloudinary_id.sub(/\.([^\.]+)$/, "-#{thumb[:width]}x#{thumb[:height]}.\\1")
         image_mappings.merge!(thumb_cloudinary_url => thumb_blob_filename)
       end
