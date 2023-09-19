@@ -13,6 +13,7 @@ module Goodcity
   #   $ rake cloudinary:archive
   #   > Goodcity::ImageArchiver.new.process_images(package.images)
   #   > Goodcity::ImageArchiver.new.process_dispatched_packages
+  #   > ImageArchiveJob.perform_later(image_ids)
   #
   # IMPORTANT NOTE: not yet ready to move images that have come from offers (need to update Donor and Admin apps first.)
   #
@@ -21,13 +22,17 @@ module Goodcity
     def initialize(options = {})
       # defaults
       @options = { min_age: 2.years.ago }.merge(options)
-      # raise "Only run this in production or staging environments." unless %w(staging production).include?(Rails.env)
     end
 
     # An entry point for archiving images
     # Be careful to only process images on Packages that haven't come from offers.
     def process_images(images)
-      [images].flatten.uniq.each do |image|
+      images = [images].flatten.uniq.compact
+      if Image.where(cloudinary_id: images.map(&:cloudinary_id)).where(imageable_type: 'Item').any?
+        raise "Only process images on Packages that haven't come from Offers."
+      end
+
+      images.each do |image|
         move_to_azure_storage(image)
       end
     end
