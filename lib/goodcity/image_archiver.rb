@@ -99,12 +99,13 @@ module Goodcity
       # Update database and delete image on Cloudinary
       image.update_columns(cloudinary_id: "#{Image::AZURE_IMAGE_PREFIX}#{cloudinary_id}")
       if (Image.where(cloudinary_id: cloudinary_id).size == 0)
-        response = Cloudinary::Api.delete_resources(params[:public_id])
-        result = response["deleted"][params[:public_id]]
+        public_id = image.cloudinary_id_public_id
+        response = Cloudinary::Api.delete_resources(public_id)
+        result = response["deleted"][public_id]]
         if (result == "deleted")
-          log("Image successfully deleted from Cloudinary: #{params[:public_id]}")
+          log("Image successfully deleted from Cloudinary: #{public_id}")
         else
-          log("Error '#{result}' when deleting image from Cloudinary: #{params[:public_id]}")
+          log("Error '#{result}' when deleting image from Cloudinary: #{public_id}")
         end
       end
     end
