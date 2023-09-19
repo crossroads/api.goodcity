@@ -101,7 +101,7 @@ module Goodcity
       if (Image.where(cloudinary_id: cloudinary_id).size == 0)
         public_id = image.cloudinary_id_public_id
         response = Cloudinary::Api.delete_resources(public_id)
-        result = response["deleted"][public_id]]
+        result = response["deleted"][public_id]
         if (result == "deleted")
           log("Image successfully deleted from Cloudinary: #{public_id}")
         else
