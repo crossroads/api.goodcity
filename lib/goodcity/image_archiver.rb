@@ -14,6 +14,8 @@ module Goodcity
   #   > Goodcity::ImageArchiver.new.process_images(package.images)
   #   > Goodcity::ImageArchiver.new.process_dispatched_packages
   #
+  # IMPORTANT NOTE: not yet ready to move images that have come from offers (need to update Donor and Admin apps first.)
+  #
   class ImageArchiver
 
     def initialize(options = {})
@@ -23,6 +25,7 @@ module Goodcity
     end
 
     # An entry point for archiving images
+    # Be careful to only process images on Packages that haven't come from offers.
     def process_images(images)
       [images].flatten.uniq.each do |image|
         move_to_azure_storage(image)
@@ -30,24 +33,18 @@ module Goodcity
     end
 
     # Criteria for archiving images on packages:
-    #   - package is fully dispatched 
+    #   - package does NOT belong to an offer (so we only alter stock app for timebeing)
     #   - package has no available quantity
-    #   - dispatched orders must have been sent prior to a 'min_age' threshold
-    #   - package images are not already archived
+    #   - images are not already archived
+    #   - package has not been updated recently
     def process_dispatched_packages
-      # TODO / WIP
-      # old_dispatched_orders_packages_package_ids = OrdersPackage.dispatched.where("sent_on < ?", @options[:min_age].to_s(:db)).select('package_id')
-      # Package.where(id: old_dispatched_orders_packages_package_ids).where(on_hand_quantity: 0)
 
-      # Package
-      #   .joins(:orders_packages)
-      #   .where('packages.on_hand_quantity = 0')
-      #   .where("orders_packages.sent_on < ?", @options[:min_age].to_s(:db))
-      #   .where("orders_packages.state = 'dispatched'")
-
-      # images = Image.joins("LEFT JOIN packages ON packages.id=images.imageable_id AND images.imageable_type='Package'").joins("LEFT JOIN orders_packages ON orders_packages.package_id=packages.id").where("packages.on_hand_quantity = 0").where("orders_packages.sent_on < ?", @options[:min_age].to_s(:db)).where("orders_packages.state = 'dispatched'").where.not("images.cloudinary_id LIKE '?%', Image::AZURE_IMAGE_PREFIX")
-
-      images = []
+      images = Image.joins("JOIN packages ON packages.id=images.imageable_id AND images.imageable_type='Package'")
+        .where('packages.offer_id IS NULL')
+        .where("packages.on_hand_quantity = 0")
+        .where.not("images.cloudinary_id LIKE ?", "#{Image::AZURE_IMAGE_PREFIX}%")
+        .where("packages.updated_at < ?", @options[:min_age].to_s(:db))
+        .order('packages.updated_at')
 
       images.find_each do |image|
         move_to_azure_storage(image)
@@ -59,9 +56,9 @@ module Goodcity
     #
     # The main algorithm
     # 1. Find the image on Cloudinary
-    # 2. Download full size and one thumbnail
+    # 2. Download full size and thumbnails
     # 3. Upload to Azure storage
-    # 4. Prefix the database id with Image::AZURE_IMAGE_PREFIX to indicate that the image is archived
+    # 4. Update all Image database entries (with the same Cloudinary id) with Image::AZURE_IMAGE_PREFIX to indicate that the image is archived
     def move_to_azure_storage(image)
       cloudinary_id = image.cloudinary_id # 1652280851/test/office_chair.jpg
       if cloudinary_id.starts_with?(Image::AZURE_IMAGE_PREFIX)
@@ -107,17 +104,15 @@ module Goodcity
         azure_client.create_block_blob(Image::AZURE_STORAGE_CONTAINER, blob_filename, image_content, { content_type: content_type })
       end
 
-      # Update database and delete image on Cloudinary
-      image.update_columns(cloudinary_id: "#{Image::AZURE_IMAGE_PREFIX}#{cloudinary_id}")
-      if (Image.where(cloudinary_id: cloudinary_id).size == 0)
-        public_id = image.cloudinary_id_public_id
-        response = Cloudinary::Api.delete_resources(public_id)
-        result = response["deleted"][public_id]
-        if (result == "deleted")
-          log("Image successfully deleted from Cloudinary: #{public_id}")
-        else
-          log("Error '#{result}' when deleting image from Cloudinary: #{public_id}")
-        end
+      # Update all instances of the image in the database and delete image on Cloudinary
+      Image.where(cloudinary_id: image.cloudinary_id).update(cloudinary_id: "#{Image::AZURE_IMAGE_PREFIX}#{cloudinary_id}")
+      public_id = image.cloudinary_id_public_id
+      response = Cloudinary::Api.delete_resources(public_id)
+      result = response["deleted"][public_id]
+      if (result == "deleted")
+        log("Image successfully deleted from Cloudinary: #{public_id}")
+      else
+        log("Error '#{result}' when deleting image from Cloudinary: #{public_id}")
       end
     end
 

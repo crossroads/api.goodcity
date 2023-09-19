@@ -1,8 +1,8 @@
 #
 # Images are uploaded directly to Cloudinary
-# Once a package is fully dispatched (nothing left in stock), and some time has passed,
+# Once a package has no remaining quantity (nothing left in stock) and some time has passed,
 #   we will move the image and some thumbnails from Cloudinary to Azure Storage
-# This saves space and money.
+# Note that many Packages are duplicated from Items (as part of an offer) and therefore share the same cloudinary image.
 class Image < ApplicationRecord
   has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include CloudinaryHelper
@@ -11,7 +11,7 @@ class Image < ApplicationRecord
   include ShareSupport
 
   AZURE_THUMBNAILS = [ {width: 300, height: 300} ] # What thumbnail sizes to store on Azure
-  AZURE_STORAGE_CONTAINER = 'images' # name of the blob container in Azure Storage
+  AZURE_STORAGE_CONTAINER = "images-#{Rails.env}" # name of the blob container in Azure Storage
   AZURE_IMAGE_PREFIX = 'azure-' # prefix used in 'cloudinary_id' field to distinguish Azure from Cloudinary
 
   has_one :user, inverse_of: :image
