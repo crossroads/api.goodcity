@@ -50,7 +50,6 @@ gem 'rubyXL'
 gem 'sendgrid-ruby'
 gem 'sidekiq', '<7'
 gem 'sidekiq-scheduler'
-gem 'sidekiq-statistic'
 gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'
@@ -59,7 +58,6 @@ gem 'whenever', '~>  1.0', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 gem 'jsonapi-serializer-formats'
-gem 'sidekiq_alive'
 gem 'azure-storage-blob'
 
 group :development, :staging do
