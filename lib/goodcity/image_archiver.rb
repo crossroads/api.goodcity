@@ -36,14 +36,15 @@ module Goodcity
       cloudinary_ids.each do |cloudinary_id|
 
         # Assertion 1. None of the occurances of the cloudinary_id should be images related to items (meaning no related offers).
-        imageable_types = !Image.where(cloudinary_id: cloudinary_id).pluck("DISTINCT imageable_type")
+        imageable_types = Image.where(cloudinary_id: cloudinary_id).pluck("DISTINCT imageable_type")
         if imageable_types != ["Package"]
           log("Skipping #{cloudinary_id} - image is related to at least one offer.")
           break
         end
 
         # Assertion 2. All images are related to packages that have 0 quantity in stock
-        packages_in_stock = Package.joins("JOIN images ON images.imageable_id=packages.id AND images.imageable_type='Package'")
+        packages_in_stock = Package
+          .joins("JOIN images ON images.imageable_id=packages.id AND images.imageable_type='Package'")
           .where("images.cloudinary_id" => cloudinary_id)
           .where.not(on_hand_quantity: 0).any?
         if packages_in_stock
