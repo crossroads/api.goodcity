@@ -25,15 +25,36 @@ module Goodcity
     end
 
     # An entry point for archiving images
-    # Be careful to only process images on Packages that haven't come from offers.
+    # A package can have an image but that image can also be duplicated (by cloudinary_id) to other packages and items
+    # Be careful to only process images on Packages that haven't come from offers. Skip if any related package has a related offer/item
+    # Also check that all related packages have 0 quantity in stock
+    # 
     def process_images(images)
       images = [images].flatten.uniq.compact
-      if Image.where(cloudinary_id: images.map(&:cloudinary_id)).where(imageable_type: 'Item').any?
-        raise "Only process images on Packages that haven't come from Offers."
-      end
+      cloudinary_ids = images.map(&:cloudinary_id).uniq.compact
 
-      images.each do |image|
+      cloudinary_ids.each do |cloudinary_id|
+
+        # Assertion 1. None of the occurances of the cloudinary_id should be images related to items (meaning no related offers).
+        imageable_types = !Image.where(cloudinary_id: cloudinary_id).pluck("DISTINCT imageable_type")
+        if imageable_types != ["Package"]
+          log("Skipping #{cloudinary_id} - image is related to at least one offer.")
+          break
+        end
+
+        # Assertion 2. All images are related to packages that have 0 quantity in stock
+        packages_in_stock = Package.joins("JOIN images ON images.imageable_id=packages.id AND images.imageable_type='Package'")
+          .where("images.cloudinary_id" => cloudinary_id)
+          .where.not(on_hand_quantity: 0).any?
+        if packages_in_stock
+          log("Skipping #{cloudinary_id} - not all related packages are fully dispatched.")
+          break
+        end
+
+        # just finding 1 instance will move all the others
+        image = Image.find_by_cloudinary_id(cloudinary_id)
         move_to_azure_storage(image)
+
       end
     end
 
@@ -51,9 +72,7 @@ module Goodcity
         .where("packages.updated_at < ?", @options[:min_age].to_s(:db))
         .order('packages.updated_at')
 
-      images.find_each do |image|
-        move_to_azure_storage(image)
-      end
+      process_images(images)
     end
 
     private
@@ -64,6 +83,7 @@ module Goodcity
     # 2. Download full size and thumbnails
     # 3. Upload to Azure storage
     # 4. Update all Image database entries (with the same Cloudinary id) with Image::AZURE_IMAGE_PREFIX to indicate that the image is archived
+    #      This means if there is more than one image with the same cloudinary_id, they will all be moved.
     def move_to_azure_storage(image)
       cloudinary_id = image.cloudinary_id # 1652280851/test/office_chair.jpg
       if cloudinary_id.starts_with?(Image::AZURE_IMAGE_PREFIX)
@@ -72,7 +92,7 @@ module Goodcity
       end
 
       search = Cloudinary::Search
-        .expression("version=#{image.cloudinary_id_version} AND public_id=#{image.cloudinary_id_public_id}")
+        .expression("public_id=#{image.cloudinary_id_public_id}")
         .max_results(1)
         .execute
 
