@@ -19,7 +19,11 @@ module StocktakeProcessor
       errors = {}
 
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open? || stocktake.awaiting_process?
-      raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions')) if stocktake.revisions.where(dirty: true).count.positive?
+
+      if stocktake.revisions.where(dirty: true).count.positive?
+        stocktake.reopen
+        raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions'))
+      end
 
       stocktake.start_processing
 
