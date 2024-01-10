@@ -1,3 +1,4 @@
+
 module Goodcity
   # ----------------------------
   # Demo data generator
@@ -119,7 +120,7 @@ module Goodcity
           quantity = rand(1..10)
           package_type = PackageType.find_by_code(attrs[:package_type_name])
           package = FactoryBot.create(:package, :received, :with_item, received_quantity: quantity, package_type: package_type, notes: attrs[:donor_description]) # inventorized
-          package.images << FactoryBot.create(:image, image_key, favourite: true)
+          package.images << FactoryBot.create(:image, image_key)
           print '.'
         end
       end
