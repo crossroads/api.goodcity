@@ -67,15 +67,8 @@ module Api
 
       api :DELETE, '/v1/users/1', "Delete user"
       def destroy
-        user_id = params["id"]
-        user = User.find(user_id)
-        can_delete = Goodcity::UserSafeDelete.new(user).can_delete
-        if can_delete[:result] == true
-          UserSafeDeleteJob.perform_later(user_id)
-          render json: { result: true, reason: I18n.t('users_controller.delete_scheduled') }, status: 200
-        else
-          render json: can_delete, status: 422
-        end
+        UserSafeDeleteJob.perform_later(params["id"])
+        render json: { result: true, reason: I18n.t('users_controller.delete_scheduled') }, status: 200
       end
 
       def recent_users

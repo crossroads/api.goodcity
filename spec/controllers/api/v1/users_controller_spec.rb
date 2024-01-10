@@ -294,15 +294,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response.status).to eql(200)
         expect(parsed_body).to eql({"result"=>true, "reason"=>"This user account has been scheduled for deletion."})
       end
-      it 'cannot be deleted' do
-        allow_any_instance_of(Goodcity::UserSafeDelete).to receive(:can_delete).
-          and_return({ result: false, reason: "User has roles" })
-        expect(User.current_user).to eql(user)
-        delete :destroy, params: { id: user.id }
-        expect(response.status).to eql(422)
-        expect(parsed_body["result"]).to eql(false)
-        expect(parsed_body["reason"]).to eql("User has roles")
-      end
     end
     context "called by another user" do
       before { generate_and_set_token(user) }

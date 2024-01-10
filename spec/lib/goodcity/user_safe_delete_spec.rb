@@ -176,19 +176,16 @@ context Goodcity::UserSafeDelete do
         create(:auth_token, user: user)
         create(:printers_user, user: user)
         create(:user_favourite, user: user)
-        create(:user_role, user: user)
       end
 
       it do
         expect(user.auth_tokens.size).to be > 0
         expect(user.printers_users.size).to be > 0
         expect(UserFavourite.where(user: user).size).to be > 0
-        expect(user.roles.size).to be > 0
         Goodcity::UserSafeDelete.new(user).delete!
         expect(user.auth_tokens.count).to be == 0
         expect(user.printers_users.size).to be == 0
         expect(UserFavourite.where(user: user).size).to be == 0
-        expect(user.roles.size).to be == 0
       end
 
     end

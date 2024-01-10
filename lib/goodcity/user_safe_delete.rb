@@ -25,6 +25,7 @@
 #
 #   This deletion mechanism has to eventually work for all apps.
 #   For now, don't allow previous admins or stock users to be deleted
+#   Don't allow deletion of system users
 #
 # For later
 #   Admin / Stock app users wanting to be deleted should
@@ -53,14 +54,19 @@ module Goodcity
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_offers') } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_orders') } if Order.where(created_by_id: @user.id).any?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_roles') } if @user.roles.any?
-      
       return { result: true, reason: "OK" }
     end
-    
+
+    # can_delete without giving a reason
+    def can_delete?
+      can_delete[:result]
+    end
+
     def delete!
+      raise "User doesn't exist anymore!" unless User.find(@user.id)
+
       User.transaction do
-        raise "User doesn't exist anymore!" unless User.find(@user.id)
-        if can_delete
+        if can_delete?
           delete_user_data
           delete_messages
           delete_organisations_users
@@ -70,7 +76,7 @@ module Goodcity
         end
       end
     end
-  
+
     private
 
     def delete_user_data
