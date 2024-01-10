@@ -18,6 +18,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     create(:stocktake_revision, package: package_1, stocktake: stocktake, quantity: 12)  # we counted more
     create(:stocktake_revision, package: package_2, stocktake: stocktake, quantity: 8)   # we counted less
     create(:stocktake_revision, package: package_3, stocktake: stocktake, quantity: 10)  # we counted the same amount
+    stocktake.reload
   end
 
   describe "GET /stocktakes" do
@@ -283,11 +284,18 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
         put :commit, params: { id: stocktake.id }
         expect(response.status).to eq(200)
       end
+
+      it "rejects a stocktake with dirty revisions" do
+        stocktake.revisions.first.update(dirty: true)
+        expect(StocktakeJob).not_to receive(:perform_later)
+        put :commit, params: { id: stocktake.id }
+        expect(response.status).to eq(422)
+      end
     end
   end
 
   describe 'PUT /stocktake/:id/cancel' do
-    context "as a  user without the 'can_manage_stocktake' permission" do
+    context "as a user without the 'can_manage_stocktake' permission" do
       before { generate_and_set_token(other_user) }
 
       it "returns 403" do

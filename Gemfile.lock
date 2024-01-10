@@ -207,16 +207,15 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    date (3.3.3)
+    date (3.3.4)
     diff-lcs (1.4.4)
     docile (1.4.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
-    dotenv (0.11.1)
-      dotenv-deployment (~> 0.0.2)
-    dotenv-deployment (0.0.2)
-    dotenv-rails (0.11.1)
-      dotenv (= 0.11.1)
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
@@ -232,25 +231,29 @@ GEM
     fake_email_validator (1.0.11)
       activemodel
       mail
-    faraday (1.8.0)
+    faraday (1.10.3)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
-      faraday-httpclient (~> 1.0.1)
+      faraday-httpclient (~> 1.0)
+      faraday-multipart (~> 1.0)
       faraday-net_http (~> 1.0)
-      faraday-net_http_persistent (~> 1.1)
+      faraday-net_http_persistent (~> 1.0)
       faraday-patron (~> 1.0)
       faraday-rack (~> 1.0)
-      multipart-post (>= 1.2, < 3)
+      faraday-retry (~> 1.0)
       ruby2_keywords (>= 0.0.4)
     faraday-em_http (1.0.0)
     faraday-em_synchrony (1.0.0)
     faraday-excon (1.1.0)
     faraday-httpclient (1.0.1)
+    faraday-multipart (1.0.4)
+      multipart-post (~> 2)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.2.0)
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
+    faraday-retry (1.0.3)
     faraday_middleware (1.1.0)
       faraday (~> 1.0)
     ffaker (2.20.0)
@@ -261,8 +264,8 @@ GEM
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
     gli (2.20.1)
-    globalid (1.1.0)
-      activesupport (>= 5.0)
+    globalid (1.2.1)
+      activesupport (>= 6.1)
     grape-swagger-rails (0.3.1)
       railties (>= 3.2.12)
     guard (2.18.0)
@@ -294,7 +297,7 @@ GEM
     jsonapi-serializer-formats (0.0.6)
       activesupport (>= 4.2)
       jsonapi-serializer (>= 2.1)
-    jwt (2.3.0)
+    jwt (2.7.1)
     kaminari (1.2.1)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.1)
@@ -317,7 +320,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.21.3)
+    loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     lumberjack (1.2.8)
@@ -332,30 +335,30 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0901)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.4)
-    minitest (5.19.0)
+    mini_portile2 (2.8.5)
+    minitest (5.20.0)
     msgpack (1.4.2)
     multi_test (0.1.2)
-    multipart-post (2.1.1)
+    multipart-post (2.3.0)
     nenv (0.3.0)
     net-http-persistent (4.0.2)
       connection_pool (~> 2.2)
-    net-imap (0.3.7)
+    net-imap (0.4.9.1)
       date
       net-protocol
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.2.1)
+    net-protocol (0.2.2)
       timeout
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
-    net-smtp (0.3.3)
+    net-smtp (0.4.0.1)
       net-protocol
     net-ssh (6.1.0)
     netrc (0.11.0)
     newrelic_rpm (8.0.0)
-    nio4r (2.5.9)
-    nokogiri (1.15.4)
+    nio4r (2.7.0)
+    nokogiri (1.15.5)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     notiffany (0.1.3)
@@ -376,10 +379,10 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.6)
-    puma (6.3.1)
+    puma (6.4.2)
       nio4r (~> 2.0)
     raabro (1.4.0)
-    racc (1.7.1)
+    racc (1.7.3)
     rack (2.2.8)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
@@ -424,29 +427,16 @@ GEM
       method_source
       rake (>= 12.2)
       thor (~> 1.0)
-    rake (13.0.6)
+    rake (13.1.0)
     rake-progressbar (0.0.5)
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    redis (4.8.1)
-    redis-actionpack (5.2.0)
-      actionpack (>= 5, < 7)
-      redis-rack (>= 2.1.0, < 3)
-      redis-store (>= 1.1.0, < 2)
-    redis-activesupport (5.2.1)
-      activesupport (>= 3, < 7)
-      redis-store (>= 1.3, < 2)
-    redis-rack (2.1.3)
-      rack (>= 2.0.8, < 3)
-      redis-store (>= 1.2, < 2)
-    redis-rails (5.0.2)
-      redis-actionpack (>= 5.0, < 6)
-      redis-activesupport (>= 5.0, < 6)
-      redis-store (>= 1.2, < 2)
-    redis-store (1.9.0)
-      redis (>= 4, < 5)
+    redis (5.0.8)
+      redis-client (>= 0.17.0)
+    redis-client (0.19.1)
+      connection_pool
     regexp_parser (2.1.1)
     request_store (1.5.0)
       rack (>= 1.4)
@@ -503,10 +493,11 @@ GEM
       activesupport (>= 3)
     shoulda-matchers (5.2.0)
       activesupport (>= 5.2.0)
-    sidekiq (6.5.9)
-      connection_pool (>= 2.2.5, < 3)
-      rack (~> 2.0)
-      redis (>= 4.5.0, < 5)
+    sidekiq (7.2.0)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
     sidekiq-scheduler (5.0.3)
       rufus-scheduler (~> 3.2)
       sidekiq (>= 6, < 8)
@@ -516,7 +507,7 @@ GEM
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
-    simplecov_json_formatter (0.1.3)
+    simplecov_json_formatter (0.1.4)
     slack-ruby-client (0.17.0)
       faraday (>= 1.0)
       faraday_middleware
@@ -526,7 +517,7 @@ GEM
     spring (2.1.1)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
-    sprockets (4.2.0)
+    sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.4.2)
@@ -539,16 +530,16 @@ GEM
     state_machine (1.2.0)
     sys-uname (1.2.2)
       ffi (~> 1.1)
-    thor (1.2.2)
+    thor (1.3.0)
     tilt (2.3.0)
     timecop (0.9.5)
-    timeout (0.4.0)
+    timeout (0.4.1)
     traco (5.3.2)
       activerecord (>= 4.2)
     ttfunk (1.7.0)
-    twilio-ruby (5.59.0)
-      faraday (>= 0.9, < 2.0)
-      jwt (>= 1.5, <= 2.5)
+    twilio-ruby (5.77.0)
+      faraday (>= 0.9, < 3.0)
+      jwt (>= 1.5, < 3.0)
       nokogiri (>= 1.6, < 2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -570,7 +561,7 @@ GEM
       activerecord (>= 4.2)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.11)
+    zeitwerk (2.6.12)
 
 PLATFORMS
   ruby
@@ -594,7 +585,7 @@ DEPENDENCIES
   cloudinary
   cucumber-rails
   database_cleaner
-  dotenv-rails (= 0.11.1)
+  dotenv-rails
   easyzpl!
   email_spec
   factory_bot_rails
@@ -608,18 +599,18 @@ DEPENDENCIES
   http_accept_language
   jsonapi-serializer
   jsonapi-serializer-formats
-  jwt (~> 2.3.0)
+  jwt
   kaminari
   lograge
-  loofah (>= 2.3.1)
+  loofah
   nestful!
   newrelic_rpm
-  nokogiri (>= 1.13.3)
+  nokogiri
   oj
   paper_trail
   paranoia
   pg
-  puma (>= 4.3.11)
+  puma
   rack-cors
   rack-protection
   rack-timeout
@@ -631,7 +622,6 @@ DEPENDENCIES
   rake-progressbar
   rb-readline
   redis
-  redis-rails
   request_store
   rollbar
   rotp (~> 3.3.1)
@@ -644,18 +634,18 @@ DEPENDENCIES
   sentry-ruby
   shoulda-callback-matchers
   shoulda-matchers
-  sidekiq (< 7)
+  sidekiq (< 8)
   sidekiq-scheduler
-  simplecov (~> 0.21.0)
+  simplecov
   slack-ruby-client
   spring
   spring-commands-rspec
   state_machine
   timecop
   traco
-  twilio-ruby (~> 5.58)
+  twilio-ruby (< 6)
   webmock
-  whenever (~> 1.0)
+  whenever
   with_advisory_lock
 
 RUBY VERSION

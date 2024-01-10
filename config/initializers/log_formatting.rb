@@ -1,6 +1,6 @@
 require 'lograge/formatters/json'
 
-if %w(staging production).include?(Rails.env)
+if %w(production).include?(Rails.env)
 
   Rails.application.configure do
 
