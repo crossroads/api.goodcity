@@ -212,11 +212,10 @@ GEM
     docile (1.4.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
-    dotenv (0.11.1)
-      dotenv-deployment (~> 0.0.2)
-    dotenv-deployment (0.0.2)
-    dotenv-rails (0.11.1)
-      dotenv (= 0.11.1)
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
@@ -594,7 +593,7 @@ DEPENDENCIES
   cloudinary
   cucumber-rails
   database_cleaner
-  dotenv-rails (= 0.11.1)
+  dotenv-rails
   easyzpl!
   email_spec
   factory_bot_rails
@@ -624,7 +623,7 @@ DEPENDENCIES
   rack-protection
   rack-timeout
   railroady
-  rails (~> 6)
+  rails (~> 6.1.4)
   rails-controller-testing
   rails-i18n
   rake

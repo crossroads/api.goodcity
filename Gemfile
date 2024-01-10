@@ -15,7 +15,7 @@ gem 'bootsnap', require: false
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'cancancan'
 gem 'cloudinary'
-gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
+gem 'dotenv-rails'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'fake_email_validator'
