@@ -515,7 +515,7 @@ GEM
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
-    simplecov_json_formatter (0.1.3)
+    simplecov_json_formatter (0.1.4)
     slack-ruby-client (0.17.0)
       faraday (>= 1.0)
       faraday_middleware
@@ -610,15 +610,15 @@ DEPENDENCIES
   jwt
   kaminari
   lograge
-  loofah (>= 2.3.1)
+  loofah
   nestful!
   newrelic_rpm
-  nokogiri (>= 1.13.3)
+  nokogiri
   oj
   paper_trail
   paranoia
   pg
-  puma (>= 4.3.11)
+  puma
   rack-cors
   rack-protection
   rack-timeout
@@ -645,7 +645,7 @@ DEPENDENCIES
   shoulda-matchers
   sidekiq (< 7)
   sidekiq-scheduler
-  simplecov (~> 0.21.0)
+  simplecov
   slack-ruby-client
   spring
   spring-commands-rspec
@@ -654,7 +654,7 @@ DEPENDENCIES
   traco
   twilio-ruby (~> 5.58)
   webmock
-  whenever (~> 1.0)
+  whenever
   with_advisory_lock
 
 RUBY VERSION
