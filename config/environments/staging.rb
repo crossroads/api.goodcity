@@ -39,7 +39,7 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
 
   # Configure Redis e.g. ENV['REDIS_URL']=rediss://:<password>@<url to redis cache>:<port>/<database>
-  config.cache_store = :redis_store, ENV['REDIS_URL'] || 'redis://localhost:6379'
+  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', 'redis://localhost:6379')}
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = "http://assets.example.com"
