@@ -52,7 +52,7 @@ gem 'sidekiq-scheduler'
 gem 'slack-ruby-client'
 gem 'state_machine'
 gem 'traco'
-gem 'twilio-ruby', '< 6'
+gem 'twilio-ruby'
 gem 'whenever', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
