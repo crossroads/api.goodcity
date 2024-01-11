@@ -446,7 +446,6 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     rexml (3.2.5)
-    rollbar (3.2.0)
     rotp (3.3.1)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -483,11 +482,14 @@ GEM
       fugit (~> 1.1, >= 1.1.6)
     sendgrid-ruby (6.5.1)
       ruby_http_client (~> 3.4)
-    sentry-rails (5.7.0)
+    sentry-rails (5.16.1)
       railties (>= 5.0)
-      sentry-ruby (~> 5.7.0)
-    sentry-ruby (5.7.0)
+      sentry-ruby (~> 5.16.1)
+    sentry-ruby (5.16.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
+    sentry-sidekiq (5.16.1)
+      sentry-ruby (~> 5.16.1)
+      sidekiq (>= 3.0)
     shellany (0.0.1)
     shoulda-callback-matchers (1.1.4)
       activesupport (>= 3)
@@ -623,7 +625,6 @@ DEPENDENCIES
   rb-readline
   redis
   request_store
-  rollbar
   rotp (~> 3.3.1)
   rspec-rails
   rspec_junit_formatter
@@ -631,7 +632,7 @@ DEPENDENCIES
   rubyXL
   sendgrid-ruby
   sentry-rails
-  sentry-ruby
+  sentry-sidekiq
   shoulda-callback-matchers
   shoulda-matchers
   sidekiq (< 8)

@@ -108,8 +108,7 @@ module Api
       param :CallStatus, String, desc: "Status of call ex: ringing"
       param :ErrorCode, String, desc: "Code of error, ex: 11200"
       def call_fallback
-        Rollbar.error(Exception, parameters: params,
-          error_class: "TwilioError", error_message: "Twilio Voice Call Error")
+        Sentry.capture_message("Twilio Voice Call Error: call_fallback triggered")
         response = Twilio::TwiML::VoiceResponse.new do |r|
           r.say(message: "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.")
           r.hangup
