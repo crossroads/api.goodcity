@@ -9,9 +9,6 @@ set :linked_files, %w{ config/database.yml .env }
 set :linked_dirs, %w{log tmp/pids tmp/cache}
 set :bundle_binstubs, nil
 set :rvm_ruby_version, '2.7.3'
-set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
-set :rollbar_env, Proc.new { fetch :stage }
-set :rollbar_role, Proc.new { :app }
 set :newrelic_user, Proc.new { ENV['CIRCLE_USERNAME'] || ENV['USER'] }
 
 after "deploy:updated", "newrelic:notice_deployment"

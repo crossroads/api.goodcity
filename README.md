@@ -50,7 +50,7 @@ For individual specs, use rspec
 ## Background Jobs
 
 Using the ActiveJob gem, some jobs are queued in Redis and then run later using Sidekiq workers.
-For example, Twilio SMS, exception notification (rollbar) and email delivery.
+For example, Twilio SMS, exception notification, and email delivery.
 
 In development mode, use
 
