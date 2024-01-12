@@ -1,5 +1,3 @@
-require 'paper_trail/version'
-
 class Version < PaperTrail::Version
   belongs_to :related, polymorphic: true
 
