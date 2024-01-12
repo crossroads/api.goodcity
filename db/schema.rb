@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_04_035910) do
+ActiveRecord::Schema.define(version: 2024_01_11_092749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -68,7 +68,6 @@ ActiveRecord::Schema.define(version: 2023_02_04_035910) do
   end
 
   create_table "auth_tokens", id: :serial, force: :cascade do |t|
-    t.datetime "otp_code_expiry", precision: 6
     t.string "otp_secret_key"
     t.integer "user_id"
     t.datetime "created_at", precision: 6

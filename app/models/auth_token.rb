@@ -8,31 +8,11 @@ class AuthToken < ApplicationRecord
 
   validates :otp_auth_key, presence: true
 
-  # Generate the otp_code as normal but set default drift_time (can be overridden)
-  # We store otp_code_expiry purely so we can include it on our SMS messages
-  # Cycle the otp_auth_key so it it not always the same.
-  def otp_code(options = {})
-    options.reverse_merge!(time: drift_time)
-    update_columns(otp_code_expiry: drift_time)
-    super(options)
-  end
-
-  def cycle_otp_auth_key!
-    update_columns(otp_auth_key: new_otp_auth_key)
-  end
-
+  # otp_auth_key is sent to the requesting client via HTTP response when the TOTP is sent via SMS
+  # When the client authenticates with TOTP, they also send back the otp_auth_key in order to facilitate
+  # auth_token retrieval to compare the code. Each code is unique to the user.
   def new_otp_auth_key
     SecureRandom.base64
   end
 
-  private
-
-  # Number of seconds the OTP code is valid for
-  def otp_code_validity
-    Rails.application.secrets.token[:otp_code_validity]
-  end
-
-  def drift_time
-    Time.now + otp_code_validity
-  end
 end
