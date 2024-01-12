@@ -18,8 +18,7 @@ class ApplicationMailer < ActionMailer::Base
 
   private
 
-  # Log Rollbar warning for any errors
   def capture_smtp_errors(exception)
-    Rollbar.warning(exception)
+    Sentry.capture_exception(exception)
   end
 end

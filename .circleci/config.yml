@@ -7,7 +7,6 @@ version: 2.1
 # AZURE_SUBSCRIPTION - name of Azure subscription with the container registry
 # AZURE_ACR_REGISTRY - name of Azure Container Registry
 # CC_TEST_REPORTER_ID   - for reporting code climate statistics
-# ROLLBAR_ACCESS_TOKEN  - for recording deployments
 # GITHUB_TOKEN - token for accessing private repos. See https://github.com/settings/tokens
 
 aliases:
