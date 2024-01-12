@@ -1,6 +1,6 @@
 class AuthToken < ApplicationRecord
   belongs_to :user
-  has_one_time_password column_name: :otp_secret_key, length: 4
+  has_one_time_password column_name: :otp_secret_key, after_column_name: :last_otp_at, length: 4
 
   scope :most_recent, -> { order('id desc').limit(1) }
 
