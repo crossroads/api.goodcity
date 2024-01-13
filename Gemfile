@@ -43,7 +43,7 @@ gem 'redis' # Used for Rails cache_store
 gem 'request_store'
 gem 'sentry-rails'
 gem 'sentry-sidekiq'
-gem 'rotp', '~> 3.3.1'
+gem 'rotp'
 gem 'rubyXL'
 gem 'sendgrid-ruby'
 gem 'sidekiq', '<8'
