@@ -22,12 +22,6 @@ GIT
       barby (>= 0.6.1)
       prawn (>= 1.0.0)
 
-GIT
-  remote: https://github.com/maccman/nestful.git
-  revision: 84cc3121fdb96aa20ceb47ed9994edb00a5faacc
-  specs:
-    nestful (1.1.4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -336,6 +330,7 @@ GEM
     multi_test (0.1.2)
     multipart-post (2.3.0)
     nenv (0.3.0)
+    nestful (1.1.4)
     net-http-persistent (4.0.2)
       connection_pool (~> 2.2)
     net-imap (0.4.9.1)
@@ -600,7 +595,7 @@ DEPENDENCIES
   kaminari
   lograge
   loofah
-  nestful!
+  nestful
   newrelic_rpm
   nokogiri
   oj
