@@ -10,7 +10,7 @@ gem 'rake'
 gem 'active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'active_record_union'
-gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
+gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", ref: "a55d836"
 gem 'bootsnap', require: false
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'cancancan'

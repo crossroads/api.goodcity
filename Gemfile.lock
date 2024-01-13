@@ -9,7 +9,7 @@ GIT
 GIT
   remote: https://github.com/Apipie/apipie-rails.git
   revision: a55d836f4e8609395c374d85b2542a3ac7277a2c
-  branch: master
+  ref: a55d836
   specs:
     apipie-rails (0.5.19)
       rails (>= 4.1)
