@@ -28,13 +28,6 @@ GIT
   specs:
     nestful (1.1.4)
 
-GIT
-  remote: https://github.com/radar/by_star.git
-  revision: f3412a7ffb015df7ced6aa662a53a53e081611a0
-  specs:
-    by_star (4.0.0)
-      activesupport (>= 3.2.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -127,6 +120,8 @@ GEM
     bullet (6.1.5)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
+    by_star (4.0.1)
+      activesupport (>= 3.2.0)
     byebug (11.1.3)
     cancancan (3.3.0)
     capistrano (3.16.0)
@@ -577,7 +572,7 @@ DEPENDENCIES
   azure-storage-blob
   bootsnap
   bullet
-  by_star!
+  by_star
   byebug
   cancancan
   capistrano-bundler
