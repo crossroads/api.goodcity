@@ -69,17 +69,19 @@ group :development do
   gem 'guard-rspec', require: false
   gem 'railroady'
   gem 'rb-readline'
-  gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
+  gem 'ruby-graphviz'
   gem 'spring'
   gem 'spring-commands-rspec', group: :development
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rake', require: false
+  gem 'capistrano-rvm'
+  gem 'ed25519'      # required for capistrano to use ssh with ed25519 keys
+  gem 'bcrypt_pbkdf' # required for capistrano to use ssh with ed25519 keys
 end
 
 group :development, :test do
   gem 'byebug'
-  gem 'capistrano-bundler'
-  gem 'capistrano-rails'
-  gem 'capistrano-rake', require: false
-  gem 'capistrano-rvm'
   gem 'rspec-rails'
 end
 
