@@ -10,7 +10,7 @@ class Image < ApplicationRecord
   include PushUpdatesMinimal
   include ShareSupport
 
-  AZURE_THUMBNAILS = [ {width: 300, height: 300} ] # What thumbnail sizes to store on Azure
+  AZURE_THUMBNAILS = [ {width: 300, height: 300}, {width: 500, height: 500} ] # What thumbnail sizes to store on Azure
   AZURE_STORAGE_CONTAINER = "images-#{Rails.env}" # name of the blob container in Azure Storage
   AZURE_IMAGE_PREFIX = 'azure-' # prefix used in 'cloudinary_id' field to distinguish Azure from Cloudinary
 
