@@ -53,31 +53,53 @@ module Goodcity
       # Has user ever used admin or stock apps?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_offers') } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_orders') } if Order.where(created_by_id: @user.id).any?
-      return { result: false, reason: I18n.t('user_safe_delete.user_has_roles') } if @user.roles.any?
+      return { result: false, reason: "System users cannot be deleted."} if @user.system_user?
       return { result: true, reason: "OK" }
     end
 
-    # can_delete without giving a reason
+    # can_delete returns true/false without giving a reason
     def can_delete?
       can_delete[:result]
     end
 
     def delete!
-      raise "User doesn't exist anymore!" unless User.find(@user.id)
-
+      raise "User doesn't exist!" unless User.find(@user.id)
       User.transaction do
         if can_delete?
-          delete_user_data
-          delete_messages
-          delete_organisations_users
-          delete_images
-          delete_contacts
-          delete_associations
+          if @user.roles.any?
+            soft_delete!
+          else
+            hard_delete!
+          end
         end
       end
     end
 
     private
+
+    # disable a user account and remove mobile and email but don't remove content or actions
+    # useful for admins
+    def soft_delete!
+      attributes = {
+        mobile: nil, other_phone: nil, email: nil,
+        disabled: true, is_mobile_verified: false,
+        is_email_verified: false, receive_email: false,
+        image: nil
+      }
+      image_id = @user.image_id
+      @user.update(attributes)
+      Image.find(image_id)&.really_destroy! if image_id.present?
+    end
+
+    # Remove as much user content as is feasible
+    def hard_delete!
+      delete_user_data
+      delete_messages
+      delete_organisations_users
+      delete_images
+      delete_contacts
+      delete_associations
+    end
 
     def delete_user_data
       attributes = {

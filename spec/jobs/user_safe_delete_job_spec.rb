@@ -20,4 +20,11 @@ describe "UserSafeDeleteJob", type: :job do
     end
   end
 
+  context "if user cannot be deleted" do
+    let(:user) { create(:user, :system) }
+    it "should send an email" do
+      expect { UserSafeDeleteJob.perform_now(user.id) }.to change { ActionMailer::Base.deliveries.count }.by(1)
+    end
+  end
+
 end
