@@ -27,3 +27,4 @@ ENV['JWT_VALIDITY'] = "1800"
 ENV['JWT_VALIDITY_FOR_API'] = "31536000"
 ENV['OTP_CODE_VALIDITY']="30"
 ENV['SOCKETIO_SERVICE_URL']="http://localhost:1337/send?site=goodcity&apiKey=132323"
+ENV['EMAIL_FROM'] = 'test@example.com'
