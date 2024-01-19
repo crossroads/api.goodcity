@@ -10,9 +10,9 @@ gem 'rake'
 gem 'active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'active_record_union'
-gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
+gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", ref: "a55d836"
 gem 'bootsnap', require: false
-gem 'by_star', git: "https://github.com/radar/by_star.git"
+gem 'by_star'
 gem 'cancancan'
 gem 'cloudinary'
 gem 'dotenv-rails'
@@ -27,7 +27,7 @@ gem 'jwt'
 gem 'kaminari'
 gem 'lograge'
 gem 'loofah'
-gem 'nestful', git: 'https://github.com/maccman/nestful.git'
+gem 'nestful'
 gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'oj'
@@ -69,17 +69,19 @@ group :development do
   gem 'guard-rspec', require: false
   gem 'railroady'
   gem 'rb-readline'
-  gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
+  gem 'ruby-graphviz'
   gem 'spring'
   gem 'spring-commands-rspec', group: :development
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rake', require: false
+  gem 'capistrano-rvm'
+  gem 'ed25519'      # required for capistrano to use ssh with ed25519 keys
+  gem 'bcrypt_pbkdf' # required for capistrano to use ssh with ed25519 keys
 end
 
 group :development, :test do
   gem 'byebug'
-  gem 'capistrano-bundler'
-  gem 'capistrano-rails'
-  gem 'capistrano-rake', require: false
-  gem 'capistrano-rvm'
   gem 'rspec-rails'
 end
 

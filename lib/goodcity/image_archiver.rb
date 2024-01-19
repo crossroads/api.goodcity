@@ -11,6 +11,8 @@ module Goodcity
   #
   # WAYS TO USE:
   #   $ rake cloudinary:archive
+  #   > require 'open-uri'; require 'goodcity/image_archiver'
+  #   > Goodcity::ImageArchiver.new(min_age: Date.parse('2018-11-30')).process_dispatched_packages
   #   > Goodcity::ImageArchiver.new.process_images(package.images)
   #   > Goodcity::ImageArchiver.new.process_dispatched_packages
   #   > ImageArchiveJob.perform_later(image_ids)
@@ -39,7 +41,7 @@ module Goodcity
         imageable_types = Image.where(cloudinary_id: cloudinary_id).pluck("DISTINCT imageable_type")
         if imageable_types != ["Package"]
           log("Skipping #{cloudinary_id} - image is related to at least one offer.")
-          break
+          next
         end
 
         # Assertion 2. All images are related to packages that have 0 quantity in stock
@@ -49,7 +51,7 @@ module Goodcity
           .where.not(on_hand_quantity: 0).any?
         if packages_in_stock
           log("Skipping #{cloudinary_id} - not all related packages are fully dispatched.")
-          break
+          next
         end
 
         # just finding 1 instance will move all the others
