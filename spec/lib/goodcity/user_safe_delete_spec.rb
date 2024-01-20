@@ -50,17 +50,25 @@ context Goodcity::UserSafeDelete do
       end
     end
 
-    context "returns false if user has at leats one role" do
-      let(:user) { create(:user, :order_administrator )}
+    context "returns false if user has the system user role" do
+      let(:user) { create(:user, :system )}
       it do
         expect(subject.can_delete[:result]).to eql(false)
-        expect(subject.can_delete[:reason]).to eql("We're sorry but we're unable to delete your account because you have some important system roles assigned. Please contact us and we will assist you with account deletion.")
+        expect(subject.can_delete[:reason]).to eql("System users cannot be deleted.")
+      end
+    end
+
+    context "returns false if trying to delete app_store user" do
+      let(:user) { create(:user, mobile: ENV['APPSTORE_REVIEWER_LOGIN_NUMBER']) }
+      it do
+        expect(subject.can_delete[:result]).to eql(false)
+        expect(subject.can_delete[:reason]).to eql("App Store Reviewer account cannot be deleted.")
       end
     end
 
   end
 
-  context 'delete!' do
+  context 'hard_delete!' do
 
     let(:image) { create(:image) }
     let(:user) { create(:user, title: "Mr", first_name: "Bob", last_name: "Jones",
@@ -188,6 +196,44 @@ context Goodcity::UserSafeDelete do
         expect(UserFavourite.where(user: user).size).to be == 0
       end
 
+    end
+
+  end
+
+  context "soft_delete!" do
+    let(:image) { create(:image) }
+    let(:user) { create(:user, :reviewer, title: "Mr", first_name: "Bob", last_name: "Jones",
+      mobile: "+85252341678", other_phone: "+85287654321", email: "email@example.com",
+      image_id: image.id, disabled: false, is_mobile_verified: true,
+      is_email_verified: true, receive_email: true) }
+
+    context "user data should not remove name" do
+      it do
+        image_id = user.image_id # so we can check later that it's been deleted
+        Goodcity::UserSafeDelete.new(user).delete!
+        expect(user.title).to eql("Mr")
+        expect(user.first_name).to eql("Bob")
+        expect(user.last_name).to eql("Jones")
+        expect(user.mobile).to eql(nil)
+        expect(user.other_phone).to eql(nil)
+        expect(user.email).to eql(nil)
+        expect(user.disabled).to eql(true)
+        expect(user.is_mobile_verified).to eql(false)
+        expect(user.is_email_verified).to eql(false)
+        expect(user.receive_email).to eql(false)
+        expect(user.image_id).to eql(nil)
+        expect(Image.find_by_id(image_id)).to eql(nil)
+      end
+    end
+
+    context "should not delete message data" do
+      let!(:message1) { create(:message, sender: user, body: 'message 1') }
+      with_versioning do
+        it do
+          Goodcity::UserSafeDelete.new(user).delete!
+          expect(message1.reload.body).to eql("message 1")
+        end
+      end
     end
 
   end
