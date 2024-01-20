@@ -37,6 +37,7 @@ module Goodcity
   class UserSafeDelete
 
     def initialize(user)
+      @app_store_mobile = Rails.application.secrets.appstore_reviewer_login&.fetch(:number) # nil if doesn't exist
       @user = user
       raise "User must exist" unless @user.is_a?(User)
     end
@@ -54,6 +55,7 @@ module Goodcity
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_offers') } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_orders') } if Order.where(created_by_id: @user.id).any?
       return { result: false, reason: "System users cannot be deleted."} if @user.system_user?
+      return { result: false, reason: "App Store Reviewer account cannot be deleted."} if @app_store_mobile.present? and (@user.mobile == @app_store_mobile)
       return { result: true, reason: "OK" }
     end
 
