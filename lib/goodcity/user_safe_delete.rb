@@ -6,6 +6,8 @@
 # Conditions:
 #   - User account must not have any 'in progress' offers
 #   - User account must not have any 'in progress' orders
+#   - User must not be a system user
+#   - User must not be the app store reviewer
 #
 # Deletion:
 #   - user profile (obfuscated or fields erased)
@@ -19,16 +21,7 @@
 # Exclusions
 #
 #   - the offer, item, packages, deliveries, schedule records etc are kept as this is the donation record and there is no personal data in there
-#
-#
-# TODO
-#
-#   This deletion mechanism has to eventually work for all apps.
-#   For now, don't allow previous admins or stock users to be deleted
-#   Don't allow deletion of system users
-#
-# For later
-#   Admin / Stock app users wanting to be deleted should
+#   - Admin / Stock app administrative users wanting to be deleted should
 #     - retain their name in User record (delete mobile, email etc)
 #     - don't delete message content created when in admin role
 #
@@ -45,13 +38,8 @@ module Goodcity
     def can_delete
       # Returns one of:
       #   { result: true, reason: "OK" }
-      #   { result: false, reason: "User has active offers" }
-      #   { result: false, reason: "User has orders" }
-      #   { result: false, reason: "User has roles" }
+      #   { result: false, reason: "..." }
       #
-      # Are all offers draft, cancelled, or resolved?
-      # Any orders owned by this user?
-      # Has user ever used admin or stock apps?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_offers') } if Offer.where(created_by_id: @user.id).where.not( state: %w(draft cancelled closed inactive) ).any?
       return { result: false, reason: I18n.t('user_safe_delete.user_has_active_orders') } if Order.where(created_by_id: @user.id).any?
       return { result: false, reason: "System users cannot be deleted."} if @user.system_user?
@@ -65,52 +53,48 @@ module Goodcity
     end
 
     def delete!
-      raise "User doesn't exist!" unless User.find(@user.id)
       User.transaction do
+        raise "User doesn't exist!" unless User.find(@user.id)
         if can_delete?
-          if @user.roles.any?
-            soft_delete!
+          if should_soft_delete?
+            delete_user_data(hard: false)
           else
-            hard_delete!
+            delete_user_data(hard: true)
+            delete_messages
           end
+          delete_organisations_users
+          delete_images
+          delete_contacts
+          delete_associations
         end
       end
     end
 
     private
 
-    # disable a user account and remove mobile and email but don't remove content or actions
-    # useful for admins
-    def soft_delete!
+    # If user has ever held an administrative role then we should soft delete
+    def should_soft_delete?
+      @user.roles.any? ||
+        Version.where(whodunnit: @user.id, item_type: %w(Package OrdersPackage)).any? ||
+        Offer.where(reviewed_by_id: @user.id).any? ||
+        Offer.where(received_by_id: @user.id).any? ||
+        Offer.where(closed_by_id: @user.id).any? ||
+        Order.where(processed_by_id: @user.id).any? ||
+        Order.where(process_completed_by_id: @user.id).any? ||
+        Order.where(dispatch_started_by_id: @user.id).any? ||
+        Order.where(closed_by_id: @user.id).any? ||
+        Order.where(cancelled_by_id: @user.id).any?
+    end
+
+    # soft delete will retain user's name and obfuscate other fields
+    def delete_user_data(hard: false)
       attributes = {
         mobile: nil, other_phone: nil, email: nil,
         disabled: true, is_mobile_verified: false,
         is_email_verified: false, receive_email: false,
         image: nil
       }
-      image_id = @user.image_id
-      @user.update(attributes)
-      Image.find(image_id)&.really_destroy! if image_id.present?
-    end
-
-    # Remove as much user content as is feasible
-    def hard_delete!
-      delete_user_data
-      delete_messages
-      delete_organisations_users
-      delete_images
-      delete_contacts
-      delete_associations
-    end
-
-    def delete_user_data
-      attributes = {
-        title: nil, first_name: "Deleted", last_name: "User",
-        mobile: nil, other_phone: nil, email: nil,
-        disabled: true, is_mobile_verified: false,
-        is_email_verified: false, receive_email: false,
-        image: nil
-      }
+      attributes = attributes.merge(title: nil, first_name: "Deleted", last_name: "User") if hard == true
       image_id = @user.image_id
       @user.update(attributes)
       Image.find(image_id)&.really_destroy! if image_id.present?
@@ -188,10 +172,6 @@ module Goodcity
     end
 
     def delete_associations
-      # Straight up removal
-      # Find addresses derived from order_transports and orders
-      # Find auth_tokens, printers_users, user_favorites, user_roles
-      # and versions for all the above
       AuthToken.where(user: @user).destroy_all
       PrintersUser.where(user: @user).destroy_all
       UserFavourite.where(user: @user).destroy_all

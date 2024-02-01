@@ -43,13 +43,6 @@ context Goodcity::UserSafeDelete do
       end
     end
 
-    context "returns true if user doesn't have any roles" do
-      it do
-        expect(user.roles.size).to eql(0)
-        expect(subject.can_delete[:result]).to eql(true)
-      end
-    end
-
     context "returns false if user has the system user role" do
       let(:user) { create(:user, :system )}
       it do
@@ -238,4 +231,46 @@ context Goodcity::UserSafeDelete do
 
   end
 
+  describe '#should_soft_delete?' do
+
+    subject { Goodcity::UserSafeDelete.new(user) }
+
+    context 'when user has roles' do
+      let(:user) { create(:user, :reviewer) }
+
+      it 'returns true' do
+        expect(subject.send("should_soft_delete?")).to be true
+      end
+    end
+
+    context 'when user has Package versions' do
+      before { create(:version, whodunnit: user.id, item_type: 'Package') }
+
+      it 'returns true' do
+        expect(subject.send("should_soft_delete?")).to be true
+      end
+    end
+
+    context 'when user has reviewed offers' do
+      before { create(:offer, reviewed_by: user) }
+
+      it 'returns true' do
+        expect(subject.send("should_soft_delete?")).to be true
+      end
+    end
+
+    context 'when user has processed orders' do
+      before { create(:order, processed_by: user) }
+
+      it 'returns true' do
+        expect(subject.send("should_soft_delete?")).to be true
+      end
+    end
+
+    context 'when user does not have any associated roles, versions, offers, or orders' do
+      it 'returns false' do
+        expect(subject.send("should_soft_delete?")).to be false
+      end
+    end
+  end
 end
