@@ -47,7 +47,7 @@ module Goodcity
         end
 
         # Assertion: Image is related to offers that are all closed or cancelled
-        not_closed_or_cancelled_offers = Offer.
+        not_closed_or_cancelled_offers = Offer
           .joins("JOIN items ON items.offer_id=offers.id")
           .joins("JOIN images ON images.imageable_id=items.id AND images.imageable_type='Item'")
           .where("images.cloudinary_id" => cloudinary_id)
