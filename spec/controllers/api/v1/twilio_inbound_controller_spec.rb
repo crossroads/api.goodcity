@@ -87,7 +87,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       it "will return response to Twilio", :show_in_doc do
         post :voice, params: parameters
         expect(response.status).to eq(200)
-        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Dial>\n<Number>+85222729348</Number>\n</Dial>\n</Response>\n")
+        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Dial>\n<Number>+85229849309</Number>\n</Dial>\n</Response>\n")
       end
     end
 
