@@ -97,8 +97,8 @@ class AzureNotificationsService
   # After July 2024, we can remove references to GcmRegistrationId
   def encoded_url(platform, handle)
     case platform
-    when "fcm" then [URI::encode("FcmV1RegistrationId eq '#{handle}'"), URI::encode("GcmRegistrationId eq '#{handle}'")]
-    when "aps" then [URI::encode("DeviceToken eq '#{handle.upcase}'")]
+    when "fcm" then [CGI::escape("FcmV1RegistrationId eq '#{handle}'"), CGI::escape("GcmRegistrationId eq '#{handle}'")]
+    when "aps" then [CGI::escape("DeviceToken eq '#{handle.upcase}'")]
     end
   end
 
