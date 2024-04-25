@@ -225,11 +225,11 @@ module Api
       end
 
       def valid_platform?
-        ["fcm", "gcm", "aps", "wns"].include?(params[:platform])
+        ["fcm", "aps"].include?(params[:platform])
       end
 
       def platform_error
-        "Unrecognised platform, expecting 'fcm' or 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)"
+        "Unrecognised platform, expecting 'fcm' (Android) or 'aps' (iOS)"
       end
 
       def register_device_for_notifications
