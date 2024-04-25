@@ -1,26 +1,24 @@
 namespace :azure do
   task add_admin_tag_to_azure_registrations: :environment do
-    svc = AzureNotificationsService.new
+    app_name = ADMIN_APP
+    svc = AzureNotificationsService.new('admin')
 
     User.staff.each do |user|
-      res = svc.send(:execute, :get, "tags/user_#{user.id}_admin/registrations")
+      res = svc.send(:execute, :get, "tags/user_#{user.id}_#{app_name}/registrations")
 
       doc = res.body
       newtag = user.permission.name.downcase
-      oldtag = Channel.private_channels_for(user, ADMIN_APP)
+      oldtag = Channel.private_channels_for(user, app_name)
       tags = [newtag, oldtag].flatten
 
       platform = ""
-      handle = (doc.match(/GcmRegistrationId>(.*)</) || [])[1]
+      handle = (doc.match(/FcmRegistrationId>(.*)</) || [])[1]
       if handle.present?
-        platform = "gcm"
+        platform = "fcm"
       else
         handle = (doc.match(/DeviceToken>(.*)</) || [])[1]
         if handle.present?
           platform = "aps"
-        else
-          handle = (doc.match(/ChannelUri>(.*)</) || [])[1]
-          platform = "wns" if handle.present?
         end
       end
 

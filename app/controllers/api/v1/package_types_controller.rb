@@ -15,7 +15,6 @@ module Api
       api :GET, "/v1/package_types", "get all package_types"
       def index
         return stock_codes if params['stock'].present?
-        @package_types = @package_types.where(id: params[:ids].split(",")) if params[:ids].present?
         render json: @package_types.with_eager_load.cached_json
       end
 

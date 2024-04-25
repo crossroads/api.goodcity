@@ -2,6 +2,7 @@
 # Safely remove a user at their request
 #
 # Should generally be run as a background task
+# > UserSafeDeleteJob.perform_later(user_id)
 #
 # Conditions:
 #   - User account must not have any 'in progress' offers
