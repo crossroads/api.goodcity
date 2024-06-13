@@ -38,3 +38,18 @@ Other:
   :name_zh_tw: 其他
   :visible_to_offer: false
   :visible_to_order: true
+
+Self-referred:
+  :name_zh_tw: Self-referred
+  :visible_to_offer: false
+  :visible_to_order: true
+
+Too soon:
+  :name_zh_tw: Too soon
+  :visible_to_offer: false
+  :visible_to_order: true
+
+Rescheduled:
+  :name_zh_tw: Rescheduled
+  :visible_to_offer: false
+  :visible_to_order: true
