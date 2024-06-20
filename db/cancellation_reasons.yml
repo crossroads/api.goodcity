@@ -1,21 +1,21 @@
 ---
 Donated elsewhere:
-  :name_zh_tw: Donated elsewhere
+  :name_zh_tw: 已轉捐贈
   :visible_to_offer: true
   :visible_to_order: false
 
 Transport too difficult:
-  :name_zh_tw: Transport too difficult
+  :name_zh_tw: 運輸困難
   :visible_to_offer: true
   :visible_to_order: false
 
 Unwanted:
-  :name_zh_tw: Unwanted
+  :name_zh_tw: 非所需物资
   :visible_to_offer: false
   :visible_to_order: false
 
 Donor cancelled:
-  :name_zh_tw: Donor cancelled
+  :name_zh_tw: 捐贈者已取消
   :visible_to_offer: true
   :visible_to_order: false
 
@@ -40,16 +40,16 @@ Other:
   :visible_to_order: true
 
 Self-referred:
-  :name_zh_tw: Self-referred
+  :name_zh_tw: 未經轉介
   :visible_to_offer: false
   :visible_to_order: true
 
 Too soon:
-  :name_zh_tw: Too soon
+  :name_zh_tw: 時間太近
   :visible_to_offer: false
   :visible_to_order: true
 
 Rescheduled:
-  :name_zh_tw: Rescheduled
+  :name_zh_tw: 已重新安排
   :visible_to_offer: false
   :visible_to_order: true
