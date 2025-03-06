@@ -25,7 +25,8 @@ end
 def generate_description(metric, value, warn, crit)
   "#{metric}=#{value}"
 end
- 
+
+Sidekiq.logger.level = Logger::WARN
 stats = Sidekiq::Stats.new
  
 status = 0
