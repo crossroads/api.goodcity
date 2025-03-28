@@ -72,7 +72,7 @@ jobs:
       DATABASE_URL: "postgres://postgres@localhost:5432/goodcity_server_test"
     steps:
       - run: sudo apt update && sudo apt -y upgrade libu2f-udev
-      - browser-tools/install-chromedriver
+      - browser-tools/install-browser-tools
       - run:
           name: Install PostgreSQL Client (required to run migrations)
           command: |
