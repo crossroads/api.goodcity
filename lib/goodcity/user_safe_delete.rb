@@ -31,7 +31,7 @@ module Goodcity
   class UserSafeDelete
 
     def initialize(user)
-      @app_store_mobile = Rails.application.secrets.appstore_reviewer_login&.fetch(:number) # nil if doesn't exist
+      @app_store_mobile = Rails.application.secrets.appstore_reviewer_login&.fetch(:number, nil)
       @user = user
       raise "User must exist" unless @user.is_a?(User)
     end
