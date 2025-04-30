@@ -344,7 +344,7 @@ GEM
     nestful (1.1.4)
     net-http-persistent (4.0.5)
       connection_pool (~> 2.2)
-    net-imap (0.4.19)
+    net-imap (0.4.21)
       date
       net-protocol
     net-pop (0.1.2)
