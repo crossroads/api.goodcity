@@ -9,8 +9,8 @@ After=syslog.target network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/rails/goodcity_server/current
-Environment=NODE_VERSION=lts/boron MALLOC_ARENA_MAX=2
-ExecStart=/home/deployer/.nvm/nvm-exec /home/deployer/.rvm/bin/rvm 2.2.2 do bundle exec sidekiq -e production -C config/sidekiq.yml
+Environment=NODE_VERSION=lts/gallium MALLOC_ARENA_MAX=2
+ExecStart=/home/deployer/.nvm/nvm-exec /home/deployer/.rvm/bin/rvm 2.7.3 do bundle exec sidekiq -e production -C config/sidekiq.yml
 User=deployer
 Group=deployer
 UMask=0002

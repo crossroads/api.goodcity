@@ -1,4 +1,4 @@
-lock '3.18.0'
+lock '3.19.2'
 
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 
