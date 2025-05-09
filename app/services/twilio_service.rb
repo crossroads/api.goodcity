@@ -39,15 +39,7 @@ class TwilioService
   # options[:body] = "SMS body"
   def send_sms(options)
     options = { to: mobile }.merge(options)
-
-    return unless options[:to]
-
-    if send_to_twilio?
-      TwilioJob.perform_later(options)
-    else
-      message = "SlackSMS (to: #{options[:to]}, id: #{user.id}, full_name: #{user.full_name}) #{options[:body]}"
-      SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
-    end
+    TwilioJob.perform_later(options)
   end
 
   private
@@ -61,12 +53,6 @@ class TwilioService
         I18n.t('twilio.sms_verification_pin', pin: pin)
       end
     end
-  end
-
-  # On production env, send real SMS
-  # In all other environments, send to Slack
-  def send_to_twilio?
-    Rails.env.production?
   end
 
   def welcome_sms_text(user_name)

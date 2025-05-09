@@ -8,8 +8,6 @@ describe TwilioService do
   let(:twilio) { TwilioService.new(user) }
   let(:twilio_with_no_mobile_user) {  TwilioService.new(user_with_no_mobile) }
 
-  before { allow(twilio).to receive(:send_to_twilio?).and_return(true) }
-
   context "initialize" do
     it do
       expect(twilio.user).to equal(user)
@@ -95,16 +93,6 @@ describe TwilioService do
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.order_confirmed_sms_to_charity(order)
     end
-
-    context 'when the mobile number is nil for the user' do
-      let(:user) { create(:user, mobile: nil, request_from_browse: true ) }
-      let(:order_for_charity_without_mobile) { build(:order, created_by: user_with_no_mobile) }
-      it "do not sends order submitted acknowledgement via sms to charity without mobile who submitted order" do
-        expect(twilio_with_no_mobile_user).not_to receive(:send_to_twilio?)
-        expect(TwilioJob).not_to receive(:perform_later)
-        twilio.order_confirmed_sms_to_charity(order_for_charity_without_mobile)
-      end
-    end
   end
 
   ['zh-tw'].map do |locale|
@@ -121,7 +109,7 @@ describe TwilioService do
       end
     end
   end
-
+  
   context "send_unread_message_reminder" do
     let(:url) { "#{Rails.application.secrets.base_urls[:app]}/offers" }
 
@@ -131,7 +119,6 @@ describe TwilioService do
       context "for #{locale} language" do
         it "sends SMS in #{locale} language" do
           body = I18n.t('twilio.unread_message_sms', url: url)
-          expect(twilio).to receive(:send_to_twilio?).and_return(true)
           expect(twilio).to receive(:unread_message_reminder).and_return( body )
           expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
           twilio.send_unread_message_reminder(url)
@@ -140,49 +127,13 @@ describe TwilioService do
     end
   end
 
-  context "send" do
+  context "send_sms" do
     let(:options) { {body: "This is the SMS body"} }
     subject{ TwilioService.new(user) }
     it "should send message to Twilio" do
-      expect(subject).to receive(:send_to_twilio?).and_return(true)
       sms_options = {to: user.mobile}.merge(options)
       expect(TwilioJob).to receive(:perform_later).with(sms_options)
       subject.send(:send_sms, options)
-    end
-
-    it "should not send staging messages to Slack if mobile number is not present within twilio service" do
-      twilio = TwilioService.new(user_with_no_mobile)
-      expect(twilio).not_to receive(:send_to_twilio?)
-      expect(TwilioJob).to_not receive(:perform_later)
-      channel = ENV['SLACK_PIN_CHANNEL']
-      message = "SlackSMS (to: #{user_with_no_mobile.mobile}, id: #{user_with_no_mobile.id}, full_name: #{user_with_no_mobile.full_name}) #{options[:body]}"
-      expect(SlackMessageJob).not_to receive(:perform_later).with(message, channel)
-      twilio.send(:send_sms, options)
-    end
-
-    it "should send staging messages to Slack" do
-      expect(subject).to receive(:send_to_twilio?).and_return(false)
-      expect(TwilioJob).to_not receive(:perform_later)
-      channel = ENV['SLACK_PIN_CHANNEL']
-      message = "SlackSMS (to: #{user.mobile}, id: #{user.id}, full_name: #{user.full_name}) #{options[:body]}"
-      expect(SlackMessageJob).to receive(:perform_later).with(message, channel)
-      subject.send(:send_sms, options)
-    end
-  end
-
-  # Be VERY careful here. Only stub prod env at last possible moment.
-  # Create everything first to avoid hazardous AR callbacks in production env.
-  context "send_to_twilio?" do
-    it "should return true if production" do
-      ts = TwilioService.new(user)
-      expect(Rails).to receive_message_chain('env.production?').and_return(true)
-      expect(ts.send(:send_to_twilio?)).to eql(true)
-    end
-
-    it "should return false if not production" do
-      ts = TwilioService.new(user)
-      expect(Rails).to receive_message_chain('env.production?').and_return(false)
-      expect(ts.send(:send_to_twilio?)).to eql(false)
     end
   end
 
