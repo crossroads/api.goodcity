@@ -3,7 +3,7 @@ class TwilioJob < ActiveJob::Base
 
   # e.g. options = { to: @user.mobile, body: body }
   def perform(options)
-    if send_to_twilio?
+    if send_to_twilio?(options)
       twilio_conf = Rails.application.secrets.twilio
       client = Twilio::REST::Client.new(twilio_conf[:account_sid], twilio_conf[:auth_token])
       client.messages.create({ from: twilio_conf[:phone_number] }.merge(options))
@@ -14,7 +14,7 @@ class TwilioJob < ActiveJob::Base
   private
 
   # Easier rspec testing
-  def send_to_twilio?
+  def send_to_twilio?(options)
     options[:to].present? and Rails.env.production?
   end
 end
