@@ -159,10 +159,11 @@ class User < ApplicationRecord
   end
 
   def send_verification_pin(app_name, mobile, email = nil)
-    SlackPinService.new(self).send_otp(app_name)
-    return send_sms(app_name, mobile) if mobile
-
-    GoodcityMailer.with(user_id: id).send_pin_email.deliver_later if email
+    if mobile
+      send_sms(app_name, mobile)
+    elsif email
+      GoodcityMailer.with(user_id: id).send_pin_email.deliver_later
+    end
   end
 
   def set_verified_flag(pin_for)

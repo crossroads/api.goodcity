@@ -28,8 +28,4 @@ Note: Specify mockup link
 
 NOTE: If these changes are related to some existing PR or fixes any issue from existing PR changes, specify PR links.
 
-### Linked Slack conversation:
-
-NOTE: IF there is any conversation happened for current changes in any of the slack channel, mention the slack message link.
-
 ### Any Open question(s) or challenge(s):

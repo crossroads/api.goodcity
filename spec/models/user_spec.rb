@@ -238,13 +238,10 @@ describe User, :type => :model do
   end
 
   describe "#send_verification_pin" do
-    let(:slack) { SlackPinService.new(user) }
     let(:twilio) { TwilioService.new(user) }
     let(:mobile) { '+85290369036' }
 
     it "should send pin via Twilio" do
-      expect(SlackPinService).to receive(:new).with(user).and_return(slack)
-      expect(slack).to receive(:send_otp)
       expect(TwilioService).to receive(:new).with(user, user.mobile).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
       user.send_verification_pin(DONOR_APP, user.mobile, nil)
