@@ -151,18 +151,11 @@ class User < ApplicationRecord
     end
   end
 
-  def send_sms(app_name, mobile = nil)
-    TwilioService.new(self, mobile).sms_verification_pin(app_name)
-  rescue Twilio::REST::RequestError => e
-    msg = e.message.try(:split, '.').try(:first)
-    errors.add(:base, msg)
-  end
-
   def send_verification_pin(app_name, mobile, email = nil)
-    if mobile
-      send_sms(app_name, mobile)
-    elsif email
+    if self.send_pin_via_email || email.present?
       GoodcityMailer.with(user_id: id).send_pin_email.deliver_later
+    elsif mobile
+      TwilioService.new(self, mobile).sms_verification_pin(app_name)
     end
   end
 

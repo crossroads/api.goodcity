@@ -251,9 +251,19 @@ describe User, :type => :model do
       twilio = TwilioService.new(user, mobile)
       expect(TwilioService).to receive(:new).with(user, mobile).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
-
       user.send_verification_pin(DONOR_APP, mobile, nil)
       expect(twilio.mobile).to eq(mobile)
+    end
+
+    it "sends pin via email if email is provided" do
+      expect(GoodcityMailer).to receive_message_chain(:with, :send_pin_email, :deliver_later)
+      user.send_verification_pin(DONOR_APP, nil, "test@example.com")
+    end
+
+    it "sends pin via email if the user flag 'send_pin_via_email' is true" do
+      expect(GoodcityMailer).to receive_message_chain(:with, :send_pin_email, :deliver_later)
+      user.update_column(:send_pin_via_email, true)
+      user.send_verification_pin(DONOR_APP, mobile, nil)
     end
   end
 
@@ -546,21 +556,6 @@ describe User, :type => :model do
       users = User.with_organisation_status(%w[expired denied])
       expect(users.count).to eq(2)
       expect(users).to match_array([user_4, user_5])
-    end
-  end
-
-  describe '.send_sms' do
-    let(:user) { create(:user) }
-    let(:mobile) { '+85290369036' }
-
-    before do
-      allow_any_instance_of(TwilioService).to receive(:pin_sms_text).and_return(true)
-    end
-
-    it 'sends sms to specified mobile number' do
-      expect_any_instance_of(TwilioService).to receive(:initialize).with(user, mobile).and_return(TwilioService.new(user, mobile))
-
-      user.send_sms('donor', mobile)
     end
   end
 

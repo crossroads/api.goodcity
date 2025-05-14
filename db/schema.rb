@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_12_041609) do
+ActiveRecord::Schema.define(version: 2025_05_09_084420) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1087,6 +1087,7 @@ ActiveRecord::Schema.define(version: 2024_01_12_041609) do
     t.boolean "receive_email", default: false
     t.string "other_phone"
     t.string "preferred_language"
+    t.boolean "send_pin_via_email", default: false, null: false
     t.index ["image_id"], name: "index_users_on_image_id"
     t.index ["mobile"], name: "index_users_on_mobile"
     t.index ["sms_reminder_sent_at"], name: "index_users_on_sms_reminder_sent_at"
