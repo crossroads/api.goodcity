@@ -772,6 +772,14 @@ RSpec.describe Order, type: :model do
           }.to raise_exception(StandardError)
         end
       end
+
+      context 'Remote Shipment order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :remote_shipment, code: 'SH001')
+          }.to raise_exception(StandardError)
+        end
+      end
     end
 
     context 'when code is valid' do

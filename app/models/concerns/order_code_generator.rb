@@ -27,6 +27,7 @@ module OrderCodeGenerator
     def self.prefix_for(detail_type)
       return 'GC-' if detail_type == Order::DetailType::GOODCITY
       return 'S' if detail_type == Order::DetailType::SHIPMENT
+      return 'S' if detail_type == Order::DetailType::REMOTESHIPMENT
       return 'C' if detail_type == Order::DetailType::CARRYOUT
 
       raise Goodcity::DetailTypeNotAllowed
