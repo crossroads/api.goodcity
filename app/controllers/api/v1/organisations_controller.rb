@@ -23,6 +23,7 @@ module Api::V1
         param :website, String, desc: 'Website detail', allow_nil: true
         param :registration, String, desc: 'Registration detail', allow_nil: true
         param :country_id, String, desc: 'Country identifier', allow_nil: true
+        param :crm_account_id, String, desc: 'CRM Account Id', allow_nil: true
       end
     end
 
@@ -87,7 +88,7 @@ module Api::V1
             .permit(:name_en, :name_zh_tw, :country_id,
                     :website, :organisation_type_id,
                     :registration, :description_en,
-                    :description_zh_tw)
+                    :description_zh_tw, :crm_account_id)
     end
 
     def organisation_serializer

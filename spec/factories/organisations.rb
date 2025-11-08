@@ -8,6 +8,7 @@ FactoryBot.define do
     description_zh_tw  { "Description" }
     registration       { (rand(89)+10).to_s+"/"+(rand(10000)+10000).to_s }
     website            { FFaker::Internet.http_url }
+    crm_account_id     { nil }
     association :country
     association :district
     association :organisation_type
