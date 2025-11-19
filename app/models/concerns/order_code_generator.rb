@@ -13,45 +13,28 @@ module OrderCodeGenerator
   end
 
   class Generator
-    attr_reader :detail_type, :delimiter, :matcher
-    def initialize(detail_type)
-      @detail_type = detail_type
-      @delimiter = self.class.prefix_for(detail_type).length.to_i + 1
-      @matcher = %r{^\d+$}
-    end
-
-    def self.generate(detail_type)
-      new(detail_type).generate
-    end
 
     def self.prefix_for(detail_type)
       return 'GC-' if detail_type == Order::DetailType::GOODCITY
       return 'S' if detail_type == Order::DetailType::SHIPMENT
       return 'S' if detail_type == Order::DetailType::REMOTESHIPMENT
       return 'C' if detail_type == Order::DetailType::CARRYOUT
-
       raise Goodcity::DetailTypeNotAllowed
     end
 
-    def generate
-      generate_next_code
-    end
-
-    def generate_next_code
-      # we're hot-wiring here to treat REMOTESHIPMENT as SHIPMENT
+    def self.generate(detail_type)
+      # SHIPMENT and REMOTESHIPMENT need to be considered together
       # this ensures generate_next_code returns the next incremental code for either
-      @detail_type = Order::DetailType::SHIPMENT if @detail_type == Order::DetailType::REMOTESHIPMENT
-      query = <<-QUERY
-        SELECT MAX(CAST(SUBSTRING(orders.code, :delimiter) as INTEGER)) as CODE FROM orders
-          WHERE orders.detail_type = :detail_type AND SUBSTRING(orders.code, :delimiter) ~ :matcher
-      QUERY
-      result = exec_query(query, detail_type: detail_type, delimiter: delimiter, matcher: matcher.source)
-      (result.first['code'] || 0) + 1
+      order_type_filter = if [Order::DetailType::SHIPMENT, Order::DetailType::REMOTESHIPMENT].include?(detail_type)
+        [Order::DetailType::SHIPMENT, Order::DetailType::REMOTESHIPMENT]
+      else
+        detail_type
+      end
+      prefix_length = self.prefix_for(detail_type).length + 1
+      result = Order.where(detail_type: order_type_filter).where("SUBSTRING(orders.code, ?) ~ '^\\d+$'", prefix_length).
+        maximum(Arel.sql("CAST(SUBSTRING(orders.code, #{prefix_length}) AS INTEGER)"))
+      (result || 0) + 1
     end
 
-    def exec_query(query, params)
-      sanitized_query = ActiveRecord::Base.send(:sanitize_sql_array, [query, params])
-      ActiveRecord::Base.connection.exec_query(sanitized_query)
-    end
   end
 end
