@@ -38,6 +38,9 @@ module OrderCodeGenerator
     end
 
     def generate_next_code
+      # we're hot-wiring here to treat REMOTESHIPMENT as SHIPMENT
+      # this ensures generate_next_code returns the next incremental code for either
+      @detail_type = Order::DetailType::SHIPMENT if @detail_type == Order::DetailType::REMOTESHIPMENT
       query = <<-QUERY
         SELECT MAX(CAST(SUBSTRING(orders.code, :delimiter) as INTEGER)) as CODE FROM orders
           WHERE orders.detail_type = :detail_type AND SUBSTRING(orders.code, :delimiter) ~ :matcher

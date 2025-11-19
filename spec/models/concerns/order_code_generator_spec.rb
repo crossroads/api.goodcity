@@ -36,6 +36,18 @@ context "Code generation validator" do
           expect(shipment.code).to eq('S00002')
         end
       end
+
+      context 'for shipment order with subsequent remote shipment' do
+        before do
+          Order.destroy_all
+          create(:order, :with_state_draft, :shipment)
+        end
+        it 'creates incremental codes' do
+          remote_shipment = create(:order, :with_state_draft, :remote_shipment)
+          expect(remote_shipment.code).to eq('S00002') # i.e. not S00001
+        end
+      end
+
     end
 
     context 'carryout' do
