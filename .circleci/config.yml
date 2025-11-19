@@ -46,16 +46,6 @@ jobs:
       - restore_cache: *restore-bundler-cache
       - run: bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - save_cache: *save-bundler-cache
-      - run:
-          name: Download Code Climate test reporter
-          command: |
-            mkdir -p tmp/
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
-            chmod +x ./tmp/cc-test-reporter
-      - persist_to_workspace:
-          root: tmp
-          paths:
-            - cc-test-reporter
 
   test:
     <<: *defaults
@@ -101,24 +91,8 @@ jobs:
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
                               $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-          # ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
       - store_test_results:
           path: ~/rspec
-      - persist_to_workspace:
-          root: tmp
-          paths:
-            - codeclimate.*.json
-
-  upload-coverage:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/api.goodcity/tmp
-      - run:
-          name: Upload coverage results to Code Climate
-          command: |
-            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 3 -o tmp/codeclimate.total.json
-            ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
 
   audit:
     <<: *defaults
