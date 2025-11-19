@@ -101,7 +101,7 @@ jobs:
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
                               $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-            ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
+          # ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
       - store_test_results:
           path: ~/rspec
       - persist_to_workspace:
