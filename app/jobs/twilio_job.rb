@@ -27,7 +27,7 @@ class TwilioJob < ActiveJob::Base
 
   # prefix with '+' if needed
   def twilio_from
-    if twilio_conf[:phone_number].start_with?('+')
+    if twilio_conf[:phone_number].to_s.start_with?('+')
       twilio_conf[:phone_number]
     else
       "+#{twilio_conf[:phone_number]}"
