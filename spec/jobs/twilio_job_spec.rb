@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe TwilioJob, :type => :job do
 
-  let(:options) { { to: generate(:mobile), body: "This is a test", from: generate(:mobile) } }
+  let(:options) { { to: generate(:mobile), body: "This is a test", from: generate(:mobile), risk_check: "disable" } }
   let(:twilio_client) { double(:twilio_client) }
   let(:system_phone_number) { '1234567890' }
 
