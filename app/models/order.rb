@@ -20,6 +20,7 @@ class Order < ApplicationRecord
     SHIPMENT = 'Shipment'
     GOODCITY = 'GoodCity'
     CARRYOUT = 'CarryOut'
+    REMOTESHIPMENT = 'RemoteShipment'
   end
 
   belongs_to :cancellation_reason
@@ -102,7 +103,7 @@ class Order < ApplicationRecord
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
   scope :goodcity_orders, -> { where(detail_type: Order::DetailType::GOODCITY) }
-  scope :shipments, -> { where(detail_type: Order::DetailType::SHIPMENT) }
+  scope :shipments, -> { where(detail_type: [Order::DetailType::SHIPMENT, Order::DetailType::REMOTESHIPMENT]) }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
@@ -343,7 +344,7 @@ class Order < ApplicationRecord
   end
 
   def shipment_order?
-    detail_type == DetailType::SHIPMENT
+    [DetailType::SHIPMENT, DetailType::REMOTESHIPMENT].include?(detail_type)
   end
 
   def nullify_columns(*columns)
@@ -423,7 +424,7 @@ class Order < ApplicationRecord
   end
 
   def valid_detail_type?
-    [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
+    [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT, DetailType::REMOTESHIPMENT].include?(detail_type)
   end
 
   def goodcity_order?
@@ -504,6 +505,8 @@ class Order < ApplicationRecord
     when DetailType::GOODCITY
       reg = /^GC-[0-9]{5}/
     when DetailType::SHIPMENT
+      reg = /^S[0-9]{4,5}[A-Z]{1}?/
+    when DetailType::REMOTESHIPMENT
       reg = /^S[0-9]{4,5}[A-Z]{1}?/
     when DetailType::CARRYOUT
       reg = /^C[0-9]{4,5}[A-Z]{1}?/

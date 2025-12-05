@@ -22,6 +22,10 @@ FactoryBot.define do
     trait :shipment do
       detail_type   { 'Shipment' }
     end
+    
+    trait :remote_shipment do
+      detail_type   { 'RemoteShipment' }
+    end
 
     trait :carry_out do
       detail_type   { 'CarryOut' }
