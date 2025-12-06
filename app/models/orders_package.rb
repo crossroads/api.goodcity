@@ -107,7 +107,7 @@ class OrdersPackage < ApplicationRecord
   end
 
   def update_state_to_designated
-    package.unpublish
+    #package.unpublish
     update(state: 'designated')
   end
 
