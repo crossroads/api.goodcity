@@ -28,7 +28,11 @@ class RequestedPackage < ApplicationRecord
   before_save :update_availability
 
   watch [Package] do |package|
-    package.requested_packages.each(&:update_availability!)
+    # Update requested packages in the shopping carts if the underlying package's quantities are updated
+    # High demand packages slow the system down by generating many push updates, so do this in a background job
+    if package.requested_packages.any?
+      RequestedPackageUpdateJob.perform_later(package.id)
+    end
   end
 
   def update_availability

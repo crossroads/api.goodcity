@@ -52,6 +52,7 @@ describe RequestedPackage, :type => :model do
   end
 
   describe "Availability" do
+
     let(:user) { create(:user) }
     let(:order) { create(:order, :with_state_awaiting_dispatch) }
 
@@ -70,48 +71,54 @@ describe RequestedPackage, :type => :model do
     it "marks cart item as available when the package is published" do
       requested_package = create(:requested_package, package: undesignated_package_unpublished)
       expect(requested_package.is_available).to eq(false)
-      Package.find(requested_package.package_id).publish
-      expect(requested_package.reload.is_available).to eq(true)
+      undesignated_package_unpublished.publish
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(true)
     end
 
     it "marks cart item as unavailable when the package is unpublished" do
       requested_package = create(:requested_package, package: undesignated_package_published)
       expect(requested_package.is_available).to eq(true)
-      Package.find(requested_package.package_id).unpublish
-      expect(requested_package.reload.is_available).to eq(false)
+      undesignated_package_published.unpublish
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(false)
     end
 
     it "marks cart item as unavailable when the package has 0 quantity" do
       requested_package = create(:requested_package, package: undesignated_package_published)
       expect(requested_package.is_available).to eq(true)
-      package = requested_package.package.reload
+      package = requested_package.package
       PackagesInventory.append_loss(package: package, quantity: - package.received_quantity, location: package.locations.first)
-      expect(requested_package.reload.is_available).to eq(false)
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(false)
     end
 
     it "marks cart item as available when the package's quantity is increased > 0" do
       expect(PackagesInventory::Computer.package_quantity(undesignated_package_published_qty_0)).to eq(0)
       requested_package = create(:requested_package, package: undesignated_package_published_qty_0)
       expect(requested_package.is_available).to eq(false)
-      package = requested_package.package.reload
+      package = requested_package.package
       PackagesInventory.append_gain(package_id: package.id, quantity: 1, location: create(:location))
-      expect(requested_package.reload.is_available).to eq(true)
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(true)
     end
 
     it "marks cart item as available if the package is undesignated" do
       pkg = designated_orders_package.package
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(false)
-      designated_orders_package.reload.cancel!
-      expect(requested_package.reload.is_available).to eq(true)
+      designated_orders_package.cancel!
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(true)
     end
 
-    it "marks cart item as unavailable if the package gets designated" do
+    it "marks cart item as unavailable if all package quantity gets designated" do
       pkg = create(:package, :with_inventory_record, :published, received_quantity: 1)
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(true)
       create(:orders_package, :with_state_designated, quantity: 1, order: order, package_id: pkg.id)
-      expect(requested_package.reload.is_available).to eq(false)
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(false)
     end
 
     it "cart item is marked as unavailable if the package is dispatched" do
@@ -119,6 +126,7 @@ describe RequestedPackage, :type => :model do
       requested_package = create(:requested_package, package: pkg)
       expect(pkg.allow_web_publish).to eq(true)
       expect(PackagesInventory::Computer.available_quantity_of(pkg)).to eq(0)
+      requested_package.update_availability!
       expect(requested_package.is_available).to eq(false)
     end
 
@@ -127,7 +135,8 @@ describe RequestedPackage, :type => :model do
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(false)
       OrdersPackage::Operations.dispatch(designated_orders_package, quantity: designated_orders_package.quantity, from_location: pkg.locations.first)
-      expect(requested_package.reload.is_available).to eq(false)
+      requested_package.update_availability!
+      expect(requested_package.is_available).to eq(false)
     end
   end
 
@@ -186,7 +195,8 @@ describe RequestedPackage, :type => :model do
           expect(record[:id]).to eq(requested_package.id)
           expect(record[:is_available]).to eq(false)
         end
-        pkg.reload.update(allow_web_publish: false)
+        pkg.update(allow_web_publish: false)
+        requested_package.update_availability!
       end
     end
 
