@@ -63,8 +63,8 @@ module Api
 
       def show
         render json: serializer.new(@package,
-          include_orders_packages: true,
-          include_packages_locations: true
+          include_orders_packages: false,
+          include_packages_locations: false
         ).as_json
       end
 

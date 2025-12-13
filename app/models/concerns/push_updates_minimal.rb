@@ -23,7 +23,7 @@ module PushUpdatesMinimal
   def push_changes
     PushService.new.send_update_store target_channels, {
       item: push_update_serialize(self),
-      sender: push_update_sender,
+      sender: {},
       operation: read_operation(self),
       type: self.class.name.underscore
     }
@@ -46,10 +46,6 @@ module PushUpdatesMinimal
     associations = record.class.reflections.keys.map(&:to_sym)
     v = push_update_serializer_version
     "Api::V#{v}::#{record.class}Serializer".safe_constantize.new(record, { exclude: associations })
-  end
-
-  def push_update_sender
-    Api::V1::UserSerializer.new(User.current_user, { user_summary: true })
   end
 
   def read_operation(record)

@@ -334,6 +334,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         it "fails if one of the packages is no longer available" do
           requested_packages = 3.times.map { create(:requested_package, user: user) }
           requested_packages[0].package.update!(allow_web_publish: false)
+          requested_packages[0].update_availability! # happens in background job so run manually here
           post :checkout, params: { order_id: draft_order.id }
           expect(response.status).to eq(422)
           expect(parsed_body['errors'][0]).to eq({"message"=>["One or many requested items are no longer available"], "status"=>422})
