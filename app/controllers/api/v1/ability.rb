@@ -6,6 +6,7 @@ module Api
         if user.present?
           @api_user = user.api_user?
           @user_offer_ids = user.offers.pluck(:id)
+          @user_order_ids = user.created_orders.pluck(:id)
         end
 
         super(user)
@@ -351,7 +352,7 @@ module Api
           can %i[index], PackagesInventory
           can %i[index], UserFavourite, user_id: @user_id
         end
-        can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
+        can [:show], Package, orders_packages: { order_id: @user_order_ids }
         can [:show], Package,  requested_packages: { user_id: @user_id }
         can :create, Package if @api_user
         can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
@@ -370,7 +371,7 @@ module Api
         # Anonymous and all users
         can [:index, :show], PackageCategory
         can [:index, :show], PackageType
-        can [:index, :show], Package, { allow_web_publish: true}
+        can [:index, :show], Package, { allow_web_publish: true }
         can :index, DonorCondition
         can [:index, :show], District
         can [:index, :show], IdentityType
