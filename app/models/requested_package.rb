@@ -7,7 +7,7 @@ class RequestedPackage < ApplicationRecord
 
   include PushUpdatesMinimal
 
-  after_save :push_changes
+  after_save :push_changes, if: -> { saved_changes? }
   after_destroy :push_changes
   push_targets do |record|
     Channel.private_channels_for(record.user_id, BROWSE_APP)
@@ -30,14 +30,15 @@ class RequestedPackage < ApplicationRecord
   watch [Package] do |package|
     # Update requested packages in the shopping carts if the underlying package's quantities are updated
     # High demand packages slow the system down by generating many push updates, so do this in a background job
+    # Set a delay to give time for package.available_quantity to stabilise
     if package.requested_packages.any?
-      RequestedPackageUpdateJob.perform_later(package.id)
+      RequestedPackageUpdateJob.set(wait: 1.second).perform_later(package.id)
     end
   end
 
   def update_availability
     self.is_available = package.published? &&
-      PackagesInventory::Computer.available_quantity_of(package) >= quantity
+      package.available_quantity >= quantity
     true
   end
 

@@ -57,8 +57,7 @@ describe RequestedPackage, :type => :model do
     let(:order) { create(:order, :with_state_awaiting_dispatch) }
 
     let(:undesignated_package_unpublished) { create(:package, :with_inventory_record, :unpublished) }
-    let(:undesignated_package_published) { create(:package, :with_inventory_record, :published) }
-    let(:undesignated_package_published_qty_0) { create(:package, :published) }
+    let(:undesignated_package_published) { create(:package, :with_inventory_record, :published, received_quantity: 5) }
     let(:designated_orders_package) {
       create(:orders_package, :with_inventory_record, :with_state_designated, quantity: 1, order: order,
         package: create(:package, :with_inventory_record, :published, received_quantity: 1))
@@ -94,11 +93,14 @@ describe RequestedPackage, :type => :model do
     end
 
     it "marks cart item as available when the package's quantity is increased > 0" do
-      expect(PackagesInventory::Computer.package_quantity(undesignated_package_published_qty_0)).to eq(0)
-      requested_package = create(:requested_package, package: undesignated_package_published_qty_0)
+      package = create(:package, :with_inventory_record, :published)
+      requested_package = create(:requested_package, package: package)
+      PackagesInventory.append_loss(package_id: package.id, quantity: -5, location: package.locations.first)
+      PackagesInventory::Computer.update_package_quantities!(package)
+      requested_package.update_availability!
       expect(requested_package.is_available).to eq(false)
-      package = requested_package.package
       PackagesInventory.append_gain(package_id: package.id, quantity: 1, location: create(:location))
+      PackagesInventory::Computer.update_package_quantities!(package)
       requested_package.update_availability!
       expect(requested_package.is_available).to eq(true)
     end
@@ -117,6 +119,7 @@ describe RequestedPackage, :type => :model do
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(true)
       create(:orders_package, :with_state_designated, quantity: 1, order: order, package_id: pkg.id)
+      PackagesInventory::Computer.update_package_quantities!(pkg)
       requested_package.update_availability!
       expect(requested_package.is_available).to eq(false)
     end
