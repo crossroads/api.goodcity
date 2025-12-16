@@ -9,7 +9,6 @@ module Api::V1
     has_many :images, serializer: StockitImageSerializer, polymorphic: true
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :offers_packages, serializer: OffersPackageSerializer
-    has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
     has_one :package_set, serializer: PackageSetSerializer::StockFormat
 

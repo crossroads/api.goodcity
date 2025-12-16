@@ -69,18 +69,16 @@ module Api
       end
 
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
-
       def stockit_item_details
         render json: stock_serializer
-          .new(Package.where(id: @package.id).includes([{orders_packages: [{order: [:country]}, :updated_by]}]).first,
+          .new(Package.where(id: @package.id).includes([:locations]).first,
                serializer: stock_serializer,
                root: 'item',
-               include_order: true,
-               include_orders_packages: bool_param(:include_orders_packages, true),
+               include_order: false,
+               include_orders_packages: false,
                include_packages_locations: true,
                include_package_set: true,
-               include_images: true,
-               include_allowed_actions: bool_param(:include_allowed_actions, true)).as_json
+               include_images: true).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -143,7 +141,7 @@ module Api
             stockit_item_details
           else
             render json: @package, serializer: serializer,
-              include_orders_packages: true,
+              include_orders_packages: false,
               include_packages_locations: true
           end
         else
@@ -302,9 +300,9 @@ module Api
           # )
           render json: stock_serializer.new(@package,
             root: "item",
-            include_order: true,
+            include_order: false,
             include_packages: false,
-            include_orders_packages: true,
+            include_orders_packages: params[:order_id].present?,
             order_id: params[:order_id],
             include_allowed_actions: true,
             include_images: @package.package_set_id.blank?
