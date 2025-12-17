@@ -16,6 +16,7 @@ class PackageCategoryImporter
       first_or_initialize
     category.name_zh_tw = value[:name_zh_tw]
     category.parent_id  = parent.id if parent
+    category.icon_url  = value[:icon_url] if value[:icon_url]
     category.save
     category
   end

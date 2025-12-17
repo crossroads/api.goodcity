@@ -2,6 +2,7 @@
 1:
   :name_en: "Electrical"
   :name_zh_tw: '電器/電子產品'
+  :icon_url: '1436965083/browse/browse_image_3.png'
   :child_categories:
     1:
       :name_en: "Computer"
@@ -25,6 +26,7 @@
 2:
   :name_en: "Furniture"
   :name_zh_tw: '家具'
+  :icon_url: '1436965082/browse/browse_image_2.png'
   :child_categories:
     1:
       :name_en: "Baby / child"
@@ -60,6 +62,7 @@
 3:
   :name_en: "Household"
   :name_zh_tw: '家居用品'
+  :icon_url: '1660276066/browse/cutlery.png'
   :child_categories:
     1:
       :name_en: "Appliances"
@@ -80,6 +83,7 @@
 4:
   :name_en: "Small goods & bulk items"
   :name_zh_tw: '小型商品和大型物品'
+  :icon_url: '1660276066/browse/handmade.png'
   :child_categories:
     1:
       :name_en: "Books"
@@ -115,6 +119,7 @@
 5:
   :name_en: "Recreation"
   :name_zh_tw: '娛樂'
+  :icon_url: '1436965083/browse/browse_image_6.png'
   :child_categories:
     1:
       :name_en: "Music"
