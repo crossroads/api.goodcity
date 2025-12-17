@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_12_17_070925) do
+ActiveRecord::Schema.define(version: 2025_12_17_075756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -639,6 +639,7 @@ ActiveRecord::Schema.define(version: 2025_12_17_070925) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "icon_url"
+    t.boolean "visible_in_browse", default: true
     t.index ["parent_id"], name: "index_package_categories_on_parent_id"
   end
 
