@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_11_07_045639) do
+ActiveRecord::Schema.define(version: 2025_12_17_063455) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -741,6 +741,7 @@ ActiveRecord::Schema.define(version: 2025_11_07_045639) do
     t.integer "on_hand_palletized_quantity", default: 0
     t.text "notes_zh_tw"
     t.integer "max_order_quantity"
+    t.bigint "package_category_override_id"
     t.index ["allow_web_publish"], name: "index_packages_on_allow_web_publish"
     t.index ["available_quantity"], name: "index_packages_on_available_quantity"
     t.index ["box_id"], name: "index_packages_on_box_id"
@@ -758,6 +759,7 @@ ActiveRecord::Schema.define(version: 2025_11_07_045639) do
     t.index ["offer_id"], name: "index_packages_on_offer_id"
     t.index ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity"
     t.index ["order_id"], name: "index_packages_on_order_id"
+    t.index ["package_category_override_id"], name: "index_packages_on_package_category_override_id"
     t.index ["package_set_id"], name: "index_packages_on_package_set_id"
     t.index ["package_type_id"], name: "index_packages_on_package_type_id"
     t.index ["pallet_id"], name: "index_packages_on_pallet_id"
@@ -1031,6 +1033,8 @@ ActiveRecord::Schema.define(version: 2025_11_07_045639) do
     t.integer "subscribable_id"
     t.index ["message_id"], name: "index_subscriptions_on_message_id"
     t.index ["state"], name: "index_subscriptions_on_state"
+    t.index ["subscribable_id", "subscribable_type"], name: "index_subscriptions_on_subscribable_id_and_subscribable_type"
+    t.index ["subscribable_type", "subscribable_id"], name: "index_subscriptions_on_subscribable_type_and_subscribable_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
@@ -1208,6 +1212,7 @@ ActiveRecord::Schema.define(version: 2025_11_07_045639) do
   add_foreign_key "packages", "donor_conditions", name: "packages_donor_condition_id_fk"
   add_foreign_key "packages", "items", name: "packages_item_id_fk"
   add_foreign_key "packages", "orders", name: "packages_order_id_fk"
+  add_foreign_key "packages", "package_categories", column: "package_category_override_id"
   add_foreign_key "packages", "package_sets", name: "packages_package_set_id_fk"
   add_foreign_key "packages", "package_types", name: "packages_package_type_id_fk"
   add_foreign_key "packages", "pallets", name: "packages_pallet_id_fk"
