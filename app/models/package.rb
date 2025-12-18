@@ -32,6 +32,7 @@ class Package < ApplicationRecord
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
+  belongs_to :package_category_override, class_name: 'PackageCategory', foreign_key: 'package_category_override_id', optional: true
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :locations, through: :packages_locations
@@ -48,6 +49,7 @@ class Package < ApplicationRecord
   before_save :reset_value_hk_dollar, if: :value_hk_dollar_changed?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
+  before_save :set_package_category_override_id
 
   # Live update rules
   after_save :push_changes
@@ -305,4 +307,30 @@ class Package < ApplicationRecord
     count = PackagesInventory.packages_contained_in(self).count
     errors.add(:error, I18n.t('box_pallet.errors.cannot_change_type')) if count.positive?
   end
+
+  def set_package_category_override_id
+    # TEMP: In case we want the package to show up under a different browse category
+    self.package_category_override_id =
+      case self.comment
+      when /BrowseCategoryTaiPo:Furniture-Beds and Mattresses/i
+        PackageCategory.find_by(name_en: "Furniture Beds")&.id
+      when /BrowseCategoryTaiPo:Furniture-Seating/i
+        PackageCategory.find_by(name_en: "Furniture Seating")&.id
+      when /BrowseCategoryTaiPo:Furniture-Storage/i
+        PackageCategory.find_by(name_en: "Furniture Storage")&.id
+      when /BrowseCategoryTaiPo:Furniture-Tables/i
+        PackageCategory.find_by(name_en: "Furniture Tables")&.id
+      when /BrowseCategoryTaiPo:Kitchen items/i
+        PackageCategory.find_by(name_en: "Kitchen items")&.id
+      when /BrowseCategoryTaiPo:Large household electrical items/i
+        PackageCategory.find_by(name_en: "Large electrical items")&.id
+      when /BrowseCategoryTaiPo:Small household electrical items/i
+        PackageCategory.find_by(name_en: "Small electrical items")&.id
+      when /BrowseCategoryTaiPo:Others/i
+        PackageCategory.find_by(name_en: "Others")&.id
+      else
+        nil
+      end
+  end
+
 end

@@ -1,7 +1,7 @@
 module Api::V1
   class PackageCategorySerializer < ApplicationSerializer
     # embed :ids, include: true
-    attributes :id, :parent_id, :package_type_codes, :name
+    attributes :id, :parent_id, :package_type_codes, :name, :icon_url, :visible_in_browse
 
     def name
       object.try("name_#{current_language}".to_sym)

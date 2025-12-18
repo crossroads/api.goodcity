@@ -19,11 +19,15 @@ module Api::V1
                :designated_quantity, :dispatched_quantity, :quantity, :max_order_quantity,
                :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id,
                :on_hand_boxed_quantity, :on_hand_palletized_quantity,
-               :notes_zh_tw
+               :notes_zh_tw, :package_category_override_id
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
+    end
+
+    def package_category_override_id?
+      is_browse_app?
     end
 
     def designation_id
