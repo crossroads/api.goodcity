@@ -32,7 +32,8 @@ module OrderFiltering
       priority: false,
       after: nil,
       with_notifications: nil,
-      before: nil)
+      before: nil,
+      needs_response: false)
       res = where(nil)
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
@@ -40,6 +41,7 @@ module OrderFiltering
       res = res.due_after(after) if after.present?
       res = res.due_before(before) if before.present?
       res = res.with_notifications(with_notifications) if with_notifications.present?
+      res = res.where_last_message_sender_is_creator if needs_response.present?
 
       if (states & Order::ACTIVE_STATES).present?
         res = res.order_by_urgency
@@ -87,6 +89,29 @@ module OrderFiltering
       res = res.where("subscriptions.user_id = (?)", User.current_user.id)
       res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
       res
+    end
+
+    # find orders where the last message sender is the order creator - useful for filtering those who need a response
+    def where_last_message_sender_is_creator
+      messages_table = Message.arel_table
+
+      # Build the subquery SELECT DISTINCT ON (messageable_id) ... FROM messages WHERE messageable_type = 'Order' ORDER BY messageable_id, created_at DESC, id DESC
+      subquery = Arel::SelectManager.new(messages_table)
+      subquery.from(messages_table)
+      subquery.project(
+        Arel.sql('DISTINCT ON (messageable_id) messageable_id AS order_id, sender_id, created_at')
+      )
+      subquery.where(messages_table[:messageable_type].eq('Order'))
+      subquery.order(
+        messages_table[:messageable_id],                     # keep grouped by messageable_id first
+        messages_table[:created_at].desc,                    # newest first
+        messages_table[:id].desc                             # tie-breaker
+      )
+
+      sub_sql = subquery.to_sql
+
+      joins("JOIN (#{sub_sql}) AS mlast ON mlast.order_id = orders.id")
+        .where("mlast.sender_id = orders.created_by_id")
     end
 
     # TYPES
