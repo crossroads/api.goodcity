@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_12_17_075756) do
+ActiveRecord::Schema.define(version: 2025_12_19_000001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -418,6 +418,7 @@ ActiveRecord::Schema.define(version: 2025_12_17_075756) do
     t.index ["body"], name: "messages_body_search_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["messageable_id", "messageable_type"], name: "index_messages_on_messageable_id_and_messageable_type"
+    t.index ["messageable_type", "messageable_id", "created_at"], name: "ix_messages_on_messageable_and_created_at", order: { created_at: :desc }
     t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable_type_and_messageable_id"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
   end

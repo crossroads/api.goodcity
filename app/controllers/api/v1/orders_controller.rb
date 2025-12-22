@@ -154,7 +154,8 @@ module Api
           priority: bool_param(:priority, false),
           with_notifications: params[:with_notifications],
           before: time_epoch_param(:before),
-          after: time_epoch_param(:after)
+          after: time_epoch_param(:after),
+          needs_response: bool_param(:needs_response, false)
         )
       end
 
