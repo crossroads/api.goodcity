@@ -328,6 +328,8 @@ class Package < ApplicationRecord
         PackageCategory.find_by(name_en: "Small electrical items")&.id
       when /BrowseCategoryTaiPo:Others/i
         PackageCategory.find_by(name_en: "Others")&.id
+      when /BrowseCategoryPublishedNGO:All/i
+        PackageCategory.find_by(name_en: "NGO - All")&.id
       else
         nil
       end
