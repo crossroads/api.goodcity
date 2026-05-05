@@ -654,7 +654,7 @@ DEPENDENCIES
   with_advisory_lock
 
 RUBY VERSION
-   ruby 2.7.3p183
+   ruby 3.1.7p261
 
 BUNDLED WITH
-   2.4.19
+   2.3.27

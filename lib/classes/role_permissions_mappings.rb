@@ -41,7 +41,7 @@ class RolePermissionsMappings
   end
 
   def sync_roles_and_permissions
-    role_permissions = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+    role_permissions = YAML.load_file("#{Rails.root}/db/permissions_roles.yml", aliases: true)
     role_permissions.each_pair do |role_name, permission_names|
       ActiveRecord::Base.transaction do
         permission_names.flatten!
