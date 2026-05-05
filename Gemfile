@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.7.3'
+ruby '3.1.7'
 
 gem 'pg'
 gem 'rails', '~> 6.1.4'
@@ -47,7 +47,7 @@ gem 'rotp'
 gem 'rubyXL'
 gem 'sidekiq', '<8'
 gem 'sidekiq-scheduler'
-gem 'state_machine'
+gem 'state_machines-activerecord', '~> 0.9.0'
 gem 'traco'
 gem 'twilio-ruby'
 gem 'whenever', require: false

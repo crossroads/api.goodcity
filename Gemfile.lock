@@ -531,7 +531,13 @@ GEM
       net-sftp (>= 2.1.2)
       net-ssh (>= 2.8.0)
       ostruct
-    state_machine (1.2.0)
+    state_machines (0.20.0)
+    state_machines-activemodel (0.9.0)
+      activemodel (>= 6.0)
+      state_machines (>= 0.6.0)
+    state_machines-activerecord (0.9.0)
+      activerecord (>= 6.0)
+      state_machines-activemodel (>= 0.9.0)
     sys-uname (1.3.1)
       ffi (~> 1.1)
     thor (1.3.2)
@@ -645,7 +651,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-commands-rspec
-  state_machine
+  state_machines-activerecord (~> 0.9.0)
   timecop
   traco
   twilio-ruby
@@ -654,7 +660,7 @@ DEPENDENCIES
   with_advisory_lock
 
 RUBY VERSION
-   ruby 2.7.3p183
+   ruby 3.1.7p261
 
 BUNDLED WITH
-   2.4.19
+   2.3.27

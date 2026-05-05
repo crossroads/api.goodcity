@@ -8,7 +8,16 @@ FactoryBot.define do
     initialize_with    { DonorCondition.find_or_initialize_by(name_en: name_en) } # avoid duplicates
 
     transient do
-      seq { @donor_conditions ||= YAML.load_file("#{Rails.root}/db/donor_conditions.yml") }
+      # Ruby 3.1+ (Psych 4) makes YAML.load/load_file safe by default, which
+      # rejects YAML tags like !!omap used in `db/donor_conditions.yml`.
+      seq do
+        path = "#{Rails.root}/db/donor_conditions.yml"
+        @donor_conditions ||= if YAML.respond_to?(:unsafe_load_file)
+          YAML.unsafe_load_file(path)
+        else
+          YAML.load_file(path)
+        end
+      end
     end
 
   end

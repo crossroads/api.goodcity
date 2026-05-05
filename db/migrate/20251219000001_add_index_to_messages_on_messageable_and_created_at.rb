@@ -4,7 +4,7 @@ class AddIndexToMessagesOnMessageableAndCreatedAt < ActiveRecord::Migration[6.1]
   disable_ddl_transaction!
 
   def change
-    unless index_exists?(:messages, name: 'index_messages_on_messageable_and_created_at')
+    unless index_exists?(:messages, nil, name: 'index_messages_on_messageable_and_created_at')
       add_index :messages,
                 [:messageable_type, :messageable_id, :created_at],
                 name: 'index_messages_on_messageable_and_created_at',

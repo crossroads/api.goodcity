@@ -81,11 +81,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
+        create :browseable_package, :with_inventory_record, notes: unique
         expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
@@ -118,11 +119,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
+        create :browseable_package, :with_inventory_record, notes: unique
         expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
@@ -1546,15 +1548,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'performs loss action on package' do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 2,
-                            from: @location.id,
-                            action_name: "loss",
-                            description: "Loss action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 2,
+        from: @location.id,
+        action_name: "loss",
+        description: "Loss action on Package",
+      }
 
       expect(response.status).to eq(200)
       expect(@package.packages_locations.first.quantity).to eq(18)
@@ -1563,14 +1563,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "performs process action on package" do
-      put :register_quantity_change, {
-        params: {
-          id: @package.id,
-          quantity: 10,
-          from: @location.id,
-          action_name: "process",
-          processing_destination_id: processing_destination.id
-        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 10,
+        from: @location.id,
+        action_name: "process",
+        processing_destination_id: processing_destination.id
       }
 
       expect(response).to have_http_status(:success)
@@ -1580,15 +1578,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context 'when action is not process' do
       it 'should not add ProcessingDestination' do
-        put :register_quantity_change, {
-          params: {
-            id: @package.id,
-            quantity: 10,
-            from: @location.id,
-            action_name: "gain",
-            description: "gain action on Package",
-            processing_destination_id: processing_destination.id
-          }
+        put :register_quantity_change, params: {
+          id: @package.id,
+          quantity: 10,
+          from: @location.id,
+          action_name: "gain",
+          description: "gain action on Package",
+          processing_destination_id: processing_destination.id
         }
 
         expect(@package.package_actions.last.action).to eq('gain')
@@ -1599,15 +1595,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "performs gain action on package" do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
-      put :register_quantity_change, {
-            params: {
-              id: @package.id,
-              quantity: 10,
-              from: @location.id,
-              action_name: "gain",
-              description: "gain action on Package",
-            }
-          }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 10,
+        from: @location.id,
+        action_name: "gain",
+        description: "gain action on Package",
+      }
 
       expect(response.status).to eq(200)
       expect(@package.packages_locations.first.quantity).to eq(30)
@@ -1616,30 +1610,26 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "throws error for unsupported action" do
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 2,
-                            from: @location.id,
-                            action_name: "invalid_action",
-                            description: "Unsupported action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 2,
+        from: @location.id,
+        action_name: "invalid_action",
+        description: "Unsupported action on Package",
+      }
 
       expect(response.status).to eq(422)
       expect(parsed_body["error"]).to eq("Action you are trying to perform is not allowed")
     end
 
     it "throws error for invalid quantity" do
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 25,
-                            from: @location.id,
-                            action_name: "loss",
-                            description: "Loss action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 25,
+        from: @location.id,
+        action_name: "loss",
+        description: "Loss action on Package",
+      }
 
       expect(response.status).to eq(422)
       expect(parsed_body['error']).to eq("The selected quantity (25) is unavailable")

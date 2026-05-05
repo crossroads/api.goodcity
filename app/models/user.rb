@@ -109,7 +109,7 @@ class User < ApplicationRecord
   scope :exclude_system_users, -> { where.not(id: [User.system_user.try(:id), User.stockit_user.try(:id)].compact) }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
-  scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
+  scope :with_roles, ->(role_names) { joins(:active_roles).where(active_roles: { name: role_names }) }
   scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
   scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
   scope :with_permissions, ->(perm) {
@@ -171,9 +171,13 @@ class User < ApplicationRecord
   end
 
   def self.filter_users(opts)
-    res = search(opts['searchText']) if opts['searchText'].present?
-    res = res.with_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
-    res = res.with_roles(opts['role_name']) if opts['role_name'].present?
+    search_text = opts[:searchText] || opts['searchText']
+    organisation_status = opts[:organisation_status] || opts['organisation_status']
+    role_name = opts[:role_name] || opts['role_name']
+
+    res = search_text.present? ? search(search_text) : all
+    res = res.with_organisation_status(organisation_status.split(',')) if organisation_status.present?
+    res = res.with_roles(role_name) if role_name.present?
     res
   end
 

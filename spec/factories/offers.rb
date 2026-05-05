@@ -85,7 +85,7 @@ FactoryBot.define do
         items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
-        evaluator.items_count.times { create :item, :with_packages, :with_images, offer: offer }
+        evaluator.items_count.times { FactoryBot.create(:item, :with_packages, :with_images, offer: offer) }
       end
     end
 
@@ -95,7 +95,7 @@ FactoryBot.define do
         items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
-        evaluator.items_count.times { create :demo_item, offer: offer }
+        evaluator.items_count.times { FactoryBot.create(:demo_item, offer: offer) }
       end
     end
 
@@ -104,7 +104,7 @@ FactoryBot.define do
         delivery_type { [:crossroads_delivery, :drop_off_delivery].sample }
       end
       after(:create) do |offer, evaluator|
-        create evaluator.delivery_type, offer: offer
+        FactoryBot.create(evaluator.delivery_type, offer: offer)
       end
     end
 
@@ -113,13 +113,13 @@ FactoryBot.define do
         messages_count { 1 }
       end
       after(:create) do |offer, evaluator|
-        create_list(:message, evaluator.messages_count, :reviewer_message, messageable: offer)
+        FactoryBot.create_list(:message, evaluator.messages_count, :reviewer_message, messageable: offer)
       end
     end
 
     trait :paranoid do
       state      { 'submitted' }
-      items      { [create(:item)] }
+      items      { [FactoryBot.create(:item)] }
     end
 
     trait :with_transport do
