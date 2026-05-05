@@ -171,9 +171,13 @@ class User < ApplicationRecord
   end
 
   def self.filter_users(opts)
-    res = search(opts['searchText']) if opts['searchText'].present?
-    res = res.with_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
-    res = res.with_roles(opts['role_name']) if opts['role_name'].present?
+    search_text = opts[:searchText] || opts['searchText']
+    organisation_status = opts[:organisation_status] || opts['organisation_status']
+    role_name = opts[:role_name] || opts['role_name']
+
+    res = search(search_text) if search_text.present?
+    res = res.with_organisation_status(organisation_status.split(',')) if organisation_status.present?
+    res = res.with_roles(role_name) if role_name.present?
     res
   end
 

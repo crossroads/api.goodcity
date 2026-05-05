@@ -52,7 +52,17 @@ context Goodcity::UserSafeDelete do
     end
 
     context "returns false if trying to delete app_store user" do
-      let(:user) { create(:user, mobile: ENV['APPSTORE_REVIEWER_LOGIN_NUMBER']) }
+      let(:appstore_number) { "+85260000000" }
+      let(:user) { create(:user, mobile: appstore_number) }
+
+      around do |example|
+        old_value = Rails.application.secrets.appstore_reviewer_login
+        allow(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({ number: appstore_number })
+        example.run
+      ensure
+        allow(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return(old_value)
+      end
+
       it do
         expect(subject.can_delete[:result]).to eql(false)
         expect(subject.can_delete[:reason]).to eql("App Store Reviewer account cannot be deleted.")
