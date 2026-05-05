@@ -29,7 +29,18 @@ class OrganisationsUserBuilder
   # Implementation
   # ------------------------
 
-  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user)
+  def initialize(options = nil, organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user)
+    if options.present?
+      opts = options.symbolize_keys
+      organisation_id ||= opts[:organisation_id]
+      user_id ||= opts[:user_id]
+      user_attributes ||= opts[:user_attributes]
+      position = opts[:position] if opts.key?(:position)
+      preferred_contact_number = opts[:preferred_contact_number] if opts.key?(:preferred_contact_number)
+      status = opts[:status] if opts.key?(:status)
+      change_author = opts[:change_author] if opts.key?(:change_author)
+    end
+
     @change_author            = change_author
     @organisation_id          = organisation_id.to_i
     @position                 = position

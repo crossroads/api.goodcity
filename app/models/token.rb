@@ -38,9 +38,11 @@ class Token
   # as part of the authentication/authorization process
   # Additional options can be encoded inside the token
   # params = { "mobile" => "+85212345678" }
-  def generate(params, metadata: {}, validity: nil, type: DEFAULT_TYPE)
+  def generate(params = {}, metadata: {}, validity: nil, type: DEFAULT_TYPE, **extra_params)
     now       = Time.current.to_i
     validity  ||= default_validity(type)
+
+    params = (params || {}).merge(extra_params)
 
     payload = params.merge({
       "iat": now,
@@ -52,12 +54,12 @@ class Token
     JWT.encode(payload.stringify_keys, secret_key, hmac_sha_algo)
   end
 
-  def generate_api_token(params, metadata: {}, validity: nil)
-    generate(params, metadata: metadata, validity: validity, type: Types::API)
+  def generate_api_token(params = {}, metadata: {}, validity: nil, **extra_params)
+    generate(params, metadata: metadata, validity: validity, type: Types::API, **extra_params)
   end
 
-  def generate_otp_token(params, metadata: {}, validity: nil)
-    generate(params, metadata: metadata, validity: validity, type: Types::OTP)
+  def generate_otp_token(params = {}, metadata: {}, validity: nil, **extra_params)
+    generate(params, metadata: metadata, validity: validity, type: Types::OTP, **extra_params)
   end
 
   # Allow access to the data stored inside the token e.g. mobile number
