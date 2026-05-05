@@ -60,11 +60,6 @@ RSpec.configure do |config|
     FactoryBot.create(:user, :system) unless User.system_user.present?
   end
 
-  # Clean up system_user at end of specs
-  config.after(:suite) do
-    User.system.destroy_all
-  end
-
   # Default app to be 'admin' in order to not use treat_user_as_donor
   config.include ApplicationHeaders
   config.before(:each, type: :controller) do
