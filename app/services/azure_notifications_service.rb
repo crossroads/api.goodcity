@@ -163,6 +163,10 @@ class AzureNotificationsService
   #
   # {
   #   "message": {
+  #     "notification": {
+  #       "title": "#{notification_title}",
+  #       "body": "$(message)"
+  #     },
   #     "data": {
   #       "title": "#{notification_title}",
   #       "message": "$(message)",
@@ -182,7 +186,7 @@ class AzureNotificationsService
   #   }
   #  }
   def fcm_platform_xml(handle, tags)
-    template = "{\"message\":{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } } }"
+    template = "{\"message\":{\"notification\":{\"title\":\"#{notification_title}\", \"body\":\"$(message)\"}, \"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } } }"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">

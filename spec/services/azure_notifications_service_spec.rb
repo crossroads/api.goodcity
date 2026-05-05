@@ -51,4 +51,33 @@ context AzureNotificationsService do
     end
 
   end
+
+  context "fcm_platform_xml" do
+    let(:handle) { "registration-token" }
+    let(:tags) { ["user_1"] }
+    let(:xml) { service.send(:fcm_platform_xml, handle, tags) }
+    let(:template) { xml.match(/<!\[CDATA\[(.*)\]\]>/m)[1] }
+    let(:payload) { JSON.parse(template) }
+
+    it "includes a notification block for system notifications" do
+      notification = payload.fetch("message").fetch("notification")
+
+      expect(notification).to include(
+        "title" => "S. GoodCity",
+        "body" => "$(message)"
+      )
+    end
+
+    it "keeps the data payload used by the app" do
+      data = payload.fetch("message").fetch("data")
+
+      expect(data).to include(
+        "title" => "S. GoodCity",
+        "message" => "$(message)",
+        "category" => "$(category)",
+        "offer_id" => "$(offer_id)",
+        "message_id" => "$(message_id)"
+      )
+    end
+  end
 end
