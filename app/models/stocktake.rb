@@ -21,7 +21,8 @@ class Stocktake < ApplicationRecord
     ])
   }
 
-  alias_attribute :revisions, :stocktake_revisions
+  # Rails 8: alias_attribute only supports real columns, not associations.
+  alias_method :revisions, :stocktake_revisions
 
   # ---------------------
   # Live updates
