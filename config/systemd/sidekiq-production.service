@@ -10,7 +10,7 @@ After=syslog.target network.target
 Type=simple
 WorkingDirectory=/opt/rails/goodcity_server/current
 Environment=NODE_VERSION=lts/gallium MALLOC_ARENA_MAX=2
-ExecStart=/home/deployer/.nvm/nvm-exec /home/deployer/.rvm/bin/rvm 3.1.7 do bundle exec sidekiq -e production -C config/sidekiq.yml
+ExecStart=/home/deployer/.nvm/nvm-exec /home/deployer/.rvm/bin/rvm 3.4.9 do bundle exec sidekiq -e production -C config/sidekiq.yml
 User=deployer
 Group=deployer
 UMask=0002

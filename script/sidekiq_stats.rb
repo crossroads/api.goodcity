@@ -1,4 +1,4 @@
-#! /home/deployer/.rvm/rubies/ruby-3.1.7/bin/ruby
+#! /home/deployer/.rvm/rubies/ruby-3.4.9/bin/ruby
 
 # Executed by CheckMK using a wrapper script in /usr/share/check-mk-agent/local/sidekiq_stats
 # #!/bin/sh

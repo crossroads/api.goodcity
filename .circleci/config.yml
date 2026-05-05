@@ -23,7 +23,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/ruby:3.1.7
+    - image: cimg/ruby:3.4.9
   working_directory: ~/api.goodcity
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
   test:
     <<: *defaults
     docker:
-      - image: cimg/ruby:3.1.7-browsers
+      - image: cimg/ruby:3.4.9-browsers
       - image: cimg/redis:6.0
       - image: cimg/postgres:9.6
         environment:

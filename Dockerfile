@@ -1,4 +1,4 @@
-FROM ruby:3.1.7-alpine
+FROM ruby:3.4.9-alpine
 
 ARG GITHUB_TOKEN
 
