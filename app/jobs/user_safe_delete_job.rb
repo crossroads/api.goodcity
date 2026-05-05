@@ -9,12 +9,11 @@ class UserSafeDeleteJob < ActiveJob::Base
       user_safe_delete.delete!
     else
       reason = user_safe_delete.can_delete[:reason]
-      ActionMailer::Base.mail(
-        from: ENV['EMAIL_FROM'],
-        to: ENV['EMAIL_FROM'],
+      InternalNotificationMailer.plain(
+        to: ENV.fetch("EMAIL_FROM"),
         subject: "GoodCity.HK failed user deletion",
         body: "Please assist GoodCity.HK user ##{user.id}. Their deletion request failed:\n\n#{reason}"
-      ).deliver
+      ).deliver_now
     end
   end
 

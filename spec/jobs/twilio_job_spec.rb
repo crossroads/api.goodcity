@@ -63,14 +63,14 @@ describe TwilioJob, :type => :job do
     end
 
     it "should send an email instead of an SMS" do
-      expect(ActionMailer::Base).to receive(:mail).with(
-        from: ENV['EMAIL_FROM'],
-        to: ENV['EMAIL_FROM'],
-        subject: "SMS to #{options[:to]}",
-        body: options[:body]
-      ).and_return(double(deliver: true))
+      expect {
+        TwilioJob.new.perform(options)
+      }.to change { ActionMailer::Base.deliveries.size }.by(1)
 
-      TwilioJob.new.perform(options)
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail.to).to eq([ENV["EMAIL_FROM"]])
+      expect(mail.subject).to eq("SMS to #{options[:to]}")
+      expect(mail.body.raw_source).to include(options[:body])
     end
   end
 end
