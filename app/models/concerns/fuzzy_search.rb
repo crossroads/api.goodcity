@@ -91,18 +91,22 @@ module FuzzySearch
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
     scope :search, ->(search_text) {
-      similarities = search_prop_names.reduce({}) do |sims, f|
-        sims[f] = self.model.sanitize_sql_for_conditions(["SIMILARITY(#{f}, ?)", search_text])
-        sims
+      if search_text.blank?
+        where(nil)
+      else
+        similarities = search_prop_names.reduce({}) do |sims, f|
+          sims[f] = self.model.sanitize_sql_for_conditions(["SIMILARITY(#{f}, ?)", search_text])
+          sims
+        end
+
+        select_list = ["GREATEST(#{similarities.values.join(',')}) as max_tolerance"] + ["#{table_name}.*"]
+        conditions  = similarities.map { |f, s| "#{s} >= #{search_configuration[f][:threshold]}" }
+
+        select(Arel.sql(select_list.join(',')))
+          .where(Arel.sql(conditions.join(' OR ')))
+          .order(Arel.sql('max_tolerance DESC'))
+          .distinct
       end
-
-      select_list = ["GREATEST(#{similarities.values.join(',')}) as max_tolerance"] + ["#{table_name}.*"]
-      conditions  = similarities.map { |f, s| "#{s} >= #{search_configuration[f][:threshold]}" }
-
-      select(Arel.sql(select_list.join(',')))
-        .where(Arel.sql(conditions.join(' OR ')))
-        .order(Arel.sql('max_tolerance DESC'))
-        .distinct
     }
   end
 end
