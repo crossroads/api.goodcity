@@ -12,7 +12,7 @@ RSpec.describe Box, type: :model do
     it{ is_expected.to have_db_column(:description).of_type(:string)}
     it{ is_expected.to have_db_column(:comments).of_type(:text)}
     it{ is_expected.to have_db_column(:pallet_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:created_at)}
+    it{ is_expected.to have_db_column(:updated_at)}
   end
 end

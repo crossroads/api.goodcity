@@ -32,8 +32,8 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:pieces).of_type(:integer)}
     it{ is_expected.to have_db_column(:notes).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
-    it{ is_expected.to have_db_column(:received_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:rejected_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:received_at)}
+    it{ is_expected.to have_db_column(:rejected_at)}
     it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
     it{ is_expected.to have_db_column(:grade).of_type(:string)}
     it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}

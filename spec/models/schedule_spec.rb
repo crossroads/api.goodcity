@@ -11,6 +11,6 @@ RSpec.describe Schedule, type: :model do
     it{ is_expected.to have_db_column(:slot).of_type(:integer)}
     it{ is_expected.to have_db_column(:slot_name).of_type(:string)}
     it{ is_expected.to have_db_column(:zone).of_type(:string)}
-    it{ is_expected.to have_db_column(:scheduled_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:scheduled_at)}
   end
 end

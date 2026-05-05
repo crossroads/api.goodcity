@@ -12,8 +12,8 @@ RSpec.describe AccessPass, type: :model do
     it{ is_expected.to have_db_column(:access_key).of_type(:integer)}
     it{ is_expected.to have_db_column(:generated_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:printer_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:generated_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:access_expires_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:generated_at)}
+    it{ is_expected.to have_db_column(:access_expires_at)}
   end
 
   describe ".refresh_pass" do

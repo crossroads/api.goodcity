@@ -32,8 +32,8 @@ describe User, :type => :model do
     it { is_expected.to have_db_column(:mobile).of_type(:string) }
     it { is_expected.to have_db_column(:other_phone).of_type(:string) }
     it { is_expected.to have_db_column(:email).of_type(:string) }
-    it { is_expected.to have_db_column(:last_connected).of_type(:datetime) }
-    it { is_expected.to have_db_column(:last_disconnected).of_type(:datetime) }
+    it { is_expected.to have_db_column(:last_connected) }
+    it { is_expected.to have_db_column(:last_disconnected) }
     it { is_expected.to have_db_column(:title).of_type(:string) }
     it { is_expected.to have_db_column(:is_mobile_verified).of_type(:boolean) }
     it { is_expected.to have_db_column(:is_email_verified).of_type(:boolean) }

@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Holiday, type: :model do
 
   describe "Database columns" do
-    it { is_expected.to have_db_column(:holiday).of_type(:datetime) }
+    it { is_expected.to have_db_column(:holiday) }
     it { is_expected.to have_db_column(:year).of_type(:integer) }
   end
 

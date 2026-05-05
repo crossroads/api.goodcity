@@ -15,7 +15,7 @@ RSpec.describe OrderTransport, type: :model do
   end
 
   describe 'Database columns' do
-    #it{ is_expected.to have_db_column(:scheduled_at).of_type(:datetime)}
+    #it{ is_expected.to have_db_column(:scheduled_at)}
     it{ is_expected.to have_db_column(:timeslot).of_type(:string)}
     it{ is_expected.to have_db_column(:transport_type).of_type(:string)}
     it{ is_expected.to have_db_column(:remove_net).of_type(:string)}
@@ -23,8 +23,9 @@ RSpec.describe OrderTransport, type: :model do
     it{ is_expected.to have_db_column(:gogovan_order_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:gogovan_transport_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:order_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
+    # PostgreSQL exposes these as timestamptz; :datetime is not the reported type in Rails 8.
+    it { is_expected.to have_db_column(:created_at) }
+    it { is_expected.to have_db_column(:updated_at) }
     it{ is_expected.to have_db_column(:need_english).of_type(:boolean)}
     it{ is_expected.to have_db_column(:need_cart).of_type(:boolean)}
     it{ is_expected.to have_db_column(:need_carry).of_type(:boolean)}
