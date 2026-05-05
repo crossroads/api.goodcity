@@ -17,7 +17,7 @@ module CacheableJson
       root = opts[:root] || name.underscore.pluralize
       key = "#{name.underscore}/#{I18n.locale}/#{root}"
       max = maximum(:updated_at)
-      key << "/#{max.utc.to_s(:nsec)}" unless max.blank?
+      key << "/#{max.utc.to_fs(:nsec)}" unless max.blank?
       key
     end
 
