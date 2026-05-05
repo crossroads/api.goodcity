@@ -123,7 +123,8 @@ module Api
         * 401 - unauthorized
       EOS
       def index
-        records = paginate(@shareables)
+        # Ensure stable pagination order
+        records = paginate(@shareables.order(id: :asc))
         records = records.of_type(params[:resource_type])                      if params[:resource_type].present?
         records = records.where(resource_id: params[:resource_id].split(','))  if params[:resource_id].present?
 

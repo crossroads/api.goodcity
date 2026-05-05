@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 module Messages
-  describe Operations do
+  describe MessageSubscriptions do
     let(:offer) { create :offer }
     let(:message) { create :message, sender: reviewer, messageable: offer }
     let!(:supervisor) { create :user, :with_supervisor_role, :with_can_manage_offer_messages_permission }
@@ -255,7 +255,7 @@ module Messages
             let!(:user1) { create(:user) }
             let!(:user2) { create(:user) }
             let(:message) { create(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
-            let(:message2) { build(:message, body: "Hello [:#{user2.id}]. I will help") }
+            let(:message2) { build(:message, sender: reviewer, messageable: offer1, body: "Hello [:#{user2.id}]. I will help") }
 
             before(:each) do
               allow(message).to receive(:add_subscription)
