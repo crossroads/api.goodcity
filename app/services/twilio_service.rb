@@ -37,9 +37,9 @@ class TwilioService
 
   # options[:to] = "+85261111111"
   # options[:body] = "SMS body"
-  def send_sms(options)
-    options = { to: mobile }.merge(options)
-    TwilioJob.perform_later(options)
+  def send_sms(options = nil, **kwargs)
+    options = { to: mobile }.merge(options || {}).merge(kwargs)
+    TwilioJob.perform_later(**options)
   end
 
   private
