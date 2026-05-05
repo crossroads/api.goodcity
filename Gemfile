@@ -23,6 +23,7 @@ gem 'bootsnap', require: false
 gem 'by_star'
 gem 'cancancan'
 gem 'cloudinary'
+gem 'csv'
 gem 'dotenv-rails'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'factory_bot_rails' # used in rake db:seed in production
