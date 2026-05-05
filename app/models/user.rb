@@ -175,7 +175,7 @@ class User < ApplicationRecord
     organisation_status = opts[:organisation_status] || opts['organisation_status']
     role_name = opts[:role_name] || opts['role_name']
 
-    res = search(search_text) if search_text.present?
+    res = search_text.present? ? search(search_text) : all
     res = res.with_organisation_status(organisation_status.split(',')) if organisation_status.present?
     res = res.with_roles(role_name) if role_name.present?
     res
