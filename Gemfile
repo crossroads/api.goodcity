@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '3.4.9'
 
 gem 'pg'
-gem 'rails', '~> 8.1.0'
+gem 'rails', '~> 8.1', '>= 8.1.3'
 gem 'rake'
 
 # Required because `config/application.rb` loads `sprockets/railtie`
@@ -40,13 +40,13 @@ gem 'nestful'
 gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'oj'
-gem 'paper_trail'
+gem 'paper_trail', '>= 17.0.0'
 gem 'paranoia'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rack-protection'
 gem 'rack-timeout', require: 'rack/timeout/base'
-gem 'rails-i18n'
+gem 'rails-i18n', '~> 8.1', '>= 8.1.0'
 gem 'rake-progressbar'
 gem 'redis' # Used for Rails cache_store
 gem 'request_store'
@@ -95,7 +95,7 @@ end
 group :test do
   # Cucumber < 9 raises ArgumentError on Ruby 3.4 (DataTable / Struct keywords).
   gem 'cucumber', '~> 10.2'
-  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails', '>= 4.0.1', require: false
   gem 'database_cleaner'
   gem 'email_spec'
   gem 'rails-controller-testing'
