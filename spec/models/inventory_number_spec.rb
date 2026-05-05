@@ -1,12 +1,27 @@
 require 'rails_helper'
 
 RSpec.describe InventoryNumber, type: :model do
+  # Low-sequence next_code/max_code tests require an empty packages + inventory_numbers slice;
+  # transactional rollback does not undo data committed by other spec types on the same DB.
+  self.use_transactional_tests = false
+
+  before(:each) do
+    ActiveRecord::Base.connection.execute(
+      'TRUNCATE TABLE packages_inventories, inventory_numbers, packages RESTART IDENTITY CASCADE'
+    )
+  end
 
   let(:inventory_number) { InventoryNumber.new }
 
   context "validations" do
     it { is_expected.to validate_presence_of(:code) }
-    it { is_expected.to validate_uniqueness_of(:code) }
+
+    it "disallows duplicate codes" do
+      InventoryNumber.create!(code: "INV-UNIQ-1")
+      dup = InventoryNumber.new(code: "INV-UNIQ-1")
+      expect(dup).not_to be_valid
+      expect(dup.errors[:code]).to be_present
+    end
   end
 
   context "create_with_next_code" do
@@ -53,7 +68,7 @@ RSpec.describe InventoryNumber, type: :model do
       create(:package, inventory_number: "000001")
       create(:package, inventory_number: "000002")
       create(:package, inventory_number: "000003")
-      expect(InventoryNumber.pluck(:code)).to match_array (["000001", "000002", "000003"])
+      expect(InventoryNumber.pluck(:code)).to match_array(["000001", "000002", "000003"])
       expect(Package.pluck(:inventory_number)).to match_array(["000001", "000002", "000003"])
       expect(InventoryNumber.next_code).to eql("000004")
     end
