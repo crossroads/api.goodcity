@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '3.1.7'
+ruby '3.4.9'
 
 gem 'pg'
-gem 'rails', '~> 6.1.4'
+gem 'rails', '~> 8.1.0'
 gem 'rake'
+
+# Required because `config/application.rb` loads `sprockets/railtie`
+gem 'sprockets-rails'
+
+# Ruby 3.4: stdlib gem needed by ActiveSupport 6.1
+gem 'mutex_m', require: false
+# Ruby 3.4: stdlib gem needed by ActiveSupport 6.1
+gem 'drb', require: false
 
 gem 'active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
