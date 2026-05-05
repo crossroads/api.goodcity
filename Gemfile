@@ -93,6 +93,8 @@ group :development, :test do
 end
 
 group :test do
+  # Cucumber < 9 raises ArgumentError on Ruby 3.4 (DataTable / Struct keywords).
+  gem 'cucumber', '~> 10.2'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'email_spec'
