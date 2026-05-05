@@ -74,7 +74,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         request.headers["X-GOODCITY-APP-NAME"] = "admin.goodcity"
         get :index
         expect(response.status).to eq(200)
-        expect(parsed_body["designations"].count).to eq(6)
+        ids = [
+          order.id, online_order.id, dispatching_order.id,
+          awaiting_dispatch_order.id, processing_order.id, order_created_by_supervisor.id
+        ]
+        expect(parsed_body["designations"].map { |d| d["id"] }).to match_array(ids)
       end
     end
 

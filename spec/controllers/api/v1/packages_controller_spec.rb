@@ -61,19 +61,21 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched packages" do
         set_browse_app_header
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        expect(Package.count).to eq(6)
+        expect(Package.count).to eq(baseline + 6)
         get :index, params: { "searchText": "car" }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
       end
 
       it "returns packages by inventory numbers" do
+        baseline = Package.count
         p1, p2, p3 = ['111111', '1111112', '111113'].map { |n| create(:package, :with_inventory_record, inventory_number: n) }
         initialize_inventory(p1, p2, p3)
 
-        expect(Package.count).to eq(3)
+        expect(Package.count).to eq(baseline + 3)
         get :index, params: { "inventory_number": "111111,1111112" }
         expect(response.status).to eq(200)
         expect( response_packages ).to match_array([p1,p2])
@@ -82,10 +84,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "returns searched browseable_packages only" do
         set_browse_app_header
         unique = "towel-#{SecureRandom.hex(4)}"
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
         create :browseable_package, :with_inventory_record, notes: unique
-        expect(Package.count).to eq(7)
+        expect(Package.count).to eq(baseline + 7)
         get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
@@ -109,9 +112,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched packages" do
         set_browse_app_header
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby Toilets" }
-        expect(Package.count).to eq(6)
+        expect(Package.count).to eq(baseline + 6)
         get :index, params: { "searchText": "Baby" }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
@@ -120,10 +124,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "returns searched browseable_packages only" do
         set_browse_app_header
         unique = "towel-#{SecureRandom.hex(4)}"
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
         create :browseable_package, :with_inventory_record, notes: unique
-        expect(Package.count).to eq(7)
+        expect(Package.count).to eq(baseline + 7)
         get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
