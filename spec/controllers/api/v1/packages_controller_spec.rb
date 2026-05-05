@@ -81,11 +81,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
+        create :browseable_package, :with_inventory_record, notes: unique
         expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
@@ -118,11 +119,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
+        create :browseable_package, :with_inventory_record, notes: unique
         expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
