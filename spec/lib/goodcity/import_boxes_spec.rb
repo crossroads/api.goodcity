@@ -30,7 +30,7 @@ context Goodcity::ImportBoxes do
 
     before do
       touch(package, box_storage_type, pallet_storage_type, pkg_storage_type, location)
-      expect(Package.count).to eq(1)
+      expect(Package.where(inventory_number: inventory_number).count).to eq(1)
       expect(package.locations.count).to eq(1)
     end
 

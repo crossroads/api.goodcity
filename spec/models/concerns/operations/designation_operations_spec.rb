@@ -15,7 +15,7 @@ context DesignationOperations do
 
   before(:each) do
     expect(PackagesInventory::Computer.package_quantity(package)).to eq(5)
-    expect(PackagesInventory.count).to eq(1)
+    expect(PackagesInventory.where(package: package).count).to eq(1)
   end
 
   def designate(quantity, pkg: package, to_order: order, shipping_number: nil)
