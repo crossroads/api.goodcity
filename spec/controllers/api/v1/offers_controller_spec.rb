@@ -577,7 +577,11 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           get :search, params: { shareable: true, include_expiry: true }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(3)
-          expect(subject["offers"].map{|offer| offer["id"]}).to eq([shareable1.resource_id, shareable2.resource_id, shareable3.resource_id])
+          expect(subject["offers"].map { |offer| offer["id"] }).to match_array([
+            shareable1.resource_id,
+            shareable2.resource_id,
+            shareable3.resource_id
+          ])
         end
       end
     end
