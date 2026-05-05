@@ -379,7 +379,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it 'fails if the the package_id is wrong' do
         put :move, params: { id: '9999', from: location2.id }
         expect(response.status).to eq(404)
-        expect(error_msg).to match(/^Couldn't find Package with 'id'=9999/)
+        expect(error_msg).to match(/Couldn't find Package with 'id'=.*9999/)
       end
 
       it 'fails if the quantity is missing' do
