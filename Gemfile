@@ -47,7 +47,7 @@ gem 'rotp'
 gem 'rubyXL'
 gem 'sidekiq', '<8'
 gem 'sidekiq-scheduler'
-gem 'state_machine'
+gem 'state_machines-activerecord', '~> 0.9.0'
 gem 'traco'
 gem 'twilio-ruby'
 gem 'whenever', require: false
