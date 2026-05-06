@@ -19,29 +19,6 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     expect(dt1.utc.to_s).to eq(dt2.utc.to_s)
   end
 
-  HKT_2018 = Date.new(2018, 1, 1)..Date.new(2018, 12, 31)
-
-  # Calendar examples assume full control of 2018 HKT slots/presets/holidays and appointment
-  # bookings on those dates. Committed order_transports change isClosed/remaining; stray slots
-  # make for_date skip presets (wrong slot counts).
-  def reset_hkt_2018_calendar_test_data
-    AppointmentSlotPreset.delete_all
-    AppointmentSlot.unscoped.delete_all
-    Holiday.where(
-      "date(holiday AT TIME ZONE 'HKT') BETWEEN ? AND ?",
-      HKT_2018.begin,
-      HKT_2018.end
-    ).delete_all
-    appt_id = BookingType.appointment&.id
-    return unless appt_id
-
-    OrderTransport.joins(:order).where(orders: { booking_type_id: appt_id }).where(
-      "date(order_transports.scheduled_at AT TIME ZONE 'HKT') BETWEEN ? AND ?",
-      HKT_2018.begin,
-      HKT_2018.end
-    ).delete_all
-  end
-
   describe "GET /appointment_slots" do
     context 'When not logged in' do
       it "prevents reading slots", :show_in_doc do
@@ -52,8 +29,19 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     context 'When logged in as Supervisor' do
       before {
-        reset_hkt_2018_calendar_test_data
+        # Seeds (and other specs) add presets; duplicates change slot counts per weekday.
+        AppointmentSlotPreset.delete_all
+        # Per-example transactional rollback does not undo data committed by :non_transactional specs or
+        # suite hooks; clear all slots so 2018 calendar examples always start clean.
+        AppointmentSlot.unscoped.delete_all
+        # Create presets
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+        # Other specs may leave 2018 holidays; Mar/Oct calendar examples need a clean slate.
+        Holiday.where(
+          "date(holiday AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+          Date.new(2018, 1, 1),
+          Date.new(2018, 12, 31)
+        ).delete_all
         generate_and_set_token(order_administrator)
       }
 
@@ -321,7 +309,18 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
   describe "Testing potential timezone issues" do
     before {
-      reset_hkt_2018_calendar_test_data
+      AppointmentSlotPreset.delete_all
+      AppointmentSlot.unscoped.delete_all
+      AppointmentSlot.where(
+        "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+        Date.new(2018, 1, 1),
+        Date.new(2018, 12, 31)
+      ).delete_all
+      Holiday.where(
+        "date(holiday AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+        Date.new(2018, 1, 1),
+        Date.new(2018, 12, 31)
+      ).delete_all
       (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
       generate_and_set_token(order_administrator)
     }
@@ -333,9 +332,13 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     end
 
     it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do
-      # Self-contained: any HKT-2018 rows committed after :before would make for_date use DB-only path.
-      AppointmentSlot.unscoped.delete_all
-      (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+      AppointmentSlot.where(
+        "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+        Date.new(2018, 12, 1),
+        Date.new(2018, 12, 31)
+      ).delete_all
+      # Stray quota=0 rows on 19 Dec (HKT) from other examples make for_date return [] and mark the day closed.
+      AppointmentSlot.where("date(timestamp AT TIME ZONE 'HKT') = ?", Date.new(2018, 12, 19)).delete_all
 
       post :create, params: { appointment_slot: { quota: 0, timestamp: "2018-12-19T16:00:00.000Z", notes: "Closed on the 20th of december" } }
       get :calendar, params: { from: '2018-12-19', to: '2018-12-21' }
