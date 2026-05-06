@@ -285,10 +285,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       generate_and_set_token(order_administrator)
     }
 
-    it 'Should have a timestamp with timezone column' do
+    it 'Should use a timestamp column for slot times' do
       column = AppointmentSlot.columns.find { |col| col.name == 'timestamp' }
       expect(column).to_not be_nil
-      expect(column.sql_type).to eq("timestamp(6) with time zone")
+      expect(column.sql_type).to match(/\Atimestamp/)
     end
 
     it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do

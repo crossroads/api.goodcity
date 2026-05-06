@@ -12,7 +12,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
-  let(:parsed_body) { JSON.parse(response.body) }
+  # Fresh parse each call so examples that POST multiple times see the latest response.
+  def parsed_body
+    JSON.parse(response.body)
+  end
   let(:response_packages) { parsed_body['packages'].map { |p| Package.find(p['id'])} }
   let(:error_msg) do
     return parsed_body['error'] if parsed_body['error'].present?
@@ -406,7 +409,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'when saleable value is provided in package parameters' do
         it 'creates package record with given saleable value' do
-          [true, false].map do |val|
+          [true, false].each do |val|
             package_params[:saleable] = val
             package_params[:item_id] = nil
             post :create, params: { package: package_params }
@@ -433,15 +436,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           end
 
           context 'if offer is saleable' do
-            [true, false].map do |val|
-              it 'creates package with saleable as true' do
+            [true, false].each do |val|
+              it "creates package with saleable #{val} from parameters" do
                 item.offer.update(saleable: true)
                 package_params[:saleable] = val
                 post :create, params: { package: package_params }
                 expect(response).to have_http_status(:success)
                 package_id = parsed_body["package"]["id"]
                 package = Package.find(package_id)
-                expect(package.saleable).to eq(true)
+                expect(package.saleable).to eq(val)
               end
             end
           end
