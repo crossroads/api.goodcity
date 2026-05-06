@@ -188,8 +188,8 @@ class PackagesInventoriesImporter
       package.id, location.id, import_author.id,
       str(action), quantity,
       source_type, source_id,
-      str(time.to_s(:db)),
-      str(time.to_s(:db))
+      str(time.to_fs(:db)),
+      str(time.to_fs(:db))
     ]
 
     # We use SQL directly to avoid ORM hooks from firing. Also allows us to set timestamps manually

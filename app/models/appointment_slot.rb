@@ -9,7 +9,7 @@ class AppointmentSlot < ApplicationRecord
   after_destroy :push_changes
   push_targets [ Channel::STOCK_CHANNEL ]
 
-  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_s(:db)) }
+  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_fs(:db)) }
 
   scope :ascending, -> { order('timestamp ASC').order('quota ASC') }
 
