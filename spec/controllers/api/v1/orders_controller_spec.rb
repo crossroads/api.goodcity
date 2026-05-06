@@ -339,11 +339,24 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           let(:moment) { Time.zone.now.beginning_of_day.change(sec: 0) }
 
           def epoch_ms(time)
-            time.to_i * 1000
+            # Ruby 3+ removed Date#to_i; scheduled_at / shipment_date may be Date or DateTime.
+            case time
+            when nil
+              nil
+            when Date, DateTime
+              time.in_time_zone.to_i * 1000
+            else
+              time.to_i * 1000
+            end
           end
 
           def day_epoch_ms(time)
-            time.beginning_of_day.to_i * 1000
+            case time
+            when Date, DateTime
+              time.beginning_of_day.in_time_zone.to_i * 1000
+            else
+              time.beginning_of_day.to_i * 1000
+            end
           end
 
           def epoch_ms_by_type(order)
