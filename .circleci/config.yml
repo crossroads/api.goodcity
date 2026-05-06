@@ -52,7 +52,7 @@ jobs:
     docker:
       - image: cimg/ruby:3.4.9-browsers
       - image: cimg/redis:6.0
-      - image: cimg/postgres:9.6
+      - image: cimg/postgres:14.20
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: goodcity_server_test
