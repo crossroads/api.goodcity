@@ -30,7 +30,8 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
 
     migration.up
 
-    expect(type_of('scheduled_at')).to eq('timestamp with time zone')
+    # PostgreSQL reports timestamp without time zone for Rails :datetime by default.
+    expect(type_of('scheduled_at')).to match(/\Atimestamp/)
     expect(OrderTransport.count).to eq(1)
 
     new_timestamp = DateTime.parse(get_column_for_id('scheduled_at', record_id).to_s).in_time_zone

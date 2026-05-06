@@ -70,7 +70,8 @@ module MigrationHelpers
     end
 
     def time(key, value)
-      @attributes[key] = "'#{value.to_s(:db)}'"; self
+      formatted = value.respond_to?(:to_fs) ? value.to_fs(:db) : value.to_s
+      @attributes[key] = "'#{formatted}'"; self
     end
 
     def timestamps
@@ -101,7 +102,7 @@ module MigrationHelpers
     end
 
     def has_run?
-      table_name  = ActiveRecord::SchemaMigration.table_name
+      table_name = ActiveRecord::Base.connection_pool.schema_migration.table_name
       query       = "SELECT version FROM %s WHERE version = '%s'" % [table_name, @version]
       ActiveRecord::Base.connection.execute(query).any?
     end
