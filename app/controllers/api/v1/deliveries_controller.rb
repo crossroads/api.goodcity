@@ -104,7 +104,7 @@ module Api
         @delivery = Delivery.find_by(id: params["delivery"]["id"])
         @delivery.delete_old_associations
         @delivery.gogovan_order = GogovanOrder.book_order(current_user,
-          order_params) if params["gogovanOrder"]
+          order_params.to_h) if params["gogovanOrder"]
         if @delivery && @delivery.update(get_delivery_details)
           render json: @delivery, serializer: serializer
         else
@@ -155,10 +155,12 @@ module Api
       end
 
       def scheduled_date
-        scheduled_at = get_delivery_details.dig(:schedule_attributes, :scheduled_at)
+        details = get_delivery_details
+        h = details.to_unsafe_h.deep_stringify_keys
+        scheduled_at = h.dig("schedule_attributes", "scheduled_at")
         return nil unless scheduled_at.present?
         begin
-          Date.parse(scheduled_at)
+          Date.parse(scheduled_at.to_s)
         rescue ArgumentError
           nil
         end
