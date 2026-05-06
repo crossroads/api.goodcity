@@ -20,7 +20,9 @@ RSpec.describe Api::V1::OrganisationTypesController, type: :controller do
     it 'returns the organisation_types' do
       get :index
       expect(response_body['organisation_types'].length).to eq(OrganisationType.count)
-      expect(response_body['organisation_types']).to match_array(organisation_types.map{|o| { 'name' => o.name_en, 'id' => o.id, 'category' => o.category_en } })
+      expected = organisation_types.map { |o| { 'name' => o.name_en, 'id' => o.id, 'category' => o.category_en } }
+      # The table may already contain seeded organisation types; assert our fixtures are present.
+      expect(response_body['organisation_types']).to include(*expected)
     end
   end
 end

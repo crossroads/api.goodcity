@@ -325,6 +325,7 @@ RSpec.describe Order, type: :model do
 
     describe ".active_orders_count_as_per_priority_and_state" do
       before do
+        Order.delete_all
         non_priority_submitted = create :order, booking_type: appointment_type, state: "submitted", submitted_at: Time.zone.now - 25.hours
         priority_submitted = create :order, state: "submitted", booking_type: appointment_type, submitted_at: Time.zone.now - 23.hours
 
@@ -367,6 +368,7 @@ RSpec.describe Order, type: :model do
       end
 
       it 'should filter prioritised orders if it was submitted more than 24hours ago' do
+        Order.delete_all
         create :order, state: "submitted", submitted_at: Time.now - 23.hours
         old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
         records = Order.where(state: 'submitted')
@@ -834,6 +836,9 @@ RSpec.describe Order, type: :model do
 
   describe 'Order filtering rules' do
     before do
+      # Some specs commit rows (non-transactional or suite-level setup), so do not assume
+      # a globally empty orders table here.
+      Order.delete_all
       create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
       create :order, state: "submitted", description: "Another table", submitted_at: Time.now - 25.hours
       create :order, state: "submitted", description: "A dangerous weapon", submitted_at: Time.now - 25.hours

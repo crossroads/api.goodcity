@@ -15,7 +15,8 @@ describe Goodcity::OrganisationPopulator do
   context "populate organisation" do
     before { organisation_populator.run }
     it ":count created data" do
-      expect(Organisation.count).to eq(JSON.parse(file).count)
+      registrations = JSON.parse(file).map { |d| d["org_id"] }
+      expect(Organisation.where(registration: registrations).count).to eq(registrations.count)
     end
     it ":created data" do
       JSON.parse(file).each do |data|

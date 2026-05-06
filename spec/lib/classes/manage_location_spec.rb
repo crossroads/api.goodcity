@@ -22,7 +22,14 @@ describe ManageLocation do
     end
 
     it "should return false when it has package-types" do
-      package_type = create(:package_type, location: location)
+      # Factory `:package_type` can return an existing record (find_or_create by code),
+      # which may belong to a different location. Create a unique package type for this test.
+      package_type = PackageType.create!(
+        code: "rspec-pt-#{SecureRandom.hex(4)}",
+        name_en: "RSpec PT",
+        name_zh_tw: "RSpec PT",
+        location: location
+      )
       expect(manage_location.empty_location?).to eq(false)
     end
 
@@ -73,7 +80,12 @@ describe ManageLocation do
     end
 
     it "should merge package_type" do
-      package_type = create(:package_type, location: location)
+      package_type = PackageType.create!(
+        code: "rspec-pt-#{SecureRandom.hex(4)}",
+        name_en: "RSpec PT",
+        name_zh_tw: "RSpec PT",
+        location: location
+      )
       ManageLocation.merge_location(location, target_location)
 
       expect(package_type.reload.location).to eq(target_location)
