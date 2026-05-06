@@ -168,14 +168,15 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
       context "to a public holiday" do
         before do
-          date = Date.parse(schedule["scheduledAt"]).to_date
-          next if Holiday.is_holiday?(date)
-
-          begin
-            Holiday.create!(name: "RSpec public holiday #{SecureRandom.hex(4)}", holiday: date, year: date.year)
-          rescue ActiveRecord::RecordInvalid
-            raise unless Holiday.is_holiday?(date)
-          end
+          # Match controller scheduling (Time.zone + scheduledAt string). Other specs can leave
+          # rows that make Holiday.is_holiday? flaky in before hooks; reset this date only.
+          date = Time.zone.parse(schedule["scheduledAt"]).to_date
+          Holiday.where("date(holiday AT TIME ZONE 'HKT') = ?", date).delete_all
+          Holiday.create!(
+            name: "RSpec public holiday #{SecureRandom.hex(4)}",
+            holiday: date,
+            year: date.year
+          )
         end
 
         context "as a user" do
