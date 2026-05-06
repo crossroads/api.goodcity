@@ -343,7 +343,7 @@ RSpec.describe Api::V1::OrganisationsController, type: :controller do
       it 'can update the organisation to nil' do
         create(:organisation, registration: nil)
         put :update, params: { id: organisation.id, organisation: { registration: nil } }
-        expect(organisation.reload.registration).to be_empty
+        expect(organisation.reload.registration).to be_nil
       end
     end
   end

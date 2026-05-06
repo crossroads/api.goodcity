@@ -22,8 +22,9 @@ context ShareSupport do
   describe "Scope" do
     describe "publicly_shared" do
       before do
+        baseline = ShareableLocation.count
         touch(location_1, location_2, location_3)
-        expect(ShareableLocation.count).to eq(3)
+        expect(ShareableLocation.count).to eq(baseline + 3)
       end
 
       it "doesnt return records that haven't been shared" do
@@ -45,10 +46,11 @@ context ShareSupport do
 
     describe "publicly_listed" do
       before do
+        baseline = ShareableLocation.count
         create(:shareable, resource: location_1, allow_listing: true)
         create(:shareable, resource: location_2, allow_listing: false)
         create(:shareable, resource: location_3, allow_listing: true)
-        expect(ShareableLocation.count).to eq(3)
+        expect(ShareableLocation.count).to eq(baseline + 3) # three lets materialized via shareables
       end
 
       it "returns records have allow_listing marked as true" do
@@ -64,12 +66,14 @@ context ShareSupport do
     let(:public_model) { base_model.public_context }
 
     before do
+      baseline = ShareableLocation.count
       touch(location_1, location_2, location_3)
-      expect(ShareableLocation.count).to eq(3)
+      @share_support_location_total = baseline + 3
+      expect(ShareableLocation.count).to eq(@share_support_location_total)
     end
 
     it "doesn't affect the base model class" do
-      expect(base_model.count).to eq(3)
+      expect(base_model.count).to eq(@share_support_location_total)
     end
 
     it "doesnt return records that haven't been shared" do

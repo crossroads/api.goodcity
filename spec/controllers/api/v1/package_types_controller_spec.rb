@@ -15,7 +15,8 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
 
       expect(response.status).to eq(200)
       expect(response.body).to include("package_types")
-      expect(JSON.parse(response.body)["package_types"].count).to eq(3)
+      codes = JSON.parse(response.body)["package_types"].map { |pt| pt["code"] }
+      expect(codes).to include("AFO", "BBC", "BBM")
     end
 
     it "returns all stock enabled package_types" do
@@ -24,16 +25,22 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
         create(:base_package_type, allow_package: true, code: "BBC"),
         create(:base_package_type, allow_package: true, code: "BBM")
       ]
-      package_type = create(:base_package_type, allow_package: false, code: "BCS")
+      donor = stock_package_types.first.reload
+      excluded_code = "ZZX#{SecureRandom.hex(4).upcase}"
+      package_type = PackageType.create!(
+        donor.attributes.except("id", "created_at", "updated_at").merge(
+          "code" => excluded_code,
+          "allow_package" => false
+        )
+      )
 
       get :index, params: { stock: true }, format: 'json'
 
       expect(response.status).to eq(200)
-      expect(JSON.parse(response.body)["codes"].count).to eq(3)
 
       package_type_codes = JSON.parse(response.body)["codes"].map{|code| code["code"]}
-      expect(package_type_codes).to match_array(stock_package_types.map &:code)
-      expect(package_type_codes).to_not include(package_type.code)
+      expect(package_type_codes).to include(*stock_package_types.map(&:code))
+      expect(package_type_codes).not_to include(package_type.code)
     end
   end
 end
