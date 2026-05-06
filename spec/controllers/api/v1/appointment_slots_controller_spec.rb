@@ -29,6 +29,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     context 'When logged in as Supervisor' do
       before {
+        # Seeds (and other specs) add presets; duplicates change slot counts per weekday.
+        AppointmentSlotPreset.delete_all
         # Create presets
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
         # Calendar examples use 2018 fixtures; leftover AppointmentSlot rows make for_date treat the day as
@@ -119,7 +121,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(1)
 
-        mar_17th = results[0];
+        mar_17th = results.find { |r| r['date'] == '2018-03-17' }
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['slots'].count).to be > 0
         expect(mar_17th['isClosed']).to eq(false)
@@ -133,7 +135,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(1)
 
-        mar_17th = results[0];
+        mar_17th = results.find { |r| r['date'] == '2018-03-17' }
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['isClosed']).to eq(false)
         expect(mar_17th['slots'].count).to eq(1)
@@ -163,6 +165,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     describe 'Special rules' do
       before {
+        AppointmentSlotPreset.delete_all
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
         generate_and_set_token(order_administrator)
       }
@@ -295,6 +298,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
   describe "Testing potential timezone issues" do
     before {
+      AppointmentSlotPreset.delete_all
       AppointmentSlot.where(
         "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
         Date.new(2018, 1, 1),

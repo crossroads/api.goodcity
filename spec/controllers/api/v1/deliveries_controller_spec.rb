@@ -162,8 +162,14 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
       context "to a public holiday" do
         before do
-          date = Date.parse(schedule["scheduledAt"]);
-          create :holiday, holiday: date, year: date.year
+          date = Date.parse(schedule["scheduledAt"]).to_date
+          next if Holiday.is_holiday?(date)
+
+          begin
+            Holiday.create!(name: "RSpec public holiday #{SecureRandom.hex(4)}", holiday: date, year: date.year)
+          rescue ActiveRecord::RecordInvalid
+            raise unless Holiday.is_holiday?(date)
+          end
         end
 
         context "as a user" do
@@ -183,21 +189,23 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
       context "with bad data" do
         it "should fail to modify the delivery if scheduled_at is nil" do
-          new_delivery['scheduleAttributes']['scheduled_at'] = nil
+          # Empty string keeps scheduledAt present for param validation; validation treats blank as invalid.
+          new_delivery["scheduleAttributes"]["scheduledAt"] = ""
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)
           post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
           expect(response.status).to eq(422)
-          expect(subject['errors'].length).to eq(1)
-          expect(subject['errors'][0]['message']).to eq(
-            'The selected date is either missing or invalid, please try again.'
+          parsed = JSON.parse(response.body)
+          expect(parsed["errors"].length).to eq(1)
+          expect(parsed["errors"][0]["message"]).to eq(
+            "The selected date is either missing or invalid, please try again."
           )
         end
 
         it "should fail to modify the delivery if scheduled_at is invalid" do
-          new_delivery['scheduleAttributes']['scheduled_at'] = 'not a date'
+          new_delivery['scheduleAttributes']['scheduledAt'] = 'not a date'
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)

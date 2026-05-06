@@ -23,12 +23,23 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
 
   describe "GET donor_conditions" do
     before do
-      2.times { create(:donor_condition) }
+      # Factory uses find_or_initialize_by(name_en: …); with seeded donor_conditions
+      # bare create() often reuses rows instead of adding new ones.
+      @extra_donor_conditions = 2.times.map do |i|
+        create(
+          :donor_condition,
+          name_en: "RSpec extra donor condition #{i} #{SecureRandom.hex(4)}",
+          name_zh_tw: "規格測試#{i}",
+          visible_to_donor: true
+        )
+      end
     end
     it "return serialized donor_conditions", :show_in_doc do
       get :index
       expect(response.status).to eq(200)
-      expect( parsed_body['donor_conditions'].length ).to eq(2)
+      extra_ids = @extra_donor_conditions.map(&:id)
+      returned = parsed_body['donor_conditions'].select { |c| extra_ids.include?(c['id']) }
+      expect(returned.length).to eq(2)
     end
 
     it "returns 'visible_to_donor' in serialized response" do

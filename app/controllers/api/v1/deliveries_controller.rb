@@ -159,18 +159,35 @@ module Api
         # rely on get_delivery_details — its permit step can differ by Rails version and must not
         # mutate params during validation. Client sends scheduleAttributes.scheduledAt.
         # Nested values may still be ActionController::Parameters — #to_h alone does not deep-convert.
-        raw_delivery = get_hash(parameters_to_plain_hash(delivery_attrs.to_unsafe_h))
-        sched = raw_delivery["schedule_attributes"]
-        return nil unless sched.is_a?(Hash)
-
-        scheduled_at = sched["scheduled_at"]
+        scheduled_at = scheduled_at_from_delivery_params
         return nil unless scheduled_at.present?
 
         begin
-          Date.parse(scheduled_at.to_s)
-        rescue ArgumentError
+          parsed = Time.zone.parse(scheduled_at.to_s)
+          return nil if parsed.nil?
+
+          parsed.to_date
+        rescue ArgumentError, TypeError
           nil
         end
+      end
+
+      def scheduled_at_from_delivery_params
+        raw_delivery = get_hash(parameters_to_plain_hash(delivery_attrs.to_unsafe_h))
+        sched = raw_delivery["schedule_attributes"]
+        if sched.is_a?(Hash)
+          at = sched["scheduled_at"].presence || sched[:scheduled_at].presence
+          return at if at.present?
+        end
+
+        plain = parameters_to_plain_hash(params.to_unsafe_h)
+        d = plain["delivery"] || plain[:delivery]
+        return nil unless d.is_a?(Hash)
+
+        sa = d["schedule_attributes"] || d["scheduleAttributes"] || d[:schedule_attributes] || d[:scheduleAttributes]
+        return nil unless sa.is_a?(Hash)
+
+        (sa["scheduled_at"] || sa["scheduledAt"] || sa[:scheduled_at] || sa[:scheduledAt]).presence
       end
 
       def validate_schedule
@@ -209,9 +226,19 @@ module Api
       end
 
       def get_hash(object)
+        object = object.to_unsafe_h if object.is_a?(ActionController::Parameters)
+        return object unless object.is_a?(Hash)
+
         Hash[
           object.map do |k, v|
-            [k.to_s.underscore, v.is_a?(Hash) ? get_hash(v) : v]
+            v = v.to_unsafe_h if v.is_a?(ActionController::Parameters)
+            nested =
+              if v.is_a?(Hash)
+                get_hash(v)
+              else
+                v
+              end
+            [k.to_s.underscore, nested]
           end
         ]
       end
