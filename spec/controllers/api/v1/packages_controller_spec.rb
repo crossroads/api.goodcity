@@ -57,7 +57,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it "return serialized packages", :show_in_doc do
-        3.times{ create :package, :with_inventory_record }
+        Package.delete_all
+        3.times { create :package, :with_inventory_record }
         get :index
         expect( subject["packages"].size ).to eq(3)
       end
@@ -556,8 +557,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
-      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
-      let!(:setting2) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+      let!(:setting) do
+        GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+        create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+      end
+      let!(:setting2) do
+        GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+        create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
+      end
 
       let(:stockit_item_params) {
         {
@@ -667,8 +674,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
-      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false") }
-      let!(:setting1) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false") }
+      let!(:setting) do
+        GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+        create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false")
+      end
+      let!(:setting1) do
+        GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+        create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false")
+      end
 
       let(:stockit_item_params) {
         {
@@ -792,9 +805,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "creates a new package with the split quantity" do
-      expect {
+      expect do
         put :split_package, params: { id: package.id, package: { quantity: 2 } }
-      }.to change(Package, :count).from(1).to(2)
+      end.to change(Package, :count).by(1)
 
       expect(response.status).to eq(200)
 
@@ -1022,7 +1035,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:printer_user) { create :printers_user, user: user, printer: printer_1, tag: 'stock'}
 
     it "returns 400 if package does not exist" do
-      post :print_barcode, params: { package_id: 1, labels:1 }
+      missing_package_id = (Package.maximum(:id) || 0) + 1
+      post :print_barcode, params: { package_id: missing_package_id, labels: 1 }
       expect(response.status).to eq(400)
       expect(subject["errors"]).to eq("Package not found with supplied package_id")
     end
@@ -1220,8 +1234,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package2) { create(:package, :with_inventory_number, received_quantity: 40, storage_type: package_storage)}
     let(:box_package) { create(:package, :with_inventory_number, received_quantity: 1, storage_type: box_storage) }
     let(:location) { Location.create(building: "21", area: "D") }
-    let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
-    let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+    let!(:creation_setting) do
+      GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+      create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+    end
+    let!(:addition_setting) do
+      GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+      create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
+    end
 
     before {
       initialize_inventory(package1, package2, box_package, location: location)
