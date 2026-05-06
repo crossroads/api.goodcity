@@ -155,10 +155,16 @@ module Api
       end
 
       def scheduled_date
-        details = get_delivery_details
-        h = details.to_unsafe_h.deep_stringify_keys
-        scheduled_at = h.dig("schedule_attributes", "scheduled_at")
+        # Use the same underscore normalization as get_delivery_details (get_hash), but do not
+        # rely on get_delivery_details — its permit step can differ by Rails version and must not
+        # mutate params during validation. Client sends scheduleAttributes.scheduledAt.
+        raw_delivery = get_hash(delivery_attrs.to_h)
+        sched = raw_delivery["schedule_attributes"]
+        return nil unless sched.is_a?(Hash)
+
+        scheduled_at = sched["scheduled_at"]
         return nil unless scheduled_at.present?
+
         begin
           Date.parse(scheduled_at.to_s)
         rescue ArgumentError
