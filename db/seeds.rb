@@ -2,8 +2,18 @@
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 # Use rake db:demo for test data once this task has run
 
+def seed_yaml_file(relative_path)
+  path = Rails.root.join(relative_path)
+  YAML.safe_load(
+    path.read,
+    permitted_classes: [Symbol, Psych::Omap],
+    aliases: true,
+    filename: path.to_s
+  )
+end
+
 # Donor Conditions
-donor_conditions = YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
+donor_conditions = seed_yaml_file("db/donor_conditions.yml")
 donor_conditions.each do |name, value|
   DonorCondition.create(
     name_en: name,
@@ -13,7 +23,7 @@ donor_conditions.each do |name, value|
 end
 
 # Rejection Reasons
-rejection_reasons = YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
+rejection_reasons = seed_yaml_file("db/rejection_reasons.yml")
 rejection_reasons.each do |name_en, value|
   RejectionReason.create(
     name_en: name_en,
@@ -22,25 +32,28 @@ rejection_reasons.each do |name_en, value|
 end
 
 # Cancellation Reasons
-cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
+cancellation_reasons = seed_yaml_file("db/cancellation_reasons.yml")
 cancellation_reasons.each do |name_en, attrs|
   CancellationReason.create!(name_en: name_en, **attrs)
 end
 
 # Canned Responses
-canned_responses = YAML.load_file("#{Rails.root}/db/canned_responses.yml")
-canned_responses.each do |id, attrs|
-  CannedResponse.create!(**attrs)
+canned_responses = seed_yaml_file("db/canned_responses.yml")
+canned_responses.each do |_id, attrs|
+  h = attrs.stringify_keys
+  record = CannedResponse.find_or_initialize_by(guid: h["guid"])
+  record.assign_attributes(h)
+  record.save!
 end
 
 # Restrictions
-restrictions = YAML.load_file("#{Rails.root}/db/restrictions.yml")
+restrictions = seed_yaml_file("db/restrictions.yml")
 restrictions.each do |id, attrs|
   Restriction.create!(**attrs)
 end
 
 # Booking Types
-booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
+booking_types = seed_yaml_file("db/booking_types.yml")
 booking_types.each do |identifier, value|
   BookingType.create(
     identifier: identifier,
@@ -50,7 +63,7 @@ booking_types.each do |identifier, value|
 end
 
 # Process Checklists
-process_checklists = YAML.load_file("#{Rails.root}/db/process_checklists.yml")
+process_checklists = seed_yaml_file("db/process_checklists.yml")
 process_checklists.each do |booking_type, values|
   @booking_type = BookingType.find_by_identifier(booking_type)
   values.each do |attrs|
@@ -63,7 +76,7 @@ process_checklists.each do |booking_type, values|
 end
 
 # Territories
-territories = YAML.load_file("#{Rails.root}/db/territories.yml")
+territories = seed_yaml_file("db/territories.yml")
 territories.each do |name_en, value|
   Territory.create(
     name_en: name_en,
@@ -72,7 +85,7 @@ territories.each do |name_en, value|
 end
 
 # Districts
-districts = YAML.load_file("#{Rails.root}/db/districts.yml")
+districts = seed_yaml_file("db/districts.yml")
 districts.each do |name_en, value|
   District.create(
     name_en: name_en,
@@ -93,7 +106,7 @@ timeslots.each do |timeslot|
 end
 
 # GogovanTransports
-gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
+gogovan_transports = seed_yaml_file("db/gogovan_transports.yml")
 gogovan_transports.each do |name, value|
   GogovanTransport.create(
     name_en: name,
@@ -103,7 +116,7 @@ gogovan_transports.each do |name, value|
 end
 
 # Crossroads Transports
-crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
+crossroads_transports = seed_yaml_file("db/crossroads_transports.yml")
 crossroads_transports.each do |name, value|
   CrossroadsTransport.create(
     name_en: name,
@@ -115,7 +128,7 @@ crossroads_transports.each do |name, value|
 end
 
 # Holidays
-holidays = YAML.load_file("#{Rails.root}/db/holidays.yml")
+holidays = seed_yaml_file("db/holidays.yml")
 holidays.each do |key, value|
   date_value = DateTime.parse(value[:holiday]).in_time_zone(Time.zone)
   holiday = Holiday.create(
@@ -128,7 +141,7 @@ Holiday.create(name: "Christmas Day", holiday: Time.new(Time.now.year,12,25).to_
 Holiday.create(name: "Boxing Day", holiday: Time.new(Time.now.year,12,26).to_date, year: Time.now.year)
 
 # Organisation Types
-organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
+organisation_types = seed_yaml_file("db/organisation_types.yml")
 organisation_types.each do |value|
   OrganisationType.create(
     name_en: value[:name_en],
@@ -139,7 +152,7 @@ organisation_types.each do |value|
 end
 
 # Package Types
-package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
+package_types = seed_yaml_file("db/package_types.yml")
 package_types.each do |code, value|
   PackageType.create(
     code: code,
@@ -190,7 +203,7 @@ package_types.each do |code, value|
 end
 
 # Purposes
-purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
+purposes = seed_yaml_file("db/purposes.yml")
 purposes.each do |key, value|
   Purpose.create(
     name_en: value[:name_en],
@@ -200,31 +213,31 @@ purposes.each do |key, value|
 end
 
 # GoodCity Settings
-goodcity_settings = YAML.load_file("#{Rails.root}/db/goodcity_settings.yml")
+goodcity_settings = seed_yaml_file("db/goodcity_settings.yml")
 goodcity_settings.each do |record|
   GoodcitySetting.find_or_create_by(record)
 end
 
 # Lookups
-lookups = YAML.load_file("#{Rails.root}/db/lookups.yml")
+lookups = seed_yaml_file("db/lookups.yml")
 lookups.each do |record|
   Lookup.find_or_create_by(record)
 end
 
 # Printers
-printers = YAML.load_file("#{Rails.root}/db/printers.yml")
+printers = seed_yaml_file("db/printers.yml")
 printers.each do |record|
   Printer.find_or_create_by(record)
 end
 
 # Locations
-locations = YAML.load_file("#{Rails.root}/db/locations.yml")
+locations = seed_yaml_file("db/locations.yml")
 locations.each do |record|
   Location.find_or_create_by(record)
 end
 
 # Storage Types
-storage_types = YAML.load_file("#{Rails.root}/db/storage_types.yml")
+storage_types = seed_yaml_file("db/storage_types.yml")
 storage_types.each do |storage_type|
   StorageType.where(name: storage_type["name"]).first_or_create(storage_type)
 end
@@ -236,7 +249,7 @@ PackageCategoryImporter.import
 PackageCategoryImporter.import_package_relation
 
 # Roles
-roles = YAML.load_file("#{Rails.root}/db/roles.yml")
+roles = seed_yaml_file("db/roles.yml")
 roles.each do |role_name, attrs|
   if (role = Role.where(name: role_name).first_or_initialize)
     role.assign_attributes(**attrs)
@@ -245,7 +258,7 @@ roles.each do |role_name, attrs|
 end
 
 # Permission and Role mappings
-permissions_roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml", aliases: true)
+permissions_roles = seed_yaml_file("db/permissions_roles.yml")
 permissions_roles.each_pair do |role_name, permission_names|
   permission_names.flatten!
   if (role = Role.where(name: role_name).first_or_create)
@@ -257,7 +270,7 @@ permissions_roles.each_pair do |role_name, permission_names|
 end
 
 # Valuation matrix
-valuation_matrix = YAML.load_file("#{Rails.root}/db/valuation_matrix.yml")
+valuation_matrix = seed_yaml_file("db/valuation_matrix.yml")
 valuation_matrix.each do |valuation|
   donor_condition_id = DonorCondition.find_by_name_en(valuation['donor_condition_name_en']).id
   ValuationMatrix.find_or_create_by(
@@ -268,7 +281,7 @@ valuation_matrix.each do |valuation|
 end
 
 # Identity types
-identity_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
+identity_types = seed_yaml_file("db/identity_types.yml")
 identity_types.each do |identifier, record|
   IdentityType.create(
     identifier: identifier,
@@ -278,7 +291,7 @@ identity_types.each do |identifier, record|
 end
 
 # Countries
-countries = YAML.load_file("#{Rails.root}/db/countries.yml")
+countries = seed_yaml_file("db/countries.yml")
 countries.each do |name_en|
   Country.create(name_en: name_en)
 end

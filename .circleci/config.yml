@@ -90,6 +90,11 @@ jobs:
             export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
             bundle exec cucumber
       - run:
+          name: Reset test database after Cucumber
+          command: |
+            export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
+            bundle exec rails db:reset
+      - run:
           name: Rspec tests
           command: |
             export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
