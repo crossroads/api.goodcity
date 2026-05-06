@@ -60,15 +60,15 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:cancel_reason).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
-    it{ is_expected.to have_db_column(:created_at)}
-    it{ is_expected.to have_db_column(:updated_at)}
-    it{ is_expected.to have_db_column(:dispatch_started_at)}
+    it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:dispatch_started_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:dispatch_started_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:cancelled_at)}
+    it{ is_expected.to have_db_column(:cancelled_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:cancelled_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:process_completed_at)}
+    it{ is_expected.to have_db_column(:process_completed_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:process_completed_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:processed_at)}
+    it{ is_expected.to have_db_column(:processed_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:processed_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
