@@ -56,16 +56,7 @@ describe TwilioJob, :type => :job do
     end
   end
 
-  describe "ActiveJob queue (test adapter)" do
-    around do |example|
-      previous_adapter = ActiveJob::Base.queue_adapter
-      ActiveJob::Base.queue_adapter = :test
-      clear_enqueued_jobs
-      clear_performed_jobs
-      example.run
-      ActiveJob::Base.queue_adapter = previous_adapter
-    end
-
+  describe "ActiveJob queue" do
     it "runs perform after perform_later with one serialized Hash (matches TwilioService#send_sms)" do
       allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
       allow_any_instance_of(TwilioJob).to receive(:send_to_twilio?).and_return(true)
