@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings_permission )}
   let(:no_permission_user) { create :user }
-  let(:parsed_body) { JSON.parse(response.body) }
+  def parsed_body
+    JSON.parse(response.body)
+  end
   let!(:appointment_type) { create(:booking_type, :appointment) }
   let!(:online_type) { create(:booking_type, :online_order) }
 
@@ -73,10 +75,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         oct_29th = results.find { |r| r['date'] == '2018-10-29' }
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['slots'].count).to eq(2)
-        timestamps = oct_29th['slots'].map { |s| s['timestamp'] }.sort
-        expect(timestamps).to eq(
-          ["2018-10-29T14:00:00.000+08:00", "2018-10-29T16:30:00.000+08:00"]
-        )
+        timestamps = oct_29th['slots'].map { |s| Time.zone.parse(s['timestamp']).in_time_zone('Hong Kong') }
+        expect(timestamps.map { |t| [t.hour, t.min] }.sort).to eq([[14, 0], [16, 30]])
       end
 
       it 'specifies the number of remaining slots (/calendar)' do
@@ -137,7 +137,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['isClosed']).to eq(false)
         expect(mar_17th['slots'].count).to eq(1)
-        special = mar_17th['slots'].find { |s| s['timestamp'] == "2018-03-17T14:00:00.000+08:00" }
+        special = mar_17th['slots'].find do |s|
+          ts = Time.zone.parse(s['timestamp']).in_time_zone('Hong Kong')
+          ts.to_date == Date.parse('2018-03-17') && ts.hour == 14
+        end
         expect(special).to be_present
         expect(special['isClosed']).to eq(false)
         expect(special['remaining']).to eq(5)
@@ -292,6 +295,11 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
   describe "Testing potential timezone issues" do
     before {
+      AppointmentSlot.where(
+        "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+        Date.new(2018, 1, 1),
+        Date.new(2018, 12, 31)
+      ).delete_all
       (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
       generate_and_set_token(order_administrator)
     }

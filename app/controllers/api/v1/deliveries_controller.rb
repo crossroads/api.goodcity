@@ -158,7 +158,8 @@ module Api
         # Use the same underscore normalization as get_delivery_details (get_hash), but do not
         # rely on get_delivery_details — its permit step can differ by Rails version and must not
         # mutate params during validation. Client sends scheduleAttributes.scheduledAt.
-        raw_delivery = get_hash(delivery_attrs.to_h)
+        # Nested values may still be ActionController::Parameters — #to_h alone does not deep-convert.
+        raw_delivery = get_hash(parameters_to_plain_hash(delivery_attrs.to_unsafe_h))
         sched = raw_delivery["schedule_attributes"]
         return nil unless sched.is_a?(Hash)
 
@@ -194,10 +195,23 @@ module Api
         %i[scheduled_at slot_name zone resource slot]
       end
 
+      def parameters_to_plain_hash(obj)
+        case obj
+        when ActionController::Parameters
+          parameters_to_plain_hash(obj.to_unsafe_h)
+        when Hash
+          obj.transform_values { |v| parameters_to_plain_hash(v) }
+        when Array
+          obj.map { |v| parameters_to_plain_hash(v) }
+        else
+          obj
+        end
+      end
+
       def get_hash(object)
         Hash[
           object.map do |k, v|
-            [k.underscore, v.is_a?(Hash) ? get_hash(v) : v]
+            [k.to_s.underscore, v.is_a?(Hash) ? get_hash(v) : v]
           end
         ]
       end
