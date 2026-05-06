@@ -66,9 +66,11 @@ RSpec.configure do |config|
     set_admin_app_header
   end
 
-  # Keep RequestStore clean between specs
+  # Keep RequestStore clean between specs; reset ActiveJob test queues between examples
   config.before(:each) do
     RequestStore.clear!
+    clear_enqueued_jobs
+    clear_performed_jobs
   end
 
   config.before(:suite) do
