@@ -142,6 +142,8 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     }
 
     describe "modify existing delivery" do
+      # Token must match the offer under test (parent `delivery`/`offer` is a different record).
+      let(:user) { old_offer.created_by }
 
       let!(:old_delivery) { create :gogovan_delivery }
       let!(:old_offer)    { old_delivery.offer }
@@ -159,6 +161,10 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
           "scheduleAttributes" => schedule,
           "contactAttributes" => ggv_contact }
       }
+
+      let(:ggv_order) do
+        super().merge("offerId" => old_offer.id.to_s)
+      end
 
       context "to a public holiday" do
         before do

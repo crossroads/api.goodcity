@@ -1,9 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe InventoryNumber, type: :model do
-  # Low-sequence next_code/max_code tests require an empty packages + inventory_numbers slice;
-  # transactional rollback does not undo data committed by other spec types on the same DB.
-  self.use_transactional_tests = false
+RSpec.describe InventoryNumber, type: :model, non_transactional: true do
+  # Low-sequence next_code/max_code tests require TRUNCATE ... RESTART IDENTITY; rollback
+  # does not reset PostgreSQL sequences. See spec/support/transactional_test_isolation.rb.
 
   before(:each) do
     ActiveRecord::Base.connection.execute(

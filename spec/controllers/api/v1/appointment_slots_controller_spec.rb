@@ -31,15 +31,11 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       before {
         # Seeds (and other specs) add presets; duplicates change slot counts per weekday.
         AppointmentSlotPreset.delete_all
+        # Per-example transactional rollback does not undo data committed by :non_transactional specs or
+        # suite hooks; clear all slots so 2018 calendar examples always start clean.
+        AppointmentSlot.unscoped.delete_all
         # Create presets
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
-        # Calendar examples use 2018 fixtures; leftover AppointmentSlot rows make for_date treat the day as
-        # fully specified in DB and skip merging presets / expected slot counts.
-        AppointmentSlot.where(
-          "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
-          Date.new(2018, 1, 1),
-          Date.new(2018, 12, 31)
-        ).delete_all
         # Other specs may leave 2018 holidays; Mar/Oct calendar examples need a clean slate.
         Holiday.where(
           "date(holiday AT TIME ZONE 'HKT') BETWEEN ? AND ?",
@@ -180,6 +176,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     describe 'Special rules' do
       before {
         AppointmentSlotPreset.delete_all
+        AppointmentSlot.unscoped.delete_all
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
         generate_and_set_token(order_administrator)
       }
@@ -313,6 +310,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   describe "Testing potential timezone issues" do
     before {
       AppointmentSlotPreset.delete_all
+      AppointmentSlot.unscoped.delete_all
       AppointmentSlot.where(
         "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
         Date.new(2018, 1, 1),
