@@ -177,6 +177,13 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
             holiday: date,
             year: date.year
           )
+          # Full-suite order / parallel timing can still leave validate_schedule thinking the day
+          # is not a holiday; fail fast before delete_old_associations would call Gogovan.cancel_order.
+          allow(Holiday).to receive(:is_holiday?).and_wrap_original do |method, check_date|
+            next method.call(check_date) if check_date.blank?
+
+            check_date.to_date == date ? true : method.call(check_date)
+          end
         end
 
         context "as a user" do
