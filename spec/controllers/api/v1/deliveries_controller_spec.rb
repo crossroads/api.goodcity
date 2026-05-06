@@ -171,7 +171,10 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
           # Match controller scheduling (Time.zone + scheduledAt string). Other specs can leave
           # rows that make Holiday.is_holiday? flaky in before hooks; reset this date only.
           date = Time.zone.parse(schedule["scheduledAt"]).to_date
-          Holiday.where("date(holiday AT TIME ZONE 'HKT') = ?", date).delete_all
+          Holiday.where(
+            "date((holiday AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') = ?",
+            date
+          ).delete_all
           Holiday.create!(
             name: "RSpec public holiday #{SecureRandom.hex(4)}",
             holiday: date,

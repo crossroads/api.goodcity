@@ -58,7 +58,12 @@ class AppointmentSlot < ApplicationRecord
   end
 
   def self.for_date(date)
-    slots = unscoped.where("date(timestamp AT TIME ZONE 'HKT') = ?", date).ascending
+    # `timestamp` is stored without timezone in DB, but Rails writes values in UTC.
+    # Convert from UTC → HKT for correct local-date bucketing.
+    slots = unscoped.where(
+      "date((timestamp AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') = ?",
+      date
+    ).ascending
     return slots.select { |sl|
       sl.timestamp = sl.timestamp.in_time_zone
       sl.quota.positive?

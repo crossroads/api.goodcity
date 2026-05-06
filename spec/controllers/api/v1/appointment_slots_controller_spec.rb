@@ -3,6 +3,13 @@ require 'rails_helper'
 RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings_permission )}
   let(:no_permission_user) { create :user }
+
+  # Some specs in the suite change Time.zone without restoring it, which breaks the
+  # appointment calendar’s HKT date bucketing assumptions (e.g. Oct 2018 / Dec 2018 examples).
+  around do |example|
+    Time.use_zone('Hong Kong') { example.run }
+  end
+
   def parsed_body
     JSON.parse(response.body)
   end
@@ -27,7 +34,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     AppointmentSlotPreset.delete_all
     AppointmentSlot.unscoped.delete_all
     Holiday.where(
-      "date(holiday AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+      "date((holiday AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') BETWEEN ? AND ?",
       HKT_2018.begin,
       HKT_2018.end
     ).delete_all
@@ -35,7 +42,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     return unless appt_id
 
     OrderTransport.joins(:order).where(orders: { booking_type_id: appt_id }).where(
-      "date(order_transports.scheduled_at AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+      "date((order_transports.scheduled_at AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') BETWEEN ? AND ?",
       HKT_2018.begin,
       HKT_2018.end
     ).delete_all
@@ -203,6 +210,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
           end
 
           it 'locks all dates before the specified date' do
+            GoodcitySetting.where(key: 'api.appointments.prevent_booking_until').delete_all
             create :goodcity_setting, key: 'api.appointments.prevent_booking_until', value: (Date.today + 10.days).strftime("%d-%m-%Y")
 
             get :calendar, params: { to: (Date.today + 20.days).to_s, booking_type_id: appointment_type.id }
@@ -279,7 +287,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it "prevents updating a timestamp that conflicts with another slot's timestamp" do
-        timestamp = DateTime.parse('29th Oct 2018 16:30:00+08:00')
+        timestamp = Time.zone.parse('2018-10-29 16:30:00 +0800')
+        AppointmentSlot.unscoped.where(timestamp: timestamp).delete_all
         FactoryBot.create :appointment_slot, timestamp: timestamp, quota: 10
         put :update, params: { id: appt_slot.id, appointment_slot: { timestamp: timestamp } }
         expect(response.status).to eq(422)

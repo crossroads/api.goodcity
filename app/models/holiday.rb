@@ -11,7 +11,11 @@ class Holiday < ApplicationRecord
     between_times(Time.zone.now.beginning_of_day, Time.zone.now.end_of_day + days) }
 
   def self.is_holiday?(date)
-    Holiday.where(" date(holiday AT TIME ZONE 'HKT') = ?", date.to_date).count > 0
+    # Use IANA TZ name instead of abbreviation (Postgres 9.6 on CI can treat 'HKT' inconsistently).
+    Holiday.where(
+      "date((holiday AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') = ?",
+      date.to_date
+    ).count > 0
   end
 
   private
