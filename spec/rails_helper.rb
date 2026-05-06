@@ -44,6 +44,13 @@ RSpec.configure do |config|
   config.include Touch
   config.include InventoryInitializer
 
+  # Per-example DB transaction (ActiveRecord::TestFixtures) — rolls back after each
+  # example so data does not leak between tests. Aliased as use_transactional_examples.
+  #
+  # Not rolled back: before(:suite) / after(:suite) (e.g. system user below). PostgreSQL
+  # sequences are not rewound by rollback; specs that need TRUNCATE ... RESTART IDENTITY
+  # set self.use_transactional_tests = false or use metadata :non_transactional — see
+  # spec/support/transactional_test_isolation.rb and spec/models/inventory_number_spec.rb.
   config.use_transactional_fixtures = true
 
   config.infer_spec_type_from_file_location!
@@ -55,14 +62,10 @@ RSpec.configure do |config|
 
   FactoryBot.use_parent_strategy = false
 
-  # Create system_user
   config.before(:suite) do
-    FactoryBot.create(:user, :system)
-  end
-
-  # Clean up system_user at end of specs
-  config.after(:suite) do
-    User.system.destroy_all
+    Time.zone = 'Hong Kong'
+    # Commits outside per-example transactions; visible to all examples.
+    FactoryBot.create(:user, :system) unless User.system_user.present?
   end
 
   # Default app to be 'admin' in order to not use treat_user_as_donor
@@ -71,13 +74,11 @@ RSpec.configure do |config|
     set_admin_app_header
   end
 
-  # Keep RequestStore clean between specs
+  # Keep RequestStore clean between specs; reset ActiveJob test queues between examples
   config.before(:each) do
     RequestStore.clear!
-  end
-
-  config.before(:suite) do
-    Time.zone = 'Hong Kong'
+    clear_enqueued_jobs
+    clear_performed_jobs
   end
 end
 

@@ -76,7 +76,7 @@ module Goodcity
         .joins("JOIN packages ON images.imageable_id=packages.id AND images.imageable_type='Package'")
         .where("packages.on_hand_quantity = 0")
         .where.not("images.cloudinary_id LIKE ?", "#{Image::AZURE_IMAGE_PREFIX}%")
-        .where("packages.updated_at < ?", @options[:min_age].to_s(:db))
+        .where("packages.updated_at < ?", @options[:min_age])
         .order('packages.updated_at')
 
       image_ids_to_exclude = Image.where(id: images.pluck('id'))
@@ -102,7 +102,7 @@ module Goodcity
         .joins("JOIN offers ON offers.id=items.offer_id")
         .where("offers.state IN (?)", ['closed', 'cancelled'])
         .where.not("images.cloudinary_id LIKE ?", "#{Image::AZURE_IMAGE_PREFIX}%")
-        .where("offers.updated_at < ?", @options[:min_age].to_s(:db))
+        .where("offers.updated_at < ?", @options[:min_age])
         .where("NOT EXISTS (SELECT 1 FROM packages WHERE packages.item_id=items.id)")
         .order('offers.updated_at')
 

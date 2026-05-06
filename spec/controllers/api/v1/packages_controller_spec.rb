@@ -12,7 +12,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
-  let(:parsed_body) { JSON.parse(response.body) }
+  # Fresh parse each call so examples that POST multiple times see the latest response.
+  def parsed_body
+    JSON.parse(response.body)
+  end
   let(:response_packages) { parsed_body['packages'].map { |p| Package.find(p['id'])} }
   let(:error_msg) do
     return parsed_body['error'] if parsed_body['error'].present?
@@ -54,26 +57,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it "return serialized packages", :show_in_doc do
-        3.times{ create :package, :with_inventory_record }
+        Package.delete_all
+        3.times { create :package, :with_inventory_record }
         get :index
         expect( subject["packages"].size ).to eq(3)
       end
 
       it "returns searched packages" do
         set_browse_app_header
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        expect(Package.count).to eq(6)
+        expect(Package.count).to eq(baseline + 6)
         get :index, params: { "searchText": "car" }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
       end
 
       it "returns packages by inventory numbers" do
+        baseline = Package.count
         p1, p2, p3 = ['111111', '1111112', '111113'].map { |n| create(:package, :with_inventory_record, inventory_number: n) }
         initialize_inventory(p1, p2, p3)
 
-        expect(Package.count).to eq(3)
+        expect(Package.count).to eq(baseline + 3)
         get :index, params: { "inventory_number": "111111,1111112" }
         expect(response.status).to eq(200)
         expect( response_packages ).to match_array([p1,p2])
@@ -81,11 +87,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
-        expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        create :browseable_package, :with_inventory_record, notes: unique
+        expect(Package.count).to eq(baseline + 7)
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
@@ -108,9 +116,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched packages" do
         set_browse_app_header
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby Toilets" }
-        expect(Package.count).to eq(6)
+        expect(Package.count).to eq(baseline + 6)
         get :index, params: { "searchText": "Baby" }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
@@ -118,11 +127,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
+        unique = "towel-#{SecureRandom.hex(4)}"
+        baseline = Package.count
         3.times{ create :package, :with_inventory_record, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, :with_inventory_record, notes: "Baby car seats" }
-        create :browseable_package, :with_inventory_record, notes: "towels"
-        expect(Package.count).to eq(7)
-        get :index, params: { "searchText": "towel" }
+        create :browseable_package, :with_inventory_record, notes: unique
+        expect(Package.count).to eq(baseline + 7)
+        get :index, params: { "searchText" => unique }
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(1)
       end
@@ -372,7 +383,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it 'fails if the the package_id is wrong' do
         put :move, params: { id: '9999', from: location2.id }
         expect(response.status).to eq(404)
-        expect(error_msg).to match(/^Couldn't find Package with 'id'=9999/)
+        expect(error_msg).to match(/Couldn't find Package with 'id'=.*9999/)
       end
 
       it 'fails if the quantity is missing' do
@@ -399,7 +410,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'when saleable value is provided in package parameters' do
         it 'creates package record with given saleable value' do
-          [true, false].map do |val|
+          [true, false].each do |val|
             package_params[:saleable] = val
             package_params[:item_id] = nil
             post :create, params: { package: package_params }
@@ -426,15 +437,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           end
 
           context 'if offer is saleable' do
-            [true, false].map do |val|
-              it 'creates package with saleable as true' do
+            [true, false].each do |val|
+              it "creates package with saleable #{val} from parameters" do
                 item.offer.update(saleable: true)
                 package_params[:saleable] = val
                 post :create, params: { package: package_params }
                 expect(response).to have_http_status(:success)
                 package_id = parsed_body["package"]["id"]
                 package = Package.find(package_id)
-                expect(package.saleable).to eq(true)
+                expect(package.saleable).to eq(val)
               end
             end
           end
@@ -546,8 +557,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
-      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
-      let!(:setting2) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+      let!(:setting) do
+        GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+        create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+      end
+      let!(:setting2) do
+        GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+        create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
+      end
 
       let(:stockit_item_params) {
         {
@@ -657,8 +674,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
-      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false") }
-      let!(:setting1) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false") }
+      let!(:setting) do
+        GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+        create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false")
+      end
+      let!(:setting1) do
+        GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+        create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false")
+      end
 
       let(:stockit_item_params) {
         {
@@ -782,9 +805,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "creates a new package with the split quantity" do
-      expect {
+      expect do
         put :split_package, params: { id: package.id, package: { quantity: 2 } }
-      }.to change(Package, :count).from(1).to(2)
+      end.to change(Package, :count).by(1)
 
       expect(response.status).to eq(200)
 
@@ -1012,7 +1035,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:printer_user) { create :printers_user, user: user, printer: printer_1, tag: 'stock'}
 
     it "returns 400 if package does not exist" do
-      post :print_barcode, params: { package_id: 1, labels:1 }
+      missing_package_id = (Package.maximum(:id) || 0) + 1
+      post :print_barcode, params: { package_id: missing_package_id, labels: 1 }
       expect(response.status).to eq(400)
       expect(subject["errors"]).to eq("Package not found with supplied package_id")
     end
@@ -1210,8 +1234,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package2) { create(:package, :with_inventory_number, received_quantity: 40, storage_type: package_storage)}
     let(:box_package) { create(:package, :with_inventory_number, received_quantity: 1, storage_type: box_storage) }
     let(:location) { Location.create(building: "21", area: "D") }
-    let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
-    let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+    let!(:creation_setting) do
+      GoodcitySetting.where(key: "stock.enable_box_pallet_creation").delete_all
+      create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+    end
+    let!(:addition_setting) do
+      GoodcitySetting.where(key: "stock.allow_box_pallet_item_addition").delete_all
+      create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
+    end
 
     before {
       initialize_inventory(package1, package2, box_package, location: location)
@@ -1546,15 +1576,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'performs loss action on package' do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 2,
-                            from: @location.id,
-                            action_name: "loss",
-                            description: "Loss action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 2,
+        from: @location.id,
+        action_name: "loss",
+        description: "Loss action on Package",
+      }
 
       expect(response.status).to eq(200)
       expect(@package.packages_locations.first.quantity).to eq(18)
@@ -1563,14 +1591,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "performs process action on package" do
-      put :register_quantity_change, {
-        params: {
-          id: @package.id,
-          quantity: 10,
-          from: @location.id,
-          action_name: "process",
-          processing_destination_id: processing_destination.id
-        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 10,
+        from: @location.id,
+        action_name: "process",
+        processing_destination_id: processing_destination.id
       }
 
       expect(response).to have_http_status(:success)
@@ -1580,15 +1606,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context 'when action is not process' do
       it 'should not add ProcessingDestination' do
-        put :register_quantity_change, {
-          params: {
-            id: @package.id,
-            quantity: 10,
-            from: @location.id,
-            action_name: "gain",
-            description: "gain action on Package",
-            processing_destination_id: processing_destination.id
-          }
+        put :register_quantity_change, params: {
+          id: @package.id,
+          quantity: 10,
+          from: @location.id,
+          action_name: "gain",
+          description: "gain action on Package",
+          processing_destination_id: processing_destination.id
         }
 
         expect(@package.package_actions.last.action).to eq('gain')
@@ -1599,15 +1623,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "performs gain action on package" do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
-      put :register_quantity_change, {
-            params: {
-              id: @package.id,
-              quantity: 10,
-              from: @location.id,
-              action_name: "gain",
-              description: "gain action on Package",
-            }
-          }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 10,
+        from: @location.id,
+        action_name: "gain",
+        description: "gain action on Package",
+      }
 
       expect(response.status).to eq(200)
       expect(@package.packages_locations.first.quantity).to eq(30)
@@ -1616,30 +1638,26 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "throws error for unsupported action" do
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 2,
-                            from: @location.id,
-                            action_name: "invalid_action",
-                            description: "Unsupported action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 2,
+        from: @location.id,
+        action_name: "invalid_action",
+        description: "Unsupported action on Package",
+      }
 
       expect(response.status).to eq(422)
       expect(parsed_body["error"]).to eq("Action you are trying to perform is not allowed")
     end
 
     it "throws error for invalid quantity" do
-      put :register_quantity_change, {
-                          params: {
-                            id: @package.id,
-                            quantity: 25,
-                            from: @location.id,
-                            action_name: "loss",
-                            description: "Loss action on Package",
-                          }
-                        }
+      put :register_quantity_change, params: {
+        id: @package.id,
+        quantity: 25,
+        from: @location.id,
+        action_name: "loss",
+        description: "Loss action on Package",
+      }
 
       expect(response.status).to eq(422)
       expect(parsed_body['error']).to eq("The selected quantity (25) is unavailable")

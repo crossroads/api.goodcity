@@ -325,6 +325,7 @@ RSpec.describe Order, type: :model do
 
     describe ".active_orders_count_as_per_priority_and_state" do
       before do
+        Order.delete_all
         non_priority_submitted = create :order, booking_type: appointment_type, state: "submitted", submitted_at: Time.zone.now - 25.hours
         priority_submitted = create :order, state: "submitted", booking_type: appointment_type, submitted_at: Time.zone.now - 23.hours
 
@@ -358,6 +359,10 @@ RSpec.describe Order, type: :model do
     let(:before_6pm_today) { Time.now.in_time_zone.change(hour: 15) }
     let(:before_6pm_yesterday) { before_6pm_today - 24.hours }
 
+    # Several nested contexts call Timecop.freeze; without a top-level return, frozen time leaks
+    # between sibling examples and breaks Order.priority (last_6pm / one_day_ago use Time.zone.now).
+    after { Timecop.return }
+
     context 'A submitted order' do
       it 'should be prioritised if it was submitted more than 24hours ago' do
         old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
@@ -367,6 +372,7 @@ RSpec.describe Order, type: :model do
       end
 
       it 'should filter prioritised orders if it was submitted more than 24hours ago' do
+        Order.delete_all
         create :order, state: "submitted", submitted_at: Time.now - 23.hours
         old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
         records = Order.where(state: 'submitted')
@@ -377,9 +383,6 @@ RSpec.describe Order, type: :model do
     end
 
     context 'An order under review (aka processing)' do
-
-      after { Timecop.return }
-
       context 'If we\'re past 6pm' do
         before { Timecop.freeze(after_6pm_today) }
 
@@ -434,9 +437,10 @@ RSpec.describe Order, type: :model do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
-      before {
+      before do
+        Order.where(state: 'awaiting_dispatch').destroy_all
         Timecop.freeze(at_6pm_today)
-      }
+      end
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
@@ -834,6 +838,9 @@ RSpec.describe Order, type: :model do
 
   describe 'Order filtering rules' do
     before do
+      # Some specs commit rows (non-transactional or suite-level setup), so do not assume
+      # a globally empty orders table here.
+      Order.delete_all
       create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
       create :order, state: "submitted", description: "Another table", submitted_at: Time.now - 25.hours
       create :order, state: "submitted", description: "A dangerous weapon", submitted_at: Time.now - 25.hours

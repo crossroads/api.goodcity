@@ -37,11 +37,13 @@ FactoryBot.define do
 
     # create(:reviewer_role, :with_can_manage_offers_permission)
     # create(:reviewer_role, :with_can_manage_offers_permission, :with_can_manage_messages_permission)
-    YAML.load_file("#{Rails.root}/db/permissions_roles.yml").each do |role_name, permissions|
+    YAML.load_file("#{Rails.root}/db/permissions_roles.yml", aliases: true).each do |role_name, permissions|
+      permissions = ::Kernel.Array(permissions).flatten
       permissions.each do |permission|
+        permission = permission.to_s
         trait "with_#{permission}_permission".to_sym do
           after(:create) do |role|
-            p = create(:permission, name: permission)
+            p = create(:permission, name: permission.to_s)
             role.permissions << p unless role.permissions.include?(p)
           end
         end

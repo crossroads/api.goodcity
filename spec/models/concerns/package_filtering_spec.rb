@@ -6,19 +6,20 @@ describe Package do
   # testing dispatched packages
   context 'in_stock packages' do
     before(:each) do
-      create(:package, :with_inventory_record, state: 'received', received_quantity: 1)
-      create(:package, :with_inventory_record, state: 'received', allow_web_publish: true, received_quantity: 1)
-      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
-      create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
-      create(:package, :dispatched, :with_inventory_record, state: 'received', received_quantity: 1) # Dispatched
+      @package_filter_baseline = Package.count
+      @fil_pkg_ids = []
+      @fil_pkg_ids << create(:package, :with_inventory_record, state: 'received', received_quantity: 1).id
+      @fil_pkg_ids << create(:package, :with_inventory_record, state: 'received', allow_web_publish: true, received_quantity: 1).id
+      @fil_pkg_ids << create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1).id
+      @fil_pkg_ids << create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1).id
+      @fil_pkg_ids << create(:package, :dispatched, :with_inventory_record, state: 'received', received_quantity: 1).id # Dispatched
     end
 
-    subject { Package.apply_filter('state' => state).count }
+    subject { Package.apply_filter('state' => state).where(id: @fil_pkg_ids).count }
 
     it 'does not filter out anything if no explicit arguments are provided' do
-      expect(Package.count).to eq(5)
-      expect(Package.count).to eq(5)
-      expect(Package.apply_filter.count).to eq(5)
+      expect(Package.count).to eq(@package_filter_baseline + 5)
+      expect(Package.apply_filter.count).to eq(@package_filter_baseline + 5)
     end
 
     context 'returns in stock items where state is received and quantity > 0' do
@@ -59,15 +60,16 @@ describe Package do
 
   context 'designated packages' do
     before(:each) do
-      package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      designated_pkg = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
-      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
-      create(:orders_package, :with_inventory_record, :with_state_designated, quantity: 1, order_id: order.id, package_id: package.id)
+      other_pkg = create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
+      create(:orders_package, :with_inventory_record, :with_state_designated, quantity: 1, order_id: order.id, package_id: designated_pkg.id)
+      @designated_pkg_ids = [designated_pkg.id, other_pkg.id]
     end
 
     it 'filters out only designated packages' do
-      expect(Package.apply_filter.count).to eq(2)
-      expect(Package.apply_filter('state' => 'designated').count).to eq(1)
+      expect(Package.apply_filter.where(id: @designated_pkg_ids).count).to eq(2)
+      expect(Package.apply_filter('state' => 'designated').where(id: @designated_pkg_ids).count).to eq(1)
     end
   end
 
@@ -79,12 +81,13 @@ describe Package do
       @parent_package = create(:package, :with_inventory_record, package_type_id: parent_package_type.id)
       @child_package = create(:package, :with_inventory_record, package_type_id: child_package_type.id)
       @other_package = create(:package, :with_inventory_record, package_type_id: (create :package_type, code: "HPW").id)
+      @associated_pkg_ids = [@parent_package.id, @child_package.id, @other_package.id]
     end
 
     it 'filters out only associated package-types packages' do
-      expect(Package.apply_filter.count).to eq(3)
+      expect(Package.apply_filter.where(id: @associated_pkg_ids).count).to eq(3)
 
-      packages = Package.apply_filter('associated_package_types_for' => ["VCL"])
+      packages = Package.apply_filter('associated_package_types_for' => ["VCL"]).where(id: @associated_pkg_ids)
       expect(packages.count).to eq(2)
       expect(packages).to match_array([@parent_package, @child_package])
       expect(packages).to_not include(@other_package)
@@ -93,15 +96,16 @@ describe Package do
 
   context 'dispatched packages' do
     before(:each) do
-      package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      dispatched_pkg = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
-      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
-      create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, order_id: order.id, package_id: package.id)
+      other_pkg = create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
+      create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, order_id: order.id, package_id: dispatched_pkg.id)
+      @dispatched_pkg_ids = [dispatched_pkg.id, other_pkg.id]
     end
 
     it 'filters out only dispatched packages' do
-      expect(Package.apply_filter.count).to eq(2)
-      expect(Package.apply_filter('state' => 'dispatched').count).to eq(1)
+      expect(Package.apply_filter.where(id: @dispatched_pkg_ids).count).to eq(2)
+      expect(Package.apply_filter('state' => 'dispatched').where(id: @dispatched_pkg_ids).count).to eq(1)
     end
   end
 
@@ -187,21 +191,18 @@ describe Package do
     let(:location_b) { create :location, area: 'area2' }
 
     before(:each) do
-      initialize_inventory(
-        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
-        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
-        location: location_a
-      )
-      initialize_inventory(
-        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
-        location: location_b
-      )
+      pa = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      pb = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      pc = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      initialize_inventory(pa, pb, location: location_a)
+      initialize_inventory(pc, location: location_b)
+      @location_pkg_ids = [pa.id, pb.id, pc.id]
     end
 
     it 'filters out item based on location' do
       pkg_location_name = "#{location_b.building}-#{location_b.area}"
-      expect(Package.apply_filter.count).to eq(3)
-      expect(Package.apply_filter('location' => pkg_location_name).count).to eq(1)
+      expect(Package.apply_filter.where(id: @location_pkg_ids).count).to eq(3)
+      expect(Package.apply_filter('location' => pkg_location_name).where(id: @location_pkg_ids).count).to eq(1)
     end
   end
 

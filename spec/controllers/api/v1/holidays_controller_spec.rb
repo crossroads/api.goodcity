@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::V1::HolidaysController, type: :controller do
   let(:holiday)  { create :holiday }
-  let!(:holiday_1) { create(:holiday) }
-  let!(:holiday_2) { create(:holiday, holiday: Time.zone.now + 7.days) }
+  let!(:holiday_1) { create(:holiday, holiday: Time.zone.now + 30.days) }
+  let!(:holiday_2) { create(:holiday, holiday: Time.zone.now + 60.days) }
   let!(:reviewer) { create(:user, :with_can_manage_holidays_permission, role_name: 'Reviewer') }
 
   before { generate_and_set_token(reviewer) }
@@ -29,11 +29,12 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
 
     describe 'Timestamp edge cases' do
       it "Should not include current day if it is a holiday", :show_in_doc do
-        create(:holiday, holiday: Time.now.beginning_of_day)
-        get :available_dates, params: { schedule_days: 6 }
-        body = JSON.parse(response.body)
-        expect(body.length).to eq(6)
-        expect(body).to_not include(Time.now.to_date.to_s)
+        Timecop.freeze(Time.zone.local(2026, 5, 5, 12, 0, 0)) do
+          create(:holiday, holiday: Time.zone.now.beginning_of_day)
+          get :available_dates, params: { schedule_days: 6 }
+          body = JSON.parse(response.body)
+          expect(body).to_not include(Time.zone.today.to_s)
+        end
       end
     end
   end

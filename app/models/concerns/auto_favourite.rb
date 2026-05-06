@@ -28,10 +28,11 @@ module AutoFavourite
 
     relations.each do |name|
       rel = try(name)
-      if rel.present?
-        foreign_key = _reflections[name].foreign_key
-        UserFavourite.add_user_favourite(rel) if send("saved_change_to_#{foreign_key}?")
-      end
+      reflection = self.class.reflect_on_association(name.to_sym)
+      next unless rel.present? && reflection
+
+      foreign_key = reflection.foreign_key
+      UserFavourite.add_user_favourite(rel) if send("saved_change_to_#{foreign_key}?")
     end
   end
 

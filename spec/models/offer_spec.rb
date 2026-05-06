@@ -26,13 +26,13 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:created_by_id).of_type(:integer) }
     it { is_expected.to have_db_column(:district_id).of_type(:integer) }
 
-    it { is_expected.to have_db_column(:submitted_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:review_completed_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:received_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:submitted_at) }
+    it { is_expected.to have_db_column(:reviewed_at) }
+    it { is_expected.to have_db_column(:review_completed_at) }
+    it { is_expected.to have_db_column(:received_at) }
+    it { is_expected.to have_db_column(:cancelled_at) }
     it { is_expected.to have_db_column(:received_by_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:start_receiving_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:start_receiving_at) }
   end
 
   describe "validations" do

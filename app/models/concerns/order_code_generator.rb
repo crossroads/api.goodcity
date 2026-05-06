@@ -30,9 +30,13 @@ module OrderCodeGenerator
       else
         detail_type
       end
-      prefix_length = self.prefix_for(detail_type).length + 1
-      result = Order.where(detail_type: order_type_filter).where("SUBSTRING(orders.code, ?) ~ '^\\d+$'", prefix_length).
-        maximum(Arel.sql("CAST(SUBSTRING(orders.code, #{prefix_length}) AS INTEGER)"))
+      # Integer start position for SUBSTRING (1-based). Inline it: combining a bound `?`
+      # here with `.maximum(...)` can mis-bind placeholders in ActiveRecord 8 (nil position).
+      start = self.prefix_for(detail_type).length + 1
+      # POSIX regex (~); \d is not a digit class in PostgreSQL — use [0-9].
+      numeric_suffix = Arel.sql("SUBSTRING(orders.code, #{start}) ~ '^[0-9]+$'")
+      result = Order.where(detail_type: order_type_filter).where(numeric_suffix).
+        maximum(Arel.sql("CAST(SUBSTRING(orders.code, #{start}) AS INTEGER)"))
       (result || 0) + 1
     end
 

@@ -142,6 +142,8 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     }
 
     describe "modify existing delivery" do
+      # Token must match the offer under test (parent `delivery`/`offer` is a different record).
+      let(:user) { old_offer.created_by }
 
       let!(:old_delivery) { create :gogovan_delivery }
       let!(:old_offer)    { old_delivery.offer }
@@ -160,10 +162,31 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
           "contactAttributes" => ggv_contact }
       }
 
+      let(:ggv_order) do
+        super().merge("offerId" => old_offer.id.to_s)
+      end
+
       context "to a public holiday" do
         before do
-          date = Date.parse(schedule["scheduledAt"]);
-          create :holiday, holiday: date, year: date.year
+          # Match controller scheduling (Time.zone + scheduledAt string). Other specs can leave
+          # rows that make Holiday.is_holiday? flaky in before hooks; reset this date only.
+          date = Time.zone.parse(schedule["scheduledAt"]).to_date
+          Holiday.where(
+            "date((holiday AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') = ?",
+            date
+          ).delete_all
+          Holiday.create!(
+            name: "RSpec public holiday #{SecureRandom.hex(4)}",
+            holiday: date,
+            year: date.year
+          )
+          # Full-suite order / parallel timing can still leave validate_schedule thinking the day
+          # is not a holiday; fail fast before delete_old_associations would call Gogovan.cancel_order.
+          allow(Holiday).to receive(:is_holiday?).and_wrap_original do |method, check_date|
+            next method.call(check_date) if check_date.blank?
+
+            check_date.to_date == date ? true : method.call(check_date)
+          end
         end
 
         context "as a user" do
@@ -183,21 +206,23 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
       context "with bad data" do
         it "should fail to modify the delivery if scheduled_at is nil" do
-          new_delivery['scheduleAttributes']['scheduled_at'] = nil
+          # Empty string keeps scheduledAt present for param validation; validation treats blank as invalid.
+          new_delivery["scheduleAttributes"]["scheduledAt"] = ""
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)
           post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
           expect(response.status).to eq(422)
-          expect(subject['errors'].length).to eq(1)
-          expect(subject['errors'][0]['message']).to eq(
-            'The selected date is either missing or invalid, please try again.'
+          parsed = JSON.parse(response.body)
+          expect(parsed["errors"].length).to eq(1)
+          expect(parsed["errors"][0]["message"]).to eq(
+            "The selected date is either missing or invalid, please try again."
           )
         end
 
         it "should fail to modify the delivery if scheduled_at is invalid" do
-          new_delivery['scheduleAttributes']['scheduled_at'] = 'not a date'
+          new_delivery['scheduleAttributes']['scheduledAt'] = 'not a date'
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)

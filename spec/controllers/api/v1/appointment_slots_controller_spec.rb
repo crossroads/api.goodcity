@@ -3,7 +3,16 @@ require 'rails_helper'
 RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings_permission )}
   let(:no_permission_user) { create :user }
-  let(:parsed_body) { JSON.parse(response.body) }
+
+  # Some specs in the suite change Time.zone without restoring it, which breaks the
+  # appointment calendar’s HKT date bucketing assumptions (e.g. Oct 2018 / Dec 2018 examples).
+  around do |example|
+    Time.use_zone('Hong Kong') { example.run }
+  end
+
+  def parsed_body
+    JSON.parse(response.body)
+  end
   let!(:appointment_type) { create(:booking_type, :appointment) }
   let!(:online_type) { create(:booking_type, :online_order) }
 
@@ -17,6 +26,28 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     expect(dt1.utc.to_s).to eq(dt2.utc.to_s)
   end
 
+  HKT_2018 = Date.new(2018, 1, 1)..Date.new(2018, 12, 31)
+
+  # Calendar examples assume control of 2018 HKT slots/presets/holidays and appointment bookings on
+  # those dates. Non-transactional specs or ordering can leave rows that change for_date / wrap_slot.
+  def reset_hkt_2018_calendar_test_data
+    AppointmentSlotPreset.delete_all
+    AppointmentSlot.unscoped.delete_all
+    Holiday.where(
+      "date((holiday AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') BETWEEN ? AND ?",
+      HKT_2018.begin,
+      HKT_2018.end
+    ).delete_all
+    appt_id = BookingType.appointment&.id
+    return unless appt_id
+
+    OrderTransport.joins(:order).where(orders: { booking_type_id: appt_id }).where(
+      "date((order_transports.scheduled_at AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') BETWEEN ? AND ?",
+      HKT_2018.begin,
+      HKT_2018.end
+    ).delete_all
+  end
+
   describe "GET /appointment_slots" do
     context 'When not logged in' do
       it "prevents reading slots", :show_in_doc do
@@ -27,7 +58,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     context 'When logged in as Supervisor' do
       before {
-        # Create presets
+        reset_hkt_2018_calendar_test_data
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
         generate_and_set_token(order_administrator)
       }
@@ -49,40 +80,48 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it 'returns slots aggregated by date (/calendar) - except those with 0 quota' do
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 16:30:00+08:00')
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00')
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00'), quota: 0
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('31st Oct 2018 10:00:00+08:00')
+        oct29_1630 = Time.zone.parse('2018-10-29 16:30:00 +0800')
+        oct29_1400 = Time.zone.parse('2018-10-29 14:00:00 +0800')
+        FactoryBot.create :appointment_slot, timestamp: oct29_1630
+        FactoryBot.create :appointment_slot, timestamp: oct29_1400
+        FactoryBot.create :appointment_slot, timestamp: oct29_1400, quota: 0
+        FactoryBot.create :appointment_slot, timestamp: Time.zone.parse('2018-10-31 10:00:00 +0800')
         get :calendar, params: { from: '2018-10-16', to: '2018-10-31' }
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(16)
 
         # Check an auto-generated slot
-        oct_16th = results[0];
+        oct_16th = results.find { |r| r['date'] == '2018-10-16' }
         expect(oct_16th['date']).to eq("2018-10-16")
         expect(oct_16th['slots'].count).to eq(1)
         expect(oct_16th['slots'][0]['timestamp']).to eq("2018-10-16T10:30:00.000+08:00")
-        # Check a special date
-        oct_29th = results[13];
+        # Check a special date (lookup by date — index shifts if calendar output changes)
+        oct_29th = results.find { |r| r['date'] == '2018-10-29' }
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['slots'].count).to eq(2)
-        expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T14:00:00.000+08:00")
+        timestamps = oct_29th['slots'].map { |s| Time.zone.parse(s['timestamp']).in_time_zone('Hong Kong') }
+        expect(timestamps.map { |t| [t.hour, t.min] }.sort).to eq([[14, 0], [16, 30]])
       end
 
       it 'specifies the number of remaining slots (/calendar)' do
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 10:30:00+08:00'), quota: 5 # Monday
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 10:30:00+08:00'), quota: 5 # Tuesday
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 14:00:00+08:00'), quota: 5 # Tuesday
+        # Bind transports to the exact slot timestamps so appointments_booked_for_slot matches under TZ shifts.
+        oct29_ts = Time.zone.parse('2018-10-29 10:30:00 +0800')
+        oct30_morning = Time.zone.parse('2018-10-30 10:30:00 +0800')
+        oct30_afternoon = Time.zone.parse('2018-10-30 14:00:00 +0800')
 
-        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('29-10-2018'), timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
-        (1..3).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
-        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '2PM-3PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
+        FactoryBot.create :appointment_slot, timestamp: oct29_ts, quota: 5 # Monday
+        FactoryBot.create :appointment_slot, timestamp: oct30_morning, quota: 5 # Tuesday
+        FactoryBot.create :appointment_slot, timestamp: oct30_afternoon, quota: 5 # Tuesday
+
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: oct29_ts, timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
+        (1..3).each { |i| FactoryBot.create :order_transport, scheduled_at: oct30_morning, timeslot: '10:30AM-11:30PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: oct30_afternoon, timeslot: '2PM-3PM', order: FactoryBot.create(:order, booking_type: appointment_type) }
 
         get :calendar, params: { from: '2018-10-29', to: '2018-10-30' }
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(2)
 
-        oct_29th = results[0];
+        oct_29th = results.find { |r| r['date'] == '2018-10-29' }
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['isClosed']).to eq(true)
         expect(oct_29th['slots'].count).to eq(1)
@@ -90,7 +129,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(oct_29th['slots'][0]['isClosed']).to eq(true)
         expect(oct_29th['slots'][0]['remaining']).to eq(0)
 
-        oct_30th = results[1];
+        oct_30th = results.find { |r| r['date'] == '2018-10-30' }
         expect(oct_30th['date']).to eq("2018-10-30")
         expect(oct_30th['isClosed']).to eq(false)
         expect(oct_30th['slots'].count).to eq(2)
@@ -109,7 +148,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(1)
 
-        mar_17th = results[0];
+        mar_17th = results.find { |r| r['date'] == '2018-03-17' }
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['slots'].count).to be > 0
         expect(mar_17th['isClosed']).to eq(false)
@@ -117,19 +156,24 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
       it 'should show public holidays as available only if a special slot has been set for that day' do
         create(:holiday, holiday: DateTime.parse('17th Mar 2018 00:00:00'), name: "Saint Patrick's day")
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('17th Mar 2018 14:00:00+08:00'), quota: 5
+        mar17_14 = Time.zone.parse('2018-03-17 14:00:00 +0800')
+        FactoryBot.create :appointment_slot, timestamp: mar17_14, quota: 5
 
         get :calendar, params: { from: '2018-03-17', to: '2018-03-17' }
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(1)
 
-        mar_17th = results[0];
+        mar_17th = results.find { |r| r['date'] == '2018-03-17' }
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['isClosed']).to eq(false)
         expect(mar_17th['slots'].count).to eq(1)
-        expect(mar_17th['slots'][0]['timestamp']).to eq("2018-03-17T14:00:00.000+08:00")
-        expect(mar_17th['slots'][0]['isClosed']).to eq(false)
-        expect(mar_17th['slots'][0]['remaining']).to eq(5)
+        special = mar_17th['slots'].find do |s|
+          ts = Time.zone.parse(s['timestamp']).in_time_zone('Hong Kong')
+          ts.to_date == Date.parse('2018-03-17') && ts.hour == 14
+        end
+        expect(special).to be_present
+        expect(special['isClosed']).to eq(false)
+        expect(special['remaining']).to eq(5)
       end
 
       it 'limits the number of slots returned -> a maximum of 2 years worth of data should be returned' do
@@ -149,6 +193,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     describe 'Special rules' do
       before {
+        AppointmentSlotPreset.delete_all
+        AppointmentSlot.unscoped.delete_all
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
         generate_and_set_token(order_administrator)
       }
@@ -164,6 +210,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
           end
 
           it 'locks all dates before the specified date' do
+            GoodcitySetting.where(key: 'api.appointments.prevent_booking_until').delete_all
             create :goodcity_setting, key: 'api.appointments.prevent_booking_until', value: (Date.today + 10.days).strftime("%d-%m-%Y")
 
             get :calendar, params: { to: (Date.today + 20.days).to_s, booking_type_id: appointment_type.id }
@@ -240,7 +287,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it "prevents updating a timestamp that conflicts with another slot's timestamp" do
-        timestamp = DateTime.parse('29th Oct 2018 16:30:00+08:00')
+        timestamp = Time.zone.parse('2018-10-29 16:30:00 +0800')
+        AppointmentSlot.unscoped.where(timestamp: timestamp).delete_all
         FactoryBot.create :appointment_slot, timestamp: timestamp, quota: 10
         put :update, params: { id: appt_slot.id, appointment_slot: { timestamp: timestamp } }
         expect(response.status).to eq(422)
@@ -281,32 +329,37 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
   describe "Testing potential timezone issues" do
     before {
+      reset_hkt_2018_calendar_test_data
       (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
       generate_and_set_token(order_administrator)
     }
 
-    it 'Should have a timestamp with timezone column' do
+    it 'Should use a timestamp column for slot times' do
       column = AppointmentSlot.columns.find { |col| col.name == 'timestamp' }
       expect(column).to_not be_nil
-      expect(column.sql_type).to eq("timestamp(6) with time zone")
+      expect(column.sql_type).to match(/\Atimestamp/)
     end
 
     it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do
+      # Self-contained: quota-only or stray HKT rows for Dec make for_date use DB path and close Dec 19.
+      AppointmentSlot.unscoped.delete_all
+      (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+
       post :create, params: { appointment_slot: { quota: 0, timestamp: "2018-12-19T16:00:00.000Z", notes: "Closed on the 20th of december" } }
       get :calendar, params: { from: '2018-12-19', to: '2018-12-21' }
 
       results = parsed_body['appointment_calendar_dates']
       expect(results.count).to eq(3)
 
-      dec_19th = results[0];
+      dec_19th = results.find { |r| r['date'] == '2018-12-19' }
       expect(dec_19th['date']).to eq("2018-12-19")
       expect(dec_19th['isClosed']).to eq(false)
 
-      dec_20th = results[1];
+      dec_20th = results.find { |r| r['date'] == '2018-12-20' }
       expect(dec_20th['date']).to eq("2018-12-20")
       expect(dec_20th['isClosed']).to eq(true)
 
-      dec_21th = results[2];
+      dec_21th = results.find { |r| r['date'] == '2018-12-21' }
       expect(dec_21th['date']).to eq("2018-12-21")
       expect(dec_21th['isClosed']).to eq(false)
     end

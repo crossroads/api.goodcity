@@ -24,12 +24,12 @@ class SubscriptionsReminder
     offer_states = Offer::SUBSCRIPTIONS_REMINDER_STATES # NOT Draft offers
     User.joins(subscriptions: [:message])
         .joins("INNER JOIN offers on offers.id = messages.messageable_id and messages.messageable_type = 'Offer'")
-        .where('COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)', delta.iso8601)
+        .where('COALESCE(users.sms_reminder_sent_at, users.created_at) < ?', delta)
         .where('subscriptions.state': 'unread')
         .where('messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)')
         .where("(messages.messageable_type = 'Offer' OR messages.messageable_type = 'Item')")
         .where('offers.created_by_id = subscriptions.user_id and offers.state IN (?)', offer_states)
-        .where('messages.sender_id != offers.created_by_id and messages.created_at < (?)', head_start.iso8601)
+        .where('messages.sender_id != offers.created_by_id and messages.created_at < ?', head_start)
         .distinct
   end
 

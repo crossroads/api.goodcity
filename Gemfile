@@ -1,20 +1,29 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.7.3'
+ruby '3.4.9'
 
 gem 'pg'
-gem 'rails', '~> 6.1.4'
+gem 'rails', '~> 8.1', '>= 8.1.3'
 gem 'rake'
+
+# Required because `config/application.rb` loads `sprockets/railtie`
+gem 'sprockets-rails'
+
+# Ruby 3.4: stdlib gem needed by ActiveSupport 6.1
+gem 'mutex_m', require: false
+# Ruby 3.4: stdlib gem needed by ActiveSupport 6.1
+gem 'drb', require: false
 
 gem 'active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
-gem 'active_record_union'
+gem 'active_record_union', '~> 1.4'
 gem 'apipie-rails', git: "https://github.com/Apipie/apipie-rails.git", ref: "a55d836"
 gem 'bootsnap', require: false
 gem 'by_star'
 gem 'cancancan'
 gem 'cloudinary'
+gem 'csv'
 gem 'dotenv-rails'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'factory_bot_rails' # used in rake db:seed in production
@@ -31,13 +40,13 @@ gem 'nestful'
 gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'oj'
-gem 'paper_trail'
+gem 'paper_trail', '>= 17.0.0'
 gem 'paranoia'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rack-protection'
 gem 'rack-timeout', require: 'rack/timeout/base'
-gem 'rails-i18n'
+gem 'rails-i18n', '~> 8.1', '>= 8.1.0'
 gem 'rake-progressbar'
 gem 'redis' # Used for Rails cache_store
 gem 'request_store'
@@ -47,7 +56,7 @@ gem 'rotp'
 gem 'rubyXL'
 gem 'sidekiq', '<8'
 gem 'sidekiq-scheduler'
-gem 'state_machine'
+gem 'state_machines-activerecord', '~> 0.9.0'
 gem 'traco'
 gem 'twilio-ruby'
 gem 'whenever', require: false
@@ -84,7 +93,9 @@ group :development, :test do
 end
 
 group :test do
-  gem 'cucumber-rails', require: false
+  # Cucumber < 9 raises ArgumentError on Ruby 3.4 (DataTable / Struct keywords).
+  gem 'cucumber', '~> 10.2'
+  gem 'cucumber-rails', '>= 4.0.1', require: false
   gem 'database_cleaner'
   gem 'email_spec'
   gem 'rails-controller-testing'

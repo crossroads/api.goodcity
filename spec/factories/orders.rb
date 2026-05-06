@@ -37,29 +37,29 @@ FactoryBot.define do
 
     trait :with_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_requested, :with_inventory_record, order: order)
-        order.save
+        create_list(:orders_package, 3, :with_state_requested, :with_inventory_record, order: order)
+        order.reload
       end
     end
 
     trait :with_designated_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_designated, :with_inventory_record, order: order)
-        order.save
+        create_list(:orders_package, 3, :with_state_designated, :with_inventory_record, order: order)
+        order.reload
       end
     end
 
     trait :with_cancelled_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_cancelled, :with_inventory_record, order: order)
-        order.save
+        create_list(:orders_package, 3, :with_state_cancelled, :with_inventory_record, order: order)
+        order.reload
       end
     end
 
     trait :with_dispatched_orders_packages do
       after(:create) do |order|
-        order.orders_packages << create_list(:orders_package, 3, :with_state_dispatched, :with_inventory_record, order: order)
-        order.save
+        create_list(:orders_package, 3, :with_state_dispatched, :with_inventory_record, order: order)
+        order.reload
       end
     end
 

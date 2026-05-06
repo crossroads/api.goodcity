@@ -63,9 +63,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         let(:user) { create(:user, user_type) }
         let(:user2) { create(:user) }
         let(:package) { create(:package) }
-        let(:payload) do
-          return { params: {requested_package: { user_id: user.id, package_id: package.id } } }
-        end
+        let(:payload) { { requested_package: { user_id: user.id, package_id: package.id } } }
 
         before {
           initialize_inventory(package)
@@ -73,20 +71,20 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         }
 
         it "returns 201" do
-          post :create, payload
+          post :create, params: payload
           expect(response.status).to eq(201)
         end
 
         it "allows creating a requested_package for him/herself" do
           expect {
-            post :create, payload
+            post :create, params: payload
           }.to change(RequestedPackage, :count).by(1)
           expect(user.reload.requested_packages.length).to eq(1)
         end
 
         it "prevents requesting the same package a second time" do
           create(:requested_package, user_id: user.id, package_id: package.id)
-          post :create, payload
+          post :create, params: payload
           expect(response.status).to eq(422)
           expect(user.reload.requested_packages.length).to eq(1)
         end

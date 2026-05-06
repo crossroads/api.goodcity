@@ -77,7 +77,7 @@ module Goodcity
   def factory(base, default_translation_key, **opts)
     error_klass = Class.new(base) do
       define_method(:initialize) do |translation_key: default_translation_key, params: {}|
-        msg = I18n.t(translation_key, { **params, default: translation_key })
+        msg = I18n.t(translation_key, **params, default: translation_key)
         super(msg, **opts)
       end
 

@@ -1,12 +1,26 @@
 require 'rails_helper'
 
-RSpec.describe InventoryNumber, type: :model do
+RSpec.describe InventoryNumber, type: :model, non_transactional: true do
+  # Low-sequence next_code/max_code tests require TRUNCATE ... RESTART IDENTITY; rollback
+  # does not reset PostgreSQL sequences. See spec/support/transactional_test_isolation.rb.
+
+  before(:each) do
+    ActiveRecord::Base.connection.execute(
+      'TRUNCATE TABLE packages_inventories, inventory_numbers, packages RESTART IDENTITY CASCADE'
+    )
+  end
 
   let(:inventory_number) { InventoryNumber.new }
 
   context "validations" do
     it { is_expected.to validate_presence_of(:code) }
-    it { is_expected.to validate_uniqueness_of(:code) }
+
+    it "disallows duplicate codes" do
+      InventoryNumber.create!(code: "INV-UNIQ-1")
+      dup = InventoryNumber.new(code: "INV-UNIQ-1")
+      expect(dup).not_to be_valid
+      expect(dup.errors[:code]).to be_present
+    end
   end
 
   context "create_with_next_code" do
@@ -53,7 +67,7 @@ RSpec.describe InventoryNumber, type: :model do
       create(:package, inventory_number: "000001")
       create(:package, inventory_number: "000002")
       create(:package, inventory_number: "000003")
-      expect(InventoryNumber.pluck(:code)).to match_array (["000001", "000002", "000003"])
+      expect(InventoryNumber.pluck(:code)).to match_array(["000001", "000002", "000003"])
       expect(Package.pluck(:inventory_number)).to match_array(["000001", "000002", "000003"])
       expect(InventoryNumber.next_code).to eql("000004")
     end

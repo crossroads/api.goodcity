@@ -23,7 +23,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/ruby:2.7.3
+    - image: cimg/ruby:3.4.9
   working_directory: ~/api.goodcity
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
     <<: *defaults
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: gem install bundler:2.2.27
+      - run: gem install bundler:2.6.9
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache: *restore-bundler-cache
@@ -50,43 +50,55 @@ jobs:
   test:
     <<: *defaults
     docker:
-      - image: cimg/ruby:2.7.3-browsers
+      - image: cimg/ruby:3.4.9-browsers
       - image: cimg/redis:6.0
-      - image: cimg/postgres:9.6
+      - image: cimg/postgres:14.20
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: goodcity_server_test
     parallelism: 3
     environment:
       RAILS_ENV: test
-      DATABASE_URL: "postgres://postgres@localhost:5432/goodcity_server_test"
+      # Parallel containers share one Postgres service — each node MUST use its own database or
+      # transactional specs race on delete_all / factories (flaky appointment_slots, orders, etc.).
+      # DATABASE_URL is set in each DB-using step via CIRCLE_NODE_INDEX.
     steps:
       - run: sudo apt update && sudo apt -y upgrade libu2f-udev
       - browser-tools/install-browser-tools
       - run:
           name: Install PostgreSQL Client (required to run migrations)
           command: |
-            sudo sh -c 'echo "deb https://apt-archive.postgresql.org/pub/repos/apt `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-            wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
             sudo apt update
-            sudo apt-get install postgresql-client-9.6
+            sudo apt-get install -y postgresql-client
       - attach_workspace:
           at: ~/api.goodcity/tmp
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache: *restore-bundler-cache
-      - run: gem install bundler:2.2.27 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
+      - run: gem install bundler:2.6.9 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - run:
           name: Wait for DB and Redis containers to start
           command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
-      - run: bundle exec rails db:create:all db:migrate
+      - run:
+          name: Setup test database (per parallel container)
+          command: |
+            export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
+            bundle exec rails db:create db:migrate
       - run:
           name: Cucumber tests
           command: |
+            export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
             bundle exec cucumber
+      - run:
+          name: Recreate test database after Cucumber
+          command: |
+            export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
+            bundle exec rails db:drop db:create db:schema:load
       - run:
           name: Rspec tests
           command: |
+            export DATABASE_URL="postgres://postgres@localhost:5432/goodcity_server_test_${CIRCLE_NODE_INDEX:-0}"
+            mkdir -p ~/rspec
             bundle exec rspec --format progress \
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
@@ -108,7 +120,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache: *restore-bundler-cache
-      - run: gem install bundler:2.2.27 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
+      - run: gem install bundler:2.6.9 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - run: |
           STAGE=$(if [ "$CIRCLE_BRANCH" == "live" ]; then echo production; else echo staging; fi)
           bundle exec cap ${STAGE} deploy

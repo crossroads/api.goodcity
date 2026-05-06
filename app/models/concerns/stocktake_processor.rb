@@ -20,7 +20,9 @@ module StocktakeProcessor
 
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open? || stocktake.awaiting_process?
 
-      if stocktake.revisions.where(dirty: true).count.positive?
+      revisions_scope = StocktakeRevision.where(stocktake_id: stocktake.id)
+
+      if revisions_scope.where(dirty: true).exists?
         stocktake.reopen
         raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions'))
       end
@@ -30,7 +32,7 @@ module StocktakeProcessor
       Stocktake.without_auto_counters do
         PackagesInventory.secured_transaction do
           PushService.paused do
-            stocktake.revisions.find_each do |revision|
+            revisions_scope.find_each do |revision|
               next unless revision.pending?
 
               error = apply_package_revision(revision)
@@ -40,7 +42,7 @@ module StocktakeProcessor
 
           raise ActiveRecord::Rollback if errors.length.positive?
 
-          stocktake.revisions.update_all(state: 'processed')
+          revisions_scope.update_all(state: 'processed')
           stocktake.close
         end
 
@@ -62,7 +64,7 @@ module StocktakeProcessor
 
     def persist_errors(stocktake, errors)
       ActiveRecord::Base.transaction do
-        stocktake.revisions.each do |rev|
+        StocktakeRevision.where(stocktake_id: stocktake.id).find_each do |rev|
           message = errors[rev.id].present? ? errors[rev.id][:message] : ''
           rev.reload.update(warning: message)
         end

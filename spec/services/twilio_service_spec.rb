@@ -28,7 +28,7 @@ describe TwilioService do
       before(:each) do
         allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
         body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn't request this message, please ignore)\n"
-        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+        expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
       end
 
       it "should send the SMS via Twilio for Donor App"  do
@@ -50,7 +50,7 @@ describe TwilioService do
           it "should send the SMS via Twilio in #{locale} language" do
             allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
             body = I18n.t('twilio.browse_sms_verification_pin', pin: otp_code)
-            expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+            expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
             twilio.sms_verification_pin(BROWSE_APP)
           end
         end
@@ -64,7 +64,7 @@ describe TwilioService do
         let(:user) { create(:user, preferred_language: locale) }
         it "should send the SMS via Twilio in #{locale} language" do
           body = I18n.t('twilio.charity_user_welcome_sms', full_name: user.full_name, locale: locale)
-          expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+          expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
           twilio.send_welcome_msg
         end
       end
@@ -82,7 +82,7 @@ describe TwilioService do
 
         it "sends the SMS in #{locale} language" do
           body = I18n.t('twilio.new_order_submitted_sms_to_charity', code: order.code, locale: locale)
-          expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+          expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
           twilio.order_confirmed_sms_to_charity(order)
         end
       end
@@ -90,7 +90,7 @@ describe TwilioService do
 
     it "sends order submitted acknowledgement to charity who submitted order" do
       body = "Thank you for placing order #{order.code} on GoodCity. Our team will be in touch with you soon.\n"
-      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+      expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
       twilio.order_confirmed_sms_to_charity(order)
     end
   end
@@ -104,7 +104,7 @@ describe TwilioService do
       it "sends order submitted alert to order_fulfilment_user" do
         allow(twilio).to receive(:send_to_twilio?).and_return(true)
         body = "#{charity.full_name} from #{order.organisation.name_en} has just placed an order #{order.code} on GoodCity.\n"
-        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+        expect(TwilioJob).to receive(:perform_later).with({ to: user.mobile, body: body })
         twilio.order_submitted_sms_to_order_fulfilment_users(order)
       end
     end
@@ -120,7 +120,7 @@ describe TwilioService do
         it "sends SMS in #{locale} language" do
           body = I18n.t('twilio.unread_message_sms', url: url)
           expect(twilio).to receive(:unread_message_reminder).and_return( body )
-          expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
+          expect(TwilioJob).to receive(:perform_later).with({ to: mobile, body: body })
           twilio.send_unread_message_reminder(url)
         end
       end

@@ -1,3 +1,4 @@
+require Rails.root.join('app/services/authentication_service')
 require 'goodcity/authentication/strategies/pin_strategy'
 require 'goodcity/authentication/strategies/pin_jwt_strategy'
 

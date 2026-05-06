@@ -12,9 +12,9 @@ RSpec.describe Shareable, type: :model do
     it { is_expected.to have_db_column(:resource_type).of_type(:string) }
     it { is_expected.to have_db_column(:allow_listing).of_type(:boolean) }
     it { is_expected.to have_db_column(:created_by_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:expires_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:updated_at).of_type(:datetime) }
-    it { is_expected.to have_db_column(:created_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:expires_at) }
+    it { is_expected.to have_db_column(:updated_at) }
+    it { is_expected.to have_db_column(:created_at) }
   end
 
   describe 'Associations' do

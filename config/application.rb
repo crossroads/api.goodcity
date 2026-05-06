@@ -43,5 +43,13 @@ module GoodCityServer
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
+
+    # Rails 8 removed Rails::Application#secrets; this app still uses config/secrets.yml
+    # (see spec/support/env and CI) for JWT, Twilio, etc.
+    def secrets
+      @secrets ||= ActiveSupport::InheritableOptions.new(
+        config_for(:secrets).deep_symbolize_keys
+      )
+    end
   end
 end

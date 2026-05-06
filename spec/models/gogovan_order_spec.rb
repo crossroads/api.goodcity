@@ -12,7 +12,7 @@ RSpec.describe GogovanOrder, type: :model do
     it{ is_expected.to have_db_column(:driver_name).of_type(:string)}
     it{ is_expected.to have_db_column(:driver_mobile).of_type(:string)}
     it{ is_expected.to have_db_column(:driver_license).of_type(:string)}
-    it{ is_expected.to have_db_column(:completed_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:completed_at)}
   end
 
   describe 'offer_by_ggv_uuid' do

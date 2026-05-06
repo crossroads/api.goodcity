@@ -126,9 +126,9 @@ module StockOperations
       }
 
       if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)
-        register_loss(package, params)
+        register_loss(package, **params)
       elsif PackagesInventory::QUANTITY_GAIN_ACTIONS.include?(action)
-        register_gain(package, params)
+        register_gain(package, **params)
       else
         raise Goodcity::ActionNotAllowedError.new
       end

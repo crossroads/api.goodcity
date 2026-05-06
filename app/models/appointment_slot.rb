@@ -9,7 +9,7 @@ class AppointmentSlot < ApplicationRecord
   after_destroy :push_changes
   push_targets [ Channel::STOCK_CHANNEL ]
 
-  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_s(:db)) }
+  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_fs(:db)) }
 
   scope :ascending, -> { order('timestamp ASC').order('quota ASC') }
 
@@ -58,7 +58,12 @@ class AppointmentSlot < ApplicationRecord
   end
 
   def self.for_date(date)
-    slots = unscoped.where("date(timestamp AT TIME ZONE 'HKT') = ?", date).ascending
+    # `timestamp` is stored without timezone in DB, but Rails writes values in UTC.
+    # Convert from UTC → HKT for correct local-date bucketing.
+    slots = unscoped.where(
+      "date((timestamp AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Hong_Kong') = ?",
+      date
+    ).ascending
     return slots.select { |sl|
       sl.timestamp = sl.timestamp.in_time_zone
       sl.quota.positive?

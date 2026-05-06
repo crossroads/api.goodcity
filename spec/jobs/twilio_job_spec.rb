@@ -56,6 +56,17 @@ describe TwilioJob, :type => :job do
     end
   end
 
+  describe "ActiveJob queue" do
+    it "runs perform after perform_later with one serialized Hash (matches TwilioService#send_sms)" do
+      allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
+      allow_any_instance_of(TwilioJob).to receive(:send_to_twilio?).and_return(true)
+      expect(twilio_client).to receive_message_chain(:messages, :create).with(options)
+
+      TwilioJob.perform_later(options)
+      perform_enqueued_jobs
+    end
+  end
+
   context "staging environment" do
     before do
       allow(Rails.env).to receive(:staging?).and_return(true)
@@ -63,14 +74,14 @@ describe TwilioJob, :type => :job do
     end
 
     it "should send an email instead of an SMS" do
-      expect(ActionMailer::Base).to receive(:mail).with(
-        from: ENV['EMAIL_FROM'],
-        to: ENV['EMAIL_FROM'],
-        subject: "SMS to #{options[:to]}",
-        body: options[:body]
-      ).and_return(double(deliver: true))
+      expect {
+        TwilioJob.new.perform(options)
+      }.to change { ActionMailer::Base.deliveries.size }.by(1)
 
-      TwilioJob.new.perform(options)
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail.to).to eq([ENV["EMAIL_FROM"]])
+      expect(mail.subject).to eq("SMS to #{options[:to]}")
+      expect(mail.body.raw_source).to include(options[:body])
     end
   end
 end

@@ -5,7 +5,7 @@ describe PackagesInventoriesImporter do
     order_id = create(:order).id
     ActiveRecord::Base.connection.execute <<-SQL
       INSERT INTO orders_packages(package_id, order_id, quantity, state, created_at, updated_at)
-      VALUES (#{package.id}, #{order_id}, #{qty}, '#{state}', '#{Time.now.to_s(:db)}', '#{Time.now.to_s(:db)}')
+      VALUES (#{package.id}, #{order_id}, #{qty}, '#{state}', '#{Time.now.to_fs(:db)}', '#{Time.now.to_fs(:db)}')
     SQL
   end
 
@@ -58,6 +58,21 @@ describe PackagesInventoriesImporter do
   end
 
   describe "For on hand packages" do
+    def row_scope_ids
+      on_hand_packages.map(&:id)
+    end
+
+    def all_rows
+      PackagesInventory.where(package_id: row_scope_ids)
+    end
+
+    def inventory_rows
+      PackagesInventory.where(package_id: row_scope_ids, action: "inventory")
+    end
+
+    def dispatch_rows
+      PackagesInventory.where(package_id: row_scope_ids, action: "dispatch")
+    end
 
     before do
       touch(on_hand_packages)
@@ -89,6 +104,21 @@ describe PackagesInventoriesImporter do
   end
 
   describe "For dispatched packages" do
+    def row_scope_ids
+      dispatched_packages.map(&:id)
+    end
+
+    def all_rows
+      PackagesInventory.where(package_id: row_scope_ids)
+    end
+
+    def inventory_rows
+      PackagesInventory.where(package_id: row_scope_ids, action: "inventory")
+    end
+
+    def dispatch_rows
+      PackagesInventory.where(package_id: row_scope_ids, action: "dispatch")
+    end
 
     before do
       touch(dispatched_packages)
@@ -136,10 +166,10 @@ describe PackagesInventoriesImporter do
       end
 
       it "should compute the correct quantity in the inventory" do
-        Package.all.each do |p|
+        dispatched_packages.each do |p|
           expect(PackagesInventory::Computer.package_quantity(p)).to eq(0)
         end
-        expect(PackagesInventory::Computer.total_quantity).to eq(0)
+        expect(PackagesInventory.where(package_id: row_scope_ids).sum(:quantity)).to eq(0)
       end
     end
   end

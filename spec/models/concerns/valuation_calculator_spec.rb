@@ -20,11 +20,27 @@ context "ValuationCalculator" do
     let(:grade) { "B" }
     let!(:donor_condition) { create(:donor_condition) }
     let!(:vm) { create(:valuation_matrix, grade: grade, donor_condition_id: donor_condition.id) }
-    let!(:package_type) { create(:package_type, default_value_hk_dollar: 543.21) }
-    let!(:package) { create(:package, grade: grade, donor_condition_id: donor_condition.id , package_type: package_type) }
+    let!(:package_type) do
+      PackageType.create!(
+        code: "rspec-vc-#{SecureRandom.hex(4)}",
+        name_en: "RSpec VC",
+        name_zh_tw: "RSpec VC",
+        default_value_hk_dollar: 543.21,
+        location: create(:location)
+      )
+    end
+    let!(:package) { create(:package, grade: grade, donor_condition_id: donor_condition.id, package_type: package_type) }
 
     context "returns 0 if package_type.default_value_hk_dollar is nil" do
-      let(:package_type) { create(:package_type, default_value_hk_dollar: nil) }
+      let(:package_type) do
+        PackageType.create!(
+          code: "rspec-vc-#{SecureRandom.hex(4)}",
+          name_en: "RSpec VC nil",
+          name_zh_tw: "RSpec VC nil",
+          default_value_hk_dollar: nil,
+          location: create(:location)
+        )
+      end
       it { expect(package.calculate_valuation).to eql(0.0) }
     end
 

@@ -22,9 +22,10 @@ class ChangeOrderTransportScheduledAtToDatetime < ActiveRecord::Migration[4.2]
         .change(hour: time.hour, min: time.min)
         .utc
 
+      ts_sql = timestamp.respond_to?(:to_fs) ? timestamp.to_fs(:db) : timestamp.to_s
       ActiveRecord::Base.connection.execute <<-SQL
         UPDATE order_transports
-        SET scheduled_at = \'#{timestamp.to_s(:db)}\'
+        SET scheduled_at = \'#{ts_sql}\'
         WHERE id = #{transport.id}
       SQL
     end

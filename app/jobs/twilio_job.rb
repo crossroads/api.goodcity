@@ -9,7 +9,11 @@ class TwilioJob < ActiveJob::Base
       Rails.logger.info(class: self.class.name, msg: "SMS sent", mobile: options[:to], body: options[:body])
     elsif Rails.env.staging?
       # We'll send the SMS text via email to mailcatcher instead
-      ActionMailer::Base.mail(from: ENV['EMAIL_FROM'], to: ENV['EMAIL_FROM'], subject: "SMS to #{options[:to]}", body: options[:body]).deliver
+      InternalNotificationMailer.plain(
+        to: ENV.fetch("EMAIL_FROM"),
+        subject: "SMS to #{options[:to]}",
+        body: options[:body]
+      ).deliver_now
     end
   end
   

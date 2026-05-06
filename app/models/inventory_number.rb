@@ -32,7 +32,7 @@ class InventoryNumber < ApplicationRecord
         SELECT 1 FROM (
           SELECT inventory_number FROM packages WHERE inventory_number ~ :term
           UNION
-          SELECT code AS inventory_number FROM inventory_numbers
+          SELECT code AS inventory_number FROM inventory_numbers WHERE code ~ :term
         ) AS inventory_number
       WHERE CAST(inventory_number AS INTEGER) = s.i)
       ORDER BY first_missing_code
@@ -48,7 +48,7 @@ class InventoryNumber < ApplicationRecord
     sql_for_max_code = sanitize_sql_array([%{
       SELECT inventory_number FROM packages WHERE inventory_number ~ :term
       UNION
-      SELECT code AS inventory_number FROM inventory_numbers
+      SELECT code AS inventory_number FROM inventory_numbers WHERE code ~ :term
       ORDER BY inventory_number DESC LIMIT 1
     }, term: reg.source])
     result = InventoryNumber.connection.exec_query(sql_for_max_code).first || {}

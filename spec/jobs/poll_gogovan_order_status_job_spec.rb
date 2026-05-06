@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe PollGogovanOrderStatusJob, type: :job do
-
   let(:order) { create :gogovan_order, :with_delivery, :active }
   let!(:empty_order) { create :gogovan_order, :pending }
   let(:invalid_order) { create :gogovan_order, :with_delivery, :pending,  booking_id: nil }
