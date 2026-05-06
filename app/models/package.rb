@@ -276,7 +276,7 @@ class Package < ApplicationRecord
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.saleable ||= offer.try(:saleable) || false
+    self.saleable = offer.try(:saleable) || false if saleable.nil?
     true
   end
 
