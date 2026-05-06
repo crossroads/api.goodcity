@@ -29,6 +29,13 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       before {
         # Create presets
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+        # Calendar examples use 2018 fixtures; leftover AppointmentSlot rows make for_date treat the day as
+        # fully specified in DB and skip merging presets / expected slot counts.
+        AppointmentSlot.where(
+          "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+          Date.new(2018, 1, 1),
+          Date.new(2018, 12, 31)
+        ).delete_all
         generate_and_set_token(order_administrator)
       }
 
@@ -58,15 +65,18 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(results.count).to eq(16)
 
         # Check an auto-generated slot
-        oct_16th = results[0];
+        oct_16th = results.find { |r| r['date'] == '2018-10-16' }
         expect(oct_16th['date']).to eq("2018-10-16")
         expect(oct_16th['slots'].count).to eq(1)
         expect(oct_16th['slots'][0]['timestamp']).to eq("2018-10-16T10:30:00.000+08:00")
-        # Check a special date
-        oct_29th = results[13];
+        # Check a special date (lookup by date — index shifts if calendar output changes)
+        oct_29th = results.find { |r| r['date'] == '2018-10-29' }
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['slots'].count).to eq(2)
-        expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T14:00:00.000+08:00")
+        timestamps = oct_29th['slots'].map { |s| s['timestamp'] }.sort
+        expect(timestamps).to eq(
+          ["2018-10-29T14:00:00.000+08:00", "2018-10-29T16:30:00.000+08:00"]
+        )
       end
 
       it 'specifies the number of remaining slots (/calendar)' do
@@ -82,7 +92,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(2)
 
-        oct_29th = results[0];
+        oct_29th = results.find { |r| r['date'] == '2018-10-29' }
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['isClosed']).to eq(true)
         expect(oct_29th['slots'].count).to eq(1)
@@ -90,7 +100,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(oct_29th['slots'][0]['isClosed']).to eq(true)
         expect(oct_29th['slots'][0]['remaining']).to eq(0)
 
-        oct_30th = results[1];
+        oct_30th = results.find { |r| r['date'] == '2018-10-30' }
         expect(oct_30th['date']).to eq("2018-10-30")
         expect(oct_30th['isClosed']).to eq(false)
         expect(oct_30th['slots'].count).to eq(2)
@@ -127,9 +137,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(mar_17th['date']).to eq("2018-03-17")
         expect(mar_17th['isClosed']).to eq(false)
         expect(mar_17th['slots'].count).to eq(1)
-        expect(mar_17th['slots'][0]['timestamp']).to eq("2018-03-17T14:00:00.000+08:00")
-        expect(mar_17th['slots'][0]['isClosed']).to eq(false)
-        expect(mar_17th['slots'][0]['remaining']).to eq(5)
+        special = mar_17th['slots'].find { |s| s['timestamp'] == "2018-03-17T14:00:00.000+08:00" }
+        expect(special).to be_present
+        expect(special['isClosed']).to eq(false)
+        expect(special['remaining']).to eq(5)
       end
 
       it 'limits the number of slots returned -> a maximum of 2 years worth of data should be returned' do
@@ -292,21 +303,27 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     end
 
     it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do
+      AppointmentSlot.where(
+        "date(timestamp AT TIME ZONE 'HKT') BETWEEN ? AND ?",
+        Date.new(2018, 12, 1),
+        Date.new(2018, 12, 31)
+      ).delete_all
+
       post :create, params: { appointment_slot: { quota: 0, timestamp: "2018-12-19T16:00:00.000Z", notes: "Closed on the 20th of december" } }
       get :calendar, params: { from: '2018-12-19', to: '2018-12-21' }
 
       results = parsed_body['appointment_calendar_dates']
       expect(results.count).to eq(3)
 
-      dec_19th = results[0];
+      dec_19th = results.find { |r| r['date'] == '2018-12-19' }
       expect(dec_19th['date']).to eq("2018-12-19")
       expect(dec_19th['isClosed']).to eq(false)
 
-      dec_20th = results[1];
+      dec_20th = results.find { |r| r['date'] == '2018-12-20' }
       expect(dec_20th['date']).to eq("2018-12-20")
       expect(dec_20th['isClosed']).to eq(true)
 
-      dec_21th = results[2];
+      dec_21th = results.find { |r| r['date'] == '2018-12-21' }
       expect(dec_21th['date']).to eq("2018-12-21")
       expect(dec_21th['isClosed']).to eq(false)
     end
