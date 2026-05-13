@@ -61,6 +61,7 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: "postgres://postgres@localhost:5432/goodcity_server_test"
     steps:
+      - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: sudo apt update && sudo apt -y upgrade libu2f-udev
       - browser-tools/install-browser-tools
       - run:
@@ -108,6 +109,7 @@ jobs:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache: *restore-bundler-cache
+      - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: gem install bundler:2.2.27 && bundle config set --local deployment 'true' && (bundle check || bundle install --jobs=2 --retry=3)
       - run: |
           STAGE=$(if [ "$CIRCLE_BRANCH" == "live" ]; then echo production; else echo staging; fi)
