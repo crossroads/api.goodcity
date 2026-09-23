@@ -32,7 +32,7 @@ staff:
   - { key: kelvin,  title: Mr,  first_name: Kelvin,   last_name: Lau,    mobile: "+85261010008", email: kelvin.lau@example.test,   roles: [Supervisor, Reviewer] }
 
 donors:
-  - { key: donor_ng,      title: Mrs, first_name: Grace,   last_name: Ng,       mobile: "+85262020001" }
+  - { key: donor_ng,      title: Mrs, first_name: Janet,   last_name: Ng,       mobile: "+85262020001" }
   - { key: donor_tsang,   title: Mr,  first_name: Edmund,  last_name: Tsang,    mobile: "+85262020002" }
   - { key: donor_fischer, title: Ms,  first_name: Anna,    last_name: Fischer,  mobile: "+85262020003" }
   - { key: donor_kwok,    title: Ms,  first_name: Mandy,   last_name: Kwok,     mobile: "+85262020004" }
@@ -69,4 +69,4 @@ charities:
 names:
   surnames: [Chan, Wong, Lee, Cheung, Lau, Ng, Ho, Leung, Lam, Tang, Yeung, Chow, Tsang, Kwok, Mak, Fung, Siu, Poon, Hui, Lo, Santos, Reyes, Gurung, Rai, Khan, Hussain, Okafor, Nguyen]
   given_male: [Chi Keung, Wai Man, Ka Ho, Siu Ming, Kin Wah, Tsz Hin, Joseph, Arjun, Mohammed, Emmanuel, Minh, Carlos, Hon Kit, Yiu Fai]
-  given_female: [Mei Ling, Siu Fong, Wing Sze, Ka Yan, Lai Kuen, Hoi Yan, Maria, Fatima, Aisha, Grace, Linh, Rosa, Yuen Ting, Man Yee]
+  given_female: [Mei Ling, Siu Fong, Wing Sze, Ka Yan, Lai Kuen, Hoi Yan, Maria, Fatima, Aisha, Joanne, Linh, Rosa, Yuen Ting, Man Yee]
