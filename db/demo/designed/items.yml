@@ -1,0 +1,697 @@
+# The stock spine: designed cases, each with the reason it exists (`why`) and what the
+# checks assert about it once built (`expect`). Delete a case only if you know what it
+# was testing.
+#
+# Fields
+#   code          real package type code (resolved by code, never id)
+#   description   post-cleanup house style: sentence case, specific, key attributes
+#   condition     New | Lightly Used | Heavily Used | Broken | Mixed      grade: A-D
+#   qty           received quantity          value: HK$ (per unit)
+#   dims          [length, width, height] in cm  (CBM is derived, never stored)
+#   location      "<building> <area>", a real production location
+#   inventoried   when it was received: "-40d", "-40d@14:30", "2018-06-12"
+#   photos        fixture photo group held by the local image service (1-3 images)
+#   history       what happened to it afterwards, performed through Package::Operations:
+#                   move: <qty|all> to: <location> [from:]   gain|loss|trash|recycle: <qty>
+#                   process: <qty> destination:   publish: true|false   set: {field: value}
+#                   message: <staff note on the item>
+#   Designations and dispatches live on the order side (orders.yml).
+
+# --- Furniture --------------------------------------------------------------------
+
+- key: sofa_three_seat
+  why: "the everyday singleton: one sofa, one location, three photos, published, with a staff note"
+  code: FCS
+  description: "Three-seater sofa, grey woven fabric, feather-filled seat cushions"
+  condition: Lightly Used
+  grade: B
+  qty: 1
+  value: 2400
+  dims: [210, 92, 86]
+  location: 30 Furniture
+  inventoried: -41d
+  published: true
+  photos: 8006
+  donor: donor_morgan
+  history:
+    - { at: -40d@16:00, message: "Small pull on the back of the left arm, only visible close up. Photographed." }
+  expect: { on_hand: 1, available: 1, photos: 3, published: true, locations: 1 }
+
+- key: two_seat_sofa
+  why: "new, grade A, requested online within a week of arriving — designated, not yet dispatched"
+  code: FCS
+  description: "Two-seater sofa, dark teal woven fabric, tapered wooden legs"
+  condition: New
+  grade: A
+  qty: 1
+  value: 3200
+  dims: [150, 82, 80]
+  location: 30 Furniture
+  inventoried: -6d
+  published: true
+  photos: 8021
+  expect: { designated: 1, available: 0, photos: 2 }
+
+- key: office_chairs_mesh
+  why: "office-refit bulk: multi-quantity across two locations, one unit trashed"
+  code: FCO
+  description: "Office chair, ergonomic, grey mesh back, adjustable arms"
+  condition: Lightly Used
+  grade: B
+  qty: 24
+  value: 450
+  dims: [66, 66, 110]
+  weight: 12.5
+  location: 30 Furniture
+  inventoried: -26d@10:30
+  published: true
+  photos: 8004
+  donor: donor_office
+  history:
+    - { at: -20d, move: 8, to: PG Shed }
+    - { at: -10d, trash: 1, description: "Gas lift failed, not repairable" }
+  expect: { locations: 2, actions: [inventory, move, trash] }
+
+- key: task_chairs
+  why: "a quieter bulk line from the same refit, unpublished"
+  code: FCO
+  description: "Task chair, navy fabric seat and back, no arms"
+  condition: Lightly Used
+  grade: B
+  qty: 6
+  value: 300
+  dims: [60, 60, 95]
+  location: 30 Furniture
+  inventoried: -26d@10:40
+  published: false
+  photos: 8019
+  donor: donor_office
+  expect: { on_hand: 6, published: false }
+
+- key: office_desks_oak
+  why: "bulk desks partly designated to two orders at once"
+  code: FDO
+  description: "Office desk, light oak veneer top, white steel frame, 140 x 70 cm"
+  condition: Lightly Used
+  grade: B
+  qty: 8
+  value: 900
+  dims: [140, 70, 74]
+  location: 30 Furniture
+  inventoried: -26d@10:50
+  published: true
+  photos: 8005
+  donor: donor_office
+
+- key: writing_desk
+  why: "brand-new small desk received this week"
+  code: FDH
+  description: "Writing desk, white matte top, pale wood legs, one drawer"
+  condition: New
+  grade: A
+  qty: 1
+  value: 850
+  dims: [100, 50, 76]
+  location: 30 Furniture
+  inventoried: -3d
+  published: true
+  photos: 8020
+
+- key: bookcase_walnut
+  why: "two identical bookcases kept in the shed"
+  code: FSB
+  description: "Bookcase, five shelves, dark walnut finish"
+  condition: Lightly Used
+  grade: B
+  qty: 2
+  value: 600
+  dims: [80, 30, 180]
+  location: PG Shed
+  inventoried: -58d
+  published: true
+  photos: 8012
+
+- key: bookcase_birch_low
+  why: "a low bookcase, new"
+  code: FSB
+  description: "Bookcase, low, three shelves, birch finish"
+  condition: New
+  grade: A
+  qty: 1
+  value: 400
+  dims: [80, 30, 100]
+  location: 30 Furniture
+  inventoried: -9d
+  published: true
+  photos: 8027
+
+- key: mattress_rolled
+  why: "brand new in factory wrapping, bulk"
+  code: BSM
+  description: "Single mattress, pocket sprung, sealed in factory wrapping"
+  condition: New
+  grade: A
+  qty: 15
+  value: 1100
+  dims: [190, 90, 22]
+  location: PG Shed
+  inventoried: -14d
+  published: true
+  photos: 8024
+
+- key: mattress_single
+  why: "New but grade B — the 8% of New stock that is not grade A (unwrapped for inspection)"
+  code: BSM
+  description: "Single mattress, white quilted cover, unwrapped for inspection"
+  condition: New
+  grade: B
+  qty: 4
+  value: 800
+  dims: [190, 90, 20]
+  location: PG Shed
+  inventoried: -31d
+  published: false
+  photos: 8009
+
+- key: dining_chairs_worn
+  why: "heavily used, grade C, unpublished — stock that waits"
+  code: FCD
+  description: "Dining chair, beech frame, worn lacquer, padded seat"
+  condition: Heavily Used
+  grade: C
+  qty: 6
+  value: 80
+  dims: [44, 50, 88]
+  location: PG Shed
+  inventoried: -130d
+  published: false
+
+- key: piano_legacy
+  why: "the pre-2010 straggler: legacy letter-prefixed inventory number, never turned over"
+  code: RMP
+  description: "Upright piano, walnut finish, with matching stool"
+  condition: Heavily Used
+  grade: B
+  qty: 1
+  value: 6000
+  dims: [150, 60, 125]
+  location: SB Shed
+  inventoried: 2007-12-04@11:00
+  published: true
+
+- key: filing_cabinets_legacy
+  why: "pre-2020 stock with a legacy number, heavily used"
+  code: FBO
+  description: "Office file cabinet, four drawers, grey steel"
+  condition: Heavily Used
+  grade: B
+  qty: 3
+  value: 300
+  dims: [47, 62, 132]
+  location: PG Shed
+  inventoried: 2018-06-12@14:00
+  published: false
+
+- key: vouchers
+  why: "the odd real case: not physical goods at all (code XX, gift vouchers)"
+  code: XX
+  description: "Supermarket gift vouchers, HK$500 each, valid to 31 December"
+  condition: New
+  grade: A
+  qty: 10
+  value: 500
+  location: 31 Secure storage
+  inventoried: -7d
+  published: false
+
+# --- Electrical -------------------------------------------------------------------
+
+- key: microwaves_white
+  why: "partly dispatched: two gone to a closed order, one designated to an order awaiting dispatch today"
+  code: EKM
+  description: "Microwave oven, 20 litre, white, dial controls"
+  condition: Lightly Used
+  grade: B
+  qty: 6
+  value: 250
+  dims: [45, 35, 26]
+  weight: 11
+  location: 30 Electrical
+  inventoried: -60d
+  published: true
+  photos: 8010
+  expect: { on_hand: 4, dispatched: 2, designated: 1, available: 3 }
+
+- key: microwave_steel
+  why: "new singleton received two days ago"
+  code: EKM
+  description: "Microwave oven, 23 litre, stainless steel, digital controls"
+  condition: New
+  grade: A
+  qty: 1
+  value: 600
+  dims: [48, 37, 28]
+  weight: 12
+  location: 30 Electrical
+  inventoried: -2d
+  published: true
+  photos: 8025
+
+- key: fridge_two_door
+  why: "designated to an order still in processing — not yet dispatched"
+  code: EKR
+  description: "Refrigerator, two-door, 240 litre, white, freezer on top"
+  condition: Lightly Used
+  grade: B
+  qty: 1
+  value: 1800
+  dims: [60, 65, 160]
+  weight: 55
+  location: 30 Electrical
+  inventoried: -21d
+  published: true
+  photos: 8015
+  expect: { designated: 1, available: 0, on_hand: 1 }
+
+- key: bar_fridge
+  why: "a pair of small fridges on an electrical sub-bay"
+  code: EKR
+  description: "Bar fridge, under-counter, 90 litre, brushed silver"
+  condition: Lightly Used
+  grade: B
+  qty: 2
+  value: 700
+  dims: [48, 50, 85]
+  weight: 24
+  location: 28 P2 Electrical
+  inventoried: -33d
+  published: true
+  photos: 8030
+
+- key: tv_43
+  why: "moved several times: Incoming, the electrical floor, a container and back"
+  code: EVT
+  description: "Television, 43-inch LED, pedestal stand, remote included"
+  condition: Lightly Used
+  grade: B
+  qty: 1
+  value: 1400
+  dims: [97, 20, 62]
+  weight: 8
+  location: 32 Incoming
+  inventoried: -70d
+  published: true
+  photos: 8014
+  history:
+    - { at: -69d, move: all, to: 30 Electrical }
+    - { at: -40d, move: all, to: CntrB 07 }
+    - { at: -15d, move: all, to: 30 Electrical }
+  expect: { locations: 1, actions: [inventory, move] }
+
+- key: tv_55
+  why: "inventorised yesterday, still in Incoming, not yet published"
+  code: EVT
+  description: "Television, 55-inch LED, slim metal feet, remote included"
+  condition: New
+  grade: A
+  qty: 1
+  value: 3500
+  dims: [124, 25, 78]
+  weight: 14
+  location: 32 Incoming
+  inventoried: -1d@15:10
+  published: false
+  photos: 8029
+  expect: { photos: 3, published: false }
+
+- key: floor_lamp_trashed
+  why: "a singleton trashed in full — nothing left on hand"
+  code: EHL
+  description: "Floor lamp, brushed steel, cream fabric shade"
+  condition: Broken
+  grade: D
+  qty: 1
+  value: 0
+  dims: [40, 40, 160]
+  location: 30 Electrical
+  inventoried: -44d
+  published: false
+  history:
+    - { at: -30d, trash: 1, description: "Wiring damaged, not safe to repair" }
+  expect: { on_hand: 0, actions: [inventory, trash] }
+
+- key: heaters_off_season
+  why: "published in winter, unpublished for the summer"
+  code: EHH
+  description: "Oil-filled radiator heater, 9 fins, 2000 W, thermostat"
+  condition: Lightly Used
+  grade: B
+  qty: 12
+  value: 280
+  dims: [60, 25, 65]
+  weight: 10
+  location: 28 P3 Electrical
+  inventoried: -120d
+  published: true
+  history:
+    - { at: -60d, publish: false }
+  expect: { published: false, on_hand: 12 }
+
+# --- Computers --------------------------------------------------------------------
+
+- key: desktops_sff
+  why: "bank asset-pool refresh: a large multi-quantity computer line designated to several orders"
+  code: VCD
+  description: "Desktop computer, small form factor, Intel Core i5, 16 GB RAM, 256 GB SSD, Windows 11"
+  condition: Lightly Used
+  grade: B
+  qty: 18
+  value: 1200
+  dims: [29, 9, 29]
+  weight: 4.2
+  location: 32 Computers
+  inventoried: -16d@10:00
+  published: true
+  photos: 8001
+  max_order_quantity: 4
+  donor: donor_office
+
+- key: desktop_sff_silver
+  why: "an older small-form-factor line, lower spec"
+  code: VCD
+  description: "Desktop computer, small form factor, silver, Intel Core i3, 8 GB RAM, 256 GB SSD"
+  condition: Lightly Used
+  grade: B
+  qty: 4
+  value: 700
+  dims: [34, 10, 30]
+  weight: 4.8
+  location: 32 Computers
+  inventoried: -48d
+  published: false
+  photos: 8016
+
+- key: mini_pcs
+  why: "part packed onto a pallet, one lost at stocktake"
+  code: VCD
+  description: "Mini desktop computer, Intel Core i5, 8 GB RAM, 256 GB SSD, power adapter included"
+  condition: Lightly Used
+  grade: B
+  qty: 10
+  value: 900
+  dims: [18, 18, 4]
+  weight: 1.2
+  location: 32 Computers
+  inventoried: -19d@10:00
+  published: false
+  photos: 8031
+  history:
+    - { at: -5d, loss: 1, description: "Not found at stocktake" }
+  expect: { in: pallet_computers, actions: [inventory, pack, loss] }
+
+- key: tower_mid
+  why: "a single high-spec tower, grade A"
+  code: VCD
+  description: "Desktop computer, mid tower, Intel Core i7, 32 GB RAM, 1 TB SSD, Windows 11"
+  condition: Lightly Used
+  grade: A
+  qty: 1
+  value: 2500
+  dims: [42, 20, 45]
+  weight: 8.5
+  location: 32 Computers
+  inventoried: -10d
+  published: true
+  photos: 8040
+
+- key: tower_compact
+  why: "compact towers, three of them"
+  code: VCD
+  description: "Desktop computer, compact tower, silver-grey, Intel Core i5, 8 GB RAM, 512 GB SSD"
+  condition: Lightly Used
+  grade: B
+  qty: 3
+  value: 900
+  dims: [30, 15, 34]
+  weight: 5.5
+  location: 32 Computers
+  inventoried: -30d
+  published: true
+  photos: 8999
+
+- key: monitors_24
+  why: "twenty-four monitors split across two locations, partly designated"
+  code: VMF
+  description: "Computer monitor, 24-inch, full HD, LED, with stand"
+  condition: Lightly Used
+  grade: B
+  qty: 24
+  value: 450
+  dims: [54, 18, 40]
+  weight: 3.5
+  location: 32 Computers
+  inventoried: -16d@10:20
+  published: true
+  photos: 8003
+  donor: donor_office
+  history:
+    - { at: -15d, move: 6, to: 30 Electrical }
+  expect: { locations: 2 }
+
+- key: monitor_27
+  why: "a pair of better monitors, grade A"
+  code: VMF
+  description: "Computer monitor, 27-inch, QHD, height-adjustable stand"
+  condition: Lightly Used
+  grade: A
+  qty: 2
+  value: 900
+  dims: [61, 20, 45]
+  weight: 6
+  location: 32 Computers
+  inventoried: -16d@10:30
+  published: true
+  photos: 8018
+
+- key: laptops_14
+  why: "laptops, designated to a youth centre's order"
+  code: VCL
+  description: "Laptop, 14-inch, Intel Core i5, 16 GB RAM, 512 GB SSD, charger included"
+  condition: Lightly Used
+  grade: B
+  qty: 5
+  value: 1600
+  dims: [33, 23, 2]
+  weight: 1.4
+  location: 32 Computers
+  inventoried: -12d
+  published: false
+  photos: 8017
+
+- key: laptop_given
+  why: "fully dispatched: the singleton that has left the building"
+  code: VCL
+  description: "Laptop, 13-inch, Intel Core i5, 8 GB RAM, 256 GB SSD, charger included"
+  condition: Lightly Used
+  grade: B
+  qty: 1
+  value: 1100
+  dims: [30, 21, 2]
+  weight: 1.2
+  location: 32 Computers
+  inventoried: -40d
+  published: false
+  photos: 8032
+  expect: { on_hand: 0, dispatched: 1 }
+
+- key: printers_laser
+  why: "two of five recycled after a toner fault"
+  code: VP
+  description: "Laser printer, monochrome, A4, network-ready"
+  condition: Lightly Used
+  grade: B
+  qty: 5
+  value: 500
+  dims: [40, 38, 25]
+  weight: 9
+  location: 32 Computers
+  inventoried: -80d
+  published: false
+  photos: 8011
+  history:
+    - { at: -60d, recycle: 2, description: "Toner unit faulty, sent for recycling" }
+  expect: { on_hand: 3, actions: [inventory, recycle] }
+
+- key: printer_mfp
+  why: "multi-function printers, published"
+  code: VPM
+  description: "Multi-function inkjet printer, print, scan and copy, white"
+  condition: Lightly Used
+  grade: B
+  qty: 2
+  value: 350
+  dims: [43, 36, 18]
+  weight: 5
+  location: 32 Computers
+  inventoried: -22d
+  published: true
+  photos: 8026
+
+- key: keyboards
+  why: "part of the quantity boxed — some loose, some in a box on a pallet"
+  code: VA
+  description: "Keyboard, wired USB, full size with number pad, English layout"
+  condition: New
+  grade: A
+  qty: 40
+  value: 60
+  dims: [44, 14, 3]
+  location: 32 Computers
+  inventoried: -20d
+  published: true
+  photos: 8013
+  expect: { in: box_keyboards }
+
+# --- Household, clothing, toys, bikes ---------------------------------------------
+
+- key: wool_blankets
+  why: "bulk soft goods: part on a pallet, part processed out to the processing department"
+  code: CBB
+  description: "Wool blanket, oatmeal colour, single size"
+  condition: New
+  grade: A
+  qty: 60
+  value: 120
+  dims: [40, 30, 8]
+  location: 28 Q BulkRm
+  inventoried: -36d
+  published: false
+  photos: 8008
+  history:
+    - { at: -8d, process: 10, destination: Processing dept }
+  expect: { in: pallet_blankets, actions: [inventory, pack, process] }
+
+- key: sunscreen_sachets
+  why: "five-figure bulk quantity with an expiry date"
+  code: HY
+  description: "Sunscreen sachets, SPF 50, 5 ml, individually sealed"
+  condition: New
+  grade: A
+  qty: 18000
+  value: 2
+  location: 28 Q BulkRm
+  inventoried: -55d
+  expiry: +300d
+  published: false
+
+- key: hangers
+  why: "valued at zero"
+  code: HX
+  description: "Clothes hangers, plastic, assorted colours, bundles of 20"
+  condition: Lightly Used
+  grade: B
+  qty: 35
+  value: 0
+  location: 29 Clothing
+  inventoried: -25d
+  published: false
+
+- key: stroller
+  why: "a household singleton published on arrival"
+  code: HPS
+  description: "Stroller, lightweight, foldable, one-hand recline"
+  condition: Lightly Used
+  grade: A
+  qty: 1
+  value: 600
+  dims: [80, 45, 100]
+  weight: 7
+  location: 28 HouseHold
+  inventoried: -4d
+  published: true
+
+- key: soft_toys
+  why: "new toys in quantity, published"
+  code: TS
+  description: "Soft toys, assorted animals, new with tags"
+  condition: New
+  grade: A
+  qty: 140
+  value: 25
+  location: 29 Toys
+  inventoried: -17d
+  published: true
+
+- key: bikes_children
+  why: "children's bikes in the bike store"
+  code: RPB
+  description: "Bicycle, child's, 16-inch wheels, stabilisers included"
+  condition: Lightly Used
+  grade: B
+  qty: 4
+  value: 350
+  dims: [115, 53, 82]
+  location: 88 Bikes
+  inventoried: -27d
+  published: false
+
+# --- Medical ----------------------------------------------------------------------
+
+- key: wheelchairs_folding
+  why: "mobility aids requested by an elderly-care team"
+  code: MFW
+  description: "Wheelchair, folding, self-propelled, navy upholstery, 46 cm seat"
+  condition: Lightly Used
+  grade: B
+  qty: 3
+  value: 1500
+  dims: [100, 65, 90]
+  weight: 14
+  location: PG Medical G
+  inventoried: -45d
+  published: false
+  photos: 8007
+
+- key: wheelchair_transit
+  why: "a single transit wheelchair"
+  code: MFW
+  description: "Transit wheelchair, lightweight, attendant-propelled, fold-down footplates"
+  condition: Lightly Used
+  grade: B
+  qty: 1
+  value: 1200
+  dims: [95, 55, 90]
+  weight: 10
+  location: PG Medical G
+  inventoried: -12d
+  published: false
+  photos: 8022
+
+- key: syringes
+  why: "restricted medical stock with an expiry date"
+  code: MGS
+  description: "Syringes with needles, 3 ml, sterile, boxed"
+  condition: New
+  grade: A
+  qty: 400
+  value: 1
+  location: PG Medical B
+  inventoried: -90d
+  expiry: +200d
+  restriction: Restricted
+  published: false
+
+- key: first_aid_kits
+  why: "kits with expiry dates, some boxed"
+  code: MGA
+  description: "First aid kit, workplace, 50 pieces, wall-mountable case"
+  condition: New
+  grade: A
+  qty: 30
+  value: 150
+  dims: [30, 22, 9]
+  location: PG Medical B
+  inventoried: -51d
+  expiry: +400d
+  published: false
+  expect: { in: box_first_aid }

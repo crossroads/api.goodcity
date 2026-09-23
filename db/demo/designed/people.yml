@@ -1,0 +1,72 @@
+# Synthetic people. Nobody here is real; organisations ARE real (production's list is
+# largely the public register of charities exempt under s.88 of the Inland Revenue
+# Ordinance) and are named exactly as they appear there.
+#
+# Mobile numbers are invented. The local stack never sends SMS (TwilioJob e-mails the
+# text to Mailpit outside production), so no real phone is ever contacted.
+
+# Exactly as goodcity-local/scripts/create-test-users.rb creates them — the real-API
+# smoke suite and scripts/login.sh depend on these two.
+test_users:
+  - key: stock_admin
+    mobile: "+85251111111"
+    first_name: Local
+    last_name: StockAdmin
+    email: stockadmin@example.test
+    roles: [Supervisor, Stock administrator, Order administrator, System administrator]
+  - key: stock_fulfilment
+    mobile: "+85252222222"
+    first_name: Local
+    last_name: StockFulfilment
+    email: stockfulfilment@example.test
+    roles: [Stock fulfilment]
+
+staff:
+  - { key: priya,   title: Ms,  first_name: Priya,    last_name: Raman,  mobile: "+85261010001", email: priya.raman@example.test,  roles: [Order administrator] }
+  - { key: wingyan, title: Ms,  first_name: Wing Yan, last_name: Chan,   mobile: "+85261010002", email: wingyan.chan@example.test, roles: [Order fulfilment] }
+  - { key: marcus,  title: Mr,  first_name: Marcus,   last_name: Leung,  mobile: "+85261010003", email: marcus.leung@example.test, roles: [Order fulfilment] }
+  - { key: daniel,  title: Mr,  first_name: Daniel,   last_name: Ho,     mobile: "+85261010004", email: daniel.ho@example.test,    roles: [Stock administrator] }
+  - { key: ahlam,   title: Mr,  first_name: Ah Lam,   last_name: Wong,   mobile: "+85261010005", email: ahlam.wong@example.test,   roles: [Stock fulfilment] }
+  - { key: joy,     title: Ms,  first_name: Joy,      last_name: Santos, mobile: "+85261010006", email: joy.santos@example.test,   roles: [Stock fulfilment] }
+  - { key: hannah,  title: Mrs, first_name: Hannah,   last_name: Clarke, mobile: "+85261010007", email: hannah.clarke@example.test, roles: [Reviewer] }
+  - { key: kelvin,  title: Mr,  first_name: Kelvin,   last_name: Lau,    mobile: "+85261010008", email: kelvin.lau@example.test,   roles: [Supervisor, Reviewer] }
+
+donors:
+  - { key: donor_ng,      title: Mrs, first_name: Grace,   last_name: Ng,       mobile: "+85262020001" }
+  - { key: donor_tsang,   title: Mr,  first_name: Edmund,  last_name: Tsang,    mobile: "+85262020002" }
+  - { key: donor_fischer, title: Ms,  first_name: Anna,    last_name: Fischer,  mobile: "+85262020003" }
+  - { key: donor_kwok,    title: Ms,  first_name: Mandy,   last_name: Kwok,     mobile: "+85262020004" }
+  - { key: donor_patel,   title: Mr,  first_name: Rohan,   last_name: Patel,    mobile: "+85262020005" }
+  - { key: donor_lee,     title: Mr,  first_name: Vincent, last_name: Lee,      mobile: "+85262020006" }
+  - { key: donor_morgan,  title: Ms,  first_name: Claire,  last_name: Morgan,   mobile: "+85262020007" }
+  - { key: donor_cheung,  title: Mrs, first_name: Iris,    last_name: Cheung,   mobile: "+85262020008" }
+  - { key: donor_office,  title: Mr,  first_name: Thomas,  last_name: Wright,   mobile: "+85262020009" }  # facilities manager, office refits
+  - { key: donor_yip,     title: Ms,  first_name: Carmen,  last_name: Yip,      mobile: "+85262020010" }
+
+# Charity users. status: approved unless stated; one pending (the approval gate), one
+# expired.
+charities:
+  - { key: ch_salvation,  title: Ms,  first_name: Ruth,     last_name: Yeung,   mobile: "+85263030001", email: ruth.yeung@example.org,    position: Social worker,        organisation: "Salvation Army Urban Renewal Social Service Team, The" }
+  - { key: ch_ywca,       title: Ms,  first_name: Florence, last_name: Mak,     mobile: "+85263030002", email: florence.mak@example.org,  position: Centre supervisor,    organisation: "Hong Kong Young Women's Christian Association Jockey Club Shatin Integrated Social Service Centre" }
+  - { key: ch_stjames,    title: Mr,  first_name: Alan,     last_name: Chow,    mobile: "+85263030003", email: alan.chow@example.org,     position: Programme officer,    organisation: "St. James' Settlement Home Maintenance Service for the Elderly" }
+  - { key: ch_haven,      title: Mrs, first_name: Esther,   last_name: Lam,     mobile: "+85263030004", email: esther.lam@example.org,    position: Case manager,         organisation: "Integrated Discharge Support Program for Elderly Patients - Haven of Hope Home Support Team (Kwun Tong)" }
+  - { key: ch_elchk,      title: Mr,  first_name: Samuel,   last_name: Kwan,    mobile: "+85263030005", email: samuel.kwan@example.org,   position: Youth worker,         organisation: "ELCHK, Tuen Mun Integrated Youth Service Centre" }
+  - { key: ch_familysvc,  title: Ms,  first_name: Tiffany,  last_name: So,      mobile: "+85263030006", email: tiffany.so@example.org,    position: Social worker,        organisation: "Christian Family Service Centre Cheerful Place - District Support Centre (Kwun Tong East)" }
+  - { key: ch_twghs,      title: Ms,  first_name: Angela,   last_name: Fung,    mobile: "+85263030007", email: angela.fung@example.org,   position: Home manager,         organisation: "T.W.G.Hs. Lo Man Huen Home for the Elderly" }
+  - { key: ch_carpenter,  title: Mr,  first_name: Peter,    last_name: Siu,     mobile: "+85263030008", email: peter.siu@example.org,     position: Centre-in-charge,     organisation: "S.K.H. Holy Carpenter Church District Elderly Community Centre" }
+  - { key: ch_waiji,      title: Ms,  first_name: Cindy,    last_name: Tam,     mobile: "+85263030009", email: cindy.tam@example.org,     position: Occupational therapist, organisation: "Wai Ji Christian Service Wai Ji Mei Tin integrated Rehabilitation Services Centre (DAC)" }
+  - { key: ch_tinshui,    title: Mr,  first_name: Jason,    last_name: Poon,    mobile: "+85263030010", email: jason.poon@example.org,    position: Youth worker,         organisation: "Tin Shui Youth S.P.O.T." }
+  - { key: ch_nursery, title: Ms,  first_name: Maggie,   last_name: Ip,      mobile: "+85263030011", email: maggie.ip@example.org,     position: Nursery supervisor,   organisation: "Christian & Missionary Alliance South Horizons Nursery School" }
+  - { key: ch_lady,       title: Mrs, first_name: Winnie,   last_name: Kong,    mobile: "+85263030012", email: winnie.kong@example.org,   position: Social worker,        organisation: "H.K.S.K.H. Lady MacLehose Centre - Dr. Lam Chik Suen District Elderly Community Centre" }
+  - { key: ch_srilanka,   title: Mr,  first_name: Nimal,    last_name: Perera,  mobile: "+85263030013", email: nimal.perera@example.org,  position: Volunteer coordinator, organisation: "Sri Lankan Buddhist Cultural Centre" }
+  - { key: ch_caritas,    title: Ms,  first_name: Josephine, last_name: Wu,     mobile: "+85263030014", email: josephine.wu@example.org,  position: Project worker,       organisation: "Caritas - Sai Ying Pun Community Living Room" }
+  - { key: ch_hkcys,      title: Ms,  first_name: Bonnie,   last_name: Law,     mobile: "+85263030015", email: bonnie.law@example.org,    position: House parent,         organisation: "HKCYS Joyful Garden – Residential Child Care Centre" }
+  - { key: ch_ssp,        title: Mr,  first_name: Raymond,  last_name: Hui,     mobile: "+85263030016", email: raymond.hui@example.org,   position: Project officer,      organisation: "Sham Shui Po Community Living Room Project" }
+  - { key: ch_pending,    title: Mr,  first_name: Kenneth,  last_name: Tong,    mobile: "+85263030017", email: kenneth.tong@example.org,  position: New staff member,     organisation: "Yan Chai Hospital Ngau Tau Kok Light Public Housing Project", status: pending }
+  - { key: ch_expired,    title: Ms,  first_name: Doris,    last_name: Ma,      mobile: "+85263030018", email: doris.ma@example.org,      position: Former social worker, organisation: "Neighbourhood Advice-Action Council Social Service Team In Buildings Department, The", status: expired }
+
+# Name bank for synthetic clients (beneficiaries).
+names:
+  surnames: [Chan, Wong, Lee, Cheung, Lau, Ng, Ho, Leung, Lam, Tang, Yeung, Chow, Tsang, Kwok, Mak, Fung, Siu, Poon, Hui, Lo, Santos, Reyes, Gurung, Rai, Khan, Hussain, Okafor, Nguyen]
+  given_male: [Chi Keung, Wai Man, Ka Ho, Siu Ming, Kin Wah, Tsz Hin, Joseph, Arjun, Mohammed, Emmanuel, Minh, Carlos, Hon Kit, Yiu Fai]
+  given_female: [Mei Ling, Siu Fong, Wing Sze, Ka Yan, Lai Kuen, Hoi Yan, Maria, Fatima, Aisha, Grace, Linh, Rosa, Yuen Ting, Man Yee]

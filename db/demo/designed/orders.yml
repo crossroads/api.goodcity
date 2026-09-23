@@ -1,0 +1,525 @@
+# The order spine. Each order is created in draft on `created` and then walked through
+# the app's real state machine by its `events`, in time order with everything else in
+# the dataset. Codes (GC-00001, S00001, C00001) are issued by the app, rising with date.
+#
+# Fields
+#   type        appointment | online-order | shipment | carryout
+#   by          charity user (people.yml) who placed a GoodCity order
+#   handler     staff member who processes it (default: an order-fulfilment person)
+#   purpose     organisation | client (client = a synthetic beneficiary is attached)
+#   transport   { type: self|ggv, scheduled: <time>, vehicle:, address: {...} }
+#   requests    goodcity_requests: [{ code, qty, description }]
+#   events      [{ at, do, ... }] where do is one of
+#                 submit start_processing finish_processing start_dispatching close
+#                 reopen restart_process dispatch_later resubmit
+#                 cancel (reason:, text:)   checklist (items: n = only the first n)
+#                 designate (item:, qty:)   dispatch (item:, qty:)   undispatch (item:, to:)
+#                 cancel_line (item:)       note (body:)  — the order's sticky staff note
+#                 message (from:, body:, staff: true = staff chat, unread: true)
+#   expect      what the checks assert: state, gate (checklist|close|approval), unread, reason
+
+# --- Live now ----------------------------------------------------------------------
+
+- key: o_draft_online
+  why: "a draft the charity has not submitted yet"
+  type: online-order
+  by: ch_ssp
+  created: -1d@16:40
+  purpose: organisation
+  people_helped: 12
+  district: Sham Shui Po
+  purpose_description: "Household basics for newly arrived families in our building project"
+  expect: { state: draft }
+
+- key: o_submitted_requests
+  why: "submitted this week with requests and an unread question from the charity"
+  type: appointment
+  by: ch_ywca
+  created: -2d@10:00
+  purpose: organisation
+  people_helped: 40
+  district: Sha Tin
+  purpose_description: "Seating and tables for the community hall at our integrated service centre"
+  transport: { type: self, scheduled: +3d@10:30 }
+  requests:
+    - { code: FCD, qty: 10, description: "Stackable chairs for the community hall" }
+    - { code: FTF, qty: 2, description: "Folding tables for workshops" }
+  events:
+    - { at: -2d@10:05, do: submit }
+    - { at: -2d@10:20, do: message, from: ch_ywca, unread: true, body: "Could we collect on Thursday morning? We will bring our own van and two helpers." }
+  expect: { state: submitted, unread: true }
+
+- key: o_pending_org
+  why: "the approval gate: submitted by someone whose organisation membership is still pending"
+  type: appointment
+  by: ch_pending
+  created: -1d@11:00
+  purpose: client
+  people_helped: 4
+  district: Kwun Tong
+  purpose_description: "Furniture for a family moving into transitional housing"
+  transport: { type: self, scheduled: +5d@14:00 }
+  requests:
+    - { code: BSM, qty: 2, description: "Single mattresses" }
+    - { code: FTD, qty: 1 }
+  events:
+    - { at: -1d@11:10, do: submit }
+  expect: { state: submitted, gate: approval }
+
+- key: o_checklist_gate
+  why: "the processing gate: checklist half done, fridge and wheelchairs designated, an unread staff note"
+  type: appointment
+  by: ch_haven
+  handler: wingyan
+  created: -6d@09:30
+  purpose: client
+  people_helped: 2
+  district: Kwun Tong
+  purpose_description: "Discharge support: an elderly couple returning home after a hospital stay"
+  transport: { type: self, scheduled: +1d@14:00, need_carry: true }
+  events:
+    - { at: -6d@09:40, do: submit }
+    - { at: -5d@10:15, do: start_processing }
+    - { at: -5d@10:30, do: designate, item: fridge_two_door, qty: 1 }
+    - { at: -5d@10:35, do: designate, item: wheelchairs_folding, qty: 2 }
+    - { at: -4d@11:00, do: checklist, items: 1 }
+    - { at: -4d@11:05, do: message, from: wingyan, staff: true, unread: true, body: "Client's flat is on the third floor with no lift. Confirm the family can carry the fridge before we finish processing." }
+  expect: { state: processing, gate: checklist, unread: true }
+
+- key: o_online_van
+  why: "online order with a hired van and a delivery address; a short public chat"
+  type: online-order
+  by: ch_stjames
+  handler: priya
+  created: -3d@14:00
+  purpose: organisation
+  people_helped: 25
+  district: Wan Chai
+  purpose_description: "Furnishing a shared lounge for elderly residents"
+  transport:
+    type: ggv
+    vehicle: Van
+    scheduled: +2d
+    timeslot: 2PM-4PM
+    address: { flat: "Room 3, G/F", building: "Kwong Sang Hong Building", street: "Queen's Road East", district: Wan Chai, notes: "Loading bay at the rear" }
+  events:
+    - { at: -3d@14:05, do: submit }
+    - { at: -2d@09:50, do: start_processing }
+    - { at: -2d@10:00, do: designate, item: two_seat_sofa, qty: 1 }
+    - { at: -2d@10:05, do: designate, item: office_desks_oak, qty: 2 }
+    - { at: -2d@10:30, do: message, from: priya, body: "The van is booked for Friday between 2 and 4 pm. The driver will call when he is ten minutes away." }
+    - { at: -2d@11:10, do: message, from: ch_stjames, unread: true, body: "Thank you! Someone will be at the loading bay." }
+  expect: { state: processing }
+
+- key: o_awaiting_today
+  why: "awaiting dispatch, scheduled for this afternoon"
+  type: appointment
+  by: ch_carpenter
+  created: -8d@10:00
+  purpose: organisation
+  people_helped: 60
+  district: Kowloon City
+  purpose_description: "Kitchen equipment and toys for the centre's family days"
+  transport: { type: self, scheduled: today@14:30 }
+  events:
+    - { at: -8d@10:10, do: submit }
+    - { at: -7d@09:45, do: start_processing }
+    - { at: -7d@10:00, do: designate, item: microwaves_white, qty: 1 }
+    - { at: -7d@10:05, do: designate, item: soft_toys, qty: 30 }
+    - { at: -6d@15:00, do: checklist }
+    - { at: -6d@15:05, do: finish_processing }
+  expect: { state: awaiting_dispatch }
+
+- key: o_awaiting_overdue
+  why: "awaiting dispatch but the appointment was three days ago — overdue"
+  type: appointment
+  by: ch_familysvc
+  handler: priya
+  created: -12d@11:00
+  purpose: organisation
+  people_helped: 30
+  district: Kwun Tong
+  purpose_description: "Computers for a homework club"
+  transport: { type: self, scheduled: -3d@10:30 }
+  events:
+    - { at: -12d@11:05, do: submit }
+    - { at: -11d@10:00, do: start_processing }
+    - { at: -11d@10:10, do: designate, item: desktops_sff, qty: 4 }
+    - { at: -11d@10:15, do: designate, item: monitors_24, qty: 4 }
+    - { at: -10d@16:00, do: checklist }
+    - { at: -10d@16:05, do: finish_processing }
+    - { at: -2d@10:00, do: message, from: priya, body: "We didn't see you on Monday. Would you like to rebook the collection?" }
+    - { at: -2d@10:02, do: note, body: "No-show 1. Call Tiffany before cancelling." }
+  expect: { state: awaiting_dispatch }
+
+- key: o_close_gate
+  why: "the close gate: dispatching, two dining chairs gone but the table's line still open — the split set"
+  type: appointment
+  by: ch_hkcys
+  created: -9d@10:00
+  purpose: organisation
+  people_helped: 8
+  district: Aberdeen
+  purpose_description: "Dining furniture for a residential child care home"
+  transport: { type: self, scheduled: -1d@11:00 }
+  events:
+    - { at: -9d@10:05, do: submit }
+    - { at: -8d@10:00, do: start_processing }
+    - { at: -8d@10:10, do: designate, item: dining_table, qty: 1 }
+    - { at: -8d@10:12, do: designate, item: dining_side_chairs, qty: 2 }
+    - { at: -7d@14:00, do: checklist }
+    - { at: -7d@14:05, do: finish_processing }
+    - { at: -1d@11:20, do: dispatch, item: dining_side_chairs, qty: 2 }
+    - { at: -1d@11:30, do: message, from: marcus, staff: true, body: "Chairs collected. The table would not fit in their van; they will come back for it next week." }
+  expect: { state: dispatching, gate: close }
+
+- key: o_dispatching_done
+  why: "dispatching with every line dispatched — ready to close"
+  type: appointment
+  by: ch_twghs
+  created: -5d@09:00
+  purpose: organisation
+  people_helped: 90
+  district: Sai Wan
+  purpose_description: "Mobility and first aid for a residential care home"
+  transport: { type: self, scheduled: today@10:30 }
+  events:
+    - { at: -5d@09:10, do: submit }
+    - { at: -4d@10:00, do: start_processing }
+    - { at: -4d@10:10, do: designate, item: wheelchair_transit, qty: 1 }
+    - { at: -4d@10:15, do: designate, item: first_aid_kits, qty: 5 }
+    - { at: -3d@15:00, do: checklist }
+    - { at: -3d@15:05, do: finish_processing }
+    - { at: today@10:40, do: dispatch, item: wheelchair_transit }
+    - { at: today@10:45, do: dispatch, item: first_aid_kits }
+  expect: { state: dispatching }
+
+- key: o_dispatch_later
+  why: "dispatch started, then put back to awaiting dispatch"
+  type: appointment
+  by: ch_caritas
+  created: -10d@10:00
+  purpose: organisation
+  people_helped: 35
+  district: Sai Ying Pun
+  purpose_description: "Toys for the community living room's children's corner"
+  transport: { type: self, scheduled: +1d@11:00 }
+  events:
+    - { at: -10d@10:05, do: submit }
+    - { at: -9d@10:00, do: start_processing }
+    - { at: -9d@10:10, do: designate, item: soft_toys, qty: 20 }
+    - { at: -8d@11:00, do: checklist }
+    - { at: -8d@11:05, do: finish_processing }
+    - { at: -2d@14:00, do: start_dispatching }
+    - { at: -2d@15:00, do: dispatch_later }
+  expect: { state: awaiting_dispatch }
+
+- key: o_restarted
+  why: "processing restarted: awaiting dispatch sent back to submitted"
+  type: appointment
+  by: ch_waiji
+  created: -7d@10:00
+  purpose: client
+  people_helped: 1
+  district: Yuen Long
+  purpose_description: "A wheelchair for a day-activity-centre member"
+  transport: { type: self, scheduled: +2d@10:00 }
+  events:
+    - { at: -7d@10:05, do: submit }
+    - { at: -6d@10:00, do: start_processing }
+    - { at: -6d@10:10, do: designate, item: wheelchairs_folding, qty: 1 }
+    - { at: -5d@10:00, do: checklist }
+    - { at: -5d@10:05, do: finish_processing }
+    - { at: -4d@09:30, do: restart_process }
+    - { at: -4d@09:35, do: message, from: ch_waiji, body: "Sorry, the family now needs a narrower chair. Could we change it?" }
+  expect: { state: submitted }
+
+- key: o_part_of_set
+  why: "wants only the drawer unit from the workstation set — taking part of a set"
+  type: appointment
+  by: ch_tinshui
+  created: -4d@15:00
+  purpose: organisation
+  people_helped: 20
+  district: Yuen Long
+  purpose_description: "Storage for the tutoring room"
+  transport: { type: self, scheduled: +4d@15:00 }
+  requests:
+    - { code: FBP, qty: 1, description: "Drawer unit for our tutoring room" }
+  events:
+    - { at: -4d@15:05, do: submit }
+    - { at: -3d@10:00, do: start_processing }
+    - { at: -3d@10:10, do: designate, item: workstation_drawer, qty: 1 }
+  expect: { state: processing }
+
+- key: o_bulk_office
+  why: "bulk office kit: a second order sharing the desks, desktops and monitors"
+  type: appointment
+  by: ch_ssp
+  handler: marcus
+  created: -6d@09:00
+  purpose: organisation
+  people_helped: 15
+  district: Sham Shui Po
+  purpose_description: "Setting up a computer room for job-seekers"
+  transport: { type: self, scheduled: +6d@10:00 }
+  events:
+    - { at: -6d@09:05, do: submit }
+    - { at: -5d@14:00, do: start_processing }
+    - { at: -5d@14:10, do: designate, item: desktops_sff, qty: 4 }
+    - { at: -5d@14:12, do: designate, item: monitors_24, qty: 4 }
+    - { at: -5d@14:14, do: designate, item: keyboards, qty: 4 }
+    - { at: -5d@14:16, do: designate, item: office_desks_oak, qty: 3 }
+  expect: { state: processing }
+
+- key: o_online_submitted
+  why: "a plain online order just submitted, for a client"
+  type: online-order
+  by: ch_lady
+  created: -1d@09:30
+  purpose: client
+  people_helped: 3
+  district: Chai Wan
+  purpose_description: "Bedding for a family of three"
+  transport: { type: self, scheduled: +4d }
+  requests:
+    - { code: CBB, qty: 3, description: "Warm blankets" }
+  events:
+    - { at: -1d@09:40, do: submit }
+  expect: { state: submitted }
+
+- key: o_resubmitted
+  why: "cancelled for 'Changed mind', then resubmitted"
+  type: appointment
+  by: ch_srilanka
+  created: -18d@10:00
+  purpose: organisation
+  people_helped: 50
+  district: Yau Ma Tei
+  purpose_description: "Kitchen items for community meals"
+  transport: { type: self, scheduled: +3d@11:30 }
+  events:
+    - { at: -18d@10:05, do: submit }
+    - { at: -16d@12:00, do: cancel, reason: Changed mind }
+    - { at: -15d@09:00, do: resubmit }
+  expect: { state: submitted }
+
+- key: o_shipment_live
+  why: "an overseas shipment in processing (S-code), with bulk sachets"
+  type: shipment
+  handler: priya
+  created: -10d@09:00
+  country: Cameroon
+  shipment_date: +20d
+  description: "Shipment to partner in Douala: computers and personal care"
+  people_helped: 500
+  events:
+    - { at: -10d@09:05, do: submit }
+    - { at: -9d@10:00, do: start_processing }
+    - { at: -9d@10:10, do: designate, item: desktop_sff_silver, qty: 4 }
+    - { at: -9d@10:15, do: designate, item: sunscreen_sachets, qty: 2000 }
+    - { at: -9d@10:20, do: designate, item: monitors_24, qty: 6 }
+  expect: { state: processing }
+
+- key: o_carryout
+  why: "a carry-out (C-code) dispatching today"
+  type: carryout
+  handler: marcus
+  created: -2d@10:00
+  description: "Carry-out for a school fair"
+  people_helped: 200
+  events:
+    - { at: -2d@10:05, do: submit }
+    - { at: -2d@10:10, do: start_processing }
+    - { at: -2d@10:20, do: designate, item: hangers, qty: 20 }
+    - { at: -1d@16:00, do: finish_processing }
+    - { at: today@09:30, do: dispatch, item: hangers }
+  expect: { state: dispatching }
+
+# --- Recently closed / reopened ------------------------------------------------------
+
+- key: o_closed_recent
+  why: "closed last month: the fully dispatched laptop and two microwaves"
+  type: appointment
+  by: ch_elchk
+  handler: marcus
+  created: -35d@10:00
+  purpose: organisation
+  people_helped: 18
+  district: Tuen Mun
+  purpose_description: "Equipment for a youth drop-in centre"
+  transport: { type: self, scheduled: -30d@11:00 }
+  events:
+    - { at: -35d@10:05, do: submit }
+    - { at: -34d@10:00, do: start_processing }
+    - { at: -34d@10:10, do: designate, item: laptop_given, qty: 1 }
+    - { at: -34d@10:12, do: designate, item: microwaves_white, qty: 2 }
+    - { at: -33d@11:00, do: checklist }
+    - { at: -33d@11:05, do: finish_processing }
+    - { at: -30d@11:20, do: dispatch, item: laptop_given }
+    - { at: -30d@11:22, do: dispatch, item: microwaves_white }
+    - { at: -30d@11:30, do: close }
+    - { at: -30d@11:35, do: message, from: marcus, body: "Collected by Samuel at 11:20. Thank you!" }
+  expect: { state: closed }
+
+- key: o_closed_patio
+  why: "a whole set dispatched together, then closed"
+  type: appointment
+  by: ch_nursery
+  created: -80d@10:00
+  purpose: organisation
+  people_helped: 60
+  district: Ap Lei Chau
+  purpose_description: "Outdoor furniture for the nursery's garden"
+  transport: { type: self, scheduled: -75d@10:00 }
+  events:
+    - { at: -80d@10:05, do: submit }
+    - { at: -79d@10:00, do: start_processing }
+    - { at: -79d@10:10, do: designate, item: patio_table, qty: 1 }
+    - { at: -79d@10:12, do: designate, item: patio_chairs, qty: 4 }
+    - { at: -78d@10:00, do: checklist }
+    - { at: -78d@10:05, do: finish_processing }
+    - { at: -75d@10:20, do: dispatch, item: patio_table }
+    - { at: -75d@10:22, do: dispatch, item: patio_chairs }
+    - { at: -75d@10:30, do: close }
+  expect: { state: closed }
+
+- key: o_reopened
+  why: "closed, then reopened when the charity reported a problem"
+  type: appointment
+  by: ch_lady
+  created: -20d@10:00
+  purpose: organisation
+  people_helped: 10
+  district: Chai Wan
+  purpose_description: "Shelving for the elderly centre's library corner"
+  transport: { type: self, scheduled: -15d@10:00 }
+  events:
+    - { at: -20d@10:05, do: submit }
+    - { at: -19d@10:00, do: start_processing }
+    - { at: -19d@10:10, do: designate, item: bookcase_walnut, qty: 1 }
+    - { at: -18d@10:00, do: checklist }
+    - { at: -18d@10:05, do: finish_processing }
+    - { at: -15d@10:20, do: dispatch, item: bookcase_walnut }
+    - { at: -15d@10:30, do: close }
+    - { at: -14d@09:00, do: message, from: ch_lady, body: "We received one bookcase but the shelves were missing. Could you check?" }
+    - { at: -14d@09:30, do: reopen }
+    - { at: -14d@09:35, do: message, from: priya, staff: true, body: "Reopened: shelves may still be in the shed. Ah Lam to check." }
+  expect: { state: dispatching }
+
+# --- Cancelled, one per reason -------------------------------------------------------
+
+- key: o_cancel_no_show
+  why: "cancelled 'No show' after processing — its designated line is cancelled with it"
+  type: appointment
+  by: ch_salvation
+  created: -25d@10:00
+  purpose: client
+  people_helped: 1
+  district: Sham Shui Po
+  purpose_description: "A bicycle for a child"
+  transport: { type: self, scheduled: -19d@10:00 }
+  events:
+    - { at: -25d@10:05, do: submit }
+    - { at: -24d@10:00, do: start_processing }
+    - { at: -24d@10:10, do: designate, item: bikes_children, qty: 1 }
+    - { at: -23d@10:00, do: checklist }
+    - { at: -23d@10:05, do: finish_processing }
+    - { at: -18d@16:00, do: cancel, reason: No show }
+  expect: { state: cancelled, reason: No show }
+
+- key: o_cancel_nothing_suitable
+  why: "cancelled 'Nothing suitable' straight from submitted"
+  type: online-order
+  by: ch_elchk
+  created: -40d@10:00
+  purpose: organisation
+  people_helped: 20
+  district: Tuen Mun
+  purpose_description: "Gym equipment for the youth centre"
+  transport: { type: self, scheduled: -35d }
+  requests:
+    - { code: REC, qty: 2, description: "Treadmill or exercise bike" }
+  events:
+    - { at: -40d@10:05, do: submit }
+    - { at: -38d@11:00, do: cancel, reason: Nothing suitable }
+  expect: { state: cancelled, reason: Nothing suitable }
+
+- key: o_cancel_changed_mind
+  why: "cancelled 'Changed mind' by the charity"
+  type: appointment
+  by: ch_tinshui
+  created: -45d@10:00
+  purpose: organisation
+  people_helped: 12
+  district: Yuen Long
+  purpose_description: "Chairs for a study room"
+  transport: { type: self, scheduled: -40d@15:00 }
+  events:
+    - { at: -45d@10:05, do: submit }
+    - { at: -44d@10:00, do: start_processing }
+    - { at: -43d@12:00, do: cancel, reason: Changed mind }
+  expect: { state: cancelled, reason: Changed mind }
+
+- key: o_cancel_other
+  why: "cancelled 'Other' with a free-text reason"
+  type: appointment
+  by: ch_carpenter
+  created: -50d@10:00
+  purpose: organisation
+  people_helped: 40
+  district: Kowloon City
+  purpose_description: "Furniture for the activity room"
+  transport: { type: self, scheduled: -44d@10:00 }
+  events:
+    - { at: -50d@10:05, do: submit }
+    - { at: -48d@10:00, do: cancel, reason: Other, text: "Centre closed for renovation until next year" }
+  expect: { state: cancelled, reason: Other }
+
+- key: o_cancel_self_referred
+  why: "cancelled 'Self-referred'"
+  type: appointment
+  by: ch_ssp
+  created: -28d@10:00
+  purpose: client
+  people_helped: 1
+  district: Sham Shui Po
+  purpose_description: "Furniture for an individual"
+  transport: { type: self, scheduled: -24d@10:00 }
+  events:
+    - { at: -28d@10:05, do: submit }
+    - { at: -27d@10:00, do: cancel, reason: Self-referred }
+  expect: { state: cancelled, reason: Self-referred }
+
+- key: o_cancel_too_soon
+  why: "cancelled 'Too soon' — the organisation ordered again too quickly"
+  type: online-order
+  by: ch_caritas
+  created: -21d@10:00
+  purpose: organisation
+  people_helped: 30
+  district: Sai Ying Pun
+  purpose_description: "More household items"
+  transport: { type: self, scheduled: -18d }
+  events:
+    - { at: -21d@10:05, do: submit }
+    - { at: -20d@10:00, do: cancel, reason: Too soon }
+  expect: { state: cancelled, reason: Too soon }
+
+- key: o_shipment_closed
+  why: "a historic shipment, dispatched and closed"
+  type: shipment
+  handler: priya
+  created: -125d@09:00
+  country: Philippines
+  shipment_date: -100d
+  description: "Shipment to partner in Manila: furniture"
+  people_helped: 120
+  events:
+    - { at: -125d@09:05, do: submit }
+    - { at: -124d@10:00, do: start_processing }
+    - { at: -124d@10:10, do: designate, item: dining_chairs_worn, qty: 2 }
+    - { at: -110d@10:00, do: finish_processing }
+    - { at: -100d@09:00, do: dispatch, item: dining_chairs_worn }
+    - { at: -100d@12:00, do: close }
+  expect: { state: closed }

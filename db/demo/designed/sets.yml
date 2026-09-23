@@ -1,0 +1,130 @@
+# Package sets. A set is ONE donated item with several packages — the app's own
+# PackageSet watcher links them on receipt, exactly as production does.
+#
+# Why sets matter (Matt, 2026-09-22): don't break a set blind; members live in different
+# places; sets are publishable as units and Crossroads may require the whole set be taken.
+#
+# Set-level fields (condition, grade, inventoried, published, donor) apply to every member
+# unless the member overrides them. `code` is the set's own package type.
+
+- key: dining_set_teak
+  why: "the canonical set: spans two locations and is partly given away — splitting it must be visible"
+  code: FTD
+  description: "Teak dining set, six seats"
+  condition: Lightly Used
+  grade: B
+  inventoried: -64d
+  published: false
+  donor: donor_fischer
+  members:
+    - key: dining_table
+      code: FTD
+      qty: 1
+      description: "Dining table, teak, extendable, 1.8 m"
+      value: 2200
+      dims: [180, 90, 76]
+      location: 30 Furniture
+      expect: { designated: 1, locations: 1 }
+    - key: dining_carvers
+      code: FCD
+      qty: 2
+      description: "Carver dining chair, teak, with arms"
+      value: 350
+      dims: [58, 54, 92]
+      location: PG Shed
+      expect: { on_hand: 2, available: 2 }
+    - key: dining_side_chairs
+      code: FCD
+      qty: 4
+      description: "Side dining chair, teak"
+      value: 300
+      dims: [46, 52, 92]
+      location: PG Shed
+      expect: { dispatched: 2, on_hand: 2 }
+
+- key: bedroom_set_oak
+  why: "a set published as a unit — offered to charities whole"
+  code: FBD
+  description: "Bedroom set, white oak, three pieces"
+  condition: Lightly Used
+  grade: A
+  inventoried: -23d
+  published: true
+  members:
+    - { key: bedroom_wardrobe, code: FBD, qty: 1, description: "Wardrobe, two doors, white oak, hanging rail and shelf", value: 1500, dims: [100, 58, 200], location: 30 Furniture, expect: { published: true } }
+    - { key: bedroom_drawers,  code: FBC, qty: 1, description: "Chest of drawers, four drawers, white oak", value: 900, dims: [80, 45, 100], location: 30 Furniture, expect: { published: true } }
+    - { key: bedroom_bedside,  code: FBB, qty: 2, description: "Bedside cabinet, one drawer, white oak", value: 350, dims: [45, 40, 55], location: 30 Furniture, expect: { published: true } }
+
+- key: workstation_set
+  why: "taking part of it is the interesting action: an order wants only the drawer unit"
+  code: FDO
+  description: "Office workstation, desk with matching drawer unit"
+  condition: Lightly Used
+  grade: B
+  inventoried: -26d@11:30
+  published: true
+  donor: donor_office
+  members:
+    - { key: workstation_desk,   code: FDO, qty: 1, description: "Office desk, walnut veneer, cable tray, 160 x 80 cm", value: 1100, dims: [160, 80, 74], location: 30 Furniture, expect: { available: 1 } }
+    - { key: workstation_drawer, code: FBP, qty: 1, description: "Office drawer unit, three drawers, walnut veneer, on castors", value: 450, dims: [42, 55, 60], location: 30 Furniture, expect: { designated: 1 } }
+
+- key: living_room_set
+  why: "a set whose members are kept in different buildings"
+  code: FCS
+  description: "Living room set, sofa and two armchairs, charcoal velvet"
+  condition: Lightly Used
+  grade: B
+  inventoried: -52d
+  published: true
+  members:
+    - { key: living_sofa,      code: FCS, qty: 1, description: "Three-seater sofa, charcoal velvet, brass feet", value: 2800, dims: [205, 90, 82], location: SB Shed }
+    - { key: living_armchairs, code: FCL, qty: 2, description: "Armchair, charcoal velvet, brass feet, matches the three-seater sofa", value: 900, dims: [80, 82, 82], location: 30 Furniture, expect: { locations: 1 } }
+
+- key: kids_table_set
+  why: "children's furniture set, older stock"
+  code: FTC
+  description: "Children's table and four chairs, beech"
+  condition: Lightly Used
+  grade: B
+  inventoried: -210d
+  published: true
+  members:
+    - { key: kids_table,  code: FTC, qty: 1, description: "Children's table, beech, 80 x 60 cm", value: 300, dims: [80, 60, 52], location: 30 Furniture }
+    - { key: kids_chairs, code: FCC, qty: 4, description: "Children's chair, beech, stackable", value: 80, dims: [30, 32, 55], location: 30 Furniture }
+
+- key: patio_set
+  why: "an outdoor set, fully dispatched to one order — a set that left together"
+  code: FTU
+  description: "Garden patio set, table and four chairs, grey aluminium"
+  condition: Lightly Used
+  grade: B
+  inventoried: -95d
+  published: false
+  members:
+    - { key: patio_table,  code: FTU, qty: 1, description: "Outdoor table, grey aluminium, slatted top, 120 cm", value: 700, dims: [120, 80, 72], location: PG Tent, expect: { dispatched: 1, on_hand: 0 } }
+    - { key: patio_chairs, code: FCU, qty: 4, description: "Outdoor chair, grey aluminium, stackable", value: 150, dims: [55, 58, 82], location: PG Tent, expect: { dispatched: 4, on_hand: 0 } }
+
+- key: bunk_bed_set
+  why: "bed frame and its mattresses as one set in the shed"
+  code: BKB
+  description: "Bunk bed with two mattresses, white steel frame"
+  condition: Lightly Used
+  grade: B
+  inventoried: -38d
+  published: true
+  members:
+    - { key: bunk_frame,     code: BKB, qty: 1, description: "Bunk bed base, white steel frame, ladder included", value: 900, dims: [200, 98, 160], location: PG Shed }
+    - { key: bunk_mattresses, code: BSM, qty: 2, description: "Single mattress, foam, for bunk bed, 190 x 90 cm", value: 350, dims: [190, 90, 12], location: PG Shed }
+
+- key: dinner_service
+  why: "household set of many small pieces"
+  code: HD
+  description: "Dinner service for six, white porcelain"
+  condition: New
+  grade: A
+  inventoried: -15d
+  published: true
+  members:
+    - { key: dinner_plates, code: HD, qty: 6, description: "Dinner plate, white porcelain, 27 cm", value: 40, location: 28 HouseHold }
+    - { key: side_plates,   code: HD, qty: 6, description: "Side plate, white porcelain, 20 cm", value: 25, location: 28 HouseHold }
+    - { key: bowls,         code: HD, qty: 6, description: "Bowl, white porcelain, 15 cm", value: 25, location: 28 HouseHold }
