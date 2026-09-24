@@ -59,9 +59,15 @@ module Goodcity
         t = Time.zone.local(base.year, base.month, base.day, hh, mm)
         # A `today@HH:MM` spec is fixed in the YAML, but "today" moves with the run: a build
         # started before HH:MM has passed in Hong Kong would otherwise schedule that event in
-        # the future and `at` (below) would raise. Clamp `today@` (only) back to just before
-        # now, so the same spine builds at any hour of the day.
-        t = now - 1.minute if day == 'today' && t > now
+        # the future and `at` (below) would raise. Clamp `today@` (only) back into the past —
+        # but not all to the same instant: order/spacing between several `today@` events in
+        # one spec (e.g. two dispatches) must survive the clamp too. Map HH:MM's minute-of-day
+        # (0..1439) onto the last ~24 minutes before now, preserving order: a later HH:MM clamps
+        # to a later (closer to now) instant, and distinct minutes never collide.
+        if day == 'today' && t > now
+          minute_of_day = (hh * 60) + mm
+          t = now - 1.minute - (1440 - minute_of_day).seconds
+        end
         t
       end
 

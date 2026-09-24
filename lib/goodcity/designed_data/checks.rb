@@ -30,7 +30,7 @@ module Goodcity
       def run
         manifest = JSON.parse(File.read(self.class.manifest_path))
         check_items(manifest['packages'])
-        check_orders(manifest['orders'])
+        check_orders(manifest['orders'], manifest['packages'])
         check_conformance(manifest['packages'].values)
         puts "[designed:check] #{@passes} passed, #{@failures.size} failed"
         @failures.each { |f| puts "  FAIL #{f}" }
@@ -89,7 +89,7 @@ module Goodcity
         end
       end
 
-      def check_orders(ids)
+      def check_orders(ids, package_ids)
         DesignedData.load_yaml('orders').each do |spec|
           key = spec['key']
           order = ids[key] && Order.find_by(id: ids[key])
@@ -121,6 +121,15 @@ module Goodcity
             assert("order #{key} has >= 30 orders_packages", count >= 30, "has #{count}")
             assert("order #{key} has >= 3 dispatched lines", dispatched >= 3, "has #{dispatched}")
             assert("order #{key} has >= 2 cancelled lines", cancelled >= 2, "has #{cancelled}")
+          end
+          if key == 'o_dispatching_done'
+            # Two `today@` dispatches (wheelchair_transit at 10:40, then first_aid_kits at
+            # 10:45) — pins the today@ clamp's order-preservation (context.rb#time), not just
+            # that both events ran.
+            wc_at = PackagesInventory.where(package_id: package_ids['wheelchair_transit'], action: 'dispatch').minimum(:created_at)
+            fa_at = PackagesInventory.where(package_id: package_ids['first_aid_kits'], action: 'dispatch').minimum(:created_at)
+            assert("order #{key} dispatches wheelchair_transit (10:40) strictly before first_aid_kits (10:45)",
+                   wc_at && fa_at && wc_at < fa_at, "wheelchair_transit=#{wc_at.inspect} first_aid_kits=#{fa_at.inspect}")
           end
         end
       end
