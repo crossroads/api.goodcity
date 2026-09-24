@@ -114,6 +114,14 @@ module Goodcity
           if e['reason']
             assert("order #{key} cancelled for #{e['reason']}", order.cancellation_reason&.name_en == e['reason'])
           end
+          if key == 'o_many_lines'
+            count = order.orders_packages.count
+            dispatched = order.orders_packages.dispatched.count
+            cancelled = order.orders_packages.where(state: OrdersPackage::States::CANCELLED).count
+            assert("order #{key} has >= 30 orders_packages", count >= 30, "has #{count}")
+            assert("order #{key} has >= 3 dispatched lines", dispatched >= 3, "has #{dispatched}")
+            assert("order #{key} has >= 2 cancelled lines", cancelled >= 2, "has #{cancelled}")
+          end
         end
       end
 

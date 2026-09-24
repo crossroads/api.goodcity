@@ -272,6 +272,59 @@
     - { at: -5d@14:16, do: designate, item: office_desks_oak, qty: 3 }
   expect: { state: processing }
 
+- key: o_many_lines
+  why: "a large processing order: paging (25/page), search and the state filter all bite (manifest O11)"
+  type: online-order
+  by: ch_ssp
+  created: -6d@09:15
+  purpose: organisation
+  people_helped: 120
+  district: Sham Shui Po
+  purpose_description: "Furnishing a transitional housing block: 32 flats"
+  transport: { type: self, scheduled: +2d@14:00 }
+  events:
+    - { at: -6d@09:20, do: submit }
+    - { at: -5d@10:00, do: start_processing }
+    - { at: -5d@10:05, do: designate, item: office_desks_oak, qty: 1 }
+    - { at: -5d@10:06, do: designate, item: bookcase_walnut, qty: 1 }
+    - { at: -5d@10:07, do: designate, item: bookcase_birch_low, qty: 1 }
+    - { at: -5d@10:08, do: designate, item: mattress_single, qty: 1 }
+    - { at: -5d@10:09, do: designate, item: piano_legacy, qty: 1 }
+    - { at: -5d@10:10, do: designate, item: filing_cabinets_legacy, qty: 1 }
+    - { at: -5d@10:11, do: designate, item: vouchers, qty: 1 }
+    - { at: -5d@10:12, do: designate, item: bar_fridge, qty: 1 }
+    - { at: -5d@10:13, do: designate, item: desktops_sff, qty: 1 }
+    - { at: -5d@10:14, do: designate, item: tower_mid, qty: 1 }
+    - { at: -5d@10:15, do: designate, item: tower_compact, qty: 1 }
+    - { at: -5d@10:16, do: designate, item: monitor_27, qty: 1 }
+    - { at: -5d@10:17, do: designate, item: laptops_14, qty: 1 }
+    - { at: -5d@10:18, do: designate, item: printer_mfp, qty: 1 }
+    - { at: -5d@10:19, do: designate, item: sunscreen_sachets, qty: 200 }
+    - { at: -5d@10:20, do: designate, item: soft_toys, qty: 10 }
+    - { at: -5d@10:21, do: designate, item: syringes, qty: 50 }
+    - { at: -5d@10:22, do: designate, item: office_chairs_mesh, qty: 2 }
+    - { at: -5d@10:23, do: designate, item: tv_43, qty: 1 }
+    - { at: -5d@10:24, do: designate, item: monitors_24, qty: 2 }
+    - { at: -5d@10:25, do: designate, item: mini_pcs, qty: 1 }
+    - { at: -5d@10:26, do: designate, item: printers_laser, qty: 1 }
+    - { at: -5d@10:27, do: designate, item: keyboards, qty: 5 }
+    - { at: -5d@10:28, do: designate, item: task_chairs, qty: 1 }
+    - { at: -5d@10:29, do: designate, item: wool_blankets, qty: 5 }
+    - { at: -5d@10:30, do: designate, item: first_aid_kits, qty: 3 }
+    - { at: -5d@10:31, do: designate, item: heaters_off_season, qty: 2 }
+    - { at: -5d@10:32, do: designate, item: mattress_rolled, qty: 2 }
+    - { at: -5d@10:33, do: designate, item: hangers, qty: 3 }
+    - { at: -5d@10:34, do: designate, item: dining_chairs_worn, qty: 1 }
+    - { at: -5d@10:35, do: designate, item: bikes_children, qty: 1 }
+    - { at: -3d@09:00, do: designate, item: stroller, qty: 1 }
+    - { at: -3d@09:30, do: finish_processing }
+    - { at: -3d@10:00, do: dispatch, item: filing_cabinets_legacy }
+    - { at: -3d@10:05, do: dispatch, item: mattress_rolled }
+    - { at: -3d@10:10, do: dispatch, item: hangers }
+    - { at: -3d@10:15, do: cancel_line, item: dining_chairs_worn }
+    - { at: -3d@10:20, do: cancel_line, item: bikes_children }
+  expect: { state: dispatching }
+
 - key: o_online_submitted
   why: "a plain online order just submitted, for a client"
   type: online-order
