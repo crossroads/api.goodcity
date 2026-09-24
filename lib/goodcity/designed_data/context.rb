@@ -56,7 +56,13 @@ module Goodcity
         return now if day == 'now' && clock.nil?
 
         hh, mm = clock ? clock.split(':').map(&:to_i) : default_clock(salt || s)
-        Time.zone.local(base.year, base.month, base.day, hh, mm)
+        t = Time.zone.local(base.year, base.month, base.day, hh, mm)
+        # A `today@HH:MM` spec is fixed in the YAML, but "today" moves with the run: a build
+        # started before HH:MM has passed in Hong Kong would otherwise schedule that event in
+        # the future and `at` (below) would raise. Clamp `today@` (only) back to just before
+        # now, so the same spine builds at any hour of the day.
+        t = now - 1.minute if day == 'today' && t > now
+        t
       end
 
       # A stable "working hour" for a spec, so re-runs produce identical timestamps.
