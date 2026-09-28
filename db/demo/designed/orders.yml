@@ -385,8 +385,10 @@
     - { at: -2d@10:05, do: submit }
     - { at: -2d@10:10, do: start_processing }
     - { at: -2d@10:20, do: designate, item: hangers, qty: 20 }
+    - { at: -2d@10:25, do: designate, item: p_two_places_mixed, qty: 2 }
     - { at: -1d@16:00, do: finish_processing }
     - { at: today@09:30, do: dispatch, item: hangers }
+    - { at: today@09:35, do: dispatch, item: p_two_places_mixed, qty: 1 }
   expect: { state: dispatching }
 
 # --- Recently closed / reopened ------------------------------------------------------

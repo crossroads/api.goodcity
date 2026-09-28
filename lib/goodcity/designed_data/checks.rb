@@ -30,6 +30,7 @@ module Goodcity
       def run
         manifest = JSON.parse(File.read(self.class.manifest_path))
         check_items(manifest['packages'])
+        check_items_list_fixtures(manifest['packages'])
         check_orders(manifest['orders'], manifest['packages'])
         check_conformance(manifest['packages'].values)
         puts "[designed:check] #{@passes} passed, #{@failures.size} failed"
@@ -87,6 +88,34 @@ module Goodcity
             assert("item #{key} ledger has #{e['actions'].join(',')}", missing.empty?, "missing #{missing.join(',')}")
           end
         end
+      end
+
+      # The Items list fixtures (rebuild manifest P2, P3, P7, P9, L1) the generic `expect:` can't say.
+      def check_items_list_fixtures(ids)
+        pkg = ->(key) { ids[key] && Package.find_by(id: ids[key]) }
+
+        never = pkg.('p_never_published')
+        assert('item p_never_published has allow_web_publish NULL', never && never.allow_web_publish.nil?,
+               "is #{never&.allow_web_publish.inspect}")
+        assert('item p_never_published has no photo', never && never.images.count.zero?, "has #{never&.images&.count}")
+
+        unlinked = pkg.('p_favourite_unlinked')
+        assert('item p_favourite_unlinked has a favourite photo but favourite_image_id NULL',
+               unlinked && unlinked.favourite_image_id.nil? && unlinked.images.where(favourite: true).exists?,
+               "favourite_image_id #{unlinked&.favourite_image_id.inspect}, favourite photos #{unlinked&.images&.where(favourite: true)&.count}")
+
+        cased = pkg.('p_case_number')
+        assert('item p_case_number case_number=64-17', cased && cased.case_number == '64-17', "is #{cased&.case_number.inspect}")
+
+        mixed = pkg.('p_two_places_mixed')
+        n = mixed && PackagesInventory.where(package_id: mixed.id).group(:location_id).sum(:quantity).count { |_, q| q.positive? }
+        assert('item p_two_places_mixed in 2 locations, part designated, part dispatched',
+               mixed && n == 2 && mixed.designated_quantity.positive? && mixed.dispatched_quantity.positive?,
+               mixed && "locations #{n}, designated #{mixed.designated_quantity}, dispatched #{mixed.dispatched_quantity}")
+
+        admin = User.find_by(mobile: '+85251111111')
+        recent = admin ? Location.recently_used(admin.id).count : 0
+        assert('+85251111111 has >= 5 recently used locations', recent >= 5, "has #{recent}")
       end
 
       def check_orders(ids, package_ids)
@@ -157,7 +186,11 @@ module Goodcity
           next if rows.size < 30
           qty1 = rows.count { |r| r[2] == 1 } / rows.size.to_f
           want = profile.dig('departments', dept, 'quantity', 'pct_qty_eq_1').to_f
-          assert("conformance: #{dept} singleton rate ~#{(want * 100).round}%", (qty1 - want).abs <= 0.12, "is #{(qty1 * 100).round}%")
+          # 12 points, or three standard errors for a small department (Toys has ~30 live
+          # rows, where one reshuffle of the RNG stream moves the rate by ~13 points).
+          tol = [0.12, 3 * Math.sqrt(want * (1 - want) / rows.size)].max
+          assert("conformance: #{dept} singleton rate ~#{(want * 100).round}%", (qty1 - want).abs <= tol,
+                 "is #{(qty1 * 100).round}% (tolerance #{(tol * 100).round(1)} points, #{rows.size} rows)")
         end
 
         published = live.count { |r| r[3] } / total

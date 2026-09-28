@@ -109,7 +109,10 @@ module Goodcity
       def plan_history(key, history)
         history.each_with_index do |h, i|
           at = h.fetch('at')
-          timeline.add(ctx.time(at, salt: "#{key}:#{i}"), "#{key} history #{h.keys.join(',')}", user: -> { receiver }) do
+          # `by:` names who did it (people.yml key), so the version rows carry that user as
+          # whodunnit — e.g. Location.recently_used reads a user's own moves.
+          user = h['by'] ? -> { people.user(h['by']) } : -> { receiver }
+          timeline.add(ctx.time(at, salt: "#{key}:#{i}"), "#{key} history #{(h.keys - ['by']).join(',')}", user: user) do
             apply_history!(package(key), h)
           end
         end

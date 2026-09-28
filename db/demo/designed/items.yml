@@ -15,6 +15,8 @@
 #                   move: <qty|all> to: <location> [from:]   gain|loss|trash|recycle: <qty>
 #                   process: <qty> destination:   publish: true|false   set: {field: value}
 #                   message: <staff note on the item>
+#                   by: <people.yml key> on any entry = who did it (PaperTrail whodunnit;
+#                     default: a random stock receiver)
 #   Designations and dispatches live on the order side (orders.yml).
 
 # --- Furniture --------------------------------------------------------------------
@@ -72,6 +74,22 @@
     - { at: -10d, trash: 1, description: "Gas lift failed, not repairable" }
   expect: { locations: 2, actions: [inventory, move, trash] }
 
+- key: p_favourite_unlinked
+  why: "manifest P7 (production 000062's shape): photos, the first flagged favourite, but favourite_image_id NULL — the list must still show the favourite photo"
+  code: FCO
+  description: "Office chair, ergonomic, grey mesh back, fixed arms"
+  condition: Lightly Used
+  grade: B
+  qty: 3
+  value: 400
+  dims: [66, 66, 110]
+  location: 30 Furniture
+  inventoried: -14d@10:00
+  published: true
+  photos: 8004
+  history:
+    - { at: -14d@12:00, set: { favourite_image_id: null } }
+
 - key: task_chairs
   why: "a quieter bulk line from the same refit, unpublished"
   code: FCO
@@ -86,6 +104,8 @@
   published: false
   photos: 8019
   donor: donor_office
+  history:
+    - { at: -2d@15:00, move: 2, to: 28 Q BulkRm, by: stock_admin }  # L1 recents (stock_admin)
   expect: { on_hand: 6, published: false }
 
 - key: office_desks_oak
@@ -116,6 +136,8 @@
   inventoried: -3d
   published: true
   photos: 8020
+  history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
+    - { at: -2d@11:00, move: all, to: PG Shed, by: stock_admin }
 
 - key: bookcase_walnut
   why: "two identical bookcases kept in the shed"
@@ -256,6 +278,8 @@
   inventoried: -2d
   published: true
   photos: 8025
+  history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
+    - { at: -1d@10:30, move: all, to: 28 P2 Electrical, by: stock_admin }
 
 - key: fridge_two_door
   why: "designated to an order still in processing — not yet dispatched"
@@ -355,6 +379,7 @@
   published: true
   history:
     - { at: -60d, publish: false }
+    - { at: -3d@14:00, move: 4, to: SB Shed, by: stock_admin }  # L1 recents (stock_admin)
   expect: { published: false, on_hand: 12 }
 
 # --- Computers --------------------------------------------------------------------
@@ -609,6 +634,54 @@
   location: 28 HouseHold
   inventoried: -4d
   published: true
+  history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
+    - { at: -1d@14:00, move: all, to: 29 Household Annex, by: stock_admin }
+
+- key: p_never_published
+  why: "Items review I1 / manifest P3: allow_web_publish NULL (never published) and no photo — the list must still show it, as Private"
+  code: BBC
+  description: "Baby crib, pine frame, mattress not included"
+  condition: Lightly Used
+  grade: B
+  qty: 2
+  value: 300
+  dims: [124, 66, 90]
+  location: 28 HouseHold
+  inventoried: -12d@10:15
+  history:
+    - { at: -12d@11:00, set: { allow_web_publish: null } }
+  expect: { on_hand: 2, available: 2, photos: 0, locations: 1 }
+
+- key: p_case_number
+  why: "manifest P9: case number and a two-word phrase in the notes, both findable by search (B8)"
+  code: BBC
+  description: "Baby crib, white frame, fold-flat sides, from the Tsuen Wan appeal"
+  condition: New
+  grade: A
+  qty: 1
+  value: 900
+  location: 28 HouseHold
+  inventoried: -9d@09:30
+  published: true
+  history:
+    - { at: -9d@10:00, set: { case_number: "64-17" } }
+  expect: { on_hand: 1, available: 1 }
+
+- key: p_two_places_mixed
+  why: "manifest P2: in two locations AND part designated, part dispatched (o_carryout designates 2, dispatches 1)"
+  code: BBC
+  description: "Baby crib, natural beech, adjustable base height, mattress included"
+  condition: Lightly Used
+  grade: B
+  qty: 4
+  value: 500
+  dims: [124, 66, 90]
+  location: 28 HouseHold
+  inventoried: -6d
+  published: true
+  history:
+    - { at: -5d@11:00, move: 2, to: 29 Household Annex }
+  expect: { locations: 2, designated: 1, dispatched: 1 }
 
 - key: soft_toys
   why: "new toys in quantity, published"
