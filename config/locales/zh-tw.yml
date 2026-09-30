@@ -120,6 +120,7 @@ zh-tw:
   delivery:
     gogovan_message: "%{name} 已預約 GoGoVan，時間為 %{time}, %{date}"
     drop_off_message: "%{name} 將會在以下時間 %{time}, %{date} 送抵物資。"
+    self_arranged_van_message: "%{name} 已告知將自行安排車輛，於 %{time}, %{date} 送抵。"
   packages_inventory:
     cannot_undo: Action cannot be undone
   package:

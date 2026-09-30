@@ -39,6 +39,16 @@ RSpec.describe Delivery, type: :model do
         drop_off_delivery.save
       }.to change(offer, :state).to("scheduled")
     end
+
+    it "updates offer-state to 'scheduled' for a self-arranged van delivery" do
+      offer = create :offer, :reviewed
+      self_arranged_van_delivery = create :self_arranged_van_delivery, offer: offer, schedule: nil
+      schedule = create :drop_off_schedule
+      expect {
+        self_arranged_van_delivery.schedule = schedule
+        self_arranged_van_delivery.save
+      }.to change(offer, :state).to("scheduled")
+    end
   end
 
 end

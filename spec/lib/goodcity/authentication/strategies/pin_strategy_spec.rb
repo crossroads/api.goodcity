@@ -40,7 +40,7 @@ describe Goodcity::Authentication::Strategies::PinStrategy do
     context "with valid auth_token" do
       let(:params) { {'pin' => pin, 'otp_auth_key' => otp_auth_key} }
       before { expect(AuthToken).to receive(:find_by_otp_auth_key).with(otp_auth_key).and_return(auth_token) }
-      before { Rails.application.secrets.appstore_reviewer_login = {} }
+      before { allow(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({}) }
 
       context "and successful otp authentication" do
         before { expect(auth_token).to receive(:authenticate_otp).with(pin, {drift: ENV['OTP_CODE_VALIDITY'].to_i}).and_return(true) }

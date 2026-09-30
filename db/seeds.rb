@@ -84,7 +84,7 @@ districts.each do |name_en, value|
 end
 
 # Timeslots
-timeslots = [["10:30am-1pm", "上午10:30時至下午1時"], ["2PM-4PM", "下午2時至下午4時"]]
+timeslots = [["10:30am-12:30pm", "上午10:30時至下午12:30時"], ["2pm-4pm", "下午2時至下午4時"]]
 timeslots.each do |timeslot|
   Timeslot.create(
     name_en: timeslot.first,

@@ -115,6 +115,17 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       }
     }
 
+    let(:self_arranged_van_delivery) {
+      { "id" => "#{delivery.id}",
+        "deliveryType" => "Self Arranged Van",
+        "offerId" =>  "#{offer.id}",
+        "scheduleAttributes" => {
+          "slot" => "2",
+          "scheduledAt" => "Fri Apr 17 2015 00:00:00 GMT+0530 (IST)",
+          "slotName" => "11AM-1PM"}
+      }
+    }
+
     let(:collection_address) {
       { "street" => "test3", "flat" => "test5", "building" => "test4", "districtId" => "#{district.id}", "addressType" => "collection" }
     }
@@ -236,6 +247,14 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       expect(offer.reload.state).to eq("scheduled")
       expect(response.status).to eq(200)
       expect(offer.reload.gogovan_transport).to eq(ggv_transport)
+    end
+
+    it "should accept a 'Self Arranged Van' delivery type without validation error" do
+      post :confirm_delivery, params: { delivery: self_arranged_van_delivery }
+
+      expect(response.status).to eq(200)
+      expect(offer.reload.state).to eq("scheduled")
+      expect(delivery.reload.delivery_type).to eq("Self Arranged Van")
     end
   end
 

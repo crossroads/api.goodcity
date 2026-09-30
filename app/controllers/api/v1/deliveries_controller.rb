@@ -24,7 +24,7 @@ module Api
           param :offer_id, String, desc: "Id of offer to which delivery belongs."
           param :contact_id, String, allow_nil: true, desc: "Id of contact to which delivery belongs."
           param :schedule_id, String, allow_nil: true, desc: "Id of schedule to which delivery belongs."
-          param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type.", allow_nil: true
+          param :delivery_type, ["Alternate", "Drop Off", "Gogovan", "Self Arranged Van"], desc: "Delivery type.", allow_nil: true
           param :start, String, allow_nil: true, desc: "Not yet used"
           param :finish, String, allow_nil: true, desc: "Not yet used"
         end
@@ -66,7 +66,7 @@ module Api
       api :POST, '/confirm_delivery', "Confirm Delivery with address, contact and schedule details"
       param :delivery, Hash, required: true do
         param :id, String, 'Id of Delivery'
-        param :deliveryType, ['Gogovan', 'Drop Off', 'Alternate'], desc: "Delivery type."
+        param :deliveryType, ['Gogovan', 'Drop Off', 'Alternate', 'Self Arranged Van'], desc: "Delivery type."
         param :offerId, String, 'Id of Offer'
         param :scheduleAttributes, Hash, required: true do
           param :zone, String

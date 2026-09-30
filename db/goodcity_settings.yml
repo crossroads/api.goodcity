@@ -70,3 +70,7 @@
   key: "browse.online_order.timeslots.booking_margin"
   value: "2"
   description: "To allow time to prepare orders, we set a safety margin of operating quota slots in which clients cannot book anything."
+-
+  key: "app.allow_in_app_van_booking"
+  value: "TRUE"
+  description: "Allow or disable in-app van booking with true/false"
