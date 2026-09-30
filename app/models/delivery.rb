@@ -47,6 +47,6 @@ class Delivery < ApplicationRecord
 
   def process_completed?
     (contact_id_previously_changed? && contact.present?) ||
-      (delivery_type == 'Drop Off' && schedule_id_previously_changed? && schedule.present?)
+      (delivery_type.in?(['Drop Off', 'Self Arranged Van']) && schedule_id_previously_changed? && schedule.present?)
   end
 end

@@ -1,12 +1,12 @@
 namespace :goodcity do
-  # rake goodcity:update_timeslots
-  desc 'Update timeslots'
-  task update_timeslots: :environment do
-    Timeslot.where("name_en <> ?", "2PM-4PM").delete_all
-
-    FactoryBot.create :timeslot,
-      name_en: "10:30AM-1PM",
-      name_zh_tw: "上午10:30時至下午1時"
+  # rake goodcity:update_timeslot_labels
+  desc 'Rename timeslots to 10:30am-12:30pm and 2pm-4pm'
+  task update_timeslot_labels: :environment do
+    Timeslot.where("LOWER(name_en) = ?", "10:30am-1pm").update_all(
+      name_en: "10:30am-12:30pm",
+      name_zh_tw: "上午10:30時至下午12:30時"
+    )
+    Timeslot.where("LOWER(name_en) = ?", "2pm-4pm").update_all(name_en: "2pm-4pm")
   end
 
   # rake goodcity:update_delivery_schedule_slotname

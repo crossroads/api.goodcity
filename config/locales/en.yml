@@ -123,6 +123,7 @@ en:
   delivery:
     gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
     drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
+    self_arranged_van_message: "%{name} has told us their own van will arrive at %{time} on %{date}"
   packages_inventory:
     cannot_undo: Action cannot be undone
   package:
