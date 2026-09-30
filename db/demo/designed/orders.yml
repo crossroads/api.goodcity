@@ -238,7 +238,6 @@
     - { at: -5d@10:05, do: finish_processing }
     - { at: -4d@09:30, do: restart_process }
     - { at: -4d@09:35, do: message, from: ch_waiji, body: "Sorry, the family now needs a narrower chair. Could we change it?" }
-    - { at: -1d@10:20, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: submitted }
 
 - key: o_part_of_set
@@ -470,6 +469,7 @@
     - { at: -14d@09:00, do: message, from: ch_lady, body: "We received one bookcase but the shelves were missing. Could you check?" }
     - { at: -14d@09:30, do: reopen }
     - { at: -14d@09:35, do: message, from: priya, staff: true, body: "Reopened: shelves may still be in the shed. Ah Lam to check." }
+    - { at: -1d@09:15, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111 (moved off o_restarted: live.spec 10. socket drop needs it empty)
   expect: { state: dispatching }
 
 # --- Cancelled, one per reason -------------------------------------------------------
@@ -1021,4 +1021,156 @@
     - { at: -136d@11:05, do: finish_processing }
     - { at: -134d@10:40, do: start_dispatching }
     - { at: -134d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_13
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -147d@10:00
+  purpose: organisation
+  people_helped: 44
+  district: Sham Shui Po
+  purpose_description: "Bunk beds for a shared bedroom"
+  transport: { type: self, scheduled: -143d@10:30 }
+  events:
+    - { at: -147d@10:10, do: submit }
+    - { at: -146d@10:00, do: start_processing }
+    - { at: -145d@11:00, do: checklist }
+    - { at: -145d@11:05, do: finish_processing }
+    - { at: -143d@10:40, do: start_dispatching }
+    - { at: -143d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_14
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -156d@10:00
+  purpose: organisation
+  people_helped: 47
+  district: Sham Shui Po
+  purpose_description: "Pots and pans for a new kitchen"
+  transport: { type: self, scheduled: -152d@10:30 }
+  events:
+    - { at: -156d@10:10, do: submit }
+    - { at: -155d@10:00, do: start_processing }
+    - { at: -154d@11:00, do: checklist }
+    - { at: -154d@11:05, do: finish_processing }
+    - { at: -152d@10:40, do: start_dispatching }
+    - { at: -152d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_15
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -165d@10:00
+  purpose: organisation
+  people_helped: 50
+  district: Sham Shui Po
+  purpose_description: "School bags for the new term"
+  transport: { type: self, scheduled: -161d@10:30 }
+  events:
+    - { at: -165d@10:10, do: submit }
+    - { at: -164d@10:00, do: start_processing }
+    - { at: -163d@11:00, do: checklist }
+    - { at: -163d@11:05, do: finish_processing }
+    - { at: -161d@10:40, do: start_dispatching }
+    - { at: -161d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_16
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -174d@10:00
+  purpose: organisation
+  people_helped: 53
+  district: Sham Shui Po
+  purpose_description: "A wardrobe and drawers for a studio flat"
+  transport: { type: self, scheduled: -170d@10:30 }
+  events:
+    - { at: -174d@10:10, do: submit }
+    - { at: -173d@10:00, do: start_processing }
+    - { at: -172d@11:00, do: checklist }
+    - { at: -172d@11:05, do: finish_processing }
+    - { at: -170d@10:40, do: start_dispatching }
+    - { at: -170d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_17
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -183d@10:00
+  purpose: organisation
+  people_helped: 56
+  district: Sham Shui Po
+  purpose_description: "Ceiling fans ahead of summer"
+  transport: { type: self, scheduled: -179d@10:30 }
+  events:
+    - { at: -183d@10:10, do: submit }
+    - { at: -182d@10:00, do: start_processing }
+    - { at: -181d@11:00, do: checklist }
+    - { at: -181d@11:05, do: finish_processing }
+    - { at: -179d@10:40, do: start_dispatching }
+    - { at: -179d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_18
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -192d@10:00
+  purpose: organisation
+  people_helped: 59
+  district: Sham Shui Po
+  purpose_description: "A sofa and coffee table for the common room"
+  transport: { type: self, scheduled: -188d@10:30 }
+  events:
+    - { at: -192d@10:10, do: submit }
+    - { at: -191d@10:00, do: start_processing }
+    - { at: -190d@11:00, do: checklist }
+    - { at: -190d@11:05, do: finish_processing }
+    - { at: -188d@10:40, do: start_dispatching }
+    - { at: -188d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_19
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -201d@10:00
+  purpose: organisation
+  people_helped: 62
+  district: Sham Shui Po
+  purpose_description: "Rice cookers for the family kitchen program"
+  transport: { type: self, scheduled: -197d@10:30 }
+  events:
+    - { at: -201d@10:10, do: submit }
+    - { at: -200d@10:00, do: start_processing }
+    - { at: -199d@11:00, do: checklist }
+    - { at: -199d@11:05, do: finish_processing }
+    - { at: -197d@10:40, do: start_dispatching }
+    - { at: -197d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_20
+  why: "L7: a closed order of the Sham Shui Po project (margin against daily filler drift — 2026-10-01 saw the org fall to 28 with 12 fixed orders)"
+  type: appointment
+  by: ch_ssp
+  created: -210d@10:00
+  purpose: organisation
+  people_helped: 65
+  district: Sham Shui Po
+  purpose_description: "Bookshelves for the reading corner"
+  transport: { type: self, scheduled: -206d@10:30 }
+  events:
+    - { at: -210d@10:10, do: submit }
+    - { at: -209d@10:00, do: start_processing }
+    - { at: -208d@11:00, do: checklist }
+    - { at: -208d@11:05, do: finish_processing }
+    - { at: -206d@10:40, do: start_dispatching }
+    - { at: -206d@11:00, do: close }
   expect: { state: closed }

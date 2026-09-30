@@ -207,6 +207,11 @@ module Goodcity
         recent = admin ? Order.recently_used(admin.id).size : 0
         assert('+85251111111 has 5 recently used orders', recent == 5, "has #{recent}")
 
+        # live.spec.ts '10. socket drop' relies on this order starting with no staff note.
+        restarted = order.('o_restarted')
+        assert('order o_restarted has no staff note', restarted && restarted.staff_note.blank?,
+               restarted && restarted.staff_note.inspect)
+
         # F8: Task 8's unread-count checks read o_submitted_requests as 51111111.
         sr = order.('o_submitted_requests')
         unread = sr && admin && Subscription.joins(:message).where(user_id: admin.id, state: 'unread',
