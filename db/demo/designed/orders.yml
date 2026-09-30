@@ -3,8 +3,12 @@
 # the dataset. Codes (GC-00001, S00001, C00001) are issued by the app, rising with date.
 #
 # Fields
-#   type        appointment | online-order | shipment | carryout
+#   type        appointment | online-order | bulk | shipment | remoteshipment | carryout
+#                 (bulk = a GoodCity order with the `bulk` booking type; remoteshipment = detail_type RemoteShipment)
 #   by          charity user (people.yml) who placed a GoodCity order
+#   submitter   charity user who submitted it, when not its creator (sets submitted_by; GoodCity orders otherwise leave it NULL)
+#   description the order's own description (shipments, carry-outs; a GoodCity order may carry one too)
+#   client      { first_name:, last_name: } names the synthetic beneficiary (purpose: client)
 #   handler     staff member who processes it (default: an order-fulfilment person)
 #   purpose     organisation | client (client = a synthetic beneficiary is attached)
 #   transport   { type: self|ggv, scheduled: <time>, vehicle:, address: {...} }
@@ -15,6 +19,7 @@
 #                 cancel (reason:, text:)   checklist (items: n = only the first n)
 #                 designate (item:, qty:)   dispatch (item:, qty:)   undispatch (item:, to:)
 #                 cancel_line (item:)       note (body:)  — the order's sticky staff note
+#                 by: <people key> on an event performs it as that person (its versions' whodunnit)
 #                 message (from:, body:, staff: true = staff chat, unread: true)
 #   expect      what the checks assert: state, gate (checklist|close|approval), unread, reason
 
@@ -212,6 +217,7 @@
     - { at: -8d@11:05, do: finish_processing }
     - { at: -2d@14:00, do: start_dispatching }
     - { at: -2d@15:00, do: dispatch_later }
+    - { at: -1d@11:00, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: awaiting_dispatch }
 
 - key: o_restarted
@@ -232,6 +238,7 @@
     - { at: -5d@10:05, do: finish_processing }
     - { at: -4d@09:30, do: restart_process }
     - { at: -4d@09:35, do: message, from: ch_waiji, body: "Sorry, the family now needs a narrower chair. Could we change it?" }
+    - { at: -1d@10:20, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: submitted }
 
 - key: o_part_of_set
@@ -250,6 +257,7 @@
     - { at: -4d@15:05, do: submit }
     - { at: -3d@10:00, do: start_processing }
     - { at: -3d@10:10, do: designate, item: workstation_drawer, qty: 1 }
+    - { at: -1d@09:10, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: processing }
 
 - key: o_bulk_office
@@ -270,6 +278,7 @@
     - { at: -5d@14:12, do: designate, item: monitors_24, qty: 4 }
     - { at: -5d@14:14, do: designate, item: keyboards, qty: 4 }
     - { at: -5d@14:16, do: designate, item: office_desks_oak, qty: 3 }
+    - { at: -1d@11:30, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: processing }
 
 - key: o_many_lines
@@ -355,6 +364,7 @@
     - { at: -18d@10:05, do: submit }
     - { at: -16d@12:00, do: cancel, reason: Changed mind }
     - { at: -15d@09:00, do: resubmit }
+    - { at: -1d@09:40, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111
   expect: { state: submitted }
 
 - key: o_shipment_live
@@ -577,4 +587,438 @@
     - { at: -110d@10:00, do: finish_processing }
     - { at: -100d@09:00, do: dispatch, item: dining_chairs_worn }
     - { at: -100d@12:00, do: close }
+  expect: { state: closed }
+
+# --- Orders list fixtures (orders list spec §8.2; manifest TASK-MANIFEST §2 v0.2) -----------
+
+# Bulk (orders review L12, manifest A7): a GoodCity order whose booking type is `bulk` — no Type filter can select it
+- key: o_bulk_submitted
+  why: "Bulk, submitted: labelled Bulk on the row; found only with no type chosen; not in Home's tiles (old counting)"
+  type: bulk
+  by: ch_salvation
+  created: -3d@09:00
+  purpose: organisation
+  people_helped: 120
+  district: Kwun Tong
+  purpose_description: "Bulk collection of winter bedding for our partner shelters"
+  transport: { type: self, scheduled: +5d@09:30 }
+  events:
+    - { at: -3d@09:10, do: submit }
+  expect: { state: submitted }
+
+- key: o_bulk_processing
+  why: "Bulk, processing"
+  type: bulk
+  by: ch_ssp
+  created: -4d@09:30
+  purpose: organisation
+  people_helped: 80
+  district: Sham Shui Po
+  purpose_description: "Bulk furniture for the common rooms of a transitional housing block"
+  transport: { type: self, scheduled: +4d@10:00 }
+  events:
+    - { at: -4d@09:40, do: submit }
+    - { at: -3d@10:00, do: start_processing }
+  expect: { state: processing }
+
+- key: o_bulk_awaiting
+  why: "Bulk, awaiting dispatch, collection booked for later this week"
+  type: bulk
+  by: ch_caritas
+  created: -6d@10:00
+  purpose: organisation
+  people_helped: 60
+  district: Sai Ying Pun
+  purpose_description: "Bulk kitchenware for a community kitchen"
+  transport: { type: self, scheduled: +3d@10:00 }
+  events:
+    - { at: -6d@10:10, do: submit }
+    - { at: -5d@10:00, do: start_processing }
+    - { at: -4d@15:00, do: finish_processing }
+  expect: { state: awaiting_dispatch }
+
+- key: o_bulk_dispatching
+  why: "Bulk, dispatching"
+  type: bulk
+  by: ch_twghs
+  created: -7d@09:00
+  purpose: organisation
+  people_helped: 90
+  district: Sai Wan
+  purpose_description: "Bulk bed linen for a residential care home"
+  transport: { type: self, scheduled: -1d@10:00 }
+  events:
+    - { at: -7d@09:10, do: submit }
+    - { at: -6d@10:00, do: start_processing }
+    - { at: -5d@15:00, do: finish_processing }
+    - { at: -1d@10:10, do: start_dispatching }
+  expect: { state: dispatching }
+
+- key: o_bulk_closed
+  why: "Bulk, closed"
+  type: bulk
+  by: ch_ssp
+  created: -26d@09:00
+  purpose: organisation
+  people_helped: 150
+  district: Sham Shui Po
+  purpose_description: "Bulk school supplies for the new term"
+  transport: { type: self, scheduled: -20d@10:00 }
+  events:
+    - { at: -26d@09:10, do: submit }
+    - { at: -25d@10:00, do: start_processing }
+    - { at: -24d@15:00, do: finish_processing }
+    - { at: -20d@10:10, do: start_dispatching }
+    - { at: -20d@12:00, do: close }
+  expect: { state: closed }
+
+- key: o_remote_shipment
+  why: "manifest A6 / L2: a Remote shipment, listed under Other in the Type filter"
+  type: remoteshipment
+  handler: priya
+  country: Sudan
+  shipment_date: +40d
+  created: -6d@11:00
+  description: "Remote shipment of school furniture"
+  people_helped: 300
+  events:
+    - { at: -6d@11:10, do: submit }
+    - { at: -5d@10:00, do: start_processing }
+  expect: { state: processing }
+
+- key: o_desc_only
+  why: "Matched on (Matt Q2): a search word found only in the description, which the row doesn't show"
+  type: online-order
+  by: ch_elchk
+  created: -9d@14:00
+  purpose: organisation
+  people_helped: 3
+  district: Tuen Mun
+  description: "Child's tricycle and a booster seat"
+  purpose_description: "Mobility aids for a family we support"
+  transport: { type: self, scheduled: +3d }
+  events: [{ at: -9d@14:05, do: submit }, { at: -8d@10:00, do: start_processing }]
+  expect: { state: processing }
+
+- key: o_client_only
+  why: "Matched on (Matt Q2): a client (beneficiary) name — the server matches it; the list payload doesn't carry it"
+  type: appointment
+  by: ch_waiji
+  created: -4d@15:00
+  purpose: client
+  client: { first_name: "Siu Ming", last_name: "Szeto" }
+  people_helped: 1
+  district: Wong Tai Sin
+  purpose_description: "A bed and a wardrobe for a member moving into his own flat"
+  transport: { type: self, scheduled: +6d@14:00 }
+  events: [{ at: -4d@15:10, do: submit }]
+  expect: { state: submitted }
+
+- key: o_created_for
+  why: "Matched on (Matt Q2): created by one charity user, submitted by another — the creator is carried but not shown"
+  type: online-order
+  by: ch_ssp_harriet
+  submitter: ch_ssp
+  created: -5d@10:00
+  purpose: organisation
+  people_helped: 30
+  district: Sha Tin
+  purpose_description: "Study desks for an after-school homework room"
+  transport: { type: self, scheduled: +4d }
+  events: [{ at: -5d@10:30, do: submit }]
+  expect: { state: submitted }
+
+# L6: one appointment per active state that is NOT late after every restore. The build fixes every date, so by the
+# time anyone reviews the dataset each active order is past Rails' priority thresholds; goodcity-local's
+# scripts/freshen-designed.sh (run by restore-designed.sh) moves these four clocks to now.
+- key: o_fresh_submitted
+  why: "L6: submitted an hour ago (after freshen-designed.sh), so not yet late"
+  type: appointment
+  by: ch_nursery
+  created: -2d@09:00
+  purpose: organisation
+  people_helped: 45
+  district: Ap Lei Chau
+  purpose_description: "Picture books and floor cushions for the reading corner"
+  transport: { type: self, scheduled: +5d@10:00 }
+  events: [{ at: -2d@09:10, do: submit }]
+  expect: { state: submitted }
+
+- key: o_fresh_processing
+  why: "L6: processing since now (after freshen-designed.sh), late only once a 6 pm passes"
+  type: appointment
+  by: ch_tinshui
+  created: -3d@10:00
+  purpose: organisation
+  people_helped: 25
+  district: Tin Shui Wai
+  purpose_description: "Chairs and a whiteboard for a youth study room"
+  transport: { type: self, scheduled: +3d@14:00 }
+  events: [{ at: -3d@10:10, do: submit }, { at: -2d@10:00, do: start_processing }]
+  expect: { state: processing }
+
+- key: o_fresh_awaiting
+  why: "L6: awaiting dispatch, collection booked for tomorrow (after freshen-designed.sh)"
+  type: appointment
+  by: ch_lady
+  created: -5d@10:00
+  purpose: organisation
+  people_helped: 70
+  district: Chai Wan
+  purpose_description: "Kettles and rice cookers for elderly members living alone"
+  transport: { type: self, scheduled: +1d@10:30 }
+  events:
+    - { at: -5d@10:10, do: submit }
+    - { at: -4d@10:00, do: start_processing }
+    - { at: -3d@11:00, do: checklist }
+    - { at: -3d@11:05, do: finish_processing }
+  expect: { state: awaiting_dispatch }
+
+- key: o_fresh_dispatching
+  why: "L6: dispatching since now (after freshen-designed.sh), late only once a 6 pm passes"
+  type: appointment
+  by: ch_hkcys
+  created: -6d@10:00
+  purpose: organisation
+  people_helped: 12
+  district: Aberdeen
+  purpose_description: "Bunk beds for a residential child care home"
+  transport: { type: self, scheduled: -1d@14:00 }
+  events:
+    - { at: -6d@10:10, do: submit }
+    - { at: -5d@10:00, do: start_processing }
+    - { at: -4d@11:00, do: checklist }
+    - { at: -4d@11:05, do: finish_processing }
+    - { at: -1d@14:10, do: start_dispatching }
+  expect: { state: dispatching }
+
+# L7: one organisation with at least 30 orders (the Sham Shui Po project, which also has the spine's other SSP orders
+# and its share of the filler), so the organisation's Orders list pages.
+
+- key: o_org_bulk_1
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -39d@10:00
+  purpose: organisation
+  people_helped: 8
+  district: Sham Shui Po
+  purpose_description: "Beds for families in the building project"
+  transport: { type: self, scheduled: -35d@10:30 }
+  events:
+    - { at: -39d@10:10, do: submit }
+    - { at: -38d@10:00, do: start_processing }
+    - { at: -37d@11:00, do: checklist }
+    - { at: -37d@11:05, do: finish_processing }
+    - { at: -35d@10:40, do: start_dispatching }
+    - { at: -35d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_2
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -48d@10:00
+  purpose: organisation
+  people_helped: 11
+  district: Sham Shui Po
+  purpose_description: "Kitchen basics for newly arrived families"
+  transport: { type: self, scheduled: -44d@10:30 }
+  events:
+    - { at: -48d@10:10, do: submit }
+    - { at: -47d@10:00, do: start_processing }
+    - { at: -46d@11:00, do: checklist }
+    - { at: -46d@11:05, do: finish_processing }
+    - { at: -44d@10:40, do: start_dispatching }
+    - { at: -44d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_3
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -57d@10:00
+  purpose: organisation
+  people_helped: 14
+  district: Sham Shui Po
+  purpose_description: "Desks and chairs for the homework corner"
+  transport: { type: self, scheduled: -53d@10:30 }
+  events:
+    - { at: -57d@10:10, do: submit }
+    - { at: -56d@10:00, do: start_processing }
+    - { at: -55d@11:00, do: checklist }
+    - { at: -55d@11:05, do: finish_processing }
+    - { at: -53d@10:40, do: start_dispatching }
+    - { at: -53d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_4
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -66d@10:00
+  purpose: organisation
+  people_helped: 17
+  district: Sham Shui Po
+  purpose_description: "Bedding for the winter"
+  transport: { type: self, scheduled: -62d@10:30 }
+  events:
+    - { at: -66d@10:10, do: submit }
+    - { at: -65d@10:00, do: start_processing }
+    - { at: -64d@11:00, do: checklist }
+    - { at: -64d@11:05, do: finish_processing }
+    - { at: -62d@10:40, do: start_dispatching }
+    - { at: -62d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_5
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -75d@10:00
+  purpose: organisation
+  people_helped: 20
+  district: Sham Shui Po
+  purpose_description: "Shelving for the community pantry"
+  transport: { type: self, scheduled: -71d@10:30 }
+  events:
+    - { at: -75d@10:10, do: submit }
+    - { at: -74d@10:00, do: start_processing }
+    - { at: -73d@11:00, do: checklist }
+    - { at: -73d@11:05, do: finish_processing }
+    - { at: -71d@10:40, do: start_dispatching }
+    - { at: -71d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_6
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -84d@10:00
+  purpose: organisation
+  people_helped: 23
+  district: Sham Shui Po
+  purpose_description: "Fans for elderly residents"
+  transport: { type: self, scheduled: -80d@10:30 }
+  events:
+    - { at: -84d@10:10, do: submit }
+    - { at: -83d@10:00, do: start_processing }
+    - { at: -82d@11:00, do: checklist }
+    - { at: -82d@11:05, do: finish_processing }
+    - { at: -80d@10:40, do: start_dispatching }
+    - { at: -80d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_7
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -93d@10:00
+  purpose: organisation
+  people_helped: 26
+  district: Sham Shui Po
+  purpose_description: "Household basics for a family of five"
+  transport: { type: self, scheduled: -89d@10:30 }
+  events:
+    - { at: -93d@10:10, do: submit }
+    - { at: -92d@10:00, do: start_processing }
+    - { at: -91d@11:00, do: checklist }
+    - { at: -91d@11:05, do: finish_processing }
+    - { at: -89d@10:40, do: start_dispatching }
+    - { at: -89d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_8
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -102d@10:00
+  purpose: organisation
+  people_helped: 29
+  district: Sham Shui Po
+  purpose_description: "Chairs for the community hall"
+  transport: { type: self, scheduled: -98d@10:30 }
+  events:
+    - { at: -102d@10:10, do: submit }
+    - { at: -101d@10:00, do: start_processing }
+    - { at: -100d@11:00, do: checklist }
+    - { at: -100d@11:05, do: finish_processing }
+    - { at: -98d@10:40, do: start_dispatching }
+    - { at: -98d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_9
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -111d@10:00
+  purpose: organisation
+  people_helped: 32
+  district: Sham Shui Po
+  purpose_description: "Wardrobes for sub-divided flats"
+  transport: { type: self, scheduled: -107d@10:30 }
+  events:
+    - { at: -111d@10:10, do: submit }
+    - { at: -110d@10:00, do: start_processing }
+    - { at: -109d@11:00, do: checklist }
+    - { at: -109d@11:05, do: finish_processing }
+    - { at: -107d@10:40, do: start_dispatching }
+    - { at: -107d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_10
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders)"
+  type: appointment
+  by: ch_ssp
+  created: -120d@10:00
+  purpose: organisation
+  people_helped: 35
+  district: Sham Shui Po
+  purpose_description: "Toys for the children's corner"
+  transport: { type: self, scheduled: -116d@10:30 }
+  events:
+    - { at: -120d@10:10, do: submit }
+    - { at: -119d@10:00, do: start_processing }
+    - { at: -118d@11:00, do: checklist }
+    - { at: -118d@11:05, do: finish_processing }
+    - { at: -116d@10:40, do: start_dispatching }
+    - { at: -116d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_11
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders; two beyond ten so filler drift can't take it under)"
+  type: appointment
+  by: ch_ssp
+  created: -129d@10:00
+  purpose: organisation
+  people_helped: 38
+  district: Sham Shui Po
+  purpose_description: "Curtains and bedding for a family moving out of a cage home"
+  transport: { type: self, scheduled: -125d@10:30 }
+  events:
+    - { at: -129d@10:10, do: submit }
+    - { at: -128d@10:00, do: start_processing }
+    - { at: -127d@11:00, do: checklist }
+    - { at: -127d@11:05, do: finish_processing }
+    - { at: -125d@10:40, do: start_dispatching }
+    - { at: -125d@11:00, do: close }
+  expect: { state: closed }
+
+- key: o_org_bulk_12
+  why: "L7: a closed order of the Sham Shui Po project (30+ orders; two beyond ten so filler drift can't take it under)"
+  type: appointment
+  by: ch_ssp
+  created: -138d@10:00
+  purpose: organisation
+  people_helped: 41
+  district: Sham Shui Po
+  purpose_description: "Office chairs for the volunteers' desk"
+  transport: { type: self, scheduled: -134d@10:30 }
+  events:
+    - { at: -138d@10:10, do: submit }
+    - { at: -137d@10:00, do: start_processing }
+    - { at: -136d@11:00, do: checklist }
+    - { at: -136d@11:05, do: finish_processing }
+    - { at: -134d@10:40, do: start_dispatching }
+    - { at: -134d@11:00, do: close }
   expect: { state: closed }

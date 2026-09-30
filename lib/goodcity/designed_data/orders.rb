@@ -12,7 +12,12 @@ module Goodcity
       TYPES = {
         'appointment' => ['GoodCity', 'appointment'],
         'online-order' => ['GoodCity', 'online-order'],
+        # Bulk: a GoodCity order whose booking type is `bulk` (staging has it; production's reference dump does not,
+        # so Reference#booking_type makes it). No Type filter in the stock app selects it.
+        'bulk' => ['GoodCity', 'bulk'],
         'shipment' => ['Shipment', nil],
+        # A Remote shipment: S-coded like a shipment, but only the Type filter's "Other" finds it.
+        'remoteshipment' => ['RemoteShipment', nil],
         'carryout' => ['CarryOut', nil]
       }.freeze
 
@@ -52,13 +57,19 @@ module Goodcity
 
         (spec['events'] || []).each_with_index do |e, i|
           user = case e['do']
-                 when 'submit', 'resubmit' then detail_type(spec) == 'GoodCity' ? -> { order(key).created_by } : handler
+                 when 'submit', 'resubmit'
+                   if spec['submitter'] then -> { people.user(spec['submitter']) }
+                   elsif detail_type(spec) == 'GoodCity' then -> { order(key).created_by }
+                   else handler
+                   end
                  when 'message'
                    case e.fetch('from').to_s
                    when 'creator' then -> { order(key).created_by }
                    when 'handler' then handler
                    else -> { people.user(e['from']) }
                    end
+                 # `by:` on any other event (e.g. a `note`) performs it as that person, so the version row's
+                 # whodunnit is theirs — Order.recently_used reads it.
                  else e['by'] ? -> { people.user(e['by']) } : handler
                  end
           timeline.add(ctx.time(e.fetch('at'), salt: "#{key}:#{i}"), "#{key} #{e['do']} #{e['item']}".strip, user: user) do
@@ -91,7 +102,10 @@ module Goodcity
             organisation: spec['organisation'] ? ctx.reference.organisation(spec['organisation']) : people.organisation_of(user),
             district: spec['district'] ? ctx.reference.district(spec['district']) : District.order(:id).first
           )
-          attrs[:beneficiary] = people.beneficiary(created_by: user) if spec['purpose'] == 'client'
+          if spec['purpose'] == 'client'
+            client = spec['client'] || {}
+            attrs[:beneficiary] = people.beneficiary(created_by: user, first_name: client['first_name'], last_name: client['last_name'])
+          end
         else
           attrs.merge!(
             country: spec['country'] && ctx.reference.country(spec['country']),
@@ -107,7 +121,7 @@ module Goodcity
             order: order,
             transport_type: t.fetch('type'),
             scheduled_at: ctx.time(t.fetch('scheduled'), salt: "#{spec['key']}:sched"),
-            timeslot: t['timeslot'] || ctx.pick(TIMESLOTS.fetch(booking || 'appointment')),
+            timeslot: t['timeslot'] || ctx.pick(TIMESLOTS.fetch(booking, TIMESLOTS['appointment'])),
             gogovan_transport: t['vehicle'] && ctx.reference.gogovan_transport(t['vehicle']),
             need_carry: t['need_carry'] || false, need_cart: t['need_cart'] || false,
             need_english: false, need_over_6ft: t['need_over_6ft'] || false
@@ -136,6 +150,9 @@ module Goodcity
         when 'submit', 'start_processing', 'finish_processing', 'start_dispatching', 'close',
              'reopen', 'restart_process', 'dispatch_later', 'resubmit', 'redesignate_cancelled_order'
           fire!(order, e['do'])
+          # `submitter:` — submitted by someone other than its creator (staging has a few). The browse app sends
+          # submitted_by_id itself; the state machine never sets it, so GoodCity orders otherwise leave it NULL.
+          order.update!(submitted_by: people.user(spec['submitter'])) if e['do'] == 'submit' && spec['submitter']
         when 'cancel'
           reason = ctx.reference.cancellation_reason(e.fetch('reason'))
           fire!(order, 'cancel')

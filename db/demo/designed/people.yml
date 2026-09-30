@@ -64,6 +64,9 @@ charities:
   - { key: ch_ssp,        title: Mr,  first_name: Raymond,  last_name: Hui,     mobile: "+85263030016", email: raymond.hui@example.org,   position: Project officer,      organisation: "Sham Shui Po Community Living Room Project" }
   - { key: ch_pending,    title: Mr,  first_name: Kenneth,  last_name: Tong,    mobile: "+85263030017", email: kenneth.tong@example.org,  position: New staff member,     organisation: "Yan Chai Hospital Ngau Tau Kok Light Public Housing Project", status: pending }
   - { key: ch_expired,    title: Ms,  first_name: Doris,    last_name: Ma,      mobile: "+85263030018", email: doris.ma@example.org,      position: Former social worker, organisation: "Neighbourhood Advice-Action Council Social Service Team In Buildings Department, The", status: expired }
+  # A second user at the Sham Shui Po project who only ever created o_created_for (Raymond submitted it): the
+  # Orders list's "Matched on: created by" case. `filler: false` keeps her off the sampled orders.
+  - { key: ch_ssp_harriet, title: Ms, first_name: Harriet, last_name: Ko,     mobile: "+85263030019", email: harriet.ko@example.org,    position: Assistant project officer, organisation: "Sham Shui Po Community Living Room Project", filler: false }
 
 # Name bank for synthetic clients (beneficiaries).
 names:

@@ -43,8 +43,13 @@ module Goodcity
         @restrictions[name] || raise(Missing, "restriction #{name}")
       end
 
+      # Staging's Bulk booking type (identifier, name_en and name_zh_tw all `bulk`). Production's reference dump
+      # has no Bulk, so it is made the first time the spine asks for it.
+      BULK_BOOKING_TYPE = { identifier: 'bulk', name_en: 'bulk', name_zh_tw: 'bulk' }.freeze
+
       def booking_type(identifier)
         @booking_types ||= BookingType.all.index_by(&:identifier)
+        @booking_types[identifier] ||= (BookingType.create!(BULK_BOOKING_TYPE) if identifier == 'bulk')
         @booking_types[identifier] || raise(Missing, "booking type #{identifier}")
       end
 
@@ -131,7 +136,7 @@ module Goodcity
             check.call('location', e['to']) { |k| location(k) } if e['to']
           end
         end
-        %w[appointment online-order].each { |b| check.call('booking type', b) { |k| booking_type(k) } }
+        %w[appointment online-order bulk].each { |b| check.call('booking type', b) { |k| booking_type(k) } }
         %w[Box Pallet Package].each { |s| check.call('storage type', s) { |k| storage_type(k) } }
 
         return if missing.empty?

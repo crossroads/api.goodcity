@@ -32,6 +32,7 @@ module Goodcity
         check_items(manifest['packages'])
         check_items_list_fixtures(manifest['packages'])
         check_orders(manifest['orders'], manifest['packages'])
+        check_orders_list_fixtures(manifest['orders'])
         check_conformance(manifest['packages'].values)
         puts "[designed:check] #{@passes} passed, #{@failures.size} failed"
         @failures.each { |f| puts "  FAIL #{f}" }
@@ -161,6 +162,59 @@ module Goodcity
                    wc_at && fa_at && wc_at < fa_at, "wheelchair_transit=#{wc_at.inspect} first_aid_kits=#{fa_at.inspect}")
           end
         end
+      end
+
+      # The Orders list fixtures (orders list spec §8.2; manifest L2 L4 L6 L7 L11, A6 A7) the generic `expect:` can't say.
+      def check_orders_list_fixtures(ids)
+        order = ->(key) { ids[key] && Order.find_by(id: ids[key]) }
+
+        bulk = BookingType.find_by(identifier: 'bulk')
+        assert('booking type bulk exists', bulk)
+        bulk_keys = %w[o_bulk_submitted o_bulk_processing o_bulk_awaiting o_bulk_dispatching o_bulk_closed]
+        bulk_keys.each do |key|
+          o = order.(key)
+          assert("order #{key} is GoodCity with booking type bulk", o && bulk && o.detail_type == 'GoodCity' && o.booking_type_id == bulk.id,
+                 o && "#{o.detail_type} / booking type #{o.booking_type&.identifier.inspect}")
+        end
+        typed = Order.where_types(%w[appointment online_orders shipment carry_out other]).distinct.pluck(:id)
+        leaked = bulk_keys.select { |k| typed.include?(ids[k]) }
+        assert('Bulk matches no Type filter (appointment online_orders shipment carry_out other)', leaked.empty?, "matched: #{leaked.join(', ')}")
+
+        remote = order.('o_remote_shipment')
+        assert('order o_remote_shipment is a RemoteShipment', remote && remote.detail_type == 'RemoteShipment', remote&.detail_type.inspect)
+        assert('order o_remote_shipment is found by the Type filter "other"',
+               remote && Order.where_types(['other']).where(id: remote.id).exists?)
+
+        desc = order.('o_desc_only')
+        found = Order.search('tricycle', nil).distinct.pluck(:id)
+        assert('search "tricycle" finds only o_desc_only', desc && found == [desc.id], "finds #{found.inspect}")
+
+        client = order.('o_client_only')
+        assert('search "Szeto" finds o_client_only', client && Order.search('Szeto', nil).where(id: client.id).exists?)
+        assert('order o_client_only beneficiary is Szeto', client && client.beneficiary&.last_name == 'Szeto',
+               client && client.beneficiary&.last_name.inspect)
+
+        created_for = order.('o_created_for')
+        assert('order o_created_for was submitted by someone other than its creator',
+               created_for && created_for.submitted_by_id && created_for.created_by_id != created_for.submitted_by_id,
+               created_for && "created_by #{created_for.created_by_id}, submitted_by #{created_for.submitted_by_id.inspect}")
+        assert('order o_created_for creator and submitter share its organisation',
+               created_for && [created_for.created_by_id, created_for.submitted_by_id].all? { |u|
+                 OrganisationsUser.where(user_id: u, organisation_id: created_for.organisation_id).exists?
+               })
+
+        admin = User.find_by(mobile: '+85251111111')
+        recent = admin ? Order.recently_used(admin.id).size : 0
+        assert('+85251111111 has 5 recently used orders', recent == 5, "has #{recent}")
+
+        # F8: Task 8's unread-count checks read o_submitted_requests as 51111111.
+        sr = order.('o_submitted_requests')
+        unread = sr && admin && Subscription.joins(:message).where(user_id: admin.id, state: 'unread',
+                                                                   messages: { messageable_type: 'Order', messageable_id: sr.id }).exists?
+        assert('order o_submitted_requests has a message unread by +85251111111', unread)
+
+        biggest = Organisation.joins(:orders).group(:id).count.values.max.to_i
+        assert('an organisation has >= 30 orders', biggest >= 30, "the most is #{biggest}")
       end
 
       # Re-profile the profile-sampled (non-spine) live stock and compare with profile.json.

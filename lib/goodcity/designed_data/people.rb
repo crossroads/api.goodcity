@@ -62,22 +62,24 @@ module Goodcity
       end
 
       def charities
-        @charities ||= @spec.fetch('charities').select { |u| (u['status'] || 'approved') == 'approved' }.map { |u| user(u['key']) }
+        # `filler: false` keeps a person to the spine orders that name them (e.g. o_created_for's creator).
+        @charities ||= @spec.fetch('charities').select { |u| (u['status'] || 'approved') == 'approved' && u['filler'] != false }
+                            .map { |u| user(u['key']) }
       end
 
       def organisation_of(user)
         OrganisationsUser.where(user: user).order(:id).first&.organisation
       end
 
-      # A synthetic client for a GoodCity order.
-      def beneficiary(created_by:)
+      # A synthetic client for a GoodCity order; a spec may name it (`client:` in orders.yml).
+      def beneficiary(created_by:, first_name: nil, last_name: nil)
         names = @spec.fetch('names')
         @beneficiary_n += 1
         female = ctx.chance(0.55)
         Beneficiary.create!(
           title: female ? ctx.pick(%w[Ms Mrs Miss]) : 'Mr',
-          first_name: ctx.pick(female ? names['given_female'] : names['given_male']),
-          last_name: ctx.pick(names['surnames']),
+          first_name: first_name || ctx.pick(female ? names['given_female'] : names['given_male']),
+          last_name: last_name || ctx.pick(names['surnames']),
           identity_type: ctx.reference.identity_type(ctx.chance(0.9) ? 'HKID' : 'ASRF'),
           identity_number: format('%04d', ctx.rng.rand(10_000)),
           phone_number: format('+8529%07d', 1_000_000 + ctx.rng.rand(8_999_999)),
