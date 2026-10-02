@@ -13,10 +13,12 @@ module Goodcity
         Pathname.new(ENV['MANIFEST'] || Rails.root.join('tmp', 'designed-manifest.json'))
       end
 
-      def self.write_manifest(stock, orders)
+      def self.write_manifest(stock, orders, stocktakes)
         data = {
           'packages' => stock.instance_variable_get(:@packages).transform_values(&:id).reject { |k, _| k.start_with?('filler_') },
-          'orders' => orders.instance_variable_get(:@orders).transform_values(&:id).reject { |k, _| k.start_with?('filler_') }
+          'orders' => orders.instance_variable_get(:@orders).transform_values(&:id).reject { |k, _| k.start_with?('filler_') },
+          'stocktakes' => stocktakes.ids,
+          'locations' => stocktakes.place_ids
         }
         FileUtils.mkdir_p(manifest_path.dirname)
         File.write(manifest_path, JSON.pretty_generate(data))
@@ -34,6 +36,7 @@ module Goodcity
         check_orders(manifest['orders'], manifest['packages'])
         check_orders_list_fixtures(manifest['orders'])
         check_conformance(manifest['packages'].values)
+        check_stocktakes(manifest['stocktakes'] || {})
         puts "[designed:check] #{@passes} passed, #{@failures.size} failed"
         @failures.each { |f| puts "  FAIL #{f}" }
         @failures.empty?
@@ -220,6 +223,33 @@ module Goodcity
 
         biggest = Organisation.joins(:orders).group(:id).count.values.max.to_i
         assert('an organisation has >= 30 orders', biggest >= 30, "the most is #{biggest}")
+      end
+
+      # The Stocktakes redesign fixtures (manifest §2, ST1–ST12; stocktakes.yml).
+      def check_stocktakes(ids)
+        assert('12 designed stocktakes in the manifest', ids.size == 12, "has #{ids.size}")
+        return unless ids.size == 12
+
+        st = ->(k) { Stocktake.find(ids.fetch(k)) }
+        assert('ST1 open, every line dirty', st['st1'].open? && st['st1'].stocktake_revisions.all?(&:dirty))
+        s2 = st['st2'].stocktake_revisions
+        assert('ST2 part-counted by two people', s2.where(dirty: false).flat_map(&:counted_by_ids).uniq.size >= 2 && s2.where(dirty: true).exists?)
+        assert('ST3 open and fully counted', st['st3'].open? && !st['st3'].stocktake_revisions.where(dirty: true).exists?)
+        # counted_by_ids is jsonb, not a Postgres array, so "has counts" is said in Ruby.
+        stale = st['st4'].stocktake_revisions.where(dirty: true).to_a.count { |r| r.counted_by_ids.any? }
+        assert('ST4 has 3 stale lines with counts', stale == 3, "has #{stale}")
+        assert('ST5 reopened with a warning', st['st5'].open? && st['st5'].stocktake_revisions.where.not(warning: [nil, '']).count == 1)
+        assert('ST6 awaiting process', st['st6'].awaiting_process?, "is #{st['st6'].state}")
+        applied = st['st7'].stocktake_revisions.where.not(processed_delta: [nil, 0]).count
+        assert('ST7 closed with 5 applied changes', st['st7'].closed? && applied == 5, "is #{st['st7'].state}, #{applied} applied")
+        assert('ST8 cancelled', st['st8'].cancelled?)
+        assert('ST9 has 150+ lines', st['st9'].stocktake_revisions.count >= 150, "has #{st['st9'].stocktake_revisions.count}")
+        assert('ST10 has no lines', st['st10'].stocktake_revisions.count.zero?)
+        assert('ST11 shares ST2 place', st['st11'].location_id == st['st2'].location_id && st['st11'].open?)
+        assert('ST12 open a year', st['st12'].open? && st['st12'].created_at < 300.days.ago)
+        # R8 / P1: only ST2's one added line is dated more than 5 s after its stocktake; every pre-printed line is not.
+        late = ids.values.sum { |id| s = Stocktake.find(id); s.stocktake_revisions.where('created_at > ?', s.created_at + 5.seconds).count }
+        assert('no pre-printed line reads as added (only ST2 has an added line)', late == 1, "#{late} late lines")
       end
 
       # Re-profile the profile-sampled (non-spine) live stock and compare with profile.json.

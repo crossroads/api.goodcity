@@ -26,6 +26,7 @@ module Goodcity
     autoload :Filler,       'goodcity/designed_data/filler'
     autoload :Timeline,     'goodcity/designed_data/timeline'
     autoload :Checks,       'goodcity/designed_data/checks'
+    autoload :Stocktakes,   'goodcity/designed_data/stocktakes'
 
     def self.load_yaml(name)
       YAML.safe_load(File.read(ROOT.join("#{name}.yml")), aliases: true) || []
@@ -52,7 +53,8 @@ module Goodcity
         sets: DesignedData.load_yaml('sets'),
         warehouse: DesignedData.load_yaml('warehouse'),
         orders: DesignedData.load_yaml('orders'),
-        people: DesignedData.load_yaml('people')
+        people: DesignedData.load_yaml('people'),
+        stocktakes: DesignedData.load_yaml('stocktakes')
       }
 
       # One transaction: a build that fails part-way leaves the database as it found it.
@@ -84,6 +86,8 @@ module Goodcity
       stock.plan_spine(spine[:items], spine[:sets], spine[:warehouse])
       orders.plan_spine(spine[:orders])
       filler.plan!(target_packages: ENV.fetch('PACKAGES', 750).to_i, target_orders: ENV.fetch('ORDERS', 250).to_i)
+      stocktakes = Stocktakes.new(ctx, people, stock, timeline)
+      stocktakes.plan_spine(spine[:stocktakes])
 
       say "timeline: #{timeline.size} events"
       timeline.run! { |n| print '.' if (n % 250).zero? }
@@ -91,7 +95,7 @@ module Goodcity
 
       stock.after_timeline!
       BaseData.new(ctx).reserve_inventory_numbers!
-      Checks.write_manifest(stock, orders)
+      Checks.write_manifest(stock, orders, stocktakes)
     end
 
     def say(msg)

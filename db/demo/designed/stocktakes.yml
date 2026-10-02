@@ -1,0 +1,78 @@
+# Stocktakes for the Stocktakes redesign (manifest §2, ST1–ST12). Built by Stocktakes (stocktakes.rb) with Rails' own
+# models after the rest of the timeline. Count CHANGES go to filler packages only; spine lines are counted as matching.
+# by: people.yml keys. counts: how many lines get each treatment, picked from the sheet in inventory-number order.
+- key: st1                 # ST1 open, fresh: every line "needs a count"
+  place: "32 Computers"    # st_main (Step 1)
+  created: today@08:00
+  by: stock_admin
+- key: st2                 # ST2 part-counted by two people, one added line
+  place: "28 HouseHold"    # st_b
+  created: -1d@09:00
+  by: stock_admin
+  counts:
+    - { by: stock_admin, match: 7 }
+    - { by: stock_fulfilment, match: 5, gains: [1, 3], losses: [1, 2, to_zero] }
+    - { by: stock_fulfilment, add_from_elsewhere: 1 }
+- key: st3                 # ST3 fully counted, ready to apply
+  place: "28 P2 Electrical" # st_c: PG Shed has a filler dispatch at -1d@11:20 that would dirty a counted line (P25)
+  created: -1d@10:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, gains: [1, 2], losses: [1, 1, 2], match: rest }
+- key: st4                 # ST4 stale: 3 counted lines dirtied by a move at the place afterwards
+  place: "29 Clothing"     # st_d
+  created: -2d@09:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, match: 6 }
+  then_move_out: 3         # move 1 of each of the first 3 counted filler lines to another place, 2 h later
+- key: st5                 # ST5 failed apply: the designated package at the place counted 0
+  place: "32 Computers"    # st_main (holds a designated package)
+  created: -1d@11:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, designated_to_zero: 1, match: rest }
+  apply: true              # Stocktake.process_stocktake → refused → reopen with the warning on that line
+- key: st6                 # ST6 awaiting process (no job queued: it stays there)
+  place: "30 Electrical"
+  created: -1d@12:00
+  by: stock_admin
+  counts:
+    - { by: stock_admin, match: rest }
+  mark_for_processing: true
+- key: st7                 # ST7 closed a month ago: 5 applied changes
+  place: "SB Shed"         # not 28 HouseHold: a filler dispatch there at -31d@13:05 dirties a counted line before apply (P25)
+  created: -31d@09:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, gains: [1, 2], losses: [1, 1, 3], match: rest }
+  apply: true
+  applied: -30d@15:20
+- key: st8                 # ST8 cancelled, counts kept
+  place: "29 Clothing"
+  created: -20d@09:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, match: 4, losses: [1] }
+  cancel: -19d@17:00
+- key: st9                 # ST9 large: 150+ lines
+  place: "30 Furniture"    # st_big
+  created: -1d@08:30
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, match: 40 }
+- key: st10                # ST10 empty place, 0 lines
+  place: "CntrS 37"        # st_empty
+  created: -1d@08:45
+  by: stock_admin
+- key: st11                # ST11 a second open stocktake at ST2's place
+  place: "28 HouseHold"
+  created: today@08:30
+  by: stock_admin
+  name: "28-HouseHold · second count"
+- key: st12                # ST12 old: open a year, never applied
+  place: "PG Shed"
+  created: -365d@09:00
+  by: stock_admin
+  counts:
+    - { by: stock_fulfilment, match: 3 }
