@@ -1,7 +1,7 @@
 module Api
   module V1
     class DeliveriesController < Api::V1::ApiController
-      load_and_authorize_resource :delivery, parent: false
+      load_and_authorize_resource :delivery, parent: false, except: [:confirm_delivery]
 
       resource_description do
         short 'Get, create, and update deliveries.'
@@ -101,7 +101,11 @@ module Api
       def confirm_delivery
         return unless validate_schedule
 
-        @delivery = Delivery.find_by(id: params["delivery"]["id"])
+        # Load and authorize the delivery being confirmed. Without this, any
+        # signed-in user could confirm (and reassociate) another user's
+        # delivery by passing its id. See issue API-30.
+        @delivery = Delivery.find(params["delivery"]["id"])
+        authorize! :confirm_delivery, @delivery
         @delivery.delete_old_associations
         @delivery.gogovan_order = GogovanOrder.book_order(current_user,
           order_params) if params["gogovanOrder"]
