@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_12_19_000001) do
+ActiveRecord::Schema.define(version: 2026_10_09_033844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -418,7 +418,7 @@ ActiveRecord::Schema.define(version: 2025_12_19_000001) do
     t.index ["body"], name: "messages_body_search_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["messageable_id", "messageable_type"], name: "index_messages_on_messageable_id_and_messageable_type"
-    t.index ["messageable_type", "messageable_id", "created_at"], name: "ix_messages_on_messageable_and_created_at", order: { created_at: :desc }
+    t.index ["messageable_type", "messageable_id", "created_at"], name: "index_messages_on_messageable_and_created_at", order: { created_at: :desc }
     t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable_type_and_messageable_id"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
@@ -686,6 +686,7 @@ ActiveRecord::Schema.define(version: 2025_12_19_000001) do
     t.integer "height"
     t.string "department"
     t.decimal "customs_value_usd"
+    t.string "customs_invoice_category"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", opclass: :gin_trgm_ops, using: :gin
@@ -1036,7 +1037,6 @@ ActiveRecord::Schema.define(version: 2025_12_19_000001) do
     t.integer "subscribable_id"
     t.index ["message_id"], name: "index_subscriptions_on_message_id"
     t.index ["state"], name: "index_subscriptions_on_state"
-    t.index ["subscribable_id", "subscribable_type"], name: "index_subscriptions_on_subscribable_id_and_subscribable_type"
     t.index ["subscribable_type", "subscribable_id"], name: "index_subscriptions_on_subscribable_type_and_subscribable_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
