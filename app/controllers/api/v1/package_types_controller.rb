@@ -245,8 +245,10 @@ module Api
 
         id = @package_type.id
         # A parent whose ONLY default content is this type would be left with none (see set_subpackage_default).
+        # The subselect drops NULL parents: one NULL in a NOT IN list makes it match nothing, so the check would pass.
         sole = SubpackageType.where(subpackage_type_id: id, is_default: true).where.not(package_type_id: id)
-                             .where.not(package_type_id: SubpackageType.where(is_default: true).where.not(subpackage_type_id: id).select(:package_type_id))
+                             .where.not(package_type_id: SubpackageType.where(is_default: true).where.not(subpackage_type_id: id)
+                                                                  .where.not(package_type_id: nil).select(:package_type_id))
                              .includes(:package_type).map { |s| s.package_type.code }
         if sole.any?
           return render_error("#{@package_type.code} is the only default content of #{sole.sort.join(', ')}; make another type default there first")

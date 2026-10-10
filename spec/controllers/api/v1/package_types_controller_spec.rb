@@ -645,6 +645,19 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(SubpackageType.where(package_type_id: set.id).pluck(:subpackage_type_id)).to eq([other.id])
     end
 
+    it "still refuses when an orphan default row with no parent exists (a NULL in the NOT IN list)" do
+      set = PackageType.create!(code: "ZZSET", name_en: "A set", allow_package: true)
+      SubpackageType.where(package_type_id: set.id).delete_all
+      SubpackageType.create!(package_type: set, child_package_type: pt, is_default: true)
+      other = PackageType.create!(code: "ZZPRT", name_en: "Part", allow_package: true)
+      now = Time.current
+      SubpackageType.insert_all([{ package_type_id: nil, subpackage_type_id: other.id, is_default: true, created_at: now, updated_at: now }])
+      delete :destroy, params: { id: pt.id, hard: "true" }
+      expect(response.status).to eq(422)
+      expect(error_message).to eq("ZZDEL is the only default content of ZZSET; make another type default there first")
+      expect(PackageType.exists?(pt.id)).to eq(true)
+    end
+
     it "retires (does not delete) unless hard is exactly true" do
       delete :destroy, params: { id: pt.id, hard: "1" }
       expect(response.status).to eq(200)
