@@ -276,6 +276,229 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
   end
 
   # The goods-types editor's list. Additive: GET /package_types without admin stays the cached legacy body.
+  # The containment editor: subpackage_types rows where this type is the parent.
+  describe "containment (subpackage_types member actions)" do
+    let(:admin) { create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment") }
+    # Fresh types, not factory find-or-create ones: after_create gives each its self-default row.
+    let!(:parent) { PackageType.create!(code: "ZZPAR", name_en: "Parent box", allow_box: true) }
+    let!(:child) { PackageType.create!(code: "ZZCHI", name_en: "Child thing", allow_package: true) }
+    let(:row_keys) { %w[id package_type_id subpackage_type_id is_default child_code child_name] }
+
+    def row(child_id = child.id)
+      SubpackageType.find_by(package_type_id: parent.id, subpackage_type_id: child_id)
+    end
+
+    # cancan's loader keeps @package_type on the controller between requests of one example.
+    def next_request!
+      @controller = described_class.new
+    end
+
+    def error_message
+      JSON.parse(response.body)["errors"].first["message"]
+    end
+
+    before { generate_and_set_token(admin) }
+
+    it "starts with the server-made self-default row" do
+      expect(row(parent.id).is_default).to eq(true)
+    end
+
+    it "adds an allowed child, not default by default", show_in_doc: true do
+      expect {
+        post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
+      }.to change(SubpackageType, :count).by(1)
+      expect(response.status).to eq(201)
+      body = JSON.parse(response.body)["subpackage_type"]
+      expect(body.keys).to match_array(row_keys)
+      expect(body).to include("package_type_id" => parent.id, "subpackage_type_id" => child.id,
+                              "is_default" => false, "child_code" => "ZZCHI", "child_name" => "Child thing")
+      expect(row.is_default).to eq(false)
+    end
+
+    it "adds a child as default content when asked" do
+      post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id, is_default: true } }, as: :json
+      expect(response.status).to eq(201)
+      expect(row.is_default).to eq(true)
+    end
+
+    it "422s on a child that is already allowed (one row per parent and child)" do
+      SubpackageType.create!(package_type: parent, child_package_type: child)
+      expect {
+        post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
+      }.not_to change(SubpackageType, :count)
+      expect(response.status).to eq(422)
+      expect(error_message).to eq("ZZCHI is already allowed inside ZZPAR")
+    end
+
+    it "422s on adding the type to itself again (its self row exists)" do
+      post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: parent.id } }, as: :json
+      expect(response.status).to eq(422)
+      expect(SubpackageType.where(package_type_id: parent.id, subpackage_type_id: parent.id).count).to eq(1)
+    end
+
+    it "422s on a child type that does not exist" do
+      expect {
+        post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: 999_999 } }, as: :json
+      }.not_to change(SubpackageType, :count)
+      expect(response.status).to eq(422)
+    end
+
+    it "422s without a subpackage_type_id" do
+      post :add_subpackage_type, params: { id: parent.id, subpackage_type: { is_default: true } }, as: :json
+      expect(response.status).to eq(422)
+    end
+
+    it "sets and unsets default on an allowed child" do
+      SubpackageType.create!(package_type: parent, child_package_type: child, is_default: false)
+      patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: true }, as: :json
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)["subpackage_type"]).to include("subpackage_type_id" => child.id, "is_default" => true)
+      expect(row.is_default).to eq(true)
+
+      next_request!
+      put :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: false }, as: :json
+      expect(response.status).to eq(200)
+      expect(row.is_default).to eq(false)
+    end
+
+    it "422s when is_default is missing or not a boolean" do
+      SubpackageType.create!(package_type: parent, child_package_type: child, is_default: false)
+      patch :set_subpackage_default, params: { id: parent.id, child_id: child.id }, as: :json
+      expect(response.status).to eq(422)
+      next_request!
+      patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: "soon" }, as: :json
+      expect(response.status).to eq(422)
+      expect(row.is_default).to eq(false)
+    end
+
+    it "refuses to switch off the self-default, and accepts switching it on" do
+      patch :set_subpackage_default, params: { id: parent.id, child_id: parent.id, is_default: false }, as: :json
+      expect(response.status).to eq(422)
+      expect(error_message).to match(/itself as its default content/)
+      expect(row(parent.id).is_default).to eq(true)
+
+      next_request!
+      patch :set_subpackage_default, params: { id: parent.id, child_id: parent.id, is_default: true }, as: :json
+      expect(response.status).to eq(200)
+    end
+
+    it "404s setting default on a child that is not allowed" do
+      patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: true }, as: :json
+      expect(response.status).to eq(404)
+    end
+
+    it "removes an allowed child (the child type itself stays)" do
+      SubpackageType.create!(package_type: parent, child_package_type: child)
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)).to eq({})
+      expect(row).to be_nil
+      expect(PackageType.exists?(child.id)).to eq(true)
+      expect(row(parent.id)).to be_present
+    end
+
+    it "refuses to remove the self-default" do
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: parent.id }
+      expect(response.status).to eq(422)
+      expect(error_message).to match(/itself as its default content/)
+      expect(row(parent.id)).to be_present
+    end
+
+    it "404s removing a child that is not allowed" do
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+      expect(response.status).to eq(404)
+    end
+
+    it "only touches rows where this type is the parent" do
+      other = PackageType.create!(code: "ZZOTH", name_en: "Other box", allow_box: true)
+      SubpackageType.create!(package_type: other, child_package_type: child)
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+      expect(response.status).to eq(404)
+      expect(SubpackageType.where(package_type_id: other.id, subpackage_type_id: child.id)).to exist
+    end
+
+    it "denies a user without the permission" do
+      generate_and_set_token(user)
+      post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
+      expect(response.status).to eq(403)
+      next_request!
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: parent.id }
+      expect(response.status).to eq(403)
+      expect(row).to be_nil
+    end
+  end
+
+  # GET /package_types and ?stock=true are cached (CacheableJson) and embed each type's child codes
+  # (default_child_packages / other_child_packages, for a signed-in reader). A containment write must
+  # move their key, or the legacy apps keep the old containment until some unrelated type changes.
+  describe "containment writes and the cached legacy lists" do
+    let(:admin) { create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment") }
+    let!(:parent) { PackageType.create!(code: "ZZPAR", name_en: "Parent box", allow_box: true) }
+    let!(:child) { PackageType.create!(code: "ZZCHI", name_en: "Child thing", allow_package: true) }
+    let!(:newest) { PackageType.create!(code: "ZZNEW", name_en: "Newest", allow_package: true) }
+
+    before do
+      Rails.cache.clear
+      # The parent is not the most recently updated row, so only a deliberate re-key moves MAX(updated_at).
+      PackageType.where(id: [parent.id, child.id]).update_all(updated_at: 1.day.ago)
+      generate_and_set_token(admin)
+    end
+
+    def next_request!
+      @controller = described_class.new
+    end
+
+    def parent_row(root)
+      JSON.parse(response.body)[root].find { |r| r["id"] == parent.id }
+    end
+
+    def contains(root)
+      r = parent_row(root)
+      { default: r["default_child_packages"].split(",").sort, other: r["other_child_packages"].split(",").sort }
+    end
+
+    def read_both
+      next_request!
+      get :index
+      plain = contains("package_types")
+      next_request!
+      get :index, params: { stock: true }
+      [plain, contains("codes")]
+    end
+
+    it "shows each add, default switch and removal in both warmed lists" do
+      expect(read_both).to all(eq(default: ["ZZPAR"], other: []))
+
+      next_request!
+      post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
+      expect(response.status).to eq(201)
+      expect(read_both).to all(eq(default: ["ZZPAR"], other: ["ZZCHI"]))
+
+      next_request!
+      patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: true }, as: :json
+      expect(response.status).to eq(200)
+      expect(read_both).to all(eq(default: %w[ZZCHI ZZPAR], other: []))
+
+      next_request!
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+      expect(response.status).to eq(200)
+      expect(read_both).to all(eq(default: ["ZZPAR"], other: []))
+    end
+
+    it "writes no paper_trail version for the re-key", versioning: true do
+      expect {
+        post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
+      }.not_to change(Version, :count)
+    end
+
+    it "leaves the cache key alone when the write is refused" do
+      key = PackageType.cache_key
+      delete :remove_subpackage_type, params: { id: parent.id, child_id: parent.id }
+      expect(response.status).to eq(422)
+      expect(PackageType.cache_key).to eq(key)
+    end
+  end
+
   describe "GET package_types?admin=true" do
     let(:admin) { create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment") }
     let(:admin_row_keys) do

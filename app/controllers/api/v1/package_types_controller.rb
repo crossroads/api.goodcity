@@ -100,7 +100,105 @@ module Api
         render json: @package_type.reload, serializer: admin_serializer, root: "package_type"
       end
 
+      api :POST, "/v1/package_types/:id/subpackage_types", "Allow another goods type inside this one (containment)"
+      description <<-DOC
+        Adds a subpackage_types row with this type as the parent. 201 { subpackage_type: { id,
+        package_type_id, subpackage_type_id, is_default, child_code, child_name } }. 422
+        { errors: [{ message, status }] } when the child is already allowed (one row per parent and
+        child) or the child type does not exist. Every type already holds itself as its default
+        content; that row is made by the server when the type is created.
+      DOC
+      param :id, String, required: true, desc: "Parent package type id"
+      param :subpackage_type, Hash, required: true do
+        param :subpackage_type_id, Integer, required: true, desc: "Child package type id"
+        param :is_default, :boolean, desc: "Default content of the parent (default false)"
+      end
+      def add_subpackage_type
+        attrs = params.require(:subpackage_type)
+        child = PackageType.find_by(id: attrs[:subpackage_type_id])
+        return render_error("There is no goods type #{attrs[:subpackage_type_id]}") unless child
+
+        sub = @package_type.subpackage_types.new(child_package_type: child,
+                                                 is_default: boolean_param(attrs[:is_default]))
+        return render_error(already_allowed(child)) unless sub.valid?
+
+        SubpackageType.transaction do
+          sub.save!
+          rekey_cached_lists(@package_type.id)
+        end
+        render json: sub, serializer: Api::V1::SubpackageTypeSerializer, root: "subpackage_type", status: 201
+      rescue ActiveRecord::RecordNotUnique
+        render_error(already_allowed(child))
+      end
+
+      api :PATCH, "/v1/package_types/:id/subpackage_types/:child_id", "Mark an allowed child type as default content or not"
+      description <<-DOC
+        Also accepts PUT. 200 with the row. 404 when the child is not allowed in this type. The type's
+        own self row (child_id = id) is its default content and cannot be switched off (422).
+      DOC
+      param :id, String, required: true, desc: "Parent package type id"
+      param :child_id, String, required: true, desc: "Child package type id"
+      param :is_default, :boolean, required: true
+      def set_subpackage_default
+        sub = find_subpackage
+        is_default = boolean_param(params[:is_default])
+        if self_row?(sub) && !is_default
+          return render_error("A goods type always holds itself as its default content; that can't be switched off")
+        end
+
+        SubpackageType.transaction do
+          sub.update!(is_default: is_default)
+          rekey_cached_lists(@package_type.id)
+        end
+        render json: sub, serializer: Api::V1::SubpackageTypeSerializer, root: "subpackage_type"
+      end
+
+      api :DELETE, "/v1/package_types/:id/subpackage_types/:child_id", "Stop allowing a child type inside this one"
+      description <<-DOC
+        200 {} once the row is gone. 404 when the child is not allowed in this type. The type's own
+        self row (child_id = id) cannot be removed (422).
+      DOC
+      param :id, String, required: true, desc: "Parent package type id"
+      param :child_id, String, required: true, desc: "Child package type id"
+      def remove_subpackage_type
+        sub = find_subpackage
+        return render_error("A goods type always holds itself as its default content; that can't be removed") if self_row?(sub)
+
+        SubpackageType.transaction do
+          sub.destroy!
+          rekey_cached_lists(@package_type.id)
+        end
+        render json: {}
+      end
+
       private
+
+      # The cached legacy lists, GET /package_types and GET /package_types?stock=true, embed each type's
+      # child codes (PackageTypeSerializer default_child_packages / other_child_packages) and are keyed
+      # on MAX(updated_at) + row count of package_types (CacheableJson). A subpackage_types write moves
+      # neither, so move the parents' updated_at. update_all: no callbacks and no paper_trail version
+      # for a timestamp-only change. (A parent outside the visible scope is not in the ?stock=true body,
+      # so that list needs no new key for it.)
+      def rekey_cached_lists(*type_ids)
+        ids = type_ids.flatten.compact.uniq
+        PackageType.where(id: ids).update_all(updated_at: Time.current) if ids.any?
+      end
+
+      def find_subpackage
+        @package_type.subpackage_types.includes(:child_package_type).find_by!(subpackage_type_id: params[:child_id])
+      end
+
+      def self_row?(sub)
+        sub.subpackage_type_id == @package_type.id
+      end
+
+      def already_allowed(child)
+        "#{child.code} is already allowed inside #{@package_type.code}"
+      end
+
+      def boolean_param(value)
+        ActiveModel::Type::Boolean.new.cast(value) || false
+      end
 
       # The editor's list. index skips validate_token for the public legacy list, so this branch checks
       # the token itself. Usage counts and category ids are batched: one GROUP BY per usage table and
