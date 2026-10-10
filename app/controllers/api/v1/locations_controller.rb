@@ -44,6 +44,16 @@ module Api
         end
       end
 
+      api :PUT, "/v1/locations/:id", "Rename a location"
+      param_group :location
+      def update
+        if @location.update(location_params)
+          render json: @location, serializer: serializer, status: 200
+        else
+          render json: @location.errors, status: 422
+        end
+      end
+
       api :DELETE, "/v1/locations/1", "Delete Location"
       def destroy
         @location.try(:destroy)
