@@ -274,4 +274,97 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(cached_codes(cat)).not_to include("AFO")
     end
   end
+
+  # The goods-types editor's list. Additive: GET /package_types without admin stays the cached legacy body.
+  describe "GET package_types?admin=true" do
+    let(:admin) { create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment") }
+    let(:admin_row_keys) do
+      %w[id code name_en name_zh_tw other_terms_en other_terms_zh_tw department location_id subform
+         allow_package allow_pieces allow_box allow_pallet allow_requests visible_in_selects allow_expiry_date
+         package_category_ids in_use item_count package_count request_count]
+    end
+
+    def count_queries(&block)
+      n = 0
+      counter = lambda do |*, payload|
+        next if %w[SCHEMA TRANSACTION].include?(payload[:name]) || payload[:cached]
+        next if payload[:sql] =~ /\A\s*(BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE)/i
+        n += 1
+      end
+      ActiveSupport::Notifications.subscribed(counter, "sql.active_record", &block)
+      n
+    end
+
+    it "401s without a token" do
+      get :index, params: { admin: "true" }
+      expect(response.status).to eq(401)
+    end
+
+    it "403s for a signed-in user who cannot update package types" do
+      generate_and_set_token(user)
+      get :index, params: { admin: "true" }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns the lean admin rows with department, both languages, categories and usage", show_in_doc: true do
+      generate_and_set_token(admin)
+      used = create(:base_package_type, code: "AFO", department: "Food", name_zh_tw: "食品")
+      unused = create(:base_package_type, code: "BBC")
+      cat = create(:package_category)
+      used.package_categories << cat
+      create(:item, package_type: used)
+
+      get :index, params: { admin: "true" }
+      expect(response.status).to eq(200)
+      rows = JSON.parse(response.body)["package_types"]
+      row = rows.find { |r| r["code"] == "AFO" }
+      expect(row.keys).to match_array(admin_row_keys)
+      expect(row).to include("id" => used.id, "name_en" => used.name_en, "name_zh_tw" => "食品",
+                             "other_terms_en" => used.other_terms_en, "other_terms_zh_tw" => used.other_terms_zh_tw,
+                             "department" => "Food", "location_id" => used.location_id,
+                             "package_category_ids" => [cat.id], "in_use" => true, "item_count" => 1,
+                             "package_count" => 0, "request_count" => 0)
+      expect(rows.find { |r| r["code"] == "BBC" }).to include("in_use" => false, "package_category_ids" => [])
+      expect(rows.map { |r| r["id"] }).to include(unused.id)
+    end
+
+    it "is not cached: a change that does not move updated_at still shows" do
+      generate_and_set_token(admin)
+      pt = create(:base_package_type, code: "AFO", department: "Food")
+      get :index, params: { admin: "true" }
+      PackageType.where(id: pt.id).update_all(department: "Furniture")
+      get :index, params: { admin: "true" }
+      row = JSON.parse(response.body)["package_types"].find { |r| r["code"] == "AFO" }
+      expect(row["department"]).to eq("Furniture")
+    end
+
+    it "runs the same number of queries for 2 rows as for 6 (batched usage and categories)" do
+      generate_and_set_token(admin)
+      cat = create(:package_category)
+      make = lambda do |codes|
+        codes.each do |code|
+          t = create(:base_package_type, code: code)
+          t.package_categories << cat
+          create(:item, package_type: t)
+        end
+      end
+      make.call(%w[AFO BBC])
+      get :index, params: { admin: "true" } # warm-up (auth lookups, schema)
+      small = count_queries { get :index, params: { admin: "true" } }
+      make.call(%w[BBM BBS BCB BCM])
+      large = count_queries { get :index, params: { admin: "true" } }
+      expect(JSON.parse(response.body)["package_types"].size).to be >= 6
+      expect(large).to eq(small)
+    end
+
+    it "leaves the plain index on the legacy shape" do
+      generate_and_set_token(admin)
+      create(:base_package_type, code: "AFO", department: "Food")
+      get :index
+      row = JSON.parse(response.body)["package_types"].find { |r| r["code"] == "AFO" }
+      expect(row).not_to have_key("department")
+      expect(row).not_to have_key("name_zh_tw")
+      expect(row).not_to have_key("in_use")
+    end
+  end
 end

@@ -13,7 +13,16 @@ module Api
       end
 
       api :GET, "/v1/package_types", "get all package_types"
+      param :admin, String, desc: <<-DOC
+        Send admin=true for the goods-types editor's list: { package_types: [ { id, code, name_en, name_zh_tw,
+        other_terms_en, other_terms_zh_tw, department, location_id, subform, allow_package, allow_pieces,
+        allow_box, allow_pallet, allow_requests, visible_in_selects, allow_expiry_date, package_category_ids,
+        in_use, item_count, package_count, request_count } ] }. Every type, retired ones included, ordered
+        by id. Not cached. Requires a signed-in user who can update package types (401 / 403 otherwise).
+        Without admin=true the response is the legacy cached list, unchanged.
+      DOC
       def index
+        return admin_index if params[:admin].to_s == "true"
         return stock_codes if params['stock'].present?
         render json: @package_types.with_eager_load.cached_json
       end
@@ -92,6 +101,28 @@ module Api
       end
 
       private
+
+      # The editor's list. index skips validate_token for the public legacy list, so this branch checks
+      # the token itself. Usage counts and category ids are batched: one GROUP BY per usage table and
+      # one pluck of the join table, whatever the number of types.
+      def admin_index
+        validate_token
+        authorize! :update, PackageType
+        category_ids = PackageCategoriesPackageType.order(:package_category_id)
+                                                   .pluck(:package_type_id, :package_category_id)
+                                                   .group_by(&:first)
+                                                   .transform_values { |pairs| pairs.map(&:last) }
+        rows = ActiveModel::ArraySerializer.new(
+          PackageType.order(:id),
+          each_serializer: Api::V1::PackageTypeAdminRowSerializer,
+          root: "package_types",
+          category_ids: category_ids,
+          item_counts: Item.group(:package_type_id).count,
+          package_counts: Package.group(:package_type_id).count,
+          request_counts: GoodcityRequest.group(:package_type_id).count
+        )
+        render json: rows.as_json
+      end
 
       def save_admin(record, status:)
         if record.save(context: :admin)
