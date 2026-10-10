@@ -177,10 +177,13 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
       package = create(:package)
       create(:packages_location, location: location, package: package, quantity: 1)
       create(:packages_inventory, location: location, package: package)
+      held = PackagesLocation.where(location_id: location.id).count
+      history = PackagesInventory.where(location_id: location.id).count
+      expect(history).to be >= 1
       patch :update, params: { id: location.id, location: { retired: true } }, as: :json
       expect(response.status).to eq(200)
-      expect(PackagesLocation.where(location_id: location.id).count).to eq(1)
-      expect(PackagesInventory.where(location_id: location.id).count).to eq(1)
+      expect(PackagesLocation.where(location_id: location.id).count).to eq(held)
+      expect(PackagesInventory.where(location_id: location.id).count).to eq(history)
       expect(parsed_body["location"]["in_use"]).to eq(true)
       expect(parsed_body["location"]["packages_count"]).to eq(1)
     end
@@ -250,10 +253,11 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
       expect(row_for(used)["in_use"]).to eq(true)
       expect(row_for(free)["in_use"]).to eq(false)
 
-      delete :destroy, params: { id: used.id }
-      expect(response.status).to eq(409)
+      # (free first: the refused DELETE's foreign-key error aborts the spec's wrapping transaction)
       delete :destroy, params: { id: free.id }
       expect(response.status).to eq(200)
+      delete :destroy, params: { id: used.id }
+      expect(response.status).to eq(409)
     end
   end
 
