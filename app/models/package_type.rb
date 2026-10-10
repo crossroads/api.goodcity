@@ -20,6 +20,11 @@ class PackageType < ApplicationRecord
 
   after_create :create_default_sub_package_type, unless: :child_package_type?
 
+  # Audit trail for the admin editor (create / update / retire). location_id is ignored so a type's
+  # default location never shows up in Location.recently_used, which reads every version's
+  # object_changes -> 'location_id' regardless of item_type.
+  has_paper_trail versions: { class_name: 'Version' }, ignore: [:location_id]
+
   translates :name, :other_terms
 
   # Admin-editor validations. They run ONLY in the :admin context
