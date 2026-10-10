@@ -63,6 +63,15 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(body).to include("set_count" => 0, "deletable" => true)
     end
 
+    it "is not deletable while only a soft-deleted item or package points at it (the foreign key still holds)" do
+      generate_and_set_token(user)
+      item = create(:item, package_type: package_type)
+      Item.where(id: item.id).update_all(deleted_at: Time.current)
+      get :show, params: { id: package_type.id }
+      body = JSON.parse(response.body)["package_type"]
+      expect(body).to include("item_count" => 0, "in_use" => false, "deletable" => false)
+    end
+
     it "is not deletable while a package set points at it" do
       generate_and_set_token(user)
       create(:package_set, package_type: package_type)
@@ -426,6 +435,43 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(SubpackageType.where(package_type_id: other.id, subpackage_type_id: child.id)).to exist
     end
 
+    context "a legacy type with no self row and two defaults (like FWT: FTD and FCD)" do
+      let!(:other) { PackageType.create!(code: "ZZOTH", name_en: "Other part", allow_package: true) }
+
+      before do
+        SubpackageType.where(package_type_id: parent.id).delete_all
+        SubpackageType.create!(package_type: parent, child_package_type: child, is_default: true)
+        SubpackageType.create!(package_type: parent, child_package_type: other, is_default: true)
+      end
+
+      it "may switch one default off, but never the last one" do
+        patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: false }, as: :json
+        expect(response.status).to eq(200)
+        next_request!
+        patch :set_subpackage_default, params: { id: parent.id, child_id: other.id, is_default: false }, as: :json
+        expect(response.status).to eq(422)
+        expect(error_message).to eq("ZZOTH is the only default content of ZZPAR, so it can't be switched off: make another type default first")
+        expect(row(other.id).is_default).to eq(true)
+      end
+
+      it "may remove one default, but never the last one; a non-default row always goes" do
+        delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+        expect(response.status).to eq(200)
+        next_request!
+        delete :remove_subpackage_type, params: { id: parent.id, child_id: other.id }
+        expect(response.status).to eq(422)
+        expect(error_message).to match(/ZZOTH is the only default content of ZZPAR, so it can't be removed/)
+        expect(row(other.id)).to be_present
+      end
+
+      it "adding the type to itself makes a DEFAULT self row, whatever was asked" do
+        post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: parent.id, is_default: false } }, as: :json
+        expect(response.status).to eq(201)
+        expect(JSON.parse(response.body)["subpackage_type"]["is_default"]).to eq(true)
+        expect(row(parent.id).is_default).to eq(true)
+      end
+    end
+
     it "denies a user without the permission" do
       generate_and_set_token(user)
       post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
@@ -494,10 +540,20 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(read_both).to all(eq(default: ["ZZPAR"], other: []))
     end
 
-    it "writes no paper_trail version for the re-key", versioning: true do
+    it "writes no PackageType version for the re-key, and a SubpackageType version for each change", versioning: true do
+      pt_versions = -> { Version.where(item_type: "PackageType").count }
+      before = Version.maximum(:id) || 0 # the let! types' own self rows were versioned as they were made
+      sub_versions = -> { Version.where(item_type: "SubpackageType").where("id > ?", before).order(:id) }
       expect {
         post :add_subpackage_type, params: { id: parent.id, subpackage_type: { subpackage_type_id: child.id } }, as: :json
-      }.not_to change(Version, :count)
+        next_request!
+        patch :set_subpackage_default, params: { id: parent.id, child_id: child.id, is_default: true }, as: :json
+        next_request!
+        delete :remove_subpackage_type, params: { id: parent.id, child_id: child.id }
+      }.not_to change { pt_versions.call }
+      expect(sub_versions.call.pluck(:event)).to eq(%w[create update destroy])
+      expect(sub_versions.call.pluck(:whodunnit).uniq).to eq([admin.id.to_s])
+      expect(sub_versions.call.last.object).to include("package_type_id" => parent.id, "subpackage_type_id" => child.id)
     end
 
     it "leaves the cache key alone when the write is refused" do
@@ -557,6 +613,36 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
         expect(pt.allow_package).to eq(true) # not retired either
         expect(SubpackageType.where(package_type_id: pt.id, subpackage_type_id: pt.id)).to exist
       end
+    end
+
+    {
+      "a soft-deleted item" => ->(pt) { Item.where(id: create(:item, package_type: pt).id).update_all(deleted_at: Time.current) },
+      "a soft-deleted package" => ->(pt) { Package.where(id: create(:package, package_type: pt).id).update_all(deleted_at: Time.current) }
+    }.each do |what, make|
+      it "refuses while only #{what} points at it (counted, not left to the foreign key)" do
+        instance_exec(pt, &make)
+        delete :destroy, params: { id: pt.id, hard: "true" }
+        expect(response.status).to eq(422)
+        expect(error_message).to match(/ZZDEL is in use .*retire it instead/)
+        expect(PackageType.exists?(pt.id)).to eq(true)
+      end
+    end
+
+    it "refuses while it is some parent's ONLY default content, and goes once that parent has another" do
+      set = PackageType.create!(code: "ZZSET", name_en: "A set", allow_package: true)
+      SubpackageType.where(package_type_id: set.id).delete_all # a legacy type with no self row
+      SubpackageType.create!(package_type: set, child_package_type: pt, is_default: true)
+      delete :destroy, params: { id: pt.id, hard: "true" }
+      expect(response.status).to eq(422)
+      expect(error_message).to eq("ZZDEL is the only default content of ZZSET; make another type default there first")
+      expect(PackageType.exists?(pt.id)).to eq(true)
+
+      other = PackageType.create!(code: "ZZPRT", name_en: "Part", allow_package: true)
+      SubpackageType.create!(package_type: set, child_package_type: other, is_default: true)
+      @controller = described_class.new
+      delete :destroy, params: { id: pt.id, hard: "true" }
+      expect(response.status).to eq(200)
+      expect(SubpackageType.where(package_type_id: set.id).pluck(:subpackage_type_id)).to eq([other.id])
     end
 
     it "retires (does not delete) unless hard is exactly true" do

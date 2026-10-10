@@ -50,10 +50,11 @@ module Api::V1
       PackageSet.where(package_type_id: object.id).count
     end
 
-    # Nothing has ever pointed at this type (see PackageType#usage_counts), so DELETE ?hard=true may
-    # remove it. Anything else may only be retired.
+    # Nothing points at this type now, soft-deleted items and packages included (PackageType#usage_counts),
+    # so DELETE ?hard=true may remove it. Anything else may only be retired. (in_use and the counts
+    # above are the CURRENT use the editor shows; they leave soft-deleted rows out, as before.)
     def deletable
-      !in_use && set_count.zero?
+      object.usage_counts.values.all?(&:zero?)
     end
   end
 end

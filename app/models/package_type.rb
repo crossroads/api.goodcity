@@ -57,10 +57,12 @@ class PackageType < ApplicationRecord
 
   # Everything that points at a type apart from its own containment rows and category joins (the
   # foreign keys to package_types in db/schema.rb). A type with any of these may be retired, never deleted.
+  # Items and packages are paranoid (soft-deleted rows stay, and their foreign keys still hold), so
+  # those are counted too: a deleted or cancelled offer's items still point at the type.
   def usage_counts
     {
-      items: items.count,
-      packages: packages.count,
+      items: Item.with_deleted.where(package_type_id: id).count,
+      packages: Package.with_deleted.where(package_type_id: id).count,
       requests: goodcity_requests.count,
       package_sets: PackageSet.where(package_type_id: id).count
     }
