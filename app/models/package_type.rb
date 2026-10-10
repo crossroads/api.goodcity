@@ -19,6 +19,9 @@ class PackageType < ApplicationRecord
   has_many :package_categories, through: :package_categories_package_types
 
   after_create :create_default_sub_package_type, unless: :child_package_type?
+  # The cached GET /package_categories lists each category's type codes, keyed on the categories'
+  # own updated_at, so a code rename must touch them.
+  after_update :touch_package_categories, if: :saved_change_to_code?
 
   # Audit trail for the admin editor (create / update / retire). location_id is ignored so a type's
   # default location never shows up in Location.recently_used, which reads every version's
@@ -53,6 +56,10 @@ class PackageType < ApplicationRecord
   }
 
   private
+
+  def touch_package_categories
+    package_categories.touch_all
+  end
 
   def child_package_type?
     default_child_package_types.exists?

@@ -107,8 +107,15 @@ module Api
       # CanCan loader) so a failed validation rolls the join rows back too.
       def assign_categories
         return unless params[:package_type].key?(:package_category_ids)
-        ids = Array(params[:package_type][:package_category_ids]).reject(&:blank?)
+        ids = Array(params[:package_type][:package_category_ids]).reject(&:blank?).map(&:to_i)
+        before_ids = @package_type.persisted? ? @package_type.package_category_ids : []
         @package_type.package_category_ids = ids
+        # Removing through has_many :through deletes the join rows without callbacks, so the join
+        # model's `belongs_to :package_category, touch: true` never fires for a removed category.
+        # Touch those here so the cached GET /package_categories (package_type_codes) moves too.
+        # (Added categories are touched by the join rows' own create callbacks.)
+        removed = before_ids - ids
+        PackageCategory.where(id: removed).touch_all if removed.any?
       end
 
       def package_type_params

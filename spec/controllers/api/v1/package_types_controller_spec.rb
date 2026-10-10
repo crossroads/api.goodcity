@@ -239,4 +239,39 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(retiring.reload.allow_package).to eq(false)
     end
   end
+
+  # GET /package_categories is a CacheableJson body whose package_type_codes lists each category's types.
+  describe "the cached package_categories list follows the editor's changes" do
+    let(:admin) { create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment") }
+    let!(:pt) { create(:base_package_type, code: "AFO") }
+    let!(:cat) { create(:package_category) }
+
+    def cached_codes(category)
+      rows = JSON.parse(PackageCategory.cached_json.to_json)["package_categories"]
+      rows.find { |r| r["id"] == category.id }["package_type_codes"].split(",")
+    end
+
+    before do
+      Rails.cache.clear
+      pt.package_categories << cat
+      cat.update_column(:updated_at, 1.day.ago)
+      create(:package_category) # a newer category, so MAX(updated_at) is not cat's
+      generate_and_set_token(admin)
+    end
+
+    it "drops the type from a category it is removed from" do
+      expect(cached_codes(cat)).to include("AFO")
+      patch :update, params: { id: pt.id, package_type: { package_category_ids: [] } }, as: :json
+      expect(response.status).to eq(200)
+      expect(cached_codes(cat)).not_to include("AFO")
+    end
+
+    it "shows the new code after the type's code is renamed" do
+      expect(cached_codes(cat)).to include("AFO")
+      patch :update, params: { id: pt.id, package_type: { code: "AFOX" } }, as: :json
+      expect(response.status).to eq(200)
+      expect(cached_codes(cat)).to include("AFOX")
+      expect(cached_codes(cat)).not_to include("AFO")
+    end
+  end
 end
