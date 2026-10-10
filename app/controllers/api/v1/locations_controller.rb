@@ -41,7 +41,7 @@ module Api
       def create
         @location.assign_attributes(location_params)
         if @location.save
-          render json: @location, serializer: serializer, status: 201
+          render json: @location, serializer: serializer, root: "location", status: 201
         else
           render json: @location.errors, status: 422
         end
@@ -51,7 +51,7 @@ module Api
       param_group :location
       def update
         if @location.update(location_params)
-          render json: @location, serializer: serializer, status: 200
+          render json: @location, serializer: serializer, root: "location", status: 200
         else
           render json: @location.errors, status: 422
         end
