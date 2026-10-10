@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_10_09_033844) do
+ActiveRecord::Schema.define(version: 2026_10_11_000001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -378,6 +378,7 @@ ActiveRecord::Schema.define(version: 2026_10_09_033844) do
     t.string "area"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "retired_at"
     t.index ["area"], name: "index_locations_on_area", opclass: :gin_trgm_ops, using: :gin
     t.index ["building"], name: "index_locations_on_building", opclass: :gin_trgm_ops, using: :gin
   end

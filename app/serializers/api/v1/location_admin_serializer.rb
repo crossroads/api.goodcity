@@ -6,7 +6,7 @@ module Api::V1
   # paths: #update, and #index when the explicit `with_counts` param is present.
   class LocationAdminSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :id, :building, :area, :packages_count, :printer_name
+    attributes :id, :building, :area, :packages_count, :printer_name, :retired_at, :in_use
 
     # Distinct packages held at this location (computed; no schema change).
     # A COUNT(DISTINCT package_id) per row, not a load of the packages_locations rows — the admin list is a
@@ -17,6 +17,13 @@ module Api::V1
 
     def printer_name
       object.printer&.name
+    end
+
+    # Whether DELETE would be refused (a foreign key still points here): the screen then offers Retire, not Delete.
+    # The admin index computes the set once for every row (`in_use_ids`); a single row (PATCH reply) asks itself.
+    def in_use
+      ids = options[:in_use_ids]
+      ids ? ids.include?(object.id) : object.in_use?
     end
   end
 end
