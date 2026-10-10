@@ -24,13 +24,16 @@ module Api
         return search if params['searchText'].present?
         return recent_locations if params['recently_used'].present?
 
-        if params[:ids].blank?
+        # The shared browse path (no params, and no params[:with_counts]) stays the cached, byte-identical
+        # { id, building, area } body the legacy stock app reads.
+        if params[:ids].blank? && params[:with_counts].blank?
           render json: Location.cached_json
           return
         end
-        @locations = @locations.with_eager_load
+        # Admin-only: eager-load :printer so printer_name isn't an N+1 (packages_count is a COUNT, not a load).
+        @locations = @locations.includes(:printer) if params[:with_counts].present?
         @locations = @locations.find(params[:ids].split(",")) if params[:ids].present?
-        render json: @locations, each_serializer: serializer
+        render json: @locations, each_serializer: serializer, root: "locations"
       end
 
       api :POST, "/v1/locations", "Create or Update a location"
@@ -80,7 +83,14 @@ module Api
       end
 
       def serializer
-        Api::V1::LocationSerializer
+        admin_serializer? ? Api::V1::LocationAdminSerializer : Api::V1::LocationSerializer
+      end
+
+      # The stock-count / printer attributes are computed only for the Locations admin screen's own requests:
+      # the #update action (rename), and #index when the explicit with_counts param is sent. Every other path
+      # (#create, the shared browse/search/recently-used GET) keeps the lean { id, building, area } body.
+      def admin_serializer?
+        action_name == "update" || (action_name == "index" && params[:with_counts].present?)
       end
     end
   end
