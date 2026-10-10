@@ -361,7 +361,7 @@ module Api
 
       def package_type_abilities
         if can_add_package_types? || can_manage_settings? || @api_user
-          can [:create, :update], PackageType
+          can [:create, :update, :add_subpackage_type, :set_subpackage_default, :remove_subpackage_type], PackageType
         end
         can :destroy, PackageType if can_manage_settings?
       end
