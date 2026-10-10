@@ -1,7 +1,7 @@
 module Api
   module V1
     class PackageTypesController < Api::V1::ApiController
-      skip_before_action :validate_token, only: [:index, :show]
+      skip_before_action :validate_token, only: [:index]
       load_and_authorize_resource :package_type, parent: false
 
       resource_description do
