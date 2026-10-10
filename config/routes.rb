@@ -47,7 +47,7 @@ Rails.application.routes.draw do
 
       resources :districts, only: [:index, :show]
       resources :identity_types, only: [:index, :show]
-      resources :package_types, only: [:index]
+      resources :package_types, only: [:index, :show, :create, :update, :destroy]
       resources :permissions, only: [:index, :show]
       resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]

@@ -22,6 +22,23 @@ class PackageType < ApplicationRecord
 
   translates :name, :other_terms
 
+  # Admin-editor validations. They run ONLY in the :admin context
+  # (save(context: :admin), used by the new PackageTypesController actions),
+  # so no other save path or legacy caller sees a new rule. Format/uniqueness/
+  # subform are checked only when changed, so editing other fields of a
+  # pre-existing row with unusual legacy data is not blocked.
+  validates :code, presence: true, on: :admin
+  validates :code, uniqueness: { case_sensitive: false },
+                   format: { with: /\A[A-Z0-9]+\z/ },
+                   on: :admin, if: :code_changed?
+  validates :name_en, presence: true, on: :admin
+  validates :subform, inclusion: { in: ['', 'medical', 'electrical', 'computer_accessory', 'computer'] },
+                      allow_nil: true, on: :admin, if: :subform_changed?
+  validates :default_value_hk_dollar, :customs_value_usd,
+            numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, on: :admin
+  validates :length, :width, :height,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true, on: :admin
+
   scope :visible, -> { where(allow_package: true).or(PackageType.box_types).or(PackageType.pallet_types) }
   scope :box_types, -> { where(allow_box: true) }
   scope :pallet_types, -> { where(allow_pallet: true) }

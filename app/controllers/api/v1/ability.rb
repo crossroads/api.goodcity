@@ -360,9 +360,10 @@ module Api
       end
 
       def package_type_abilities
-        if can_add_package_types? || @api_user
-          can :create, PackageType
+        if can_add_package_types? || can_manage_settings? || @api_user
+          can [:create, :update], PackageType
         end
+        can :destroy, PackageType if can_manage_settings?
       end
 
       def public_ability
