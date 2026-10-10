@@ -128,6 +128,17 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(pt.package_categories).to eq([cat])
     end
 
+    it "accepts JSON decimals and clears nullable fields with null (what the editor sends)" do
+      pt.update_columns(default_value_hk_dollar: 5, length: 3)
+      patch :update, params: { id: pt.id, package_type: {
+        customs_value_usd: 12.5, default_value_hk_dollar: nil, length: nil } }, as: :json
+      expect(response.status).to eq(200)
+      pt.reload
+      expect(pt.customs_value_usd).to eq(12.5)
+      expect(pt.default_value_hk_dollar).to be_nil
+      expect(pt.length).to be_nil
+    end
+
     it "clears categories when an empty set is sent" do
       pt.package_categories << create(:package_category)
       patch :update, params: { id: pt.id, package_type: { name_en: pt.name_en, package_category_ids: [""] } }
