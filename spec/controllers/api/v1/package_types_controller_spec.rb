@@ -60,6 +60,15 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
                               "in_use" => false)
       expect(body["package_category_ids"]).to eq([cat.id])
       expect(body["subpackage_types"].first).to include("subpackage_type_id" => package_type.id, "is_default" => true)
+      expect(body).to include("set_count" => 0, "deletable" => true)
+    end
+
+    it "is not deletable while a package set points at it" do
+      generate_and_set_token(user)
+      create(:package_set, package_type: package_type)
+      get :show, params: { id: package_type.id }
+      body = JSON.parse(response.body)["package_type"]
+      expect(body).to include("in_use" => false, "set_count" => 1, "deletable" => false)
     end
   end
 
@@ -496,6 +505,103 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       delete :remove_subpackage_type, params: { id: parent.id, child_id: parent.id }
       expect(response.status).to eq(422)
       expect(PackageType.cache_key).to eq(key)
+    end
+  end
+
+  describe "DELETE package_types/:id?hard=true" do
+    let(:supervisor) { create(:user, :with_token, :with_can_manage_settings_permission, role_name: "Supervisor") }
+    let!(:pt) { PackageType.create!(code: "ZZDEL", name_en: "Made in error", allow_package: true) }
+
+    before { generate_and_set_token(supervisor) }
+
+    def error_message
+      JSON.parse(response.body)["errors"].first["message"]
+    end
+
+    it "deletes a never-used type with its containment rows on both sides and its category joins", versioning: true do
+      box = PackageType.create!(code: "ZZBOX", name_en: "Box", allow_box: true)
+      inner = PackageType.create!(code: "ZZINN", name_en: "Inner", allow_package: true)
+      SubpackageType.create!(package_type: box, child_package_type: pt)    # pt is a child of box
+      SubpackageType.create!(package_type: pt, child_package_type: inner)  # pt is a parent of inner
+      cat = create(:package_category)
+      pt.package_categories << cat
+
+      delete :destroy, params: { id: pt.id, hard: "true" }
+
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)).to eq({})
+      expect(PackageType.exists?(pt.id)).to eq(false)
+      expect(SubpackageType.where(package_type_id: pt.id)).to be_empty
+      expect(SubpackageType.where(subpackage_type_id: pt.id)).to be_empty
+      expect(PackageCategoriesPackageType.where(package_type_id: pt.id)).to be_empty
+      expect(PackageCategory.exists?(cat.id)).to eq(true)
+      expect(PackageType.exists?(box.id) && PackageType.exists?(inner.id)).to eq(true)
+      expect(SubpackageType.where(package_type_id: box.id, subpackage_type_id: box.id)).to exist
+      version = Version.where(item_type: "PackageType", item_id: pt.id, event: "destroy").last
+      expect(version).to be_present
+      expect(version.whodunnit).to eq(supervisor.id.to_s)
+    end
+
+    {
+      "an item" => ->(pt) { create(:item, package_type: pt) },
+      "a package" => ->(pt) { create(:package, package_type: pt) },
+      "a goodcity request" => ->(pt) { create(:goodcity_request, package_type: pt) },
+      "a package set" => ->(pt) { create(:package_set, package_type: pt) }
+    }.each do |what, make|
+      it "refuses while #{what} points at it, and changes nothing" do
+        instance_exec(pt, &make)
+        delete :destroy, params: { id: pt.id, hard: "true" }
+        expect(response.status).to eq(422)
+        expect(error_message).to match(/ZZDEL is in use .*retire it instead/)
+        pt.reload
+        expect(pt.allow_package).to eq(true) # not retired either
+        expect(SubpackageType.where(package_type_id: pt.id, subpackage_type_id: pt.id)).to exist
+      end
+    end
+
+    it "retires (does not delete) unless hard is exactly true" do
+      delete :destroy, params: { id: pt.id, hard: "1" }
+      expect(response.status).to eq(200)
+      expect(PackageType.exists?(pt.id)).to eq(true)
+      expect(pt.reload.allow_package).to eq(false)
+    end
+
+    it "denies a can_add_package_types only user" do
+      admin = create(:user, :with_token, :with_can_add_package_types_permission, role_name: "Order fulfilment")
+      generate_and_set_token(admin)
+      delete :destroy, params: { id: pt.id, hard: "true" }
+      expect(response.status).to eq(403)
+      expect(PackageType.exists?(pt.id)).to eq(true)
+    end
+
+    it "drops the deleted code from the parents' rows in the warmed legacy lists" do
+      box = PackageType.create!(code: "ZZBOX", name_en: "Box", allow_box: true)
+      SubpackageType.create!(package_type: box, child_package_type: pt)
+      # pt is retired (outside ?stock=true) and neither row is the newest, so neither MAX nor the
+      # visible count would move on their own.
+      PackageType.where(id: pt.id).update_all(allow_package: false, visible_in_selects: false)
+      PackageType.where(id: [pt.id, box.id]).update_all(updated_at: 1.day.ago)
+      PackageType.create!(code: "ZZNEW", name_en: "Newest", allow_package: true)
+      Rails.cache.clear
+
+      box_row = ->(root) { JSON.parse(response.body)[root].find { |r| r["id"] == box.id } }
+      get :index, params: { stock: true }
+      expect(box_row.call("codes")["other_child_packages"]).to eq("ZZDEL")
+      @controller = described_class.new
+      get :index
+      expect(box_row.call("package_types")["other_child_packages"]).to eq("ZZDEL")
+
+      @controller = described_class.new
+      delete :destroy, params: { id: pt.id, hard: "true" }
+      expect(response.status).to eq(200)
+
+      @controller = described_class.new
+      get :index, params: { stock: true }
+      expect(box_row.call("codes")["other_child_packages"]).to eq("")
+      @controller = described_class.new
+      get :index
+      expect(box_row.call("package_types")["other_child_packages"]).to eq("")
+      expect(JSON.parse(response.body)["package_types"].map { |r| r["id"] }).not_to include(pt.id)
     end
   end
 

@@ -55,6 +55,17 @@ class PackageType < ApplicationRecord
     includes([:location, :subpackage_types, :other_child_package_types, :default_child_package_types, :other_subpackage_types, :default_subpackage_types])
   }
 
+  # Everything that points at a type apart from its own containment rows and category joins (the
+  # foreign keys to package_types in db/schema.rb). A type with any of these may be retired, never deleted.
+  def usage_counts
+    {
+      items: items.count,
+      packages: packages.count,
+      requests: goodcity_requests.count,
+      package_sets: PackageSet.where(package_type_id: id).count
+    }
+  end
+
   private
 
   def touch_package_categories

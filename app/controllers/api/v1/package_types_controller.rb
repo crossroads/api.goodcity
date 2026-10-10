@@ -85,8 +85,19 @@ module Api
         end
       end
 
-      api :DELETE, "/v1/package_types/:id", "Retire a package type (flags switched off, record kept)"
+      api :DELETE, "/v1/package_types/:id", "Retire a package type (flags switched off, record kept), or delete a never-used one"
+      param :hard, String, desc: <<-DOC
+        Without it (the default) the type is RETIRED: visible_in_selects, allow_package, allow_box,
+        allow_pallet, allow_pieces and allow_requests are switched off, the record is kept and existing
+        stock keeps its type; reply 200 { package_type: <admin shape> }. Send hard=true to DELETE the
+        record instead, allowed only for a type nothing has ever used (no items, packages,
+        goodcity_requests or package_sets point at it): its containment rows on both sides
+        (subpackage_types as parent and as child) and its category joins go with it; reply 200 {}.
+        A used type answers 422 { errors: [{ message, status }] } and nothing changes.
+      DOC
       def destroy
+        return hard_destroy if params[:hard].to_s == "true"
+
         # Retire through the normal save path so callbacks run: paper_trail writes a version and
         # updated_at moves (the cached GET /package_types re-keys); the visible-only ?stock=true list
         # re-keys on its row count (CacheableJson), so the legacy apps stop offering the type.
@@ -198,6 +209,31 @@ module Api
 
       def boolean_param(value)
         ActiveModel::Type::Boolean.new.cast(value) || false
+      end
+
+      # DELETE ?hard=true. Only a type nothing has ever used: its own containment rows (both sides)
+      # and category joins are removed with it, then the record. Parents that listed it as a child
+      # are re-keyed so the cached legacy lists drop its code. paper_trail keeps a destroy version
+      # with the full record.
+      def hard_destroy
+        usage = @package_type.usage_counts
+        if usage.values.any?(&:positive?)
+          used = usage.select { |_, n| n.positive? }.map { |what, n| "#{n} #{what.to_s.tr('_', ' ')}" }.join(", ")
+          return render_error("#{@package_type.code} is in use (#{used}); retire it instead")
+        end
+
+        id = @package_type.id
+        parent_ids = SubpackageType.where(subpackage_type_id: id).where.not(package_type_id: id).pluck(:package_type_id)
+        PackageType.transaction do
+          SubpackageType.where(package_type_id: id).or(SubpackageType.where(subpackage_type_id: id)).delete_all
+          # destroy_all (not delete_all): the join rows' touch: true re-keys the cached GET /package_categories.
+          @package_type.package_categories_package_types.destroy_all
+          @package_type.destroy!
+          rekey_cached_lists(parent_ids)
+        end
+        render json: {}
+      rescue ActiveRecord::InvalidForeignKey
+        render_error("#{@package_type.code} is still referenced; retire it instead")
       end
 
       # The editor's list. index skips validate_token for the public legacy list, so this branch checks
