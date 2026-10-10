@@ -7,6 +7,34 @@ class Location < ApplicationRecord
   has_many :package_types, inverse_of: :location
   has_one  :printer
 
+  # Retired locations stay on every record that points at them, but the new stock app stops offering them for new
+  # stock (GET /locations?exclude_retired=true). The legacy apps don't read retired_at.
+  scope :not_retired, -> { where(retired_at: nil) }
+
+  # True when a foreign key still points at the location, so DELETE would answer 409 (ForeignKeyDeletionError).
+  # The tables are the five with a foreign key to locations (db/schema.rb); each probe uses its location_id index.
+  IN_USE_SQL = %w[packages_locations packages_inventories stocktakes printers package_types].map { |table|
+    "EXISTS (SELECT 1 FROM #{table} WHERE #{table}.location_id = locations.id)"
+  }.join(" OR ").freeze
+
+  # The ids of every location in use, in one query (the Locations admin list).
+  def self.in_use_ids
+    unscoped.where(IN_USE_SQL).pluck(:id).to_set
+  end
+
+  def in_use?
+    Location.unscoped.where(id: id).where(IN_USE_SQL).exists?
+  end
+
+  def retired?
+    retired_at.present?
+  end
+
+  # PATCH /locations/:id sends location: { retired: true|false }. Retiring an already-retired location keeps its stamp.
+  def retired=(value)
+    self.retired_at = ActiveModel::Type::Boolean.new.cast(value) ? (retired_at || Time.current) : nil
+  end
+
   def label
     "#{building}#{area}"
   end
