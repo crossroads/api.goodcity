@@ -86,7 +86,7 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     end
 
     it "returns 0 and nil when the location is empty and has no printer" do
-      get :index, params: { ids: location.id.to_s, with_counts: true }
+      get :index, params: { with_counts: true }
       row = parsed_body["locations"].find { |l| l["id"] == location.id }
       expect(row["packages_count"]).to eq(0)
       expect(row["printer_name"]).to be_nil
@@ -101,8 +101,10 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
       expect(row.keys).to match_array(%w[id building area])
     end
 
-    it "does NOT add the admin attributes to the ?ids= path without with_counts" do
-      get :index, params: { ids: location.id.to_s }
+    # (The ?ids= path cannot be exercised over HTTP: apipie's `param :ids, Array, of: Integer` rejects the
+    # string values a query string carries with a 422, so the other non-cached read path is searchText.)
+    it "does NOT add the admin attributes to the searchText path without with_counts" do
+      get :index, params: { searchText: "G1" }
       row = parsed_body["locations"].find { |l| l["id"] == location.id }
       expect(row).not_to have_key("packages_count")
       expect(row).not_to have_key("printer_name")
