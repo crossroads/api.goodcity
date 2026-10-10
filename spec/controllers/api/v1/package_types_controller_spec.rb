@@ -45,8 +45,8 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
     end
 
     let(:location) { create(:location, building: "PTREN", area: "Old") }
-    let!(:package_type) { create(:base_package_type, allow_package: true, code: "PTR", location: location) }
-    let!(:other_type) { create(:base_package_type, allow_package: true, code: "PTO") }
+    let!(:package_type) { create(:base_package_type, allow_package: true, code: "AFO", location: location) }
+    let!(:other_type) { create(:base_package_type, allow_package: true, code: "BBC") }
 
     def location_names(body)
       JSON.parse(body)["locations"].select { |l| l["building"] == "PTREN" }.map { |l| l["area"] }
