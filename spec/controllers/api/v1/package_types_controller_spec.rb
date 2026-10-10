@@ -81,7 +81,7 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
         expect {
           post :create, params: { package_type: { code: "ZZZ", name_en: "Widget", name_zh_tw: "小部件",
                                                   allow_package: true, location_id: location.id,
-                                                  package_category_ids: [cat.id] } }
+                                                  package_category_ids: [cat.id] } }, as: :json
         }.to change(PackageType, :count).by(1)
         pt = PackageType.find_by(code: "ZZZ")
         expect(response.status).to eq(201)
@@ -114,11 +114,13 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
     let!(:pt) { create(:base_package_type, code: "AFO") }
     before { generate_and_set_token(admin) }
 
+    # The editor sends JSON. apipie's typed params (Integer, [true, false], Array of Integer) reject the
+    # strings a form-encoded request carries, so the examples that exercise those params use as: :json.
     it "updates scalars, translations, valuation and the category set" do
       cat = create(:package_category)
       patch :update, params: { id: pt.id, package_type: {
         name_zh_tw: "小部件", customs_value_usd: "12.50", allow_box: true,
-        department: "Furniture", length: 10, package_category_ids: [cat.id] } }
+        department: "Furniture", length: 10, package_category_ids: [cat.id] } }, as: :json
       expect(response.status).to eq(200)
       pt.reload
       expect(pt.name_zh_tw).to eq("小部件")
@@ -141,7 +143,7 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
 
     it "clears categories when an empty set is sent" do
       pt.package_categories << create(:package_category)
-      patch :update, params: { id: pt.id, package_type: { name_en: pt.name_en, package_category_ids: [""] } }
+      patch :update, params: { id: pt.id, package_type: { name_en: pt.name_en, package_category_ids: [] } }, as: :json
       expect(response.status).to eq(200)
       expect(pt.reload.package_categories).to be_empty
     end
