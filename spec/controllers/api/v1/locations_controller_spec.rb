@@ -67,15 +67,18 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     end
   end
 
-  describe "serialized stock and printer fields" do
+  # The stock-count / printer attributes are the Locations admin screen's own, delivered by LocationAdminSerializer
+  # ONLY when the explicit with_counts param is sent. The shared LocationSerializer (nested in ~9 other serializers
+  # and read by the legacy stock app's GET /locations) must stay { id, building, area }.
+  describe "stock and printer fields (with_counts)" do
     let!(:location) { create(:location, building: "G1", area: "Z") }
 
-    it "includes packages_count (distinct packages) and printer_name" do
+    it "includes packages_count (distinct packages) and printer_name when with_counts is sent" do
       package = create(:package)
       create(:packages_location, location: location, package: package, quantity: 1)
       create(:packages_location, location: location, package: create(:package), quantity: 1)
       create(:printer, location: location, name: "Dock Printer")
-      get :index, params: { ids: location.id.to_s }
+      get :index, params: { with_counts: true }
       row = parsed_body["locations"].find { |l| l["id"] == location.id }
       expect(row["packages_count"]).to eq(2)
       expect(row["printer_name"]).to eq("Dock Printer")
@@ -83,10 +86,26 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     end
 
     it "returns 0 and nil when the location is empty and has no printer" do
-      get :index, params: { ids: location.id.to_s }
+      get :index, params: { ids: location.id.to_s, with_counts: true }
       row = parsed_body["locations"].find { |l| l["id"] == location.id }
       expect(row["packages_count"]).to eq(0)
       expect(row["printer_name"]).to be_nil
+    end
+
+    it "does NOT add the admin attributes to the shared serializer (no with_counts)" do
+      create(:printer, location: location, name: "Dock Printer")
+      get :index
+      row = parsed_body["locations"].find { |l| l["id"] == location.id }
+      expect(row).not_to have_key("packages_count")
+      expect(row).not_to have_key("printer_name")
+      expect(row.keys).to match_array(%w[id building area])
+    end
+
+    it "does NOT add the admin attributes to the ?ids= path without with_counts" do
+      get :index, params: { ids: location.id.to_s }
+      row = parsed_body["locations"].find { |l| l["id"] == location.id }
+      expect(row).not_to have_key("packages_count")
+      expect(row).not_to have_key("printer_name")
     end
   end
 end
