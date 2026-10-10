@@ -40,7 +40,13 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
   describe "GET package_types/:id" do
     let(:package_type) { create(:base_package_type, code: "AFO") }
 
-    it "is public and returns the admin shape" do
+    it "requires a signed-in user (the admin shape carries usage counts)" do
+      get :show, params: { id: package_type.id }
+      expect(response.status).to eq(401)
+    end
+
+    it "returns the admin shape to a signed-in user" do
+      generate_and_set_token(user)
       cat = create(:package_category)
       package_type.package_categories << cat
       get :show, params: { id: package_type.id }
