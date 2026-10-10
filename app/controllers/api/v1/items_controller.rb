@@ -78,9 +78,12 @@ module Api
       end
 
       def item_params
-        params.require(:item).permit(:donor_description, :donor_condition_id, :state,
-          :state_event, :offer_id, :package_type_id, :rejection_reason_id,
-          :reject_reason, :rejection_comments)
+        attributes = [:donor_description, :donor_condition_id, :offer_id,
+          :package_type_id]
+        attributes.concat [:state, :rejection_reason_id, :reject_reason,
+          :rejection_comments] if User.current_user.staff?
+        attributes << :state_event if permit_state_event?(params[:item])
+        params.require(:item).permit(attributes)
       end
 
       def serializer
