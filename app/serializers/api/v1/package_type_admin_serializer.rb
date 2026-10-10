@@ -11,7 +11,8 @@ module Api::V1
                :default_value_hk_dollar, :customs_value_usd,
                :length, :width, :height,
                :package_category_ids, :subpackage_types,
-               :in_use, :item_count, :package_count, :request_count
+               :in_use, :item_count, :package_count, :request_count,
+               :set_count, :deletable
 
     def package_category_ids
       object.package_categories_package_types.pluck(:package_category_id)
@@ -43,6 +44,16 @@ module Api::V1
 
     def in_use
       item_count.positive? || package_count.positive? || request_count.positive?
+    end
+
+    def set_count
+      PackageSet.where(package_type_id: object.id).count
+    end
+
+    # Nothing has ever pointed at this type (see PackageType#usage_counts), so DELETE ?hard=true may
+    # remove it. Anything else may only be retired.
+    def deletable
+      !in_use && set_count.zero?
     end
   end
 end

@@ -25,6 +25,22 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_many :goodcity_requests }
   end
 
+  describe "#usage_counts" do
+    let(:pt) { PackageType.create!(code: "ZZUSE", name_en: "Usage") }
+
+    it "is all zero for a type nothing points at" do
+      expect(pt.usage_counts).to eq(items: 0, packages: 0, requests: 0, package_sets: 0)
+    end
+
+    it "counts each table that references the type" do
+      create(:package, package_type: pt)
+      create(:package_set, package_type: pt)
+      counts = pt.usage_counts
+      expect(counts[:packages]).to be >= 1
+      expect(counts[:package_sets]).to be >= 1
+    end
+  end
+
   describe 'scope' do
     describe "visible" do
       it "returns records with allow_package true value" do
