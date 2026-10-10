@@ -246,18 +246,25 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
       end
     end
 
-    it "in_use matches what DELETE does" do
+    # One DELETE per example: cancan's load_resource keeps @location across requests in a controller spec, and a
+    # refused DELETE's foreign-key error aborts the spec's wrapping transaction.
+    it "in_use true matches DELETE's 409" do
       used = create(:location, building: "USE-DEL", area: "1")
       create(:packages_inventory, location: used)
       get :index, params: { with_counts: true }
       expect(row_for(used)["in_use"]).to eq(true)
-      expect(row_for(free)["in_use"]).to eq(false)
-
-      # (free first: the refused DELETE's foreign-key error aborts the spec's wrapping transaction)
-      delete :destroy, params: { id: free.id }
-      expect(response.status).to eq(200)
+      @controller = described_class.new
       delete :destroy, params: { id: used.id }
       expect(response.status).to eq(409)
+    end
+
+    it "in_use false matches DELETE's 200" do
+      get :index, params: { with_counts: true }
+      expect(row_for(free)["in_use"]).to eq(false)
+      @controller = described_class.new
+      delete :destroy, params: { id: free.id }
+      expect(response.status).to eq(200)
+      expect(Location.exists?(free.id)).to eq(false)
     end
   end
 
