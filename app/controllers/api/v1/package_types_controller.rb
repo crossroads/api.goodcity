@@ -129,23 +129,30 @@ module Api
         child = PackageType.find_by(id: attrs[:subpackage_type_id])
         return render_error("There is no goods type #{attrs[:subpackage_type_id]}") unless child
 
-        sub = @package_type.subpackage_types.new(child_package_type: child,
-                                                 is_default: boolean_param(attrs[:is_default]))
-        return render_error(already_allowed(child)) unless sub.valid?
-
-        SubpackageType.transaction do
+        # A type that holds itself holds itself as its default content (what after_create makes), so a
+        # self row added here (legacy types such as FWT have none) is always a default one.
+        is_default = child.id == @package_type.id || boolean_param(attrs[:is_default])
+        sub = nil
+        refused = SubpackageType.transaction do
+          # The lock serialises containment writes per parent: there is no unique index on
+          # (package_type_id, subpackage_type_id), so two concurrent adds could otherwise both pass valid?.
+          @package_type.lock!
+          sub = @package_type.subpackage_types.new(child_package_type: child, is_default: is_default)
+          next already_allowed(child) unless sub.valid?
           sub.save!
           rekey_cached_lists(@package_type.id)
+          nil
         end
+        return render_error(refused) if refused
         render json: sub, serializer: Api::V1::SubpackageTypeSerializer, root: "subpackage_type", status: 201
-      rescue ActiveRecord::RecordNotUnique
-        render_error(already_allowed(child))
       end
 
       api :PATCH, "/v1/package_types/:id/subpackage_types/:child_id", "Mark an allowed child type as default content or not"
       description <<-DOC
-        Also accepts PUT. 200 with the row. 404 when the child is not allowed in this type. The type's
-        own self row (child_id = id) is its default content and cannot be switched off (422).
+        Also accepts PUT. 200 with the row. 404 when the child is not allowed in this type. 422 when
+        switching off the type's own self row (child_id = id), or the parent's LAST default row: the stock
+        app makes new stock of a type as its first default child, and admin review adds a package per
+        default child, so a type is never left with no default.
       DOC
       param :id, String, required: true, desc: "Parent package type id"
       param :child_id, String, required: true, desc: "Child package type id"
@@ -153,32 +160,37 @@ module Api
       def set_subpackage_default
         sub = find_subpackage
         is_default = boolean_param(params[:is_default])
-        if self_row?(sub) && !is_default
-          return render_error("A goods type always holds itself as its default content; that can't be switched off")
-        end
-
-        SubpackageType.transaction do
+        refused = SubpackageType.transaction do
+          @package_type.lock!
+          sub.reload
+          next "A goods type always holds itself as its default content; that can't be switched off" if self_row?(sub) && !is_default
+          next last_default(sub, "switched off") if !is_default && last_default?(sub)
           sub.update!(is_default: is_default)
           rekey_cached_lists(@package_type.id)
+          nil
         end
+        return render_error(refused) if refused
         render json: sub, serializer: Api::V1::SubpackageTypeSerializer, root: "subpackage_type"
       end
 
       api :DELETE, "/v1/package_types/:id/subpackage_types/:child_id", "Stop allowing a child type inside this one"
       description <<-DOC
-        200 {} once the row is gone. 404 when the child is not allowed in this type. The type's own
-        self row (child_id = id) cannot be removed (422).
+        200 {} once the row is gone. 404 when the child is not allowed in this type. 422 for the type's
+        own self row (child_id = id), and for the parent's LAST default row (see the PATCH).
       DOC
       param :id, String, required: true, desc: "Parent package type id"
       param :child_id, String, required: true, desc: "Child package type id"
       def remove_subpackage_type
         sub = find_subpackage
-        return render_error("A goods type always holds itself as its default content; that can't be removed") if self_row?(sub)
-
-        SubpackageType.transaction do
+        refused = SubpackageType.transaction do
+          @package_type.lock!
+          next "A goods type always holds itself as its default content; that can't be removed" if self_row?(sub)
+          next last_default(sub, "removed") if last_default?(sub.reload)
           sub.destroy!
           rekey_cached_lists(@package_type.id)
+          nil
         end
+        return render_error(refused) if refused
         render json: {}
       end
 
@@ -203,6 +215,15 @@ module Api
         sub.subpackage_type_id == @package_type.id
       end
 
+      def last_default?(sub)
+        sub.is_default && !@package_type.subpackage_types.where(is_default: true).where.not(id: sub.id).exists?
+      end
+
+      def last_default(sub, verb)
+        "#{sub.child_package_type.try(:code)} is the only default content of #{@package_type.code}, so it can't be #{verb}: " \
+          "make another type default first"
+      end
+
       def already_allowed(child)
         "#{child.code} is already allowed inside #{@package_type.code}"
       end
@@ -223,9 +244,18 @@ module Api
         end
 
         id = @package_type.id
+        # A parent whose ONLY default content is this type would be left with none (see set_subpackage_default).
+        sole = SubpackageType.where(subpackage_type_id: id, is_default: true).where.not(package_type_id: id)
+                             .where.not(package_type_id: SubpackageType.where(is_default: true).where.not(subpackage_type_id: id).select(:package_type_id))
+                             .includes(:package_type).map { |s| s.package_type.code }
+        if sole.any?
+          return render_error("#{@package_type.code} is the only default content of #{sole.sort.join(', ')}; make another type default there first")
+        end
+
         parent_ids = SubpackageType.where(subpackage_type_id: id).where.not(package_type_id: id).pluck(:package_type_id)
         PackageType.transaction do
-          SubpackageType.where(package_type_id: id).or(SubpackageType.where(subpackage_type_id: id)).delete_all
+          # destroy_all: each row's paper_trail version records what went.
+          SubpackageType.where(package_type_id: id).or(SubpackageType.where(subpackage_type_id: id)).destroy_all
           # destroy_all (not delete_all): the join rows' touch: true re-keys the cached GET /package_categories.
           @package_type.package_categories_package_types.destroy_all
           @package_type.destroy!

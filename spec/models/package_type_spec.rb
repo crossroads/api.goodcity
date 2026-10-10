@@ -39,6 +39,12 @@ RSpec.describe PackageType, type: :model do
       expect(counts[:packages]).to be >= 1
       expect(counts[:package_sets]).to be >= 1
     end
+
+    it "counts soft-deleted items and packages (their foreign keys still hold)" do
+      Item.where(id: create(:item, package_type: pt).id).update_all(deleted_at: Time.current)
+      Package.where(id: create(:package, package_type: pt).id).update_all(deleted_at: Time.current)
+      expect(pt.usage_counts).to include(items: 1, packages: be >= 1)
+    end
   end
 
   describe 'scope' do
