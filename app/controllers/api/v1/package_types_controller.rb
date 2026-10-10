@@ -33,7 +33,7 @@ module Api
           param :description_en, String
           param :description_zh_tw, String
           param :subform, String, desc: "'', medical, electrical, computer_accessory or computer"
-          param :location_id, Integer
+          param :location_id, Integer, allow_nil: true
           param :department, String
           param :allow_package, [true, false]
           param :allow_pieces, [true, false]
@@ -42,11 +42,11 @@ module Api
           param :allow_requests, [true, false]
           param :visible_in_selects, [true, false]
           param :allow_expiry_date, [true, false]
-          param :default_value_hk_dollar, :number
-          param :customs_value_usd, :number
-          param :length, Integer
-          param :width, Integer
-          param :height, Integer
+          param :default_value_hk_dollar, :decimal, allow_nil: true
+          param :customs_value_usd, :decimal, allow_nil: true
+          param :length, Integer, allow_nil: true
+          param :width, Integer, allow_nil: true
+          param :height, Integer, allow_nil: true
           param :package_category_ids, Array, of: Integer, desc: "Declarative set of category ids"
         end
       end
