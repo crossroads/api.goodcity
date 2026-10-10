@@ -110,4 +110,28 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
       expect(row).not_to have_key("printer_name")
     end
   end
+
+  # API-39: the plain GET /locations is the CacheableJson body. Deleting a location that was not the most
+  # recently updated left MAX(updated_at) unchanged, so the deleted row stayed in that cached list.
+  describe "DELETE locations/:id then the cached GET locations" do
+    before { Rails.cache.clear }
+
+    it "omits the deleted location from the plain (cached) index" do
+      first = create(:location, building: "DEL-A", area: "1")
+      first.update_column(:updated_at, 1.day.ago)
+      second = create(:location, building: "DEL-B", area: "1")
+
+      get :index
+      expect(parsed_body["locations"].map { |l| l["id"] }).to include(first.id, second.id)
+
+      delete :destroy, params: { id: first.id }
+      expect(response.status).to eq(200)
+      expect(Location.exists?(first.id)).to eq(false)
+
+      get :index
+      ids = JSON.parse(response.body)["locations"].map { |l| l["id"] }
+      expect(ids).to include(second.id)
+      expect(ids).not_to include(first.id)
+    end
+  end
 end
