@@ -78,12 +78,16 @@ module Api
 
       api :DELETE, "/v1/package_types/:id", "Retire a package type (flags switched off, record kept)"
       def destroy
-        @package_type.update_columns(
+        # Retire through the normal save path so callbacks run: paper_trail writes a version and
+        # updated_at moves (the cached GET /package_types re-keys); the visible-only ?stock=true list
+        # re-keys on its row count (CacheableJson), so the legacy apps stop offering the type.
+        # validate: false so unusual legacy data (blank name, old-style code) never blocks a retire;
+        # the admin-editor rules are context-only (on: :admin) and a plain save skips them anyway.
+        @package_type.assign_attributes(
           visible_in_selects: false, allow_package: false, allow_box: false,
-          allow_pallet: false, allow_pieces: false, allow_requests: false,
-          updated_at: Time.current
+          allow_pallet: false, allow_pieces: false, allow_requests: false
         )
-        Rails.cache.delete(PackageType.cache_key)
+        @package_type.save(validate: false)
         render json: @package_type.reload, serializer: admin_serializer, root: "package_type"
       end
 

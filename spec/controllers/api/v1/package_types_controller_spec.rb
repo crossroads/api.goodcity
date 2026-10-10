@@ -183,4 +183,60 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       expect(pt.reload.allow_package).to eq(true)
     end
   end
+
+  # Retire must reach the cached legacy lists: GET /package_types (every type, flags in the body) and
+  # GET /package_types?stock=true (visible types only), so the legacy apps stop offering a retired type.
+  describe "DELETE package_types/:id and the cached legacy lists" do
+    let(:supervisor) { create(:user, :with_token, :with_can_manage_settings_permission, role_name: "Supervisor") }
+    let!(:retiring) { create(:base_package_type, code: "AFO", allow_package: true, visible_in_selects: true) }
+    let!(:staying) { create(:base_package_type, code: "BBC", allow_package: true, visible_in_selects: true) }
+
+    before do
+      Rails.cache.clear
+      # An existing type, not the most recently updated row. (update_all, not update_column: the factory's
+      # find-or-create leaves id_in_database nil, so update_column/update_columns on it update nothing.)
+      PackageType.where(id: retiring.id).update_all(updated_at: 1.day.ago)
+      generate_and_set_token(supervisor) # set before the first request: a controller spec keeps that header
+    end
+
+    def body_rows(root)
+      JSON.parse(response.body)[root]
+    end
+
+    it "drops a retired existing type from a warmed ?stock=true and flags it off in the warmed plain index" do
+      get :index, params: { stock: true }
+      expect(body_rows("codes").map { |r| r["code"] }).to include("AFO", "BBC")
+      get :index
+      expect(body_rows("package_types").find { |r| r["code"] == "AFO" }["allow_package"]).to eq(true)
+
+      delete :destroy, params: { id: retiring.id }
+      expect(response.status).to eq(200)
+
+      get :index, params: { stock: true }
+      codes = body_rows("codes").map { |r| r["code"] }
+      expect(codes).to include("BBC")
+      expect(codes).not_to include("AFO")
+
+      get :index
+      row = body_rows("package_types").find { |r| r["code"] == "AFO" }
+      expect(row["allow_package"]).to eq(false)
+      expect(row["visible_in_selects"]).to eq(false)
+    end
+
+    it "writes a paper_trail version for the retire", versioning: true do
+      versions = -> { Version.where(item_type: "PackageType", item_id: retiring.id) }
+      expect { delete :destroy, params: { id: retiring.id } }.to change { versions.call.count }.by(1)
+      version = versions.call.last
+      expect(version.event).to eq("update")
+      expect(version.whodunnit).to eq(supervisor.id.to_s)
+      expect(version.object_changes.keys).to include("allow_package", "visible_in_selects")
+    end
+
+    it "retires a legacy row the admin-editor validations would reject" do
+      PackageType.where(id: retiring.id).update_all(name_en: nil, code: "afo")
+      delete :destroy, params: { id: retiring.id }
+      expect(response.status).to eq(200)
+      expect(retiring.reload.allow_package).to eq(false)
+    end
+  end
 end
