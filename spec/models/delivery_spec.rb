@@ -29,11 +29,21 @@ RSpec.describe Delivery, type: :model do
         expect(text).to include(words)
         expect(text).not_to match(/translation missing/i)
         expect(text).to include(delivery.offer.created_by.full_name)
-        # zh-tw: the sentence exists. (Its date still says "translation missing" for every type, because
-        # `day.ordinalize` has no zh-tw rule — a separate, older fault, logged as its own issue.)
-        key = "delivery.#{delivery.delivery_type.downcase.tr(' ', '_')}_message"
-        expect(I18n.exists?(key, :"zh-tw")).to eq(true)
+        # zh-tw: a real sentence too, date included (API-63: `day.ordinalize` had no zh-tw rule).
+        zh = I18n.with_locale(:"zh-tw") { delivery.send(:delivery_notify_message) }
+        expect(zh).not_to match(/translation missing/i)
+        expect(zh).to include(delivery.offer.created_by.full_name)
+        expect(zh).to include(delivery.schedule.scheduled_at.strftime("%b %Y"))
       end
+    end
+  end
+
+  describe "ordinals" do
+    it "are plain numbers in zh-tw and unchanged in en (API-63)" do
+      expect(I18n.with_locale(:"zh-tw") { 11.ordinalize }).to eq("11")
+      expect(I18n.with_locale(:"zh-tw") { 1.ordinalize }).to eq("1")
+      expect(I18n.with_locale(:en) { 11.ordinalize }).to eq("11th")
+      expect(I18n.with_locale(:en) { 22.ordinalize }).to eq("22nd")
     end
   end
 
