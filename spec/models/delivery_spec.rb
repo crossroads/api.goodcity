@@ -19,6 +19,24 @@ RSpec.describe Delivery, type: :model do
     end
   end
 
+  describe "the reviewers' push text" do
+    # API-61: an Alternate ("Crossroads collects") booking looked up delivery.alternate_message, which didn't exist.
+    { crossroads_delivery: "Crossroads will collect", drop_off_delivery: "will deliver the items",
+      self_arranged_van_delivery: "their own van will arrive" }.each do |factory, words|
+      it "is a real sentence for #{factory} in English and Chinese" do
+        delivery = create factory
+        text = I18n.with_locale(:en) { delivery.send(:delivery_notify_message) }
+        expect(text).to include(words)
+        expect(text).not_to match(/translation missing/i)
+        expect(text).to include(delivery.offer.created_by.full_name)
+        # zh-tw: the sentence exists. (Its date still says "translation missing" for every type, because
+        # `day.ordinalize` has no zh-tw rule — a separate, older fault, logged as its own issue.)
+        key = "delivery.#{delivery.delivery_type.downcase.tr(' ', '_')}_message"
+        expect(I18n.exists?(key, :"zh-tw")).to eq(true)
+      end
+    end
+  end
+
   describe "push_back_offer_state" do
     it "revert offer state on delivery deletion" do
       delivery = create :drop_off_delivery
