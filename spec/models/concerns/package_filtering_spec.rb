@@ -205,6 +205,76 @@ describe Package do
     end
   end
 
+  context 'filters based on location_id (the move-stock helper, CR-291)' do
+    # Two locations with the same building and area: the name filter can only ever reach the first (API-72).
+    let!(:first_twin) { Location.create!(building: 'ZZ', area: 'Twin') }
+    let!(:second_twin) { Location.create!(building: 'ZZ', area: 'Twin') }
+    let(:elsewhere) { create :location, area: 'area3' }
+    let!(:at_first) { create(:package, :with_inventory_number, state: 'received', received_quantity: 2) }
+    let!(:at_second) { create(:package, :with_inventory_number, state: 'received', received_quantity: 3) }
+    let!(:at_both) { create(:package, :with_inventory_number, state: 'received', received_quantity: 4) }
+    let!(:not_here) { create(:package, :with_inventory_number, state: 'received', received_quantity: 1) }
+
+    before(:each) do
+      initialize_inventory(at_first, location: first_twin)
+      initialize_inventory(at_second, at_both, location: second_twin)
+      initialize_inventory(not_here, location: elsewhere)
+      # at_both also has 1 at first_twin: a package at two places is listed for each of them.
+      Package::Operations.move(1, at_both, from: second_twin.id, to: first_twin.id)
+    end
+
+    it 'lists exactly the packages with a packages_locations row at that location id' do
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s)).to match_array([at_second, at_both])
+      expect(Package.apply_filter('location_id' => first_twin.id)).to match_array([at_first, at_both])
+    end
+
+    it 'reaches the second of two same-named locations, which the name filter cannot (API-72)' do
+      expect(Package.apply_filter('location' => 'ZZ-Twin')).to match_array([at_first, at_both])
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s)).to match_array([at_second, at_both])
+    end
+
+    it 'lists a package once even when it is at that place and another' do
+      expect(Package.apply_filter('location_id' => first_twin.id.to_s).to_a.count(at_both)).to eq(1)
+    end
+
+    it 'drops a package once its row there is gone (moved away)' do
+      Package::Operations.move(3, at_second, from: second_twin.id, to: elsewhere.id)
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s)).to match_array([at_both])
+    end
+
+    it 'still leaves out packages with no inventory number, as the base filter always has' do
+      no_number = create(:package, state: 'received', received_quantity: 1, inventory_number: nil)
+      initialize_inventory(no_number, location: second_twin)
+      expect(PackagesLocation.where(location_id: second_twin.id).pluck(:package_id)).to include(no_number.id)
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s)).not_to include(no_number)
+    end
+
+    it 'is empty for a location id with no stock or no such location' do
+      empty = create :location, area: 'area4'
+      expect(Package.apply_filter('location_id' => empty.id.to_s)).to be_empty
+      expect(Package.apply_filter('location_id' => (Location.maximum(:id) + 1000).to_s)).to be_empty
+    end
+
+    it 'combines with the other filters' do
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s, 'state' => 'in_stock')).to match_array([at_second, at_both])
+      expect(Package.apply_filter('location_id' => second_twin.id.to_s, 'location' => 'ZZ-Twin')).to match_array([at_both])
+    end
+
+    it 'leaves the SQL of every legacy call unchanged when location_id is absent or nil' do
+      legacy = ->(opts) {
+        # The pre-CR-291 apply_filter for these options, verbatim.
+        q = Package.where.not(inventory_number: nil)
+        q = q.where_states(%w[in_stock]) if opts['state'] == 'in_stock'
+        q = q.filter_by_location(opts['location']) if opts['location'].present?
+        q.distinct.to_sql
+      }
+      [{}, { 'location' => 'ZZ-Twin' }, { 'state' => 'in_stock' }, { 'state' => 'in_stock', 'location' => 'ZZ-Twin' }].each do |opts|
+        expect(Package.apply_filter(opts).to_sql).to eq(legacy.call(opts))
+        expect(Package.apply_filter(opts.merge('location_id' => nil)).to_sql).to eq(legacy.call(opts))
+      end
+    end
+  end
+
   context "search" do
     let(:item_id) { nil }
     let(:state) { [] }
