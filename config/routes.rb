@@ -47,7 +47,14 @@ Rails.application.routes.draw do
 
       resources :districts, only: [:index, :show]
       resources :identity_types, only: [:index, :show]
-      resources :package_types, only: [:index]
+      resources :package_types, only: [:index, :show, :create, :update, :destroy] do
+        # The goods-types editor's containment rows (subpackage_types where this type is the parent).
+        member do
+          post "subpackage_types", action: :add_subpackage_type, as: :add_subpackage_type
+          match "subpackage_types/:child_id", action: :set_subpackage_default, via: [:put, :patch], as: :set_subpackage_default
+          delete "subpackage_types/:child_id", action: :remove_subpackage_type, as: :remove_subpackage_type
+        end
+      end
       resources :permissions, only: [:index, :show]
       resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]
