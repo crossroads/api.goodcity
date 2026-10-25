@@ -25,9 +25,15 @@ class Organisation < ApplicationRecord
   #   has_orders: any order at all (what `orders_count` counts)
   #   has_members: a pending or approved organisations_user (OrganisationsUser::ACTIVE_STATUS)
   #   has_registration: a registration that isn't NULL or blank (spaces, tabs and newlines count as blank)
-  # Correlated EXISTS subqueries, so a row is never duplicated and the fuzzy search's SELECT DISTINCT is untouched.
+  #   name: the English or Chinese name contains it, ignoring case (ILIKE; `%`, `_` and `\` in it are matched as
+  #         themselves). A sequential scan of ~17k short rows (a few ms); no trigram index is needed at this size.
+  # Correlated EXISTS subqueries, so a row is never duplicated.
   def self.filtered(filters = {})
     rel = all
+    if filters[:name].present?
+      # sanitize_sql_like escapes \, % and _ with a backslash, PostgreSQL's default LIKE escape; the pattern is quoted.
+      rel = rel.where('organisations.name_en ILIKE :pattern OR organisations.name_zh_tw ILIKE :pattern', pattern: "%#{sanitize_sql_like(filters[:name])}%")
+    end
     { organisation_type_id: :organisation_type_id, country_id: :country_id }.each do |key, column|
       next unless filters.key?(key)
 

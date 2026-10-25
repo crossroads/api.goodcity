@@ -154,7 +154,7 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
     end
   end
 
-  describe 'with a term: the filters narrow its matches' do
+  describe 'with a term (searchText) and a filter: the filtered listing, names that contain the term' do
     it 'type, or none' do
       search(searchText: 'Zebra Harbour', filter_organisation_type_id: school.id)
       expect(ids).to eq([schooled.id])
@@ -200,10 +200,104 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
       expect(body['meta']['total_count']).to eq(2)
     end
 
-    it 'keeps the best-match order' do
+    it 'is never the fuzzy search: names that contain the term, by English name' do
+      # the fuzzy search ignores word order, so "Harbour Zebra" finds all six without a filter (legacy, unchanged)...
+      search(searchText: 'Harbour Zebra')
+      expect(ids).to match_array([plain, schooled, untyped, abroad, stateless, busy].map(&:id))
+      # ...but with a filter it is a "contains" match, which no name passes
+      search(searchText: 'Harbour Zebra', filter_has_registration: 'true')
+      expect(ids).to eq([])
       search(searchText: 'Zebra Harbour Zeta', filter_has_registration: 'true')
-      expect(ids).to match_array([busy, plain, abroad].map(&:id))
-      expect(ids.first).to eq(busy.id)
+      expect(ids).to eq([busy.id])
+      search(searchText: 'harbour', filter_has_registration: 'true')
+      expect(ids).to eq([plain, abroad, busy].map(&:id)) # Alpha, Delta, Zeta
+    end
+
+    it 'searchText and filter_name together are refused, not guessed between' do
+      get '/api/v1/organisations', params: { searchText: 'Zebra', filter_name: 'Harbour', filter_has_orders: 'true' }, headers: headers
+      expect(response.status).to eq(422)
+      expect(body['errors'][0]['message']).to include('filter_name')
+    end
+  end
+
+  describe 'filter_name: names that contain the text (the filtered listing, no fuzzy search)' do
+    let!(:chinese) { create(:organisation, name_en: 'Lantau Youth Hub', name_zh_tw: '大嶼山青年中心', organisation_type: ngo, country: hong_kong) }
+    let!(:percent) { create(:organisation, name_en: '100% Kids Fund', name_zh_tw: nil, organisation_type: ngo, country: hong_kong) }
+    let!(:underscore) { create(:organisation, name_en: 'Under_Score Club', name_zh_tw: nil, organisation_type: ngo, country: hong_kong) }
+    let!(:backslash) { create(:organisation, name_en: 'Back\\Slash Society', name_zh_tw: nil, organisation_type: ngo, country: hong_kong) }
+
+    it 'matches anywhere in the English name, ignoring case and the spaces around it; by name, then id' do
+      search(filter_name: 'ARBOUR')
+      expect(ids).to eq([plain, schooled, abroad, stateless, untyped, busy].map(&:id)) # Alpha Beta Delta Epsilon Gamma Zeta
+      expect(body['meta']).to include('total_count' => 6, 'search' => nil)
+      search(filter_name: '  rbour gam ')
+      expect(ids).to eq([untyped.id])
+      search(filter_name: 'ebra Harbour Z') # the middle of a name
+      expect(ids).to eq([busy.id])
+    end
+
+    it 'a short prefix finds a long name (what the fuzzy search cannot)' do
+      long = create(:organisation, name_en: "Hong Kong Young Women's Christian Association Jockey Club Shatin Integrated Social Service Centre", organisation_type: ngo, country: hong_kong)
+      create(:order, organisation: long)
+      search(searchText: 'Hon')
+      expect(ids).not_to include(long.id) # legacy fuzzy search, whole-name similarity: unchanged
+      search(filter_name: 'Hon', filter_has_orders: 'true')
+      expect(ids).to eq([long.id])
+    end
+
+    it 'matches the Chinese name' do
+      search(filter_name: '青年')
+      expect(ids).to eq([chinese.id])
+      search(filter_name: '大嶼山青年中心')
+      expect(ids).to eq([chinese.id])
+    end
+
+    it '%, _ and \\ are matched as themselves, never as wildcards' do
+      search(filter_name: '%')
+      expect(ids).to eq([percent.id])
+      search(filter_name: '_')
+      expect(ids).to eq([underscore.id])
+      search(filter_name: '\\')
+      expect(ids).to eq([backslash.id])
+      search(filter_name: 'Zebra_Harbour')
+      expect(ids).to eq([]) # as a wildcard, _ would match the space in all six "Zebra Harbour …"
+      search(filter_name: 'Zebra%Zeta')
+      expect(ids).to eq([])
+      search(filter_name: "'; DROP TABLE organisations; --")
+      expect(ids).to eq([])
+      expect(Organisation.count).to be > 0
+    end
+
+    it 'combines with every other filter' do
+      search(filter_name: 'zebra', filter_has_orders: 'true')
+      expect(ids).to eq([busy.id])
+      search(filter_name: 'zebra', filter_has_members: 'true', filter_has_registration: 'true')
+      expect(ids).to eq([plain.id, busy.id])
+      search(filter_name: 'zebra', filter_organisation_type_id: 'none')
+      expect(ids).to eq([untyped.id])
+      search(filter_name: 'zebra', filter_country_id: other_country.id)
+      expect(ids).to eq([abroad.id])
+      search(filter_name: 'zebra', filter_organisation_type_id: ngo.id, filter_country_id: hong_kong.id, filter_has_orders: 'true', filter_has_members: 'true', filter_has_registration: 'true')
+      expect(ids).to eq([busy.id])
+      search(filter_name: 'quokka', filter_has_orders: 'true')
+      expect(ids).to eq([elsewhere.id])
+    end
+
+    it 'equal names are ordered by id; pages are capped at 100' do
+      105.times { |i| create(:organisation, name_en: "Ibis Court #{format('%03d', i)}", registration: nil) }
+      search(filter_name: 'ibis court', per_page: 1000)
+      expect(ids.size).to eq(100)
+      expect(body['meta']).to include('total_pages' => 2, 'total_count' => 105)
+      expect(body['organisations'].map { |o| o['name_en'] }).to eq((0...100).map { |i| "Ibis Court #{format('%03d', i)}" })
+      search(filter_name: 'ibis court', per_page: 1000, page: 2)
+      expect(ids.size).to eq(5)
+    end
+
+    it 'never reaches ids[] or the names endpoint' do
+      search(ids: [busy.id, plain.id], filter_name: 'Alpha')
+      expect(ids).to match_array([busy.id, plain.id])
+      get '/api/v1/organisations/names', params: { searchText: 'Zebra Harbour', filter_name: 'Alpha' }, headers: headers
+      expect(JSON.parse(response.body)['organisations'].size).to eq(6)
     end
   end
 
@@ -255,7 +349,8 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
   describe 'bad values are refused, never ignored (ignoring one would list everything)' do
     [
       { filter_has_orders: 'yes' }, { filter_has_members: '1' }, { filter_has_registration: '' },
-      { filter_organisation_type_id: 'abc' }, { filter_country_id: '' }, { filter_country_id: '12x' }
+      { filter_organisation_type_id: 'abc' }, { filter_country_id: '' }, { filter_country_id: '12x' },
+      { filter_name: '' }, { filter_name: "  \t " }
     ].each do |bad|
       it "422 for #{bad.inspect}" do
         get '/api/v1/organisations', params: bad, headers: headers

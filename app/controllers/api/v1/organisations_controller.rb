@@ -54,10 +54,15 @@ module Api::V1
 
     api :GET, '/v1/organisations', "List all organisations"
     description <<~DESC
-      Either `ids[]`, or a fuzzy name search (`searchText`), paged with `page` / `per_page`. Optional filters narrow the
-      search's matches; when at least one filter is sent, an empty `searchText` lists every organisation that passes
-      them, ordered by English name, at most 100 a page (without a filter an empty term still returns nothing, as
-      before). `ids[]` ignores the filters. `meta.total_count` is the number of matching organisations across all pages.
+      Three kinds of request, paged with `page` / `per_page`:
+      - `ids[]`: those organisations (the filters are ignored);
+      - no `filter_…` param: the fuzzy name search (`searchText`, best matches first), exactly as before; an empty
+        term returns nothing;
+      - at least one `filter_…` param: the filtered listing. Every organisation that passes the filters, ordered by
+        English name (then id), at most 100 a page. No fuzzy search: `filter_name` keeps the organisations whose
+        English or Chinese name contains it (case-insensitive). A `searchText` sent with the filters means the same
+        as `filter_name`; sending both is a 422.
+      `meta.total_count` is the number of matching organisations across all pages.
     DESC
     # Every filter is named `filter_…`: no existing client (stock, admin, donor, browse, shared) sends a param of that
     # name, so the new behaviour can only be switched on by a client that asks for it.
@@ -66,6 +71,7 @@ module Api::V1
     param :filter_has_orders, %w[true false], desc: '`true`: at least one order (any state); `false`: none'
     param :filter_has_members, %w[true false], desc: '`true`: at least one pending or approved member; `false`: none'
     param :filter_has_registration, %w[true false], desc: '`true`: a registration that is not blank; `false`: blank or missing'
+    param :filter_name, /\S/, desc: 'Only organisations whose English or Chinese name contains this text, ignoring case and the spaces around it (`%`, `_` and `\\` are plain characters). Not blank.'
     def index
       find_record_and_render_json(organisation_serializer, filters: organisation_filters)
     end
@@ -141,6 +147,7 @@ module Api::V1
         value = params["filter_#{key}"]
         filters[key.to_sym] = value == 'true' unless value.nil?
       end
+      filters[:name] = params['filter_name'].strip unless params['filter_name'].nil?
       filters
     end
 
@@ -149,16 +156,23 @@ module Api::V1
         records = @organisations.where(id: params['ids'])
                                 .page(params["page"])
                                 .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
-      elsif filters.any? && params["searchText"].blank?
-        # browse: no term, at least one filter — every organisation that passes, by English name. Unlike a search,
-        # browse can reach the whole table, so its page size is capped at BROWSE_MAX_PER_PAGE (each row costs its
-        # orders and its members' sideloads); the legacy paths keep reading per_page as they always have.
+      elsif filters.any?
+        # The filtered listing: at least one filter_… param (no legacy client sends one). Never the fuzzy search: a name
+        # is a "contains" match (filter_name; a searchText sent with the filters means the same, so a client that sends
+        # its term as searchText still gets names that contain it, never fuzzy matches). Every organisation that passes,
+        # by English name, then id. It can reach the whole table, so its page size is capped at BROWSE_MAX_PER_PAGE
+        # (each row costs its orders and its members' sideloads); the legacy paths keep reading per_page as before.
+        if params['searchText'].present?
+          return render_error("Send the name as filter_name, not searchText, with the filter_ params") if filters.key?(:name)
+
+          filters[:name] = params['searchText'].strip
+        end
         records = @organisations.with_order.filtered(filters)
                                 .order(Arel.sql('LOWER(organisations.name_en) ASC, organisations.id ASC'))
                                 .page(params["page"])
                                 .per([params["per_page"].to_i.nonzero? || DEFAULT_SEARCH_COUNT, BROWSE_MAX_PER_PAGE].min)
       else
-        records = @organisations.with_order.search(params["searchText"]).filtered(filters)
+        records = @organisations.with_order.search(params["searchText"])
                                 .page(params["page"])
                                 .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
