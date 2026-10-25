@@ -65,8 +65,8 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
   # The pre-change action, verbatim (find_record_and_render_json before this branch), as the JSON string Rails renders,
   # serialized as the signed-in supervisor (UserSerializer shows staff the users' addresses and mobiles). Params are
   # strings, as a request carries them. `total_count:` adds the one new key where this branch puts it.
-  def legacy_json(params, serializer: Api::V1::OrganisationSerializer, total_count: nil)
-    User.current_user = supervisor
+  def legacy_json(params, serializer: Api::V1::OrganisationSerializer, total_count: nil, as: supervisor)
+    User.current_user = as
     records = if params['ids'].present?
                 Organisation.where(id: params['ids']).page(params['page']).per(params['per_page'] || DEFAULT_SEARCH_COUNT)
               else
@@ -102,6 +102,18 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
 
     it 'browse.goodcity organisation picker: /organisations/names with url, searchText, per_page, page' do
       expect_legacy('/api/v1/organisations/names', { url: 'organisations/names', searchText: 'Zebra Harbour', per_page: 25, page: 1 }, serializer: Api::V1::OrganisationNamesSerializer)
+    end
+
+    it 'browse.goodcity as its real caller: a charity user, the browse app header, /organisations/names' do
+      charity = create(:user, :charity)
+      jwt = Rails.application.secrets.jwt
+      payload = { iss: jwt[:issuer], exp: 14.days.from_now.to_i, user_id: charity.id, iat: Time.current.to_i }
+      params = { url: 'organisations/names', searchText: 'Zebra Harbour', per_page: 25, page: 1 }
+      get '/api/v1/organisations/names', params: params, headers: { 'Authorization' => "Bearer #{JWT.encode(payload, jwt[:secret_key], jwt[:hmac_sha_algo])}", 'X-GOODCITY-APP-NAME' => 'browse.goodcity' }
+      expect(response.status).to eq(200)
+      body = JSON.parse(response.body)
+      expect(body['meta'].delete('total_count')).to eq(6)
+      expect(body).to eq(JSON.parse(legacy_json(params.transform_keys(&:to_s).transform_values(&:to_s), serializer: Api::V1::OrganisationNamesSerializer, as: charity)))
     end
 
     it 'ids[] (Ember Data findMany shape)' do
