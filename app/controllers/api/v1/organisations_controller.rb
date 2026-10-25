@@ -59,11 +59,13 @@ module Api::V1
       them, ordered by English name, at most 100 a page (without a filter an empty term still returns nothing, as
       before). `ids[]` ignores the filters. `meta.total_count` is the number of matching organisations across all pages.
     DESC
-    param :organisation_type_id, /\A(\d+|none)\z/, desc: 'Only this organisation type id, or `none` for organisations with no type'
-    param :country_id, /\A(\d+|none)\z/, desc: 'Only this country id, or `none` for organisations with no country'
-    param :has_orders, %w[true false], desc: '`true`: at least one order (any state); `false`: none'
-    param :has_members, %w[true false], desc: '`true`: at least one pending or approved member; `false`: none'
-    param :has_registration, %w[true false], desc: '`true`: a registration that is not blank; `false`: blank or missing'
+    # Every filter is named `filter_…`: no existing client (stock, admin, donor, browse, shared) sends a param of that
+    # name, so the new behaviour can only be switched on by a client that asks for it.
+    param :filter_organisation_type_id, /\A(\d+|none)\z/, desc: 'Only this organisation type id, or `none` for organisations with no type'
+    param :filter_country_id, /\A(\d+|none)\z/, desc: 'Only this country id, or `none` for organisations with no country'
+    param :filter_has_orders, %w[true false], desc: '`true`: at least one order (any state); `false`: none'
+    param :filter_has_members, %w[true false], desc: '`true`: at least one pending or approved member; `false`: none'
+    param :filter_has_registration, %w[true false], desc: '`true`: a registration that is not blank; `false`: blank or missing'
     def index
       find_record_and_render_json(organisation_serializer, filters: organisation_filters)
     end
@@ -125,17 +127,19 @@ module Api::V1
       ).as_json
     end
 
-    # The index's optional filters, read into Organisation.filtered's keys. Only the params sent are present; apipie has
+    # The index's optional filters (`filter_<key>`), read into Organisation.filtered's keys. Only the params sent are present; apipie has
     # already refused a value outside its pattern (422), so a typo can never be ignored into "every organisation".
     def organisation_filters
       filters = {}
       %w[organisation_type_id country_id].each do |key|
-        next if params[key].nil?
+        value = params["filter_#{key}"]
+        next if value.nil?
 
-        filters[key.to_sym] = params[key] == 'none' ? :none : params[key].to_i
+        filters[key.to_sym] = value == 'none' ? :none : value.to_i
       end
       %w[has_orders has_members has_registration].each do |key|
-        filters[key.to_sym] = params[key] == 'true' unless params[key].nil?
+        value = params["filter_#{key}"]
+        filters[key.to_sym] = value == 'true' unless value.nil?
       end
       filters
     end
