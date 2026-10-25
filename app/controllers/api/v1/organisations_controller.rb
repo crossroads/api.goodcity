@@ -2,6 +2,8 @@
 
 module Api::V1
   class OrganisationsController < Api::V1::ApiController
+    BROWSE_MAX_PER_PAGE = 100
+
     load_and_authorize_resource :organisation, parent: false
 
     resource_description do
@@ -54,8 +56,8 @@ module Api::V1
     description <<~DESC
       Either `ids[]`, or a fuzzy name search (`searchText`), paged with `page` / `per_page`. Optional filters narrow the
       search's matches; when at least one filter is sent, an empty `searchText` lists every organisation that passes
-      them, ordered by English name (without a filter an empty term still returns nothing, as before). `ids[]` ignores
-      the filters. `meta.total_count` is the number of matching organisations across all pages.
+      them, ordered by English name, at most 100 a page (without a filter an empty term still returns nothing, as
+      before). `ids[]` ignores the filters. `meta.total_count` is the number of matching organisations across all pages.
     DESC
     param :organisation_type_id, /\A(\d+|none)\z/, desc: 'Only this organisation type id, or `none` for organisations with no type'
     param :country_id, /\A(\d+|none)\z/, desc: 'Only this country id, or `none` for organisations with no country'
@@ -144,11 +146,13 @@ module Api::V1
                                 .page(params["page"])
                                 .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       elsif filters.any? && params["searchText"].blank?
-        # browse: no term, at least one filter — every organisation that passes, by English name
+        # browse: no term, at least one filter — every organisation that passes, by English name. Unlike a search,
+        # browse can reach the whole table, so its page size is capped at BROWSE_MAX_PER_PAGE (each row costs its
+        # orders and its members' sideloads); the legacy paths keep reading per_page as they always have.
         records = @organisations.with_order.filtered(filters)
                                 .order(Arel.sql('LOWER(organisations.name_en) ASC, organisations.id ASC'))
                                 .page(params["page"])
-                                .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+                                .per([params["per_page"].to_i.nonzero? || DEFAULT_SEARCH_COUNT, BROWSE_MAX_PER_PAGE].min)
       else
         records = @organisations.with_order.search(params["searchText"]).filtered(filters)
                                 .page(params["page"])

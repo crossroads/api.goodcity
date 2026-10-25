@@ -39,7 +39,7 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
 
   # Zebra Harbour 1–6 match the term "Zebra Harbour"; Quokka Lane matches no term used here.
   let!(:plain)    { org('Zebra Harbour Alpha', registration: '91/1001') }
-  let!(:schooled) { org('Zebra Harbour Beta', type: school, registration: '   ') }
+  let!(:schooled) { org('Zebra Harbour Beta', type: school, registration: " \t\n ") }
   let!(:untyped)  { org('Zebra Harbour Gamma', type: nil) }
   let!(:abroad)   { org('Zebra Harbour Delta', country: other_country, registration: 'S-2') }
   let!(:stateless) { org('Zebra Harbour Epsilon', country: nil) }
@@ -137,7 +137,7 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
       expect(ids).to match_array([schooled, untyped, abroad, stateless].map(&:id))
     end
 
-    it 'registration: filled in, or empty (blank counts as empty)' do
+    it 'registration: filled in, or empty (spaces, tabs and newlines count as empty)' do
       search(searchText: 'Zebra Harbour', has_registration: 'true')
       expect(ids).to match_array([plain, abroad, busy].map(&:id))
       search(searchText: 'Zebra Harbour', has_registration: 'false')
@@ -182,6 +182,19 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
       expect(ids).to eq([untyped.id])
       search(has_registration: 'false', country_id: hong_kong.id)
       expect(ids).to eq([schooled.id, untyped.id])
+    end
+
+    it 'pages are at most 100 rows (browse reaches the whole table); a search keeps any per_page, as before' do
+      102.times { |i| create(:organisation, name_en: "Quagga Field #{i}", registration: nil) }
+      search(has_registration: 'false', per_page: 1000)
+      expect(ids.size).to eq(100)
+      expect(body['meta']).to include('total_pages' => 2, 'total_count' => 105)
+      search(has_registration: 'false', per_page: 1000, page: 2)
+      expect(ids.size).to eq(5)
+      search(has_registration: 'false', per_page: 'abc')
+      expect(ids.size).to eq(DEFAULT_SEARCH_COUNT)
+      search(searchText: 'Quagga Field', per_page: 1000)
+      expect(ids.size).to be >= 102 # a search's page is not capped
     end
 
     it 'a filter nothing passes is an empty page, not an error' do

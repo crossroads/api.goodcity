@@ -24,7 +24,7 @@ class Organisation < ApplicationRecord
   #   organisation_type_id / country_id: an id, or :none for "not set" (NULL)
   #   has_orders: any order at all (what `orders_count` counts)
   #   has_members: a pending or approved organisations_user (OrganisationsUser::ACTIVE_STATUS)
-  #   has_registration: a registration that isn't NULL or blank
+  #   has_registration: a registration that isn't NULL or blank (spaces, tabs and newlines count as blank)
   # Correlated EXISTS subqueries, so a row is never duplicated and the fuzzy search's SELECT DISTINCT is untouched.
   def self.filtered(filters = {})
     rel = all
@@ -36,7 +36,7 @@ class Organisation < ApplicationRecord
     {
       has_orders: 'EXISTS (SELECT 1 FROM orders WHERE orders.organisation_id = organisations.id)',
       has_members: "EXISTS (SELECT 1 FROM organisations_users WHERE organisations_users.organisation_id = organisations.id AND LOWER(organisations_users.status) IN (#{OrganisationsUser::ACTIVE_STATUS.map { |s| connection.quote(s) }.join(', ')}))",
-      has_registration: "NULLIF(BTRIM(organisations.registration), '') IS NOT NULL"
+      has_registration: "NULLIF(REGEXP_REPLACE(organisations.registration, '^[[:space:]]+|[[:space:]]+$', '', 'g'), '') IS NOT NULL"
     }.each do |key, condition|
       next unless filters.key?(key)
 
