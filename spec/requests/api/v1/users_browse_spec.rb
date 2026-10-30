@@ -151,9 +151,9 @@ RSpec.describe 'GET /api/v1/users/browse', type: :request do
   # --- every request today's clients send, answered as before (byte for byte: compared parsed, keys and array order) ---
 
   # The pre-change index, verbatim, for the signed-in supervisor (CanCan lets a supervisor list every user).
-  def legacy_json(params)
-    User.current_user = supervisor
-    users = User.accessible_by(Api::V1::Ability.new(supervisor), :index).exclude_system_users
+  def legacy_json(params, as: supervisor)
+    User.current_user = as
+    users = User.accessible_by(Api::V1::Ability.new(as), :index).exclude_system_users
     if params['searchText'].present?
       records = users.limit(25).filter_users(params)
       data = ActiveModel::ArraySerializer.new(records, each_serializer: Api::V1::UserDetailsSerializer,
@@ -213,6 +213,33 @@ RSpec.describe 'GET /api/v1/users/browse', type: :request do
     it 'a blank searchText with page and per_page (an emptied search box): still the unpaged list' do
       expect_legacy(searchText: '', page: 1, per_page: 25)
       expect(JSON.parse(response.body)['users'].size).to eq(User.exclude_system_users.count)
+    end
+
+    # Steve's rules (30 Oct): each app's own kind of user, with every permission of that role and that app's header.
+    def role_user(role_name)
+      permissions = YAML.load_file(Rails.root.join('db', 'permissions_roles.yml'))[role_name].flatten
+      role = create("#{role_name.parameterize.underscore}_role", :with_permissions, permissions: permissions)
+      create(:user, first_name: 'Zed', last_name: "Replay #{role_name}").tap { |u| create(:user_role, user: u, role: role) }
+    end
+
+    [
+      ['stock.goodcity Manage Users, as a Stock administrator', 'Stock administrator', 'stock.goodcity',
+       { page: 1, per_page: 25, searchText: 'Abbot', stockRequest: true }],
+      ['stock.goodcity Manage Users with the box emptied, as a Stock administrator', 'Stock administrator', 'stock.goodcity',
+       { page: 1, per_page: 25, searchText: '', stockRequest: true }],
+      ['admin.goodcity offer › search users, as a Reviewer', 'Reviewer', 'admin.goodcity',
+       { searchText: 'Nash', per_page: 25, page: 1 }]
+    ].each do |label, role_name, app, params|
+      it "#{label}: answered as before" do
+        staff = role_user(role_name)
+        User.current_user = nil
+        get '/api/v1/users', params: params, headers: headers_for(staff).merge('X-GOODCITY-APP-NAME' => app)
+        expect(response.status).to eq(200), response.body
+        wire = params.transform_keys(&:to_s).transform_values(&:to_s)
+        expect(JSON.parse(response.body)).to eq(JSON.parse(legacy_json(wire, as: staff)))
+      ensure
+        User.current_user = nil
+      end
     end
 
     it 'show is untouched' do
