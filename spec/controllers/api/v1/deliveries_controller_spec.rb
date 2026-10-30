@@ -156,7 +156,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
       let!(:old_delivery) { create :gogovan_delivery }
       let!(:old_offer)    { old_delivery.offer }
-      let(:user)          { old_offer.created_by }
       let!(:old_contact_id)  { old_delivery.contact_id }
       let!(:old_ggv_id)  { old_delivery.gogovan_order_id }
       let!(:schedule) {

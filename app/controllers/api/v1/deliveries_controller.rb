@@ -99,15 +99,13 @@ module Api
         param :mobile, String
       end
       def confirm_delivery
-        # Load and authorize the delivery being confirmed. Without this, any
-        # signed-in user could confirm (and reassociate) another user's
-        # delivery by passing its id. See issue API-30. This must happen
-        # before validate_schedule: an early render without authorize! fails
-        # check_authorization.
-        @delivery = Delivery.find(params["delivery"]["id"])
-        authorize! :confirm_delivery, @delivery
         return unless validate_schedule
 
+        # Load and authorize the delivery being confirmed. Without this, any
+        # signed-in user could confirm (and reassociate) another user's
+        # delivery by passing its id. See issue API-30.
+        @delivery = Delivery.find(params["delivery"]["id"])
+        authorize! :confirm_delivery, @delivery
         @delivery.delete_old_associations
         @delivery.gogovan_order = GogovanOrder.book_order(current_user,
           order_params) if params["gogovanOrder"]
