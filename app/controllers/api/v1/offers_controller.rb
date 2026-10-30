@@ -230,12 +230,13 @@ module Api
 
       def offer_params
         attributes = [:language, :origin, :stairs, :parking, :estimated_size,
-          :notes, :delivered_by, :state_event, :cancel_reason, :district_id,
+          :notes, :delivered_by, :cancel_reason, :district_id,
           :cancellation_reason_id, :saleable]
         attributes.concat [
           :created_at, :created_by_id, :submitted_at, :state,
           :reviewed_at, :reviewed_by_id, :company_id
         ] if User.current_user.staff?
+        attributes << :state_event if permit_state_event?(params[:offer])
         params.require(:offer).permit(attributes)
       end
 

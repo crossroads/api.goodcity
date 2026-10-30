@@ -118,5 +118,31 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
         expect(response.status).to eq(200)
       end
     end
+
+    # issue API-29: a non-staff owner may edit descriptive fields and submit,
+    # but may not accept/reject their own item or write its state directly.
+    describe "as the non-staff owner of the item" do
+      let(:donor) { create :user, :with_token }
+      let(:offer) { create(:offer, created_by: donor) }
+      let(:item)  { create(:item, offer: offer, state: 'draft') }
+      before { generate_and_set_token(donor) }
+
+      it "may still edit the description" do
+        put :update, params: { id: item.id, item: { donor_description: 'A sofa' } }
+        expect(response.status).to eq(200)
+        expect(item.reload.donor_description).to eq('A sofa')
+      end
+
+      it "cannot accept the item via state_event" do
+        put :update, params: { id: item.id, item: { state_event: 'accept' } }
+        expect(item.reload.state).to eq('draft')
+      end
+
+      it "cannot write a staff state directly" do
+        put :update, params: { id: item.id, item: { state: 'rejected', reject_reason: 'quality' } }
+        expect(item.reload.state).to eq('draft')
+        expect(item.reload.reject_reason).to be_nil
+      end
+    end
   end
 end

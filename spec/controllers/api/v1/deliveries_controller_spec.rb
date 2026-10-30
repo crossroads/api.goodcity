@@ -256,6 +256,18 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       expect(offer.reload.state).to eq("scheduled")
       expect(delivery.reload.delivery_type).to eq("Self Arranged Van")
     end
+
+    context "when the delivery belongs to another user (issue API-30)" do
+      let(:other_user) { create :user }
+      before { generate_and_set_token(other_user) }
+
+      it "is forbidden and leaves the delivery untouched" do
+        expect {
+          post :confirm_delivery, params: { delivery: drop_off_delivery }
+        }.not_to change { delivery.reload.attributes }
+        expect(response.status).to eq(403)
+      end
+    end
   end
 
   describe "delete_existing_delivery" do

@@ -86,6 +86,15 @@ module Api
 
       private
 
+      # Only staff may trigger arbitrary state transitions. Everyone else
+      # (e.g. a donor acting on their own offer or item) may trigger `submit`
+      # and nothing else, so a crafted request cannot drive a record through
+      # the staff review workflow. See issue API-29.
+      def permit_state_event?(resource_params)
+        return false if resource_params.blank?
+        User.current_user&.staff? || resource_params[:state_event] == "submit"
+      end
+
       def foreign_key_violation
         goodcity_error(
           request.method.eql?('DELETE') ?

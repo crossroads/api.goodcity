@@ -353,6 +353,18 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(response.status).to eq(200)
         expect(offer.reload).to be_submitted
       end
+
+      # issue API-29: a non-staff owner may only submit, never drive the offer
+      # through staff review steps or write its state directly.
+      it "owner cannot trigger a staff state_event" do
+        put :update, params: { id: submitted_offer.id, offer: { state_event: 'start_review' } }, as: :json
+        expect(submitted_offer.reload).to be_submitted
+      end
+
+      it "owner cannot write state directly" do
+        put :update, params: { id: offer.id, offer: { state: 'reviewed' } }, as: :json
+        expect(offer.reload).to be_draft
+      end
     end
   end
 
