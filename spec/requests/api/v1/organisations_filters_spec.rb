@@ -116,6 +116,27 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
       expect(body).to eq(JSON.parse(legacy_json(params.transform_keys(&:to_s).transform_values(&:to_s), serializer: Api::V1::OrganisationNamesSerializer, as: charity)))
     end
 
+    # Steve's rules (30 Oct): the stock app's own caller is a stock role, not a Supervisor. Each role that opens the
+    # overlay, with every permission of that role, gets the pre-change body plus meta.total_count.
+    ['Stock fulfilment', 'Order fulfilment'].each do |role_name|
+      it "stock.goodcity as its real caller: a #{role_name} user, the stock app header, the search overlay" do
+        permissions = YAML.load_file(Rails.root.join('db', 'permissions_roles.yml'))[role_name].flatten
+        role = create("#{role_name.parameterize.underscore}_role", :with_permissions, permissions: permissions)
+        staff = create(:user).tap { |u| create(:user_role, user: u, role: role) }
+        User.current_user = nil
+        jwt = Rails.application.secrets.jwt
+        payload = { iss: jwt[:issuer], exp: 14.days.from_now.to_i, user_id: staff.id, iat: Time.current.to_i }
+        params = { page: 1, per_page: 25, searchText: 'Zebra Harbour', stockRequest: true }
+        get '/api/v1/organisations', params: params, headers: { 'Authorization' => "Bearer #{JWT.encode(payload, jwt[:secret_key], jwt[:hmac_sha_algo])}", 'X-GOODCITY-APP-NAME' => 'stock.goodcity' }
+        expect(response.status).to eq(200)
+        body = JSON.parse(response.body)
+        expect(body['meta'].delete('total_count')).to eq(6)
+        expect(body).to eq(JSON.parse(legacy_json(params.transform_keys(&:to_s).transform_values(&:to_s), as: staff)))
+      ensure
+        User.current_user = nil
+      end
+    end
+
     it 'ids[] (Ember Data findMany shape)' do
       expect_legacy('/api/v1/organisations', { ids: [busy.id, plain.id] })
     end
