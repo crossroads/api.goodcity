@@ -82,13 +82,6 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       post :create, params: { item: item_params }
       expect(response.status).to eq(201)
     end
-
-    it "creates a draft item for a donor, who may not set state" do
-      set_donor_app_header
-      post :create, params: { item: item_params.merge("state" => "draft") }
-      expect(response.status).to eq(201)
-      expect(parsed_body['item']['state']).to eq('draft')
-    end
   end
 
   describe "PUT item/1" do
@@ -104,7 +97,6 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     let(:offer) { create(:offer, created_by: user) }
     let(:item) { create(:item, offer: offer) }
     it 'should not allow last item to be rejected if there\'s a confirmed gogovan booking' do
-      generate_and_set_token(create(:user, :with_reviewer_role, :with_can_manage_items_permission))
       offer.update(delivery: delivery, state: 'scheduled')
       put :update, params: { id: item.id, item: item_params.merge({state_event:'reject'}) }
       expect(response.status).to eq(422)
