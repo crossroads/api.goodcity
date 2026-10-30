@@ -22,6 +22,7 @@ class Item < ApplicationRecord
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   before_save :set_description
+  after_initialize :set_initial_state
 
   scope :with_eager_load, -> {
     eager_load([:package_type, :rejection_reason, :donor_condition, :images,
