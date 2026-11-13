@@ -1,0 +1,9 @@
+# Generated from db/districts.yml so the seed file stays the single source.
+<% YAML.load_file(Rails.root.join("db/districts.yml")).each do |name_en, attrs| %>
+<%= name_en.parameterize.underscore %>:
+  name_en: <%= name_en.to_json %>
+  name_zh_tw: <%= attrs[:name_zh_tw].to_json %>
+  latitude: <%= attrs[:latitude] %>
+  longitude: <%= attrs[:longitude] %>
+  territory: <%= attrs[:territory_name_en].parameterize.underscore %>
+<% end %>

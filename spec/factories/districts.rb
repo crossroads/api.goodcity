@@ -6,7 +6,8 @@ FactoryBot.define do
     name_zh_tw         { seq[name_en][:name_zh_tw] }
     latitude           { seq[name_en][:latitude] }
     longitude          { seq[name_en][:longitude] }
-    territory
+    # Match db/districts.yml (and the fixtures) so a found district's territory agrees
+    territory          { association(:territory, name_en: seq[name_en][:territory_name_en]) }
 
     # Ensures FactoryBot.create(:object, attr1: 'xyz', attr2: 'abc') actually returns a record
     #   from the DB if exists whilst also applying our custom attributes

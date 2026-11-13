@@ -84,7 +84,7 @@ back to that same baseline.
   `users_controller_spec.rb:129` ("returns charity users", 2 vs 3) on the
   2026-10-30 master. It predates this work.
 
-### Step 1: Fixture plumbing plus the first table (districts and territories)
+### Step 1: Fixture plumbing plus the first table (districts and territories) *(done)*
 - In `spec/rails_helper.rb`: `config.fixture_path = Rails.root.join("spec/fixtures")`
   and `config.global_fixtures = :all`. `spec/fixtures/organisation.json` is unaffected,
   because only `*.yml` files are loaded.
@@ -100,10 +100,37 @@ back to that same baseline.
     territory: <%= a[:territory_name_en].parameterize.underscore %>
   <% end %>
   ```
-- Expected win: about 165s nested (`district` 127s plus `territory` 39s). That time
-  is mostly INSERT work, which drops to SELECT.
+- Fixtures are loaded explicitly in `before(:suite)`, *before* the system user is
+  created. Otherwise the first example's fixture load deletes the districts the system
+  user's address points at. Rails caches loaded fixture sets per connection, so
+  examples don't reload them (verified: one `DELETE`/`INSERT` per run).
 - Local and CI DB users are both `postgres` (superuser), so
   `DISABLE TRIGGER ALL` during fixture load works with the 120 foreign keys.
+- *Done.* The `district` factory now takes its territory from the seed's
+  `territory_name_en`. Before, it took one from the territory sequence, so a *found*
+  district came back with a `territory_id` that didn't match its row. Once every
+  district pre-existed, that latent bug failed `districts_controller_spec:16`.
+- **Measured (seed 50161):** 3,480 examples, 0 failures; cucumber 21/21.
+  | Factory (incl. nested) | Baseline | Step 1 |
+  |---|---|---|
+  | `district` | 109.1s (7.7ms/call) | 47.9s (3.4ms/call) |
+  | `territory` | 33.5s | 22.0s |
+  | `address` | 128.2s | 90.4s |
+
+  Wall time was 1,007s against 977s. Run-to-run noise on the local WSL box is about
+  ±5%: `location`, untouched by this step, moved 64s → 71s. That noise swamps a ~60s
+  gain.
+
+**Lesson that changes the sequencing:** fixtures turn INSERTs into SELECTs, but the
+factory machinery (attribute evaluation plus nested factories) still runs 14k times.
+Fixtures alone halve the per-call cost. The large wins arrive when associations read
+fixture rows directly and the factory never runs (Step 4). From Step 2 onward,
+**pair each fixture table with its Step 4 association change in the same commit**, so
+each commit shows a measurable gain.
+
+**Measuring:** use the `FPROF=1` "total time" for the factories a commit touches as
+the primary metric, since it is far less noisy than wall time locally. Use CI
+timings for wall clock.
 
 ### Step 2: Remaining callback-free reference tables (one commit per cluster)
 In profile order: `locations` (12k creates), `countries`, `donor_conditions`,
