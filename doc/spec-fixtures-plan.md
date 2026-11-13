@@ -43,19 +43,56 @@ Rails inserts fixtures **once per process, outside the per-example transaction**
 because `use_transactional_fixtures = true` is already on. Every example then rolls
 back to that same baseline.
 
+## What measurement actually showed (2026-11-13)
+
+The original premise, that reference-data cascades dominate, was **wrong**, and this
+section is here so nobody repeats the mistake.
+
+- **FactoryProf's inclusive times overstate cheap nested factories.** Moving districts
+  and locations to fixtures cut 40,000 nested factory runs and "saved" ~200s in FPROF,
+  but an alternating A/B of four hot spec files showed **no measurable change**:
+  146.4s/150.6s before against 154.3s/146.3s after. A nested find-or-create inside a
+  transaction costs about 2ms.
+- **Single 16-minute runs are not evidence locally.** Wall time drifts ±5–10% between
+  runs on the WSL box; one run came in at 843s purely by luck. **Use the alternating
+  A/B harness** (below) for any claim about speed.
+- **Where the time really is** (stackprof plus a micro-benchmark of single creates, with
+  PaperTrail off as the suite has it):
+
+  | create | ms/call | SQL | Ruby | dominant cost |
+  |---|---|---|---|---|
+  | `packages_inventory` | 86 | 34ms | 52ms | nested package **and** user (60%), `InventoryComputer` recompute (18%) |
+  | `order` | 47 | 19ms | 28ms | nested associations (50%), `PushUpdatesMinimal` serialising the order (14%) |
+  | `package` | 37 | 15ms | 22ms | package_type cascade, storage type, donor condition |
+  | `offer` | 20 | 8ms | 12ms | `created_by` user |
+  | `user` | 16 | 7ms | 10ms | `refresh_auth_token!` after_create (19%), address, image |
+  | `district` | 2 | 1ms | 1ms | (negligible) |
+
+  So the levers are: **nested records with heavy callbacks**, which is where fixtures
+  genuinely help because fixture rows skip callbacks entirely, and **instrumentation**.
+- **SimpleCov cost 13.5%** (A/B: 160.4s/159.2s with it against 139.8s/137.6s without),
+  and CI never uploaded the report. It's now opt-in with `COVERAGE=true`.
+
+### A/B harness
+`script/spec_ab_benchmark.sh <baseline-checkout> <candidate-checkout> <rounds> <spec files…>` alternates
+runs on a fixed seed and empties the fixtured tables before each baseline run, so the
+baseline sees a cold DB as CI does. Make the baseline checkout with
+`git worktree add --detach <dir> 8d08d24d` (the last commit before any fixtures).
+
 ## Ground rules for working piecemeal
 
 1. **One fixture table, or one tight cluster, per commit.** Each commit contains the
    fixture YAML, any factory change it enables, and the spec fixups it forces. It must
    leave the suite green.
-2. **Every commit message records its measured effect.** Measure before and after with
-   `FPROF=1` (top factories) and the suite wall time. Example:
-   `perf(spec): fixture districts+territories (suite 1128s → 1003s, district creates 14130 → 0 inserts)`.
+2. **Every commit message records its measured effect.** Use `FPROF=1` to see *which*
+   factories a change touched (call counts are reliable). Use the alternating A/B
+   harness, or a micro-benchmark of single creates, for *how much* it saved. Don't use
+   FPROF inclusive times or single full-suite wall times as evidence.
 3. **Run the full suite** before each commit with `--order random`, plus a second seed
    for any commit that touches users, roles or orders. Fixtures change what
    `Model.first` and `Model.count` return, so look for order-dependent fallout.
-4. **Pick the next target from the profile, not from intuition.** Re-run `FPROF=1`
-   after each step; the ranking shifts.
+4. **Pick the next target from a sampling profile, not from FPROF totals.** stackprof
+   on a few hundred creates of the candidate factory shows where its time goes.
 5. **Never fixture a table and keep relying on `before(:suite)` rows in it.** On the
    first example, fixture loading `DELETE`s every row in each table that has a fixture
    file.
@@ -121,19 +158,28 @@ back to that same baseline.
   ±5%: `location`, untouched by this step, moved 64s → 71s. That noise swamps a ~60s
   gain.
 
-**Lesson that changes the sequencing:** fixtures turn INSERTs into SELECTs, but the
-factory machinery (attribute evaluation plus nested factories) still runs 14k times.
-Fixtures alone halve the per-call cost. The large wins arrive when associations read
-fixture rows directly and the factory never runs (Step 4). From Step 2 onward,
-**pair each fixture table with its Step 4 association change in the same commit**, so
-each commit shows a measurable gain.
+Wall time was 1,007s against 977s, within noise; see "What measurement actually
+showed" above.
 
-**Measuring:** use the `FPROF=1` "total time" for the factories a commit touches as
-the primary metric, since it is far less noisy than wall time locally. Use CI
-timings for wall clock.
+### Done since (each its own commit)
+| Commit | Change | Effect |
+|---|---|---|
+| `abb8d823` | address/organisation/order/offer read a fixture district | district runs 14,092 → 71; ~no wall change |
+| `0a62446b` | locations fixtured; package_type/packages_inventory/etc. read a fixture location | location runs 12,515 → 588; ~no wall change |
+| `ccdbf461` | SimpleCov opt-in (`COVERAGE=true`) | **−13.5%** (A/B) |
+| `f7223388` | move specs stop asserting on unordered `packages_locations` heap order | fixes a latent flake |
+| `83a598be` | fixture `bystander` user for incidental actors (ledger rows, orders_package updated_by, shareable/stocktake created_by, access_pass generated_by) | `packages_inventory` 86 → 56ms/call |
 
-### Step 2: Remaining callback-free reference tables (one commit per cluster)
-In profile order: `locations` (12k creates), `countries`, `donor_conditions`,
+Full suite after these: **3,480 examples, 0 failures on seeds 50161 and 1234; 627s
+without FPROF**, against the 977s baseline (which ran with FPROF).
+
+**Cumulative A/B** (`8d08d24d` vs `83a598be`; packages_controller, packages_inventory,
+offers_controller and users_controller specs; 360 examples, 2 rounds):
+baseline 146.6s / 152.7s, now 111.5s / 113.6s, which is **−25%**. SimpleCov accounts
+for ~13.5 points of that; the bystander user for most of the rest.
+
+### Step 2: Remaining callback-free reference tables (low value, do opportunistically)
+`locations` is done. Remaining: `countries`, `donor_conditions`,
 `storage_types`, `booking_types` + `process_checklists`, `identity_types`,
 `organisation_types`, `crossroads_transports`/`gogovan_transports`,
 `cancellation_reasons`, `rejection_reasons`, `roles`, `permissions`.
@@ -144,8 +190,20 @@ In profile order: `locations` (12k creates), `countries`, `donor_conditions`,
   static reference rows.
 - Expect fallout in a few specs that assume an empty table, such as `Location.first`
   or index endpoints compared against a hard-coded count. Fix them to be explicit.
+- Measured value is small (~2ms per nested call). Do these only alongside a change
+  that needs them, e.g. Step 4's order work.
 
-### Step 3: Package types (the biggest reference cascade, 162s nested)
+### Next, ranked by measured cost
+1. **`order` nested associations** (Step 4): organisation, beneficiary, 3× stockit_*,
+   country, booking type. Plus the `PushUpdatesMinimal` serialisation (14% of an order
+   create), which runs even in tests; investigate gating it like `PushUpdates`.
+2. **Remaining nested users that are bystanders.** Audit the `with_processed_by` /
+   `with_closed_by`-style order traits and `beneficiary.with_created_by`.
+3. **`package` cascade** (Step 3 below) and `packages_inventory`'s nested package.
+4. **`user`'s own cost**: `refresh_auth_token!` per user and the nested image.
+   Canonical role users (Step 5) cut the 3,163 direct `create(:user)` calls.
+
+### Step 3: Package types (the biggest reference cascade)
 - Fixtures for `package_types` from `db/package_types.yml`, plus `subpackage_types`
   rows for every `default_packages`/`other_packages` pair. `PackageType`'s
   `after_create :create_default_sub_package_type` doesn't run for fixtures, so those
