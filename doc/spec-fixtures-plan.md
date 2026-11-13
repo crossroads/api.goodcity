@@ -193,15 +193,45 @@ for ~13.5 points of that; the bystander user for most of the rest.
 - Measured value is small (~2ms per nested call). Do these only alongside a change
   that needs them, e.g. Step 4's order work.
 
-### Next, ranked by measured cost
-1. **`order` nested associations** (Step 4): organisation, beneficiary, 3× stockit_*,
-   country, booking type. Plus the `PushUpdatesMinimal` serialisation (14% of an order
-   create), which runs even in tests; investigate gating it like `PushUpdates`.
-2. **Remaining nested users that are bystanders.** Audit the `with_processed_by` /
-   `with_closed_by`-style order traits and `beneficiary.with_created_by`.
-3. **`package` cascade** (Step 3 below) and `packages_inventory`'s nested package.
-4. **`user`'s own cost**: `refresh_auth_token!` per user and the nested image.
-   Canonical role users (Step 5) cut the 3,163 direct `create(:user)` calls.
+### Where the remaining time is (stackprof, 2026-11-13)
+Wall-mode stackprof over the five hottest files (order_spec,
+requested_packages_controller, packages_controller, orders_controller,
+packages_inventory; 511 examples):
+
+| | share of wall |
+|---|---|
+| factory creates (spec setup) | **86.8%** |
+| controller requests under test | 4.5% |
+| SQL, mostly SELECTs (`exec_query` 51%, `exec_insert` 13%) | 51% |
+| `InventoryComputer.update_package_quantities!` (recompute after every ledger row) | **18%** |
+| `ActiveModel::Serializer#as_json` (push serialisation) | 3.7% |
+| `PackageType#create_default_sub_package_type` | 1.8% |
+| `InventoryNumber.next_code` | 1.7% |
+| `User#refresh_auth_token!` | 1.3% |
+
+(`StateMachine…run_callbacks` shows 24%, but it only wraps `save` on models with a
+lifecycle.)
+
+### Next: options, ranked by measured cost (needs a decision)
+1. **Ledger recompute, 18% of the hottest files.** Every `packages_inventory` create
+   (direct, `:with_inventory_record`, `InventoryInitializer`) triggers
+   `update_package_quantities!`, which issues several SUM queries. Options:
+   - *Step 6 fixtures*: canonical packages with hand-built, ledger-consistent
+     `packages_inventories` rows. Biggest fixture win, highest data-consistency risk;
+     check with `lib/goodcity/health_checks`.
+   - *Optimise `update_package_quantities!`* to compute the quantities in one query.
+     App code; production benefits too; needs its own review.
+   - Not recommended: have factories skip the hook and set the quantity columns
+     directly. Tests would then run on data the real code never produces.
+2. **`order` nested associations**: organisation, beneficiary, 3× stockit_*. About
+   20ms of a ~34ms order create. stockit_* are legacy and look like safe fixture
+   bystanders; organisation and beneficiary carry meaning in filtering and permission
+   specs, so audit those before sharing.
+3. **Disabling `PushService` by default in specs**: measured −9ms per order
+   (34 → 25ms), about 15s per suite (~2%). Not worth it: 21 spec files assert pushes,
+   and pushes would silently stop being exercised everywhere else. Recorded so nobody
+   re-measures it.
+4. **`package` cascade** (Step 3 below) and **canonical role users** (Step 5).
 
 ### Step 3: Package types (the biggest reference cascade)
 - Fixtures for `package_types` from `db/package_types.yml`, plus `subpackage_types`
