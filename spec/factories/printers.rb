@@ -8,7 +8,7 @@ FactoryBot.define do
     port            { 9100 }
     username        { FFaker::Name.name }
     password        { FFaker::Name.name }
-    association :location
+    location { Location.find_by!(generate(:location_seed)) }
 
     trait :active do
       active { true }

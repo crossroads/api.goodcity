@@ -18,12 +18,14 @@ context ShareSupport do
   let(:location_1) { create_location('building1') }
   let(:location_2) { create_location('building2') }
   let(:location_3) { create_location('building3') }
+  # The locations table also holds fixture rows, so count only the records made here
+  let(:location_ids) { [location_1, location_2, location_3].map(&:id) }
 
   describe "Scope" do
     describe "publicly_shared" do
       before do
         touch(location_1, location_2, location_3)
-        expect(ShareableLocation.count).to eq(3)
+        expect(ShareableLocation.where(id: location_ids).count).to eq(3)
       end
 
       it "doesnt return records that haven't been shared" do
@@ -48,7 +50,7 @@ context ShareSupport do
         create(:shareable, resource: location_1, allow_listing: true)
         create(:shareable, resource: location_2, allow_listing: false)
         create(:shareable, resource: location_3, allow_listing: true)
-        expect(ShareableLocation.count).to eq(3)
+        expect(ShareableLocation.where(id: location_ids).count).to eq(3)
       end
 
       it "returns records have allow_listing marked as true" do
@@ -65,11 +67,11 @@ context ShareSupport do
 
     before do
       touch(location_1, location_2, location_3)
-      expect(ShareableLocation.count).to eq(3)
+      expect(ShareableLocation.where(id: location_ids).count).to eq(3)
     end
 
     it "doesn't affect the base model class" do
-      expect(base_model.count).to eq(3)
+      expect(base_model.where(id: location_ids).count).to eq(3)
     end
 
     it "doesnt return records that haven't been shared" do

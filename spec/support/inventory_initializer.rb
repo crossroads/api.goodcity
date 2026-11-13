@@ -3,7 +3,7 @@ module InventoryInitializer
     [packages].flatten.each do |pkg|
       return if PackagesInventory.where(package: pkg).count.positive? # Already initialized
 
-      dest_location = location || pkg.locations.first || FactoryBot.create(:location)
+      dest_location = location || pkg.locations.first || Location.find_by!(FactoryBot.generate(:location_seed))
 
       FactoryBot.create :packages_inventory, package: pkg, quantity: pkg.received_quantity, location: dest_location, action: 'inventory'
 

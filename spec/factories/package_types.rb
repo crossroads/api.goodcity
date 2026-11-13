@@ -19,7 +19,7 @@ FactoryBot.define do
     width                   { pt[code][:width]  || rand(100) }
     height                  { pt[code][:height] || rand(100) }
     customs_value_usd       { rand(10000) }
-    association             :location
+    location                { Location.find_by!(generate(:location_seed)) }
     subform do
       pt[code][:subform] ||
         if code.starts_with?("M")

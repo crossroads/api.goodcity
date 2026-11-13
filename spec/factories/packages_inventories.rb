@@ -6,7 +6,7 @@ FactoryBot.define do
     quantity      { 1 }
     created_at    { Time.now }
     association   :package
-    association   :location
+    location      { Location.find_by!(generate(:location_seed)) }
     association   :user
 
     trait :loss do

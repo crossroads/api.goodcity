@@ -1,0 +1,7 @@
+# Generated from db/locations.yml so the seed file stays the single source.
+# Labels are quoted: some look numeric (e.g. "22_01") and YAML would read them as integers.
+<% YAML.load_file(Rails.root.join("db/locations.yml")).uniq.each do |attrs| %>
+"<%= "#{attrs['building']}_#{attrs['area']}".parameterize(separator: '_') %>":
+  building: <%= attrs['building'].to_json %>
+  area: <%= attrs['area'].to_json %>
+<% end %>
