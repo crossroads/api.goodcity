@@ -16,7 +16,7 @@ describe "UserSafeDeleteJob", type: :job do
   context "if user doesn't exist (any more)" do
     it "should not call UserSafeDelete" do
       expect(Goodcity::UserSafeDelete).to_not receive(:new)
-      UserSafeDeleteJob.perform_now(1)
+      UserSafeDeleteJob.perform_now(User.maximum(:id).to_i + 1)
     end
   end
 
