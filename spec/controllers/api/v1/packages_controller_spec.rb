@@ -303,10 +303,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:package) { create :package, received_quantity: 1 }
     let!(:packages_location) { create(:packages_location, package: package, location: location1, quantity: 5) }
 
+    # packages_locations has no order, so look rows up by location rather than position
+    def quantity_at(location)
+      package.packages_locations.find_by(location: location)&.quantity
+    end
+
     it 'moves the entire quantity to the desired location' do
       expect(package.packages_locations.length).to eq(1)
-      expect(package.packages_locations.first.location).to eq(location1)
-      expect(package.packages_locations.first.quantity).to eq(5)
+      expect(quantity_at(location1)).to eq(5)
 
       put :move, params: { id: package.id, quantity: 5, from: location1.id, to: location2.id }
 
@@ -314,14 +318,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       package.reload
       expect(package.packages_locations.length).to eq(1)
-      expect(package.packages_locations.first.location).to eq(location2)
-      expect(package.packages_locations.first.quantity).to eq(5)
+      expect(quantity_at(location2)).to eq(5)
     end
 
     it 'moves part of the quantity to the desired location' do
       expect(package.packages_locations.length).to eq(1)
-      expect(package.packages_locations.first.location).to eq(location1)
-      expect(package.packages_locations.first.quantity).to eq(5)
+      expect(quantity_at(location1)).to eq(5)
 
       put :move, params: { id: package.id, quantity: 3, from: location1.id, to: location2.id }
 
@@ -329,20 +331,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       package.reload
       expect(package.packages_locations.length).to eq(2)
-      expect(package.packages_locations.first.location).to eq(location1)
-      expect(package.packages_locations.first.quantity).to eq(2)
-      expect(package.packages_locations.last.location).to eq(location2)
-      expect(package.packages_locations.last.quantity).to eq(3)
+      expect(quantity_at(location1)).to eq(2)
+      expect(quantity_at(location2)).to eq(3)
     end
 
     it 'updates existing packages_location with the moved quantity' do
       create(:packages_location, package: package, quantity: 1, location: location2)
 
       expect(package.packages_locations.length).to eq(2)
-      expect(package.packages_locations.first.location).to eq(location1)
-      expect(package.packages_locations.first.quantity).to eq(5)
-      expect(package.packages_locations.last.location).to eq(location2)
-      expect(package.packages_locations.last.quantity).to eq(1)
+      expect(quantity_at(location1)).to eq(5)
+      expect(quantity_at(location2)).to eq(1)
 
       put :move, params: { id: package.id, quantity: 3, from: location1.id, to: location2.id }
 
@@ -350,10 +348,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       package.reload
       expect(package.packages_locations.length).to eq(2)
-      expect(package.packages_locations.first.location).to eq(location1)
-      expect(package.packages_locations.first.quantity).to eq(2)
-      expect(package.packages_locations.last.location).to eq(location2)
-      expect(package.packages_locations.last.quantity).to eq(4)
+      expect(quantity_at(location1)).to eq(2)
+      expect(quantity_at(location2)).to eq(4)
     end
 
     context 'with bad parameters' do
