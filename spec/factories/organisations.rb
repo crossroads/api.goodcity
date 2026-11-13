@@ -10,7 +10,7 @@ FactoryBot.define do
     website            { FFaker::Internet.http_url }
     crm_account_id     { nil }
     association :country
-    association :district
+    district { District.find_by!(name_en: generate(:district_name_en)) }
     association :organisation_type
   end
 end

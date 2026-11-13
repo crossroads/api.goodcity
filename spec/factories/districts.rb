@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :district do
-    sequence(:name_en) { |n| seq.keys.sort[n%seq.keys.size] }
+    name_en            { generate(:district_name_en) }
     name_zh_tw         { seq[name_en][:name_zh_tw] }
     latitude           { seq[name_en][:latitude] }
     longitude          { seq[name_en][:longitude] }
@@ -25,6 +25,13 @@ FactoryBot.define do
 
   sequence :districts do |n|
     @districts ||= YAML.load_file("#{Rails.root}/db/districts.yml")
+  end
+
+  # One counter shared by this factory and by factories that look districts up from
+  # spec/fixtures/districts.yml, so successive calls still yield different districts
+  sequence :district_name_en do |n|
+    names = FactoryBot.generate(:districts).keys.sort
+    names[n % names.size]
   end
 
 end

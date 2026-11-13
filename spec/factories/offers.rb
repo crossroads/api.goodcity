@@ -13,7 +13,7 @@ FactoryBot.define do
     association    :created_by, factory: :user
 
     trait :with_district do
-      association    :district
+      district       { District.find_by!(name_en: generate(:district_name_en)) }
     end
 
     trait :admin_offer do

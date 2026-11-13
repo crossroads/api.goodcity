@@ -17,7 +17,7 @@ FactoryBot.define do
     association     :stockit_contact
     association     :beneficiary
     association     :country
-    association     :district
+    district        { District.find_by!(name_en: generate(:district_name_en)) }
 
     trait :shipment do
       detail_type   { 'Shipment' }

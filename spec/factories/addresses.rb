@@ -5,7 +5,7 @@ FactoryBot.define do
     sequence(:flat)     { |n| "Flat #{n}" }
     sequence(:building) { |n| "Building #{n}" }
     sequence(:street)   { |n| "Street #{n}" }
-    association         :district
+    district            { District.find_by!(name_en: generate(:district_name_en)) }
     address_type        { 'Collection' }
     association         :addressable, factory: :contact, strategy: :build
     addressable_type    { 'Contact' }
@@ -19,7 +19,7 @@ FactoryBot.define do
   end
 
   factory :gogovan_collection_address, class: Address do
-    association      :district
+    district         { District.find_by!(name_en: generate(:district_name_en)) }
     address_type     { 'Collection' }
     association      :addressable, factory: :contact, strategy: :build
     addressable_type { 'Contact' }
