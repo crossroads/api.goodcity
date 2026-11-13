@@ -1,0 +1,6 @@
+# User#refresh_auth_token! (after_create) doesn't run for fixtures, so each fixture user
+# gets its token here.
+bystander:
+  user: bystander
+  otp_secret_key: JBSWY3DPEHPK3PXP
+  otp_auth_key: fixture-bystander-otp-key

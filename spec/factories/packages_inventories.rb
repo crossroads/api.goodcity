@@ -7,7 +7,7 @@ FactoryBot.define do
     created_at    { Time.now }
     association   :package
     location      { Location.find_by!(generate(:location_seed)) }
-    association   :user
+    user          { FixtureRecords.find(User, :bystander) || association(:user) }
 
     trait :loss do
       action    { 'loss' }

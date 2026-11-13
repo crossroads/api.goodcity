@@ -4,7 +4,7 @@ FactoryBot.define do
     expires_at    { nil }
     notes         { "Notes" }
     notes_zh_tw   { notes }
-    association   :created_by, factory: :user
+    created_by    { FixtureRecords.find(User, :bystander) || association(:user) }
     association   :resource, factory: :offer
     
     trait :offer do

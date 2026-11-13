@@ -7,7 +7,7 @@ FactoryBot.define do
     comment         { "Comment" }
 
     location { Location.find_by!(generate(:location_seed)) }
-    association :created_by, factory: :user, strategy: :build
+    created_by { FixtureRecords.find(User, :bystander) || association(:user, strategy: :build) }
 
     trait :open do
       state { 'open' }

@@ -4,7 +4,7 @@ FactoryBot.define do
   factory :orders_package do
     association   :order
     association   :package, :with_inventory_record
-    association   :updated_by, factory: :user, strategy: :build
+    updated_by    { FixtureRecords.find(User, :bystander) || association(:user, strategy: :build) }
     state         { %w[requested cancelled designated received].sample }
     quantity      { 2 }
 

@@ -1,0 +1,13 @@
+# bystander: the actor on records where who did it doesn't matter to the spec (who
+# recorded a ledger row, last updated an orders_package, created a shareable, ...).
+# Factories default to it via FixtureRecords instead of creating a user (~16ms each).
+# Its mobile is outside the :mobile sequence's range, so the user factory's
+# find_or_initialize_by(mobile:) can never hand it back as a "new" user.
+bystander:
+  title: Mr
+  first_name: Fixture
+  last_name: Bystander
+  mobile: "+85298880001"
+  email: bystander@fixtures.goodcity.test
+  is_mobile_verified: true
+  disabled: false

@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :access_pass do
     printer
-    association       :generated_by, factory: :user
+    generated_by      { FixtureRecords.find(User, :bystander) || association(:user) }
     access_expires_at { Time.current.at_end_of_day }
     access_key        { '123456' }
 
