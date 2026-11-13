@@ -2,8 +2,12 @@
 # specs live under a `spec` directory, which RSpec adds to the `$LOAD_PATH`.
 # The generated `.rspec` file contains `--require spec_helper` which will cause this
 # file to always be loaded, without a need to explicitly require it in any files.
-require 'simplecov'
-SimpleCov.start
+# Line coverage slows the suite by ~13% and CI doesn't collect it, so it's opt-in:
+#   COVERAGE=true bundle exec rspec
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
 
 ActiveRecord::Migration.maintain_test_schema! if defined?(ActiveRecord::Migration)
 
