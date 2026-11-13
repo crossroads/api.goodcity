@@ -92,6 +92,7 @@ group :test do
   gem 'shoulda-callback-matchers'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
+  gem 'test-prof', '~> 1.4'
   gem 'timecop'
   gem 'webmock'
 end
