@@ -12,7 +12,6 @@ tmp/*
 .env.production
 .env.staging
 .gitignore
-.hgtags
 Dockerfile
 README.md
 SECURITY.md
