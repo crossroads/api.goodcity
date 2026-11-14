@@ -147,7 +147,12 @@ baseline sees a cold DB as CI does. Make the baseline checkout with
   `territory_name_en`. Before, it took one from the territory sequence, so a *found*
   district came back with a `territory_id` that didn't match its row. Once every
   district pre-existed, that latent bug failed `districts_controller_spec:16`.
-- **Measured (seed 50161):** 3,480 examples, 0 failures; cucumber 21/21.
+- **Measured (seed 50161):** 3,480 examples, 0 failures; cucumber 21/21. *That
+  cucumber result was wrong:* it ran after rspec and passed only on fixture rows rspec
+  had left behind. On CI's fresh DB, 10/21 scenarios failed (`Couldn't find Location`),
+  because the factories cucumber shares now look up fixture rows. Fixed by loading the
+  fixtures for cucumber too (`features/support/fixtures.rb`, via
+  `spec/support/fixture_loader.rb`).
   | Factory (incl. nested) | Baseline | Step 1 |
   |---|---|---|
   | `district` | 109.1s (7.7ms/call) | 47.9s (3.4ms/call) |
@@ -283,9 +288,11 @@ would hide what the test is about. Expect most of the gain from Steps 1–4, whi
 need almost no spec edits. Steps 5–6 are a judgment call per file.
 
 ## Risks and traps
-- **Fixture rows persist in the test DB** after rspec, because they're inserted
-  outside transactions. Cucumber uses DatabaseCleaner `:transaction` and runs before
-  rspec in CI, so CI is fine. Locally, a cucumber run after rspec will see them.
+- **Cucumber runs first in CI, on a fresh DB, and shares the factories.** Any factory
+  that looks up a fixture row fails there unless cucumber loads the fixtures too, which
+  `features/support/fixtures.rb` does. Locally, fixture rows persist after any run
+  (they're committed outside the test transactions), which hides this: always check on
+  a freshly rebuilt test DB, cucumber first.
 - **Migration specs** (`spec/migrations/`, 2 files) inspect live tables. Re-check them
   after any fixture touching `messages` or `order_transports`.
 - `Kernel.srand 852` plus `rand`/`sample` in factories means fixture-backed SELECTs
@@ -296,9 +303,9 @@ need almost no spec edits. Steps 5–6 are a judgment call per file.
 
 ## Verification (every step)
 ```bash
-RAILS_ENV=test rails db:drop db:create db:migrate   # if schema changed; schema:load is broken
+RAILS_ENV=test rails db:drop db:create db:migrate   # fresh DB, as CI has; schema:load is broken
+bundle exec cucumber                                # CI runs it first, on that fresh DB
 FPROF=1 bundle exec rspec                           # green + factory table
 bundle exec rspec --seed <other>                    # second seed for user/role/order steps
-bundle exec cucumber                                # CI runs it first
 ```
 Record suite time and the top-5 FPROF rows in the commit message.

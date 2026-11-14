@@ -46,7 +46,7 @@ RSpec.configure do |config|
 
   # Reference data is preloaded from spec/fixtures (see doc/spec-fixtures-plan.md).
   # Fixtures are inserted once per process, outside the per-example transaction.
-  config.fixture_path = Rails.root.join('spec/fixtures').to_s
+  config.fixture_path = FixtureLoader::PATH
   config.global_fixtures = :all
 
   config.infer_spec_type_from_file_location!
@@ -62,10 +62,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     # Load fixtures first: the first example's fixture load deletes every row in a
     # fixtured table, which would orphan anything created here that references one.
-    fixture_names = Dir[File.join(config.fixture_path, '**/*.yml')].map do |f|
-      f.delete_prefix("#{config.fixture_path}/").delete_suffix('.yml')
-    end
-    ActiveRecord::FixtureSet.create_fixtures(config.fixture_path, fixture_names)
+    FixtureLoader.load_all
     FactoryBot.create(:user, :system)
   end
 
