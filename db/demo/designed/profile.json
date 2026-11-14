@@ -6098,7 +6098,7 @@
       "pairs",
       "L)"
     ],
-    "cross_reference_pattern": "Furniture/matched-set items sometimes reference another inventory number in the description, e.g. \"Matches #059856\", \"(matches armchair #128746)\" -- a small but real pattern for paired/matched furniture sets.",
-    "destination_tag_pattern": "A leading \"FOR <TAG>\" (all-caps) block is used for earmarked shipments/programs, e.g. \"FOR HKD\" (Hong Kong Distribution), \"FOR TAIPO\", \"FOR MOLDOVA\", \"FOR S1358\" (shipment/container ref) -- these are program/place codes, not addresses."
+    "cross_reference_pattern": "Furniture/matched-set items sometimes reference another inventory number in the description, e.g. \"Matches #012345\", \"(matches armchair #567890)\" -- a small but real pattern for paired/matched furniture sets.",
+    "destination_tag_pattern": "A leading \"FOR <TAG>\" (all-caps) block is used for earmarked shipments/programs, e.g. \"FOR HKD\" (Hong Kong Distribution), \"FOR TAIPO\", \"FOR SPAIN\", \"FOR S1234\" (shipment/container ref) -- these are program/place codes, not addresses."
   }
 }

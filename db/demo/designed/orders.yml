@@ -955,7 +955,7 @@
   purpose: organisation
   people_helped: 32
   district: Sham Shui Po
-  purpose_description: "Wardrobes for sub-divided flats"
+  purpose_description: "Wardrobes for small flats"
   transport: { type: self, scheduled: -107d@10:30 }
   events:
     - { at: -111d@10:10, do: submit }
