@@ -91,7 +91,6 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'shoulda-callback-matchers'
   gem 'shoulda-matchers'
-  gem 'simplecov', require: false
   gem 'timecop'
   gem 'webmock'
 end
