@@ -13,7 +13,6 @@ tmp/*
 .env.staging
 .gitignore
 .hgtags
-.travis.yml
 Dockerfile
 README.md
 SECURITY.md
