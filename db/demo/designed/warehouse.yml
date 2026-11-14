@@ -1,0 +1,67 @@
+# Where stock lives. Locations are REAL production locations, named "<building> <area>"
+# exactly as the stock app shows them.
+
+# Filler stock is placed by department with these weights — shaped on the snapshot's
+# location frequencies (profile.json: locations).
+departments:
+  Furniture:        { "30 Furniture": 0.72, "PG Shed": 0.12, "SB Shed": 0.07, "PG PTL": 0.04, "PG Tent": 0.03, "CntrA 03": 0.02 }
+  Electrical:       { "30 Electrical": 0.38, "28 P2 Electrical": 0.14, "28 P3 Electrical": 0.12, "28 M Electrical": 0.09, "28 P7 Electrical": 0.08, "28 P8 Electrical": 0.07, "28 P9 Electrical": 0.06, "28 N1 Electrical": 0.04, "CntrB 07": 0.02 }
+  Household:        { "28 HouseHold": 0.55, "28 Q BulkRm": 0.2, "SB Shed": 0.1, "29 Household Annex": 0.05, "CntrB 09": 0.1 }
+  Clothing:         { "29 Clothing": 0.7, "CntrB 09": 0.15, "CntrA 02": 0.1, "29 HKD": 0.05 }
+  Computers:        { "32 Computers": 0.9, "32 Incoming": 0.1 }
+  Medical:          { "PG Medical G": 0.3, "PG Medical B": 0.25, "PG Medical D": 0.12, "PG Medical H": 0.1, "PG Medical A": 0.1, "CntrB 10 (Medical)": 0.08, "PG Medical E": 0.05 }
+  Toys:             { "29 Toys": 0.8, "PG Tent": 0.1, "CntrA 04": 0.1 }
+  Bikes:            { "88 Bikes": 0.45, "31 Bikes": 0.25, "CntrB 08 (Bikes)": 0.3 }
+  Stationery:       { "28 L Stationery": 0.9, "28 Q BulkRm": 0.1 }
+  Books:            { "29 Books": 1.0 }
+  Boutique:         { "29 Household Annex": 0.6, "28 HouseHold": 0.4 }
+  Building Fittings: { "SB Shed": 1.0 }
+
+# Boxes and pallets in use. Each is itself a package (storage type Box or Pallet) that
+# is received and inventorised; `contents` are packed into it with the app's own
+# pack operation — never by setting a column.
+containers:
+  - key: box_keyboards
+    why: "a box holding part of a multi-quantity item — on-hand must read as 'some here, some boxed'"
+    code: VB
+    storage: Box
+    description: "Multi-item box of tested keyboards"
+    location: 32 Computers
+    inventoried: -19d@11:00
+    expect: { in: pallet_computers }
+    contents:
+      - { item: keyboards, qty: 10, at: -19d@11:10 }
+
+  - key: pallet_computers
+    why: "a pallet carrying a box — the box-on-a-pallet case"
+    code: V
+    storage: Pallet
+    description: "Pallet of tested computer equipment, bank office refit"
+    location: 32 Computers
+    inventoried: -18d@10:00
+    expect: { on_hand: 1 }
+    contents:
+      - { item: box_keyboards, qty: 1, at: -18d@10:20 }
+      - { item: mini_pcs, qty: 6, at: -18d@10:25 }
+
+  - key: pallet_blankets
+    why: "a pallet of soft goods in the bulk room, with loose units of the same item left beside it"
+    code: H
+    storage: Pallet
+    description: "Pallet of sorted household textiles, winter blankets"
+    location: 28 Q BulkRm
+    inventoried: -35d@14:00
+    expect: { on_hand: 1 }
+    contents:
+      - { item: wool_blankets, qty: 20, at: -35d@14:30 }
+
+  - key: box_first_aid
+    why: "a medical box whose contents carry expiry dates"
+    code: MB
+    storage: Box
+    description: "Multi-item box of sorted medical items, first aid"
+    location: PG Medical B
+    inventoried: -50d@15:00
+    expect: { on_hand: 1 }
+    contents:
+      - { item: first_aid_kits, qty: 12, at: -50d@15:20 }

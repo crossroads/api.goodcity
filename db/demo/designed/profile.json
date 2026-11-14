@@ -1,0 +1,6104 @@
+{
+  "_meta": {
+    "source_file": "Monthly Stock Snapshot (for Automation) - September 22, 2026.xlsx",
+    "row_count": 4522,
+    "generated_date": "2026-09-22",
+    "generator_target_scale": "approx 1:6 of this snapshot (~750 packages)",
+    "schema_notes": "All *_weights and *weight* fields are fractions summing to ~1.0 within their group and are meant to be sampled directly (e.g. weighted random choice). Percentile fields describe the *value* distribution shape for numeric sampling (e.g. log-normal-ish interpolation between percentiles)."
+  },
+  "department_weights": {
+    "Furniture": 0.30031,
+    "Electrical": 0.23728,
+    "Household": 0.10924,
+    "Clothing": 0.10593,
+    "Computers": 0.07873,
+    "Medical": 0.07276,
+    "Toys": 0.04489,
+    "Bikes": 0.02057,
+    "Stationery": 0.01194,
+    "Books": 0.00973,
+    "Boutique": 0.00818,
+    "Building Fittings": 0.00044
+  },
+  "departments": {
+    "Furniture": {
+      "count": 1358,
+      "weight": 0.30031,
+      "codes": [
+        {
+          "code": "FCD",
+          "description": "Dining chair",
+          "count": 161,
+          "weight": 0.11856
+        },
+        {
+          "code": "FCO",
+          "description": "Office chair",
+          "count": 111,
+          "weight": 0.08174
+        },
+        {
+          "code": "FCI",
+          "description": "Stool",
+          "count": 75,
+          "weight": 0.05523
+        },
+        {
+          "code": "FTX",
+          "description": "Other table",
+          "count": 58,
+          "weight": 0.04271
+        },
+        {
+          "code": "FXA",
+          "description": "Artwork - pictures for wall, picture frames",
+          "count": 55,
+          "weight": 0.0405
+        },
+        {
+          "code": "FTE",
+          "description": "Coffee table",
+          "count": 51,
+          "weight": 0.03756
+        },
+        {
+          "code": "FBB",
+          "description": "Bedroom bedside cabinet",
+          "count": 43,
+          "weight": 0.03166
+        },
+        {
+          "code": "FTD",
+          "description": "Dining table",
+          "count": 41,
+          "weight": 0.03019
+        },
+        {
+          "code": "FCX",
+          "description": "Other chair",
+          "count": 37,
+          "weight": 0.02725
+        },
+        {
+          "code": "FSS",
+          "description": "Storage shelf",
+          "count": 36,
+          "weight": 0.02651
+        },
+        {
+          "code": "FCL",
+          "description": "Living room chair",
+          "count": 33,
+          "weight": 0.0243
+        },
+        {
+          "code": "FBX",
+          "description": "Other cabinets",
+          "count": 28,
+          "weight": 0.02062
+        },
+        {
+          "code": "FCS",
+          "description": "Sofa/ Lounge sofa",
+          "count": 28,
+          "weight": 0.02062
+        },
+        {
+          "code": "FSB",
+          "description": "Book shelf",
+          "count": 27,
+          "weight": 0.01988
+        },
+        {
+          "code": "FBL",
+          "description": "Living room cabinet",
+          "count": 27,
+          "weight": 0.01988
+        },
+        {
+          "code": "FCQ",
+          "description": "School chair",
+          "count": 27,
+          "weight": 0.01988
+        },
+        {
+          "code": "FCC",
+          "description": "Children's chair",
+          "count": 26,
+          "weight": 0.01915
+        },
+        {
+          "code": "BSM",
+          "description": "Single size mattress",
+          "count": 25,
+          "weight": 0.01841
+        },
+        {
+          "code": "FBV",
+          "description": "TV/Hi-Fi cabinet",
+          "count": 23,
+          "weight": 0.01694
+        },
+        {
+          "code": "FCH",
+          "description": "Stacking chair",
+          "count": 21,
+          "weight": 0.01546
+        },
+        {
+          "code": "FDQ",
+          "description": "School desk",
+          "count": 20,
+          "weight": 0.01473
+        },
+        {
+          "code": "FBR",
+          "description": "Office cupboard",
+          "count": 18,
+          "weight": 0.01325
+        },
+        {
+          "code": "FBC",
+          "description": "Bedroom chest of drawers",
+          "count": 17,
+          "weight": 0.01252
+        },
+        {
+          "code": "BBM",
+          "description": "Baby mattress",
+          "count": 17,
+          "weight": 0.01252
+        },
+        {
+          "code": "FBP",
+          "description": "Office drawer unit",
+          "count": 16,
+          "weight": 0.01178
+        },
+        {
+          "code": "CHP",
+          "description": "Carpet/rug",
+          "count": 16,
+          "weight": 0.01178
+        },
+        {
+          "code": "FDO",
+          "description": "Office desk",
+          "count": 15,
+          "weight": 0.01105
+        },
+        {
+          "code": "FCF",
+          "description": "Folding chair",
+          "count": 14,
+          "weight": 0.01031
+        },
+        {
+          "code": "FCU",
+          "description": "Outdoor chair",
+          "count": 13,
+          "weight": 0.00957
+        },
+        {
+          "code": "FDP",
+          "description": "Computer desk",
+          "count": 13,
+          "weight": 0.00957
+        },
+        {
+          "code": "FTC",
+          "description": "Children's table",
+          "count": 12,
+          "weight": 0.00884
+        },
+        {
+          "code": "FDH",
+          "description": "Household desk",
+          "count": 12,
+          "weight": 0.00884
+        },
+        {
+          "code": "BDM",
+          "description": "Double size mattress",
+          "count": 12,
+          "weight": 0.00884
+        },
+        {
+          "code": "FT",
+          "description": "Table",
+          "count": 12,
+          "weight": 0.00884
+        },
+        {
+          "code": "FBD",
+          "description": "Bedroom wardrobe",
+          "count": 11,
+          "weight": 0.0081
+        },
+        {
+          "code": "XX",
+          "description": "Other, miscellaeneous",
+          "count": 10,
+          "weight": 0.00736
+        },
+        {
+          "code": "RMP",
+          "description": "Piano/Organ",
+          "count": 10,
+          "weight": 0.00736
+        },
+        {
+          "code": "FXH",
+          "description": "Clothes hanging racks",
+          "count": 9,
+          "weight": 0.00663
+        },
+        {
+          "code": "FSD",
+          "description": "Display shelf",
+          "count": 9,
+          "weight": 0.00663
+        },
+        {
+          "code": "FXM",
+          "description": "Mirror",
+          "count": 9,
+          "weight": 0.00663
+        },
+        {
+          "code": "FTF",
+          "description": "Folding table",
+          "count": 9,
+          "weight": 0.00663
+        },
+        {
+          "code": "FSX",
+          "description": "Other shelf",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "FTA",
+          "description": "Baby-change table",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "BBS",
+          "description": "Baby's crib with mattress",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "FCT",
+          "description": "Sofa bed",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "BDB",
+          "description": "Double bed base",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "FS",
+          "description": "Shelf",
+          "count": 8,
+          "weight": 0.00589
+        },
+        {
+          "code": "BCM",
+          "description": "Child's mattress",
+          "count": 7,
+          "weight": 0.00515
+        },
+        {
+          "code": "FBO",
+          "description": "Office file cabinet",
+          "count": 6,
+          "weight": 0.00442
+        },
+        {
+          "code": "FTO",
+          "description": "Office/ Conference table",
+          "count": 6,
+          "weight": 0.00442
+        },
+        {
+          "code": "FD",
+          "description": "Desk",
+          "count": 6,
+          "weight": 0.00442
+        },
+        {
+          "code": "FC",
+          "description": "Chairs",
+          "count": 5,
+          "weight": 0.00368
+        },
+        {
+          "code": "BBC",
+          "description": "Baby crib",
+          "count": 5,
+          "weight": 0.00368
+        },
+        {
+          "code": "BDS",
+          "description": "Double bed with mattress",
+          "count": 5,
+          "weight": 0.00368
+        },
+        {
+          "code": "BSS",
+          "description": "Single bed with mattress",
+          "count": 5,
+          "weight": 0.00368
+        },
+        {
+          "code": "FXT",
+          "description": "Trolley",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "FDX",
+          "description": "Other desk",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "FTU",
+          "description": "Outdoor table",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "FDC",
+          "description": "Children's desk",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "FB",
+          "description": "Cabinet/ cupboard",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "BSF",
+          "description": "Single bed (folding)",
+          "count": 4,
+          "weight": 0.00295
+        },
+        {
+          "code": "FXZ",
+          "description": "Other types of furniture",
+          "count": 3,
+          "weight": 0.00221
+        },
+        {
+          "code": "FSR",
+          "description": "Rack-CD, Magazine, Shoe",
+          "count": 3,
+          "weight": 0.00221
+        },
+        {
+          "code": "FBS",
+          "description": "Display cabinet",
+          "count": 3,
+          "weight": 0.00221
+        },
+        {
+          "code": "FXB",
+          "description": "Writing board/ notice board",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "BCX",
+          "description": "Bed - child's others",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "FTV",
+          "description": "TV/Hi-Fi table",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "BKS",
+          "description": "Bunk bed with mattress",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "BSB",
+          "description": "Single bed base",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "FSO",
+          "description": "Office shelf",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "FBK",
+          "description": "Kitchen cabinet",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "FBT",
+          "description": "Shoe cabinet",
+          "count": 2,
+          "weight": 0.00147
+        },
+        {
+          "code": "BCS",
+          "description": "Child's bed with mattress",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "BLS",
+          "description": "Loft bed with mattress",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "FXU",
+          "description": "Other outdoor furniture",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "FBF",
+          "description": "Plastic chest of drawers",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "FTK",
+          "description": "Kitchen table",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "BKB",
+          "description": "Bunk bed base",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "BCB",
+          "description": "Child's base",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "BB",
+          "description": "Baby's bed",
+          "count": 1,
+          "weight": 0.00074
+        },
+        {
+          "code": "BS",
+          "description": "Single bed",
+          "count": 1,
+          "weight": 0.00074
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.7187,
+        "buckets": {
+          "1": 0.7187,
+          "2-5": 0.19146,
+          "6-20": 0.05891,
+          "21-100": 0.02356,
+          "101-1000": 0.00736
+        },
+        "mean": 4.43,
+        "median": 1.0,
+        "p90": 5.0,
+        "p99": 54.73,
+        "max": 399.0,
+        "top_outliers": [
+          399.0,
+          318.0,
+          259.0,
+          215.0,
+          199.0
+        ]
+      },
+      "condition_weights": {
+        "New": 0.08321,
+        "Heavily Used": 0.14433,
+        "Lightly Used": 0.77099,
+        "Broken": 0.00147
+      },
+      "grade_weights": {
+        "A": 0.06186,
+        "B": 0.86451,
+        "C": 0.0729,
+        "D": 0.00074
+      },
+      "published_weights": {
+        "False": 0.45803,
+        "True": 0.54197
+      },
+      "value": {
+        "n_present": 1358,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 398.25,
+        "median": 765.75,
+        "p75": 1306.4,
+        "p90": 1917.3,
+        "max": 7458.0
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.97644,
+        "weight_presence_rate": 0.16789,
+        "length_cm": {
+          "median": 61.0,
+          "p10": 39.0,
+          "p90": 156.5
+        },
+        "width_cm": {
+          "median": 50.0,
+          "p10": 34.0,
+          "p90": 101.0
+        },
+        "height_cm": {
+          "median": 75.0,
+          "p10": 32.0,
+          "p90": 120.0
+        },
+        "weight_kg": {
+          "median": 12.5,
+          "p10": 3.85,
+          "p90": 37.0
+        }
+      }
+    },
+    "Electrical": {
+      "count": 1073,
+      "weight": 0.23728,
+      "codes": [
+        {
+          "code": "EHL",
+          "description": "Lighting- Lamp",
+          "count": 188,
+          "weight": 0.17521
+        },
+        {
+          "code": "EHX",
+          "description": "Other Household Electrical items",
+          "count": 121,
+          "weight": 0.11277
+        },
+        {
+          "code": "EUS",
+          "description": "Speaker",
+          "count": 93,
+          "weight": 0.08667
+        },
+        {
+          "code": "EXB",
+          "description": "Electrical bodycare products",
+          "count": 69,
+          "weight": 0.06431
+        },
+        {
+          "code": "EX",
+          "description": "Other electrical items",
+          "count": 59,
+          "weight": 0.05499
+        },
+        {
+          "code": "EHH",
+          "description": "Heater",
+          "count": 55,
+          "weight": 0.05126
+        },
+        {
+          "code": "EKE",
+          "description": "Electric plates / multicookers",
+          "count": 42,
+          "weight": 0.03914
+        },
+        {
+          "code": "EKX",
+          "description": "Other small kitchen appliances",
+          "count": 37,
+          "weight": 0.03448
+        },
+        {
+          "code": "EKI",
+          "description": "Rice cooker",
+          "count": 30,
+          "weight": 0.02796
+        },
+        {
+          "code": "EHF",
+          "description": "Fan",
+          "count": 30,
+          "weight": 0.02796
+        },
+        {
+          "code": "EUX",
+          "description": "Other audio items",
+          "count": 29,
+          "weight": 0.02703
+        },
+        {
+          "code": "EKK",
+          "description": "Kettle",
+          "count": 26,
+          "weight": 0.02423
+        },
+        {
+          "code": "EZH",
+          "description": "PALLET OF Electrical Home, Untested",
+          "count": 23,
+          "weight": 0.02144
+        },
+        {
+          "code": "EKR",
+          "description": "Refrigerator",
+          "count": 21,
+          "weight": 0.01957
+        },
+        {
+          "code": "DE",
+          "description": "Electrical tools",
+          "count": 16,
+          "weight": 0.01491
+        },
+        {
+          "code": "EHC",
+          "description": "Vacuum cleaner",
+          "count": 16,
+          "weight": 0.01491
+        },
+        {
+          "code": "EVD",
+          "description": "DVD/VCD player",
+          "count": 14,
+          "weight": 0.01305
+        },
+        {
+          "code": "EOX",
+          "description": "Other office/communication items",
+          "count": 13,
+          "weight": 0.01212
+        },
+        {
+          "code": "EUN",
+          "description": "Amplifier - in-building PA",
+          "count": 12,
+          "weight": 0.01118
+        },
+        {
+          "code": "E",
+          "description": "PALLET of Sorted Electrical",
+          "count": 12,
+          "weight": 0.01118
+        },
+        {
+          "code": "DD",
+          "description": "Hand tools",
+          "count": 11,
+          "weight": 0.01025
+        },
+        {
+          "code": "EVX",
+          "description": "Other visual appliances",
+          "count": 10,
+          "weight": 0.00932
+        },
+        {
+          "code": "EVT",
+          "description": "TV set",
+          "count": 10,
+          "weight": 0.00932
+        },
+        {
+          "code": "EB",
+          "description": "Multi-item Box of Tested Electrical items",
+          "count": 8,
+          "weight": 0.00746
+        },
+        {
+          "code": "XC",
+          "description": "Car accessories",
+          "count": 8,
+          "weight": 0.00746
+        },
+        {
+          "code": "EHD",
+          "description": "Dehumidifier",
+          "count": 8,
+          "weight": 0.00746
+        },
+        {
+          "code": "EOT",
+          "description": "Telephone",
+          "count": 7,
+          "weight": 0.00652
+        },
+        {
+          "code": "EKH",
+          "description": "Range hood",
+          "count": 7,
+          "weight": 0.00652
+        },
+        {
+          "code": "EUR",
+          "description": "Radio",
+          "count": 6,
+          "weight": 0.00559
+        },
+        {
+          "code": "EKJ",
+          "description": "Fruit juicer/Blender",
+          "count": 6,
+          "weight": 0.00559
+        },
+        {
+          "code": "EUD",
+          "description": "CD player",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EKT",
+          "description": "Toaster/Toaster oven",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EHW",
+          "description": "Washing machine",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EKP",
+          "description": "Pot/Urn",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EKC",
+          "description": "Coffee maker",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EKS",
+          "description": "Stove/ oven",
+          "count": 5,
+          "weight": 0.00466
+        },
+        {
+          "code": "EUM",
+          "description": "Amplifier - home",
+          "count": 4,
+          "weight": 0.00373
+        },
+        {
+          "code": "EUH",
+          "description": "Hi-Fi System",
+          "count": 4,
+          "weight": 0.00373
+        },
+        {
+          "code": "EVB",
+          "description": "Blu-ray player",
+          "count": 4,
+          "weight": 0.00373
+        },
+        {
+          "code": "EUK",
+          "description": "Electrical music instrument",
+          "count": 4,
+          "weight": 0.00373
+        },
+        {
+          "code": "EKL",
+          "description": "Water cooler/ Water Heater",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EHY",
+          "description": "Clothes dryer",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EKD",
+          "description": "Dishwasher",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EXS",
+          "description": "Sewing machine",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EVS",
+          "description": "Slide projector",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EHI",
+          "description": "Iron",
+          "count": 3,
+          "weight": 0.0028
+        },
+        {
+          "code": "EVQ",
+          "description": "Video projector",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EOW",
+          "description": "Typewriter",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EV",
+          "description": "Video/Visual/AV",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EHA",
+          "description": "Air conditioner",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EKM",
+          "description": "Microwave",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EVP",
+          "description": "Overhead projector",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "DB",
+          "description": "Tool box",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EKF",
+          "description": "Freezer",
+          "count": 2,
+          "weight": 0.00186
+        },
+        {
+          "code": "EH",
+          "description": "Household electrical",
+          "count": 1,
+          "weight": 0.00093
+        },
+        {
+          "code": "EVC",
+          "description": "Video cassette recorder",
+          "count": 1,
+          "weight": 0.00093
+        },
+        {
+          "code": "EUU",
+          "description": "Radio tuner",
+          "count": 1,
+          "weight": 0.00093
+        },
+        {
+          "code": "EUP",
+          "description": "Amplifier - outdoor PA",
+          "count": 1,
+          "weight": 0.00093
+        },
+        {
+          "code": "EUC",
+          "description": "Cassette recorder",
+          "count": 1,
+          "weight": 0.00093
+        },
+        {
+          "code": "EVA",
+          "description": "Cameras [Digital/Still/Video]",
+          "count": 1,
+          "weight": 0.00093
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.89748,
+        "buckets": {
+          "1": 0.89748,
+          "2-5": 0.05499,
+          "6-20": 0.0261,
+          "21-100": 0.01305,
+          "101-1000": 0.00746,
+          "1000+": 0.00093
+        },
+        "mean": 4.5,
+        "median": 1.0,
+        "p90": 2.0,
+        "p99": 76.4,
+        "max": 1086.0,
+        "top_outliers": [
+          1086.0,
+          433.0,
+          272.0,
+          218.0,
+          175.0
+        ]
+      },
+      "condition_weights": {
+        "New": 0.20317,
+        "Heavily Used": 0.09413,
+        "Mixed": 0.00186,
+        "Lightly Used": 0.66729,
+        "-": 0.0205,
+        "Broken": 0.01305
+      },
+      "grade_weights": {
+        "B": 0.71948,
+        "A": 0.22926,
+        "blank": 0.0205,
+        "D": 0.01025,
+        "C": 0.0205
+      },
+      "published_weights": {
+        "-": 0.04753,
+        "True": 0.10811,
+        "False": 0.84436
+      },
+      "value": {
+        "n_present": 1073,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 218.25,
+        "median": 426.7,
+        "p75": 872.1,
+        "p90": 2506.5,
+        "max": 18162.0
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.9068,
+        "weight_presence_rate": 0.84809,
+        "length_cm": {
+          "median": 25.0,
+          "p10": 11.0,
+          "p90": 55.0
+        },
+        "width_cm": {
+          "median": 20.0,
+          "p10": 7.0,
+          "p90": 42.0
+        },
+        "height_cm": {
+          "median": 24.0,
+          "p10": 7.0,
+          "p90": 76.8
+        },
+        "weight_kg": {
+          "median": 2.0,
+          "p10": 1.0,
+          "p90": 10.0
+        }
+      }
+    },
+    "Household": {
+      "count": 494,
+      "weight": 0.10924,
+      "codes": [
+        {
+          "code": "H",
+          "description": "PALLET of Sorted Household",
+          "count": 48,
+          "weight": 0.09717
+        },
+        {
+          "code": "HD",
+          "description": "Dining items -NON TEXTILE",
+          "count": 45,
+          "weight": 0.09109
+        },
+        {
+          "code": "HXB",
+          "description": "Bags/ Backpacks",
+          "count": 40,
+          "weight": 0.08097
+        },
+        {
+          "code": "CBB",
+          "description": "Blanket",
+          "count": 40,
+          "weight": 0.08097
+        },
+        {
+          "code": "HK",
+          "description": "Kitchen items",
+          "count": 33,
+          "weight": 0.0668
+        },
+        {
+          "code": "CBP",
+          "description": "Pillow/pillow cover",
+          "count": 33,
+          "weight": 0.0668
+        },
+        {
+          "code": "HZO",
+          "description": "PALLET OF Household Other, Unsorted",
+          "count": 26,
+          "weight": 0.05263
+        },
+        {
+          "code": "HX",
+          "description": "Other household items",
+          "count": 25,
+          "weight": 0.05061
+        },
+        {
+          "code": "HPX",
+          "description": "Other baby items (stairgate, safety items etc)",
+          "count": 15,
+          "weight": 0.03036
+        },
+        {
+          "code": "CHS",
+          "description": "Cushions/kitchen & dining linen",
+          "count": 15,
+          "weight": 0.03036
+        },
+        {
+          "code": "RCM",
+          "description": "Camping sleeping mattress",
+          "count": 14,
+          "weight": 0.02834
+        },
+        {
+          "code": "HXT",
+          "description": "Rubbish bin/ cleaning supplies",
+          "count": 12,
+          "weight": 0.02429
+        },
+        {
+          "code": "HPW",
+          "description": "Baby swing/walker/jumper",
+          "count": 11,
+          "weight": 0.02227
+        },
+        {
+          "code": "HN",
+          "description": "Ornaments",
+          "count": 11,
+          "weight": 0.02227
+        },
+        {
+          "code": "CHX",
+          "description": "Other household textiles",
+          "count": 11,
+          "weight": 0.02227
+        },
+        {
+          "code": "CBS",
+          "description": "Bed sheet",
+          "count": 10,
+          "weight": 0.02024
+        },
+        {
+          "code": "HY",
+          "description": "Personal care items",
+          "count": 10,
+          "weight": 0.02024
+        },
+        {
+          "code": "CHT",
+          "description": "Towels/ Bath Linen",
+          "count": 10,
+          "weight": 0.02024
+        },
+        {
+          "code": "HPH",
+          "description": "High chair",
+          "count": 9,
+          "weight": 0.01822
+        },
+        {
+          "code": "RCX",
+          "description": "Other camping equipment",
+          "count": 9,
+          "weight": 0.01822
+        },
+        {
+          "code": "HPS",
+          "description": "Stroller",
+          "count": 8,
+          "weight": 0.01619
+        },
+        {
+          "code": "CCB",
+          "description": "Sleeping bag",
+          "count": 8,
+          "weight": 0.01619
+        },
+        {
+          "code": "HZT",
+          "description": "PALLET OF Household Textiles, Unsorted",
+          "count": 8,
+          "weight": 0.01619
+        },
+        {
+          "code": "CBX",
+          "description": "Other bedding items",
+          "count": 8,
+          "weight": 0.01619
+        },
+        {
+          "code": "RCT",
+          "description": "Tent",
+          "count": 7,
+          "weight": 0.01417
+        },
+        {
+          "code": "HPT",
+          "description": "Travel cot",
+          "count": 6,
+          "weight": 0.01215
+        },
+        {
+          "code": "GCB",
+          "description": "Booster seat",
+          "count": 4,
+          "weight": 0.0081
+        },
+        {
+          "code": "CHF",
+          "description": "Fabric/ Craft",
+          "count": 3,
+          "weight": 0.00607
+        },
+        {
+          "code": "HGX",
+          "description": "Agricultural and Gardening Tools and Supplies",
+          "count": 3,
+          "weight": 0.00607
+        },
+        {
+          "code": "HPB",
+          "description": "Baby Bath/ toilet/ bath ring",
+          "count": 3,
+          "weight": 0.00607
+        },
+        {
+          "code": "HB",
+          "description": "Bedroom items - NON TEXTILE",
+          "count": 3,
+          "weight": 0.00607
+        },
+        {
+          "code": "CHC",
+          "description": "Curtain",
+          "count": 3,
+          "weight": 0.00607
+        },
+        {
+          "code": "HPC",
+          "description": "Baby car seats",
+          "count": 2,
+          "weight": 0.00405
+        },
+        {
+          "code": "HA",
+          "description": "Bathroom items",
+          "count": 1,
+          "weight": 0.00202
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.87045,
+        "buckets": {
+          "1": 0.87045,
+          "2-5": 0.07085,
+          "6-20": 0.02227,
+          "21-100": 0.01215,
+          "101-1000": 0.01822,
+          "1000+": 0.00607
+        },
+        "mean": 61.27,
+        "median": 1.0,
+        "p90": 2.0,
+        "p99": 266.52,
+        "max": 18462.0,
+        "top_outliers": [
+          18462.0,
+          6943.0,
+          1084.0,
+          996.0,
+          579.0
+        ]
+      },
+      "condition_weights": {
+        "New": 0.17206,
+        "Lightly Used": 0.71053,
+        "-": 0.09919,
+        "Heavily Used": 0.01417,
+        "Mixed": 0.00405
+      },
+      "grade_weights": {
+        "A": 0.20243,
+        "B": 0.68826,
+        "blank": 0.09919,
+        "C": 0.00607,
+        "D": 0.00405
+      },
+      "published_weights": {
+        "-": 0.00202,
+        "False": 0.90486,
+        "True": 0.09312
+      },
+      "value": {
+        "n_present": 494,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 255.75,
+        "median": 476.25,
+        "p75": 1575.0,
+        "p90": 1908.9,
+        "max": 11274.4
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.77935,
+        "weight_presence_rate": 0.7166,
+        "length_cm": {
+          "median": 50.0,
+          "p10": 31.4,
+          "p90": 72.2
+        },
+        "width_cm": {
+          "median": 35.0,
+          "p10": 20.0,
+          "p90": 48.6
+        },
+        "height_cm": {
+          "median": 34.0,
+          "p10": 15.4,
+          "p90": 69.2
+        },
+        "weight_kg": {
+          "median": 5.0,
+          "p10": 2.0,
+          "p90": 15.7
+        }
+      }
+    },
+    "Computers": {
+      "count": 356,
+      "weight": 0.07873,
+      "codes": [
+        {
+          "code": "VMF",
+          "description": "Monitor, flat screen",
+          "count": 218,
+          "weight": 0.61236
+        },
+        {
+          "code": "VCD",
+          "description": "Desktop computer",
+          "count": 59,
+          "weight": 0.16573
+        },
+        {
+          "code": "VZX",
+          "description": "PALLET OF Computer Accessories/ Mixed items, Untested",
+          "count": 38,
+          "weight": 0.10674
+        },
+        {
+          "code": "VB",
+          "description": "Multi-item Box of Tested Computer items",
+          "count": 6,
+          "weight": 0.01685
+        },
+        {
+          "code": "VXC",
+          "description": "Computer Power & Network Cable",
+          "count": 5,
+          "weight": 0.01404
+        },
+        {
+          "code": "V",
+          "description": "PALLET of tested Computer equipment",
+          "count": 5,
+          "weight": 0.01404
+        },
+        {
+          "code": "VZM",
+          "description": "PALLET of Computer Monitors, Untested",
+          "count": 4,
+          "weight": 0.01124
+        },
+        {
+          "code": "VA",
+          "description": "Computer accessories - e.g. mouse, keyboard",
+          "count": 3,
+          "weight": 0.00843
+        },
+        {
+          "code": "VZ",
+          "description": "PALLET OF Computer equipment, untested",
+          "count": 3,
+          "weight": 0.00843
+        },
+        {
+          "code": "VPM",
+          "description": "Multi-function printer, scanner & fax",
+          "count": 3,
+          "weight": 0.00843
+        },
+        {
+          "code": "VXS",
+          "description": "Computer speakers",
+          "count": 3,
+          "weight": 0.00843
+        },
+        {
+          "code": "VCL",
+          "description": "Laptop",
+          "count": 3,
+          "weight": 0.00843
+        },
+        {
+          "code": "VZC",
+          "description": "PALLET OF CPUs, Untested",
+          "count": 2,
+          "weight": 0.00562
+        },
+        {
+          "code": "VP",
+          "description": "Printer",
+          "count": 1,
+          "weight": 0.00281
+        },
+        {
+          "code": "VXW",
+          "description": "Web cam",
+          "count": 1,
+          "weight": 0.00281
+        },
+        {
+          "code": "VXX",
+          "description": "Other types of computer equipment",
+          "count": 1,
+          "weight": 0.00281
+        },
+        {
+          "code": "VNS",
+          "description": "Scanner",
+          "count": 1,
+          "weight": 0.00281
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.98034,
+        "buckets": {
+          "1": 0.98034,
+          "2-5": 0.00562,
+          "6-20": 0.01124,
+          "101-1000": 0.00281
+        },
+        "mean": 2.13,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 13.9,
+        "max": 340.0,
+        "top_outliers": [
+          340.0,
+          18.0,
+          18.0,
+          15.0,
+          13.0
+        ]
+      },
+      "condition_weights": {
+        "Lightly Used": 0.18539,
+        "Heavily Used": 0.73315,
+        "New": 0.02247,
+        "-": 0.0309,
+        "Broken": 0.02809
+      },
+      "grade_weights": {
+        "B": 0.23596,
+        "A": 0.69382,
+        "C": 0.00281,
+        "blank": 0.0309,
+        "D": 0.03652
+      },
+      "published_weights": {
+        "False": 0.87921,
+        "True": 0.12079
+      },
+      "value": {
+        "n_present": 356,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 822.4,
+        "median": 897.6,
+        "p75": 3452.8,
+        "p90": 6522.75,
+        "max": 22500.0
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.85112,
+        "weight_presence_rate": 0.84831,
+        "length_cm": {
+          "median": 46.0,
+          "p10": 18.0,
+          "p90": 57.0
+        },
+        "width_cm": {
+          "median": 18.0,
+          "p10": 5.0,
+          "p90": 34.0
+        },
+        "height_cm": {
+          "median": 33.0,
+          "p10": 4.0,
+          "p90": 44.0
+        },
+        "weight_kg": {
+          "median": 3.0,
+          "p10": 1.0,
+          "p90": 5.0
+        }
+      }
+    },
+    "Toys": {
+      "count": 203,
+      "weight": 0.04489,
+      "codes": [
+        {
+          "code": "TPX",
+          "description": "Pretend-play toy",
+          "count": 28,
+          "weight": 0.13793
+        },
+        {
+          "code": "TS",
+          "description": "Soft Toys",
+          "count": 20,
+          "weight": 0.09852
+        },
+        {
+          "code": "REC",
+          "description": "Large Circuit/Exercise Equipment",
+          "count": 16,
+          "weight": 0.07882
+        },
+        {
+          "code": "TRG",
+          "description": "Gross-motor toys",
+          "count": 15,
+          "weight": 0.07389
+        },
+        {
+          "code": "RPR",
+          "description": "Ride-on toy/ scooter",
+          "count": 15,
+          "weight": 0.07389
+        },
+        {
+          "code": "RMS",
+          "description": "Musical instruments",
+          "count": 15,
+          "weight": 0.07389
+        },
+        {
+          "code": "TRF",
+          "description": "Fine-motor toys",
+          "count": 14,
+          "weight": 0.06897
+        },
+        {
+          "code": "TX",
+          "description": "Other toys",
+          "count": 11,
+          "weight": 0.05419
+        },
+        {
+          "code": "TZ",
+          "description": "PALLET OF Toys, unsorted",
+          "count": 11,
+          "weight": 0.05419
+        },
+        {
+          "code": "TT",
+          "description": "Battery-operated toys",
+          "count": 10,
+          "weight": 0.04926
+        },
+        {
+          "code": "TB",
+          "description": "Baby & Toddler toys",
+          "count": 9,
+          "weight": 0.04433
+        },
+        {
+          "code": "RPS",
+          "description": "Sports equipment (large)",
+          "count": 6,
+          "weight": 0.02956
+        },
+        {
+          "code": "T",
+          "description": "PALLET of Sorted Toys",
+          "count": 6,
+          "weight": 0.02956
+        },
+        {
+          "code": "REX",
+          "description": "Other exercise equipment",
+          "count": 6,
+          "weight": 0.02956
+        },
+        {
+          "code": "REE",
+          "description": "Small Exercise Aids",
+          "count": 6,
+          "weight": 0.02956
+        },
+        {
+          "code": "RPX",
+          "description": "Playground item (large)",
+          "count": 4,
+          "weight": 0.0197
+        },
+        {
+          "code": "TE",
+          "description": "Educational toys",
+          "count": 3,
+          "weight": 0.01478
+        },
+        {
+          "code": "TW",
+          "description": "Water / sand toys",
+          "count": 3,
+          "weight": 0.01478
+        },
+        {
+          "code": "REW",
+          "description": "Weights",
+          "count": 2,
+          "weight": 0.00985
+        },
+        {
+          "code": "RX",
+          "description": "Other recreational items",
+          "count": 1,
+          "weight": 0.00493
+        },
+        {
+          "code": "TZR",
+          "description": "PALLET OF Sporting items, unsorted",
+          "count": 1,
+          "weight": 0.00493
+        },
+        {
+          "code": "TM",
+          "description": "Music toys",
+          "count": 1,
+          "weight": 0.00493
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.93596,
+        "buckets": {
+          "1": 0.93596,
+          "2-5": 0.01478,
+          "6-20": 0.0197,
+          "21-100": 0.00985,
+          "101-1000": 0.01478,
+          "1000+": 0.00493
+        },
+        "mean": 24.07,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 249.34,
+        "max": 3789.0,
+        "top_outliers": [
+          3789.0,
+          379.0,
+          252.0,
+          119.0,
+          75.0
+        ]
+      },
+      "condition_weights": {
+        "Heavily Used": 0.01478,
+        "Lightly Used": 0.73892,
+        "New": 0.2069,
+        "-": 0.02956,
+        "Mixed": 0.00985
+      },
+      "grade_weights": {
+        "B": 0.74877,
+        "A": 0.21675,
+        "C": 0.00493,
+        "blank": 0.02956
+      },
+      "published_weights": {
+        "-": 0.00493,
+        "False": 0.86207,
+        "True": 0.133
+      },
+      "value": {
+        "n_present": 203,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 367.23,
+        "median": 469.8,
+        "p75": 1253.25,
+        "p90": 3729.0,
+        "max": 50000.0
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.84236,
+        "weight_presence_rate": 0.6601,
+        "length_cm": {
+          "median": 59.0,
+          "p10": 34.0,
+          "p90": 109.0
+        },
+        "width_cm": {
+          "median": 34.0,
+          "p10": 15.0,
+          "p90": 73.0
+        },
+        "height_cm": {
+          "median": 38.0,
+          "p10": 8.0,
+          "p90": 96.0
+        },
+        "weight_kg": {
+          "median": 5.0,
+          "p10": 1.0,
+          "p90": 14.0
+        }
+      }
+    },
+    "Medical": {
+      "count": 329,
+      "weight": 0.07276,
+      "codes": [
+        {
+          "code": "MDY",
+          "description": "Physiotherapy",
+          "count": 33,
+          "weight": 0.1003
+        },
+        {
+          "code": "MGT",
+          "description": "Therapeutic aids (allied health)",
+          "count": 28,
+          "weight": 0.08511
+        },
+        {
+          "code": "MGP",
+          "description": "Patient Accessories",
+          "count": 25,
+          "weight": 0.07599
+        },
+        {
+          "code": "MGB",
+          "description": "Monitoring Devices",
+          "count": 21,
+          "weight": 0.06383
+        },
+        {
+          "code": "MGS",
+          "description": "Sharps",
+          "count": 16,
+          "weight": 0.04863
+        },
+        {
+          "code": "MGO",
+          "description": "Oxygen tubing/ masks/ suction catheters",
+          "count": 15,
+          "weight": 0.04559
+        },
+        {
+          "code": "MDA",
+          "description": "Anaesthetics/ICU/Resuscitation",
+          "count": 15,
+          "weight": 0.04559
+        },
+        {
+          "code": "MGE",
+          "description": "Items for enteral procedures",
+          "count": 12,
+          "weight": 0.03647
+        },
+        {
+          "code": "MDM",
+          "description": "Maternity/Obstetrics/Perinatoloy",
+          "count": 12,
+          "weight": 0.03647
+        },
+        {
+          "code": "MZ",
+          "description": "Pallet of Medical supplies, unsorted",
+          "count": 11,
+          "weight": 0.03343
+        },
+        {
+          "code": "MW",
+          "description": "Women's Health",
+          "count": 10,
+          "weight": 0.0304
+        },
+        {
+          "code": "MGX",
+          "description": "Other General Medical Supplies",
+          "count": 10,
+          "weight": 0.0304
+        },
+        {
+          "code": "MDT",
+          "description": "Trauma",
+          "count": 9,
+          "weight": 0.02736
+        },
+        {
+          "code": "MDR",
+          "description": "Respiratory",
+          "count": 8,
+          "weight": 0.02432
+        },
+        {
+          "code": "MFX",
+          "description": "Other medical furniture",
+          "count": 8,
+          "weight": 0.02432
+        },
+        {
+          "code": "MGG",
+          "description": "Gloves, gowns, masks",
+          "count": 7,
+          "weight": 0.02128
+        },
+        {
+          "code": "MEN",
+          "description": "Eye frames without prescription lenses",
+          "count": 7,
+          "weight": 0.02128
+        },
+        {
+          "code": "MDS",
+          "description": "Surgical",
+          "count": 7,
+          "weight": 0.02128
+        },
+        {
+          "code": "MGA",
+          "description": "First Aid Kits",
+          "count": 5,
+          "weight": 0.0152
+        },
+        {
+          "code": "MDC",
+          "description": "Cardiology",
+          "count": 4,
+          "weight": 0.01216
+        },
+        {
+          "code": "MP",
+          "description": "Paediatric supplies",
+          "count": 4,
+          "weight": 0.01216
+        },
+        {
+          "code": "MDB",
+          "description": "Doctor's Bag/ assessment tools",
+          "count": 4,
+          "weight": 0.01216
+        },
+        {
+          "code": "MFB",
+          "description": "Hospital bed",
+          "count": 4,
+          "weight": 0.01216
+        },
+        {
+          "code": "MGW",
+          "description": "Geriatrics",
+          "count": 4,
+          "weight": 0.01216
+        },
+        {
+          "code": "MT",
+          "description": "Dental supplies",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MFG",
+          "description": "Commode chair",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MGU",
+          "description": "Urinary catheters",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MDW",
+          "description": "Xray Boxes/ Ultasound/ Imaging",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MS",
+          "description": "General Surgical supplies",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MFD",
+          "description": "Hospital bed mattress",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MDQ",
+          "description": "Sterilizing",
+          "count": 3,
+          "weight": 0.00912
+        },
+        {
+          "code": "MDV",
+          "description": "Vision/ Opthalmology Equipment",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MDH",
+          "description": "ENT (Ear Nose Throat)",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MDD",
+          "description": "Dental devices",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MFT",
+          "description": "Equipment trolley",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MDX",
+          "description": "Medical devices",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MEF",
+          "description": "Safety glasses (eye protectors)",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MFP",
+          "description": "Patient transport trolley",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MEW",
+          "description": "Assorted/Mixed Box of Eyeglasses",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MFH",
+          "description": "Examination couch/ bench",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "M",
+          "description": "Pallet of Sorted Medical items",
+          "count": 2,
+          "weight": 0.00608
+        },
+        {
+          "code": "MFC",
+          "description": "Hospital bed parts",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "ML",
+          "description": "Laboratory Equipment",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MFA",
+          "description": "Therapy equip/ furniture",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MEG",
+          "description": "Sunglasses",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MFW",
+          "description": "Wheelchair",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MDE",
+          "description": "Endoscopy",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MGN",
+          "description": "Nursing - dressing/ bandages",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MFV",
+          "description": "Mobility aids",
+          "count": 1,
+          "weight": 0.00304
+        },
+        {
+          "code": "MFE",
+          "description": "Bed-over table",
+          "count": 1,
+          "weight": 0.00304
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.91489,
+        "buckets": {
+          "1": 0.91489,
+          "2-5": 0.07295,
+          "6-20": 0.00608,
+          "21-100": 0.00304,
+          "101-1000": 0.00304
+        },
+        "mean": 1.93,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 6.88,
+        "max": 233.0,
+        "top_outliers": [
+          233.0,
+          23.0,
+          14.0,
+          8.0,
+          4.0
+        ]
+      },
+      "condition_weights": {
+        "Lightly Used": 0.51064,
+        "New": 0.42249,
+        "Mixed": 0.01216,
+        "Heavily Used": 0.04255,
+        "Broken": 0.00608,
+        "-": 0.00608
+      },
+      "grade_weights": {
+        "B": 0.4924,
+        "A": 0.49848,
+        "D": 0.00304,
+        "blank": 0.00608
+      },
+      "published_weights": {
+        "False": 0.99696,
+        "True": 0.00304
+      },
+      "value": {
+        "n_present": 329,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 286.2,
+        "median": 716.4,
+        "p75": 9599.25,
+        "p90": 11274.4,
+        "max": 15358.5
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.73556,
+        "weight_presence_rate": 0.59878,
+        "length_cm": {
+          "median": 30.0,
+          "p10": 15.0,
+          "p90": 60.9
+        },
+        "width_cm": {
+          "median": 20.0,
+          "p10": 7.0,
+          "p90": 42.9
+        },
+        "height_cm": {
+          "median": 20.0,
+          "p10": 5.0,
+          "p90": 50.9
+        },
+        "weight_kg": {
+          "median": 1.5,
+          "p10": 1.0,
+          "p90": 10.0
+        }
+      }
+    },
+    "Books": {
+      "count": 44,
+      "weight": 0.00973,
+      "codes": [
+        {
+          "code": "P",
+          "description": "PALLET of Sorted Books",
+          "count": 12,
+          "weight": 0.27273
+        },
+        {
+          "code": "PGC",
+          "description": "English fiction for children (stories, comics, poems, etc.)",
+          "count": 8,
+          "weight": 0.18182
+        },
+        {
+          "code": "PL",
+          "description": "Books in other languages",
+          "count": 6,
+          "weight": 0.13636
+        },
+        {
+          "code": "PGG",
+          "description": "English non-fiction for adults (general interest)",
+          "count": 6,
+          "weight": 0.13636
+        },
+        {
+          "code": "PGD",
+          "description": "English non-fiction for children (fact/topic books, biography, etc.)",
+          "count": 4,
+          "weight": 0.09091
+        },
+        {
+          "code": "PEP",
+          "description": "English primary textbooks/ teaching materials",
+          "count": 3,
+          "weight": 0.06818
+        },
+        {
+          "code": "PZ",
+          "description": "PALLET OF Books/publications, unsorted",
+          "count": 3,
+          "weight": 0.06818
+        },
+        {
+          "code": "PES",
+          "description": "English Secondary textbooks / teaching materials",
+          "count": 2,
+          "weight": 0.04545
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 1.0,
+        "buckets": {
+          "1": 1.0
+        },
+        "mean": 1.0,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 1.0,
+        "max": 1.0,
+        "top_outliers": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "condition_weights": {
+        "-": 0.27273,
+        "Heavily Used": 0.02273,
+        "New": 0.04545,
+        "Lightly Used": 0.65909
+      },
+      "grade_weights": {
+        "blank": 0.27273,
+        "B": 0.11364,
+        "A": 0.61364
+      },
+      "published_weights": {
+        "False": 1.0
+      },
+      "value": {
+        "n_present": 44,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 466.65,
+        "p75": 466.65,
+        "p90": 554.01,
+        "max": 2961.75
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.65909,
+        "weight_presence_rate": 0.65909,
+        "length_cm": {
+          "median": 33.0,
+          "p10": 33.0,
+          "p90": 34.2
+        },
+        "width_cm": {
+          "median": 30.0,
+          "p10": 29.0,
+          "p90": 31.6
+        },
+        "height_cm": {
+          "median": 34.0,
+          "p10": 31.0,
+          "p90": 34.0
+        },
+        "weight_kg": {
+          "median": 16.0,
+          "p10": 12.8,
+          "p90": 19.0
+        }
+      }
+    },
+    "Bikes": {
+      "count": 93,
+      "weight": 0.02057,
+      "codes": [
+        {
+          "code": "RPB",
+          "description": "Bicycles - Children",
+          "count": 53,
+          "weight": 0.56989
+        },
+        {
+          "code": "RPA",
+          "description": "Bicycles - Adult",
+          "count": 40,
+          "weight": 0.43011
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.97849,
+        "buckets": {
+          "1": 0.97849,
+          "21-100": 0.02151
+        },
+        "mean": 1.69,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 32.16,
+        "max": 34.0,
+        "top_outliers": [
+          34.0,
+          32.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "condition_weights": {
+        "Heavily Used": 0.39785,
+        "Lightly Used": 0.58065,
+        "New": 0.02151
+      },
+      "grade_weights": {
+        "C": 0.2043,
+        "B": 0.76344,
+        "D": 0.01075,
+        "A": 0.02151
+      },
+      "published_weights": {
+        "False": 1.0
+      },
+      "value": {
+        "n_present": 93,
+        "presence_rate": 1.0,
+        "min": 30.7,
+        "p25": 429.8,
+        "median": 447.75,
+        "p75": 1491.75,
+        "p90": 1491.75,
+        "max": 1591.2
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.97849,
+        "weight_presence_rate": 0.0,
+        "length_cm": {
+          "median": 115.0,
+          "p10": 80.0,
+          "p90": 160.0
+        },
+        "width_cm": {
+          "median": 53.0,
+          "p10": 40.0,
+          "p90": 60.0
+        },
+        "height_cm": {
+          "median": 82.0,
+          "p10": 65.0,
+          "p90": 100.0
+        },
+        "weight_kg": null
+      }
+    },
+    "Clothing": {
+      "count": 479,
+      "weight": 0.10593,
+      "codes": [
+        {
+          "code": "CLZU",
+          "description": "PALLET OF USED clothing for Men, Women or Children",
+          "count": 92,
+          "weight": 0.19207
+        },
+        {
+          "code": "C",
+          "description": "PALLET of Sorted Clothing",
+          "count": 54,
+          "weight": 0.11273
+        },
+        {
+          "code": "CMW",
+          "description": "Men's winter clothing",
+          "count": 46,
+          "weight": 0.09603
+        },
+        {
+          "code": "CWW",
+          "description": "Women's winter clothing",
+          "count": 41,
+          "weight": 0.08559
+        },
+        {
+          "code": "CLZ",
+          "description": "PALLET OF NEW Clothing, unsorted",
+          "count": 40,
+          "weight": 0.08351
+        },
+        {
+          "code": "CLX",
+          "description": "Clothing items, other",
+          "count": 38,
+          "weight": 0.07933
+        },
+        {
+          "code": "CLS",
+          "description": "Shoes",
+          "count": 37,
+          "weight": 0.07724
+        },
+        {
+          "code": "CMS",
+          "description": "Men's summer clothing",
+          "count": 34,
+          "weight": 0.07098
+        },
+        {
+          "code": "CLJ",
+          "description": "Boys' clothing",
+          "count": 30,
+          "weight": 0.06263
+        },
+        {
+          "code": "CWS",
+          "description": "Women's summer clothing",
+          "count": 24,
+          "weight": 0.0501
+        },
+        {
+          "code": "CLR",
+          "description": "Accessories",
+          "count": 17,
+          "weight": 0.03549
+        },
+        {
+          "code": "CLG",
+          "description": "Girls' clothing",
+          "count": 14,
+          "weight": 0.02923
+        },
+        {
+          "code": "CLD",
+          "description": "Baby/Toddlers' Clothing",
+          "count": 12,
+          "weight": 0.02505
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.97912,
+        "buckets": {
+          "1": 0.97912,
+          "2-5": 0.01044,
+          "6-20": 0.00418,
+          "21-100": 0.00626
+        },
+        "mean": 1.24,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 5.22,
+        "max": 42.0,
+        "top_outliers": [
+          42.0,
+          32.0,
+          23.0,
+          7.0,
+          6.0
+        ]
+      },
+      "condition_weights": {
+        "New": 0.57203,
+        "Lightly Used": 0.31524,
+        "-": 0.11273
+      },
+      "grade_weights": {
+        "A": 0.55532,
+        "B": 0.33194,
+        "blank": 0.11273
+      },
+      "published_weights": {
+        "False": 0.99374,
+        "True": 0.00626
+      },
+      "value": {
+        "n_present": 479,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 3540.75,
+        "median": 4305.6,
+        "p75": 12675.75,
+        "p90": 12675.75,
+        "max": 18736.2
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.60752,
+        "weight_presence_rate": 0.56576,
+        "length_cm": {
+          "median": 60.0,
+          "p10": 37.0,
+          "p90": 62.0
+        },
+        "width_cm": {
+          "median": 40.0,
+          "p10": 30.0,
+          "p90": 42.0
+        },
+        "height_cm": {
+          "median": 31.0,
+          "p10": 20.0,
+          "p90": 40.0
+        },
+        "weight_kg": {
+          "median": 11.0,
+          "p10": 5.0,
+          "p90": 18.0
+        }
+      }
+    },
+    "Stationery": {
+      "count": 54,
+      "weight": 0.01194,
+      "codes": [
+        {
+          "code": "NZ",
+          "description": "PALLET OF Stationery, unsorted",
+          "count": 24,
+          "weight": 0.44444
+        },
+        {
+          "code": "NO",
+          "description": "Office stationery",
+          "count": 17,
+          "weight": 0.31481
+        },
+        {
+          "code": "NQ",
+          "description": "School stationery",
+          "count": 8,
+          "weight": 0.14815
+        },
+        {
+          "code": "N",
+          "description": "Pallet of Sorted Stationery",
+          "count": 5,
+          "weight": 0.09259
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.96296,
+        "buckets": {
+          "1": 0.96296,
+          "2-5": 0.01852,
+          "21-100": 0.01852
+        },
+        "mean": 1.81,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 21.74,
+        "max": 44.0,
+        "top_outliers": [
+          44.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "condition_weights": {
+        "Lightly Used": 0.68519,
+        "Heavily Used": 0.03704,
+        "New": 0.03704,
+        "Mixed": 0.14815,
+        "-": 0.09259
+      },
+      "grade_weights": {
+        "B": 0.77778,
+        "C": 0.03704,
+        "A": 0.07407,
+        "blank": 0.09259,
+        "D": 0.01852
+      },
+      "published_weights": {
+        "False": 0.98148,
+        "True": 0.01852
+      },
+      "value": {
+        "n_present": 54,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 418.5,
+        "median": 516.23,
+        "p75": 10886.25,
+        "p90": 10886.25,
+        "max": 10886.25
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.46296,
+        "weight_presence_rate": 0.42593,
+        "length_cm": {
+          "median": 48.0,
+          "p10": 34.2,
+          "p90": 73.8
+        },
+        "width_cm": {
+          "median": 36.0,
+          "p10": 21.2,
+          "p90": 45.6
+        },
+        "height_cm": {
+          "median": 30.0,
+          "p10": 24.4,
+          "p90": 45.6
+        },
+        "weight_kg": {
+          "median": 14.0,
+          "p10": 5.4,
+          "p90": 20.8
+        }
+      }
+    },
+    "Boutique": {
+      "count": 37,
+      "weight": 0.00818,
+      "codes": [
+        {
+          "code": "QHH",
+          "description": "Household items",
+          "count": 27,
+          "weight": 0.72973
+        },
+        {
+          "code": "QCC",
+          "description": "Clothing",
+          "count": 10,
+          "weight": 0.27027
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 0.64865,
+        "buckets": {
+          "1": 0.64865,
+          "2-5": 0.05405,
+          "6-20": 0.10811,
+          "21-100": 0.08108,
+          "101-1000": 0.10811
+        },
+        "mean": 21.32,
+        "median": 1.0,
+        "p90": 101.2,
+        "p99": 143.84,
+        "max": 155.0,
+        "top_outliers": [
+          155.0,
+          124.0,
+          109.0,
+          109.0,
+          96.0
+        ]
+      },
+      "condition_weights": {
+        "Lightly Used": 0.54054,
+        "New": 0.45946
+      },
+      "grade_weights": {
+        "B": 0.56757,
+        "A": 0.43243
+      },
+      "published_weights": {
+        "False": 0.94595,
+        "True": 0.05405
+      },
+      "value": {
+        "n_present": 37,
+        "presence_rate": 1.0,
+        "min": 0.0,
+        "p25": 150.0,
+        "median": 150.0,
+        "p75": 180.0,
+        "p90": 180.0,
+        "max": 410.25
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.08108,
+        "weight_presence_rate": 0.0,
+        "length_cm": {
+          "median": 60.0,
+          "p10": 21.6,
+          "p90": 164.0
+        },
+        "width_cm": {
+          "median": 60.0,
+          "p10": 21.6,
+          "p90": 164.0
+        },
+        "height_cm": {
+          "median": 35.0,
+          "p10": 17.4,
+          "p90": 55.0
+        },
+        "weight_kg": null
+      }
+    },
+    "Building Fittings": {
+      "count": 2,
+      "weight": 0.00044,
+      "codes": [
+        {
+          "code": "XBT",
+          "description": "Floor tiles",
+          "count": 1,
+          "weight": 0.5
+        },
+        {
+          "code": "XB",
+          "description": "Building fittings",
+          "count": 1,
+          "weight": 0.5
+        }
+      ],
+      "quantity": {
+        "pct_qty_eq_1": 1.0,
+        "buckets": {
+          "1": 1.0
+        },
+        "mean": 1.0,
+        "median": 1.0,
+        "p90": 1.0,
+        "p99": 1.0,
+        "max": 1.0,
+        "top_outliers": [
+          1.0,
+          1.0
+        ]
+      },
+      "condition_weights": {
+        "Lightly Used": 1.0
+      },
+      "grade_weights": {
+        "B": 1.0
+      },
+      "published_weights": {
+        "False": 1.0
+      },
+      "value": {
+        "n_present": 2,
+        "presence_rate": 1.0,
+        "min": 186.75,
+        "p25": 1881.56,
+        "median": 3576.38,
+        "p75": 5271.19,
+        "p90": 6288.07,
+        "max": 6966.0
+      },
+      "dimensions": {
+        "presence_rate_lwh": 0.5,
+        "weight_presence_rate": 0.0,
+        "length_cm": {
+          "median": 65.0,
+          "p10": 65.0,
+          "p90": 65.0
+        },
+        "width_cm": {
+          "median": 58.0,
+          "p10": 58.0,
+          "p90": 58.0
+        },
+        "height_cm": {
+          "median": 95.0,
+          "p10": 95.0,
+          "p90": 95.0
+        },
+        "weight_kg": null
+      }
+    }
+  },
+  "code_table_all_295": [
+    {
+      "code": "RPB",
+      "description": "Bicycles - Children",
+      "department": "Bikes",
+      "count": 53
+    },
+    {
+      "code": "RPA",
+      "description": "Bicycles - Adult",
+      "department": "Bikes",
+      "count": 40
+    },
+    {
+      "code": "P",
+      "description": "PALLET of Sorted Books",
+      "department": "Books",
+      "count": 12
+    },
+    {
+      "code": "PGC",
+      "description": "English fiction for children (stories, comics, poems, etc.)",
+      "department": "Books",
+      "count": 8
+    },
+    {
+      "code": "PGG",
+      "description": "English non-fiction for adults (general interest)",
+      "department": "Books",
+      "count": 6
+    },
+    {
+      "code": "PL",
+      "description": "Books in other languages",
+      "department": "Books",
+      "count": 6
+    },
+    {
+      "code": "PGD",
+      "description": "English non-fiction for children (fact/topic books, biography, etc.)",
+      "department": "Books",
+      "count": 4
+    },
+    {
+      "code": "PEP",
+      "description": "English primary textbooks/ teaching materials",
+      "department": "Books",
+      "count": 3
+    },
+    {
+      "code": "PZ",
+      "description": "PALLET OF Books/publications, unsorted",
+      "department": "Books",
+      "count": 3
+    },
+    {
+      "code": "PES",
+      "description": "English Secondary textbooks / teaching materials",
+      "department": "Books",
+      "count": 2
+    },
+    {
+      "code": "QHH",
+      "description": "Household items",
+      "department": "Boutique",
+      "count": 27
+    },
+    {
+      "code": "QCC",
+      "description": "Clothing",
+      "department": "Boutique",
+      "count": 10
+    },
+    {
+      "code": "XB",
+      "description": "Building fittings",
+      "department": "Building Fittings",
+      "count": 1
+    },
+    {
+      "code": "XBT",
+      "description": "Floor tiles",
+      "department": "Building Fittings",
+      "count": 1
+    },
+    {
+      "code": "CLZU",
+      "description": "PALLET OF USED clothing for Men, Women or Children",
+      "department": "Clothing",
+      "count": 92
+    },
+    {
+      "code": "C",
+      "description": "PALLET of Sorted Clothing",
+      "department": "Clothing",
+      "count": 54
+    },
+    {
+      "code": "CMW",
+      "description": "Men's winter clothing",
+      "department": "Clothing",
+      "count": 46
+    },
+    {
+      "code": "CWW",
+      "description": "Women's winter clothing",
+      "department": "Clothing",
+      "count": 41
+    },
+    {
+      "code": "CLZ",
+      "description": "PALLET OF NEW Clothing, unsorted",
+      "department": "Clothing",
+      "count": 40
+    },
+    {
+      "code": "CLX",
+      "description": "Clothing items, other",
+      "department": "Clothing",
+      "count": 38
+    },
+    {
+      "code": "CLS",
+      "description": "Shoes",
+      "department": "Clothing",
+      "count": 37
+    },
+    {
+      "code": "CMS",
+      "description": "Men's summer clothing",
+      "department": "Clothing",
+      "count": 34
+    },
+    {
+      "code": "CLJ",
+      "description": "Boys' clothing",
+      "department": "Clothing",
+      "count": 30
+    },
+    {
+      "code": "CWS",
+      "description": "Women's summer clothing",
+      "department": "Clothing",
+      "count": 24
+    },
+    {
+      "code": "CLR",
+      "description": "Accessories",
+      "department": "Clothing",
+      "count": 17
+    },
+    {
+      "code": "CLG",
+      "description": "Girls' clothing",
+      "department": "Clothing",
+      "count": 14
+    },
+    {
+      "code": "CLD",
+      "description": "Baby/Toddlers' Clothing",
+      "department": "Clothing",
+      "count": 12
+    },
+    {
+      "code": "VMF",
+      "description": "Monitor, flat screen",
+      "department": "Computers",
+      "count": 218
+    },
+    {
+      "code": "VCD",
+      "description": "Desktop computer",
+      "department": "Computers",
+      "count": 59
+    },
+    {
+      "code": "VZX",
+      "description": "PALLET OF Computer Accessories/ Mixed items, Untested",
+      "department": "Computers",
+      "count": 38
+    },
+    {
+      "code": "VB",
+      "description": "Multi-item Box of Tested Computer items",
+      "department": "Computers",
+      "count": 6
+    },
+    {
+      "code": "V",
+      "description": "PALLET of tested Computer equipment",
+      "department": "Computers",
+      "count": 5
+    },
+    {
+      "code": "VXC",
+      "description": "Computer Power & Network Cable",
+      "department": "Computers",
+      "count": 5
+    },
+    {
+      "code": "VZM",
+      "description": "PALLET of Computer Monitors, Untested",
+      "department": "Computers",
+      "count": 4
+    },
+    {
+      "code": "VA",
+      "description": "Computer accessories - e.g. mouse, keyboard",
+      "department": "Computers",
+      "count": 3
+    },
+    {
+      "code": "VCL",
+      "description": "Laptop",
+      "department": "Computers",
+      "count": 3
+    },
+    {
+      "code": "VPM",
+      "description": "Multi-function printer, scanner & fax",
+      "department": "Computers",
+      "count": 3
+    },
+    {
+      "code": "VXS",
+      "description": "Computer speakers",
+      "department": "Computers",
+      "count": 3
+    },
+    {
+      "code": "VZ",
+      "description": "PALLET OF Computer equipment, untested",
+      "department": "Computers",
+      "count": 3
+    },
+    {
+      "code": "VZC",
+      "description": "PALLET OF CPUs, Untested",
+      "department": "Computers",
+      "count": 2
+    },
+    {
+      "code": "VNS",
+      "description": "Scanner",
+      "department": "Computers",
+      "count": 1
+    },
+    {
+      "code": "VP",
+      "description": "Printer",
+      "department": "Computers",
+      "count": 1
+    },
+    {
+      "code": "VXW",
+      "description": "Web cam",
+      "department": "Computers",
+      "count": 1
+    },
+    {
+      "code": "VXX",
+      "description": "Other types of computer equipment",
+      "department": "Computers",
+      "count": 1
+    },
+    {
+      "code": "EHL",
+      "description": "Lighting- Lamp",
+      "department": "Electrical",
+      "count": 188
+    },
+    {
+      "code": "EHX",
+      "description": "Other Household Electrical items",
+      "department": "Electrical",
+      "count": 121
+    },
+    {
+      "code": "EUS",
+      "description": "Speaker",
+      "department": "Electrical",
+      "count": 93
+    },
+    {
+      "code": "EXB",
+      "description": "Electrical bodycare products",
+      "department": "Electrical",
+      "count": 69
+    },
+    {
+      "code": "EX",
+      "description": "Other electrical items",
+      "department": "Electrical",
+      "count": 59
+    },
+    {
+      "code": "EHH",
+      "description": "Heater",
+      "department": "Electrical",
+      "count": 55
+    },
+    {
+      "code": "EKE",
+      "description": "Electric plates / multicookers",
+      "department": "Electrical",
+      "count": 42
+    },
+    {
+      "code": "EKX",
+      "description": "Other small kitchen appliances",
+      "department": "Electrical",
+      "count": 37
+    },
+    {
+      "code": "EHF",
+      "description": "Fan",
+      "department": "Electrical",
+      "count": 30
+    },
+    {
+      "code": "EKI",
+      "description": "Rice cooker",
+      "department": "Electrical",
+      "count": 30
+    },
+    {
+      "code": "EUX",
+      "description": "Other audio items",
+      "department": "Electrical",
+      "count": 29
+    },
+    {
+      "code": "EKK",
+      "description": "Kettle",
+      "department": "Electrical",
+      "count": 26
+    },
+    {
+      "code": "EZH",
+      "description": "PALLET OF Electrical Home, Untested",
+      "department": "Electrical",
+      "count": 23
+    },
+    {
+      "code": "EKR",
+      "description": "Refrigerator",
+      "department": "Electrical",
+      "count": 21
+    },
+    {
+      "code": "DE",
+      "description": "Electrical tools",
+      "department": "Electrical",
+      "count": 16
+    },
+    {
+      "code": "EHC",
+      "description": "Vacuum cleaner",
+      "department": "Electrical",
+      "count": 16
+    },
+    {
+      "code": "EVD",
+      "description": "DVD/VCD player",
+      "department": "Electrical",
+      "count": 14
+    },
+    {
+      "code": "EOX",
+      "description": "Other office/communication items",
+      "department": "Electrical",
+      "count": 13
+    },
+    {
+      "code": "E",
+      "description": "PALLET of Sorted Electrical",
+      "department": "Electrical",
+      "count": 12
+    },
+    {
+      "code": "EUN",
+      "description": "Amplifier - in-building PA",
+      "department": "Electrical",
+      "count": 12
+    },
+    {
+      "code": "DD",
+      "description": "Hand tools",
+      "department": "Electrical",
+      "count": 11
+    },
+    {
+      "code": "EVT",
+      "description": "TV set",
+      "department": "Electrical",
+      "count": 10
+    },
+    {
+      "code": "EVX",
+      "description": "Other visual appliances",
+      "department": "Electrical",
+      "count": 10
+    },
+    {
+      "code": "EB",
+      "description": "Multi-item Box of Tested Electrical items",
+      "department": "Electrical",
+      "count": 8
+    },
+    {
+      "code": "EHD",
+      "description": "Dehumidifier",
+      "department": "Electrical",
+      "count": 8
+    },
+    {
+      "code": "XC",
+      "description": "Car accessories",
+      "department": "Electrical",
+      "count": 8
+    },
+    {
+      "code": "EKH",
+      "description": "Range hood",
+      "department": "Electrical",
+      "count": 7
+    },
+    {
+      "code": "EOT",
+      "description": "Telephone",
+      "department": "Electrical",
+      "count": 7
+    },
+    {
+      "code": "EKJ",
+      "description": "Fruit juicer/Blender",
+      "department": "Electrical",
+      "count": 6
+    },
+    {
+      "code": "EUR",
+      "description": "Radio",
+      "department": "Electrical",
+      "count": 6
+    },
+    {
+      "code": "EHW",
+      "description": "Washing machine",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EKC",
+      "description": "Coffee maker",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EKP",
+      "description": "Pot/Urn",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EKS",
+      "description": "Stove/ oven",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EKT",
+      "description": "Toaster/Toaster oven",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EUD",
+      "description": "CD player",
+      "department": "Electrical",
+      "count": 5
+    },
+    {
+      "code": "EUH",
+      "description": "Hi-Fi System",
+      "department": "Electrical",
+      "count": 4
+    },
+    {
+      "code": "EUK",
+      "description": "Electrical music instrument",
+      "department": "Electrical",
+      "count": 4
+    },
+    {
+      "code": "EUM",
+      "description": "Amplifier - home",
+      "department": "Electrical",
+      "count": 4
+    },
+    {
+      "code": "EVB",
+      "description": "Blu-ray player",
+      "department": "Electrical",
+      "count": 4
+    },
+    {
+      "code": "EHI",
+      "description": "Iron",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "EHY",
+      "description": "Clothes dryer",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "EKD",
+      "description": "Dishwasher",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "EKL",
+      "description": "Water cooler/ Water Heater",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "EVS",
+      "description": "Slide projector",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "EXS",
+      "description": "Sewing machine",
+      "department": "Electrical",
+      "count": 3
+    },
+    {
+      "code": "DB",
+      "description": "Tool box",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EHA",
+      "description": "Air conditioner",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EKF",
+      "description": "Freezer",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EKM",
+      "description": "Microwave",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EOW",
+      "description": "Typewriter",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EV",
+      "description": "Video/Visual/AV",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EVP",
+      "description": "Overhead projector",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EVQ",
+      "description": "Video projector",
+      "department": "Electrical",
+      "count": 2
+    },
+    {
+      "code": "EH",
+      "description": "Household electrical",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "EUC",
+      "description": "Cassette recorder",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "EUP",
+      "description": "Amplifier - outdoor PA",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "EUU",
+      "description": "Radio tuner",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "EVA",
+      "description": "Cameras [Digital/Still/Video]",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "EVC",
+      "description": "Video cassette recorder",
+      "department": "Electrical",
+      "count": 1
+    },
+    {
+      "code": "FCD",
+      "description": "Dining chair",
+      "department": "Furniture",
+      "count": 161
+    },
+    {
+      "code": "FCO",
+      "description": "Office chair",
+      "department": "Furniture",
+      "count": 111
+    },
+    {
+      "code": "FCI",
+      "description": "Stool",
+      "department": "Furniture",
+      "count": 75
+    },
+    {
+      "code": "FTX",
+      "description": "Other table",
+      "department": "Furniture",
+      "count": 58
+    },
+    {
+      "code": "FXA",
+      "description": "Artwork - pictures for wall, picture frames",
+      "department": "Furniture",
+      "count": 55
+    },
+    {
+      "code": "FTE",
+      "description": "Coffee table",
+      "department": "Furniture",
+      "count": 51
+    },
+    {
+      "code": "FBB",
+      "description": "Bedroom bedside cabinet",
+      "department": "Furniture",
+      "count": 43
+    },
+    {
+      "code": "FTD",
+      "description": "Dining table",
+      "department": "Furniture",
+      "count": 41
+    },
+    {
+      "code": "FCX",
+      "description": "Other chair",
+      "department": "Furniture",
+      "count": 37
+    },
+    {
+      "code": "FSS",
+      "description": "Storage shelf",
+      "department": "Furniture",
+      "count": 36
+    },
+    {
+      "code": "FCL",
+      "description": "Living room chair",
+      "department": "Furniture",
+      "count": 33
+    },
+    {
+      "code": "FBX",
+      "description": "Other cabinets",
+      "department": "Furniture",
+      "count": 28
+    },
+    {
+      "code": "FCS",
+      "description": "Sofa/ Lounge sofa",
+      "department": "Furniture",
+      "count": 28
+    },
+    {
+      "code": "FBL",
+      "description": "Living room cabinet",
+      "department": "Furniture",
+      "count": 27
+    },
+    {
+      "code": "FCQ",
+      "description": "School chair",
+      "department": "Furniture",
+      "count": 27
+    },
+    {
+      "code": "FSB",
+      "description": "Book shelf",
+      "department": "Furniture",
+      "count": 27
+    },
+    {
+      "code": "FCC",
+      "description": "Children's chair",
+      "department": "Furniture",
+      "count": 26
+    },
+    {
+      "code": "BSM",
+      "description": "Single size mattress",
+      "department": "Furniture",
+      "count": 25
+    },
+    {
+      "code": "FBV",
+      "description": "TV/Hi-Fi cabinet",
+      "department": "Furniture",
+      "count": 23
+    },
+    {
+      "code": "FCH",
+      "description": "Stacking chair",
+      "department": "Furniture",
+      "count": 21
+    },
+    {
+      "code": "FDQ",
+      "description": "School desk",
+      "department": "Furniture",
+      "count": 20
+    },
+    {
+      "code": "FBR",
+      "description": "Office cupboard",
+      "department": "Furniture",
+      "count": 18
+    },
+    {
+      "code": "BBM",
+      "description": "Baby mattress",
+      "department": "Furniture",
+      "count": 17
+    },
+    {
+      "code": "FBC",
+      "description": "Bedroom chest of drawers",
+      "department": "Furniture",
+      "count": 17
+    },
+    {
+      "code": "CHP",
+      "description": "Carpet/rug",
+      "department": "Furniture",
+      "count": 16
+    },
+    {
+      "code": "FBP",
+      "description": "Office drawer unit",
+      "department": "Furniture",
+      "count": 16
+    },
+    {
+      "code": "FDO",
+      "description": "Office desk",
+      "department": "Furniture",
+      "count": 15
+    },
+    {
+      "code": "FCF",
+      "description": "Folding chair",
+      "department": "Furniture",
+      "count": 14
+    },
+    {
+      "code": "FCU",
+      "description": "Outdoor chair",
+      "department": "Furniture",
+      "count": 13
+    },
+    {
+      "code": "FDP",
+      "description": "Computer desk",
+      "department": "Furniture",
+      "count": 13
+    },
+    {
+      "code": "BDM",
+      "description": "Double size mattress",
+      "department": "Furniture",
+      "count": 12
+    },
+    {
+      "code": "FDH",
+      "description": "Household desk",
+      "department": "Furniture",
+      "count": 12
+    },
+    {
+      "code": "FT",
+      "description": "Table",
+      "department": "Furniture",
+      "count": 12
+    },
+    {
+      "code": "FTC",
+      "description": "Children's table",
+      "department": "Furniture",
+      "count": 12
+    },
+    {
+      "code": "FBD",
+      "description": "Bedroom wardrobe",
+      "department": "Furniture",
+      "count": 11
+    },
+    {
+      "code": "RMP",
+      "description": "Piano/Organ",
+      "department": "Furniture",
+      "count": 10
+    },
+    {
+      "code": "XX",
+      "description": "Other, miscellaeneous",
+      "department": "Furniture",
+      "count": 10
+    },
+    {
+      "code": "FSD",
+      "description": "Display shelf",
+      "department": "Furniture",
+      "count": 9
+    },
+    {
+      "code": "FTF",
+      "description": "Folding table",
+      "department": "Furniture",
+      "count": 9
+    },
+    {
+      "code": "FXH",
+      "description": "Clothes hanging racks",
+      "department": "Furniture",
+      "count": 9
+    },
+    {
+      "code": "FXM",
+      "description": "Mirror",
+      "department": "Furniture",
+      "count": 9
+    },
+    {
+      "code": "BBS",
+      "description": "Baby's crib with mattress",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "BDB",
+      "description": "Double bed base",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "FCT",
+      "description": "Sofa bed",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "FS",
+      "description": "Shelf",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "FSX",
+      "description": "Other shelf",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "FTA",
+      "description": "Baby-change table",
+      "department": "Furniture",
+      "count": 8
+    },
+    {
+      "code": "BCM",
+      "description": "Child's mattress",
+      "department": "Furniture",
+      "count": 7
+    },
+    {
+      "code": "FBO",
+      "description": "Office file cabinet",
+      "department": "Furniture",
+      "count": 6
+    },
+    {
+      "code": "FD",
+      "description": "Desk",
+      "department": "Furniture",
+      "count": 6
+    },
+    {
+      "code": "FTO",
+      "description": "Office/ Conference table",
+      "department": "Furniture",
+      "count": 6
+    },
+    {
+      "code": "BBC",
+      "description": "Baby crib",
+      "department": "Furniture",
+      "count": 5
+    },
+    {
+      "code": "BDS",
+      "description": "Double bed with mattress",
+      "department": "Furniture",
+      "count": 5
+    },
+    {
+      "code": "BSS",
+      "description": "Single bed with mattress",
+      "department": "Furniture",
+      "count": 5
+    },
+    {
+      "code": "FC",
+      "description": "Chairs",
+      "department": "Furniture",
+      "count": 5
+    },
+    {
+      "code": "BSF",
+      "description": "Single bed (folding)",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FB",
+      "description": "Cabinet/ cupboard",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FDC",
+      "description": "Children's desk",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FDX",
+      "description": "Other desk",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FTU",
+      "description": "Outdoor table",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FXT",
+      "description": "Trolley",
+      "department": "Furniture",
+      "count": 4
+    },
+    {
+      "code": "FBS",
+      "description": "Display cabinet",
+      "department": "Furniture",
+      "count": 3
+    },
+    {
+      "code": "FSR",
+      "description": "Rack-CD, Magazine, Shoe",
+      "department": "Furniture",
+      "count": 3
+    },
+    {
+      "code": "FXZ",
+      "description": "Other types of furniture",
+      "department": "Furniture",
+      "count": 3
+    },
+    {
+      "code": "BCX",
+      "description": "Bed - child's others",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "BKS",
+      "description": "Bunk bed with mattress",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "BSB",
+      "description": "Single bed base",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "FBK",
+      "description": "Kitchen cabinet",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "FBT",
+      "description": "Shoe cabinet",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "FSO",
+      "description": "Office shelf",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "FTV",
+      "description": "TV/Hi-Fi table",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "FXB",
+      "description": "Writing board/ notice board",
+      "department": "Furniture",
+      "count": 2
+    },
+    {
+      "code": "BB",
+      "description": "Baby's bed",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "BCB",
+      "description": "Child's base",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "BCS",
+      "description": "Child's bed with mattress",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "BKB",
+      "description": "Bunk bed base",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "BLS",
+      "description": "Loft bed with mattress",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "BS",
+      "description": "Single bed",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "FBF",
+      "description": "Plastic chest of drawers",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "FTK",
+      "description": "Kitchen table",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "FXU",
+      "description": "Other outdoor furniture",
+      "department": "Furniture",
+      "count": 1
+    },
+    {
+      "code": "H",
+      "description": "PALLET of Sorted Household",
+      "department": "Household",
+      "count": 48
+    },
+    {
+      "code": "HD",
+      "description": "Dining items -NON TEXTILE",
+      "department": "Household",
+      "count": 45
+    },
+    {
+      "code": "CBB",
+      "description": "Blanket",
+      "department": "Household",
+      "count": 40
+    },
+    {
+      "code": "HXB",
+      "description": "Bags/ Backpacks",
+      "department": "Household",
+      "count": 40
+    },
+    {
+      "code": "CBP",
+      "description": "Pillow/pillow cover",
+      "department": "Household",
+      "count": 33
+    },
+    {
+      "code": "HK",
+      "description": "Kitchen items",
+      "department": "Household",
+      "count": 33
+    },
+    {
+      "code": "HZO",
+      "description": "PALLET OF Household Other, Unsorted",
+      "department": "Household",
+      "count": 26
+    },
+    {
+      "code": "HX",
+      "description": "Other household items",
+      "department": "Household",
+      "count": 25
+    },
+    {
+      "code": "CHS",
+      "description": "Cushions/kitchen & dining linen",
+      "department": "Household",
+      "count": 15
+    },
+    {
+      "code": "HPX",
+      "description": "Other baby items (stairgate, safety items etc)",
+      "department": "Household",
+      "count": 15
+    },
+    {
+      "code": "RCM",
+      "description": "Camping sleeping mattress",
+      "department": "Household",
+      "count": 14
+    },
+    {
+      "code": "HXT",
+      "description": "Rubbish bin/ cleaning supplies",
+      "department": "Household",
+      "count": 12
+    },
+    {
+      "code": "CHX",
+      "description": "Other household textiles",
+      "department": "Household",
+      "count": 11
+    },
+    {
+      "code": "HN",
+      "description": "Ornaments",
+      "department": "Household",
+      "count": 11
+    },
+    {
+      "code": "HPW",
+      "description": "Baby swing/walker/jumper",
+      "department": "Household",
+      "count": 11
+    },
+    {
+      "code": "CBS",
+      "description": "Bed sheet",
+      "department": "Household",
+      "count": 10
+    },
+    {
+      "code": "CHT",
+      "description": "Towels/ Bath Linen",
+      "department": "Household",
+      "count": 10
+    },
+    {
+      "code": "HY",
+      "description": "Personal care items",
+      "department": "Household",
+      "count": 10
+    },
+    {
+      "code": "HPH",
+      "description": "High chair",
+      "department": "Household",
+      "count": 9
+    },
+    {
+      "code": "RCX",
+      "description": "Other camping equipment",
+      "department": "Household",
+      "count": 9
+    },
+    {
+      "code": "CBX",
+      "description": "Other bedding items",
+      "department": "Household",
+      "count": 8
+    },
+    {
+      "code": "CCB",
+      "description": "Sleeping bag",
+      "department": "Household",
+      "count": 8
+    },
+    {
+      "code": "HPS",
+      "description": "Stroller",
+      "department": "Household",
+      "count": 8
+    },
+    {
+      "code": "HZT",
+      "description": "PALLET OF Household Textiles, Unsorted",
+      "department": "Household",
+      "count": 8
+    },
+    {
+      "code": "RCT",
+      "description": "Tent",
+      "department": "Household",
+      "count": 7
+    },
+    {
+      "code": "HPT",
+      "description": "Travel cot",
+      "department": "Household",
+      "count": 6
+    },
+    {
+      "code": "GCB",
+      "description": "Booster seat",
+      "department": "Household",
+      "count": 4
+    },
+    {
+      "code": "CHC",
+      "description": "Curtain",
+      "department": "Household",
+      "count": 3
+    },
+    {
+      "code": "CHF",
+      "description": "Fabric/ Craft",
+      "department": "Household",
+      "count": 3
+    },
+    {
+      "code": "HB",
+      "description": "Bedroom items - NON TEXTILE",
+      "department": "Household",
+      "count": 3
+    },
+    {
+      "code": "HGX",
+      "description": "Agricultural and Gardening Tools and Supplies",
+      "department": "Household",
+      "count": 3
+    },
+    {
+      "code": "HPB",
+      "description": "Baby Bath/ toilet/ bath ring",
+      "department": "Household",
+      "count": 3
+    },
+    {
+      "code": "HPC",
+      "description": "Baby car seats",
+      "department": "Household",
+      "count": 2
+    },
+    {
+      "code": "HA",
+      "description": "Bathroom items",
+      "department": "Household",
+      "count": 1
+    },
+    {
+      "code": "MDY",
+      "description": "Physiotherapy",
+      "department": "Medical",
+      "count": 33
+    },
+    {
+      "code": "MGT",
+      "description": "Therapeutic aids (allied health)",
+      "department": "Medical",
+      "count": 28
+    },
+    {
+      "code": "MGP",
+      "description": "Patient Accessories",
+      "department": "Medical",
+      "count": 25
+    },
+    {
+      "code": "MGB",
+      "description": "Monitoring Devices",
+      "department": "Medical",
+      "count": 21
+    },
+    {
+      "code": "MGS",
+      "description": "Sharps",
+      "department": "Medical",
+      "count": 16
+    },
+    {
+      "code": "MDA",
+      "description": "Anaesthetics/ICU/Resuscitation",
+      "department": "Medical",
+      "count": 15
+    },
+    {
+      "code": "MGO",
+      "description": "Oxygen tubing/ masks/ suction catheters",
+      "department": "Medical",
+      "count": 15
+    },
+    {
+      "code": "MDM",
+      "description": "Maternity/Obstetrics/Perinatoloy",
+      "department": "Medical",
+      "count": 12
+    },
+    {
+      "code": "MGE",
+      "description": "Items for enteral procedures",
+      "department": "Medical",
+      "count": 12
+    },
+    {
+      "code": "MZ",
+      "description": "Pallet of Medical supplies, unsorted",
+      "department": "Medical",
+      "count": 11
+    },
+    {
+      "code": "MGX",
+      "description": "Other General Medical Supplies",
+      "department": "Medical",
+      "count": 10
+    },
+    {
+      "code": "MW",
+      "description": "Women's Health",
+      "department": "Medical",
+      "count": 10
+    },
+    {
+      "code": "MDT",
+      "description": "Trauma",
+      "department": "Medical",
+      "count": 9
+    },
+    {
+      "code": "MDR",
+      "description": "Respiratory",
+      "department": "Medical",
+      "count": 8
+    },
+    {
+      "code": "MFX",
+      "description": "Other medical furniture",
+      "department": "Medical",
+      "count": 8
+    },
+    {
+      "code": "MDS",
+      "description": "Surgical",
+      "department": "Medical",
+      "count": 7
+    },
+    {
+      "code": "MEN",
+      "description": "Eye frames without prescription lenses",
+      "department": "Medical",
+      "count": 7
+    },
+    {
+      "code": "MGG",
+      "description": "Gloves, gowns, masks",
+      "department": "Medical",
+      "count": 7
+    },
+    {
+      "code": "MGA",
+      "description": "First Aid Kits",
+      "department": "Medical",
+      "count": 5
+    },
+    {
+      "code": "MDB",
+      "description": "Doctor's Bag/ assessment tools",
+      "department": "Medical",
+      "count": 4
+    },
+    {
+      "code": "MDC",
+      "description": "Cardiology",
+      "department": "Medical",
+      "count": 4
+    },
+    {
+      "code": "MFB",
+      "description": "Hospital bed",
+      "department": "Medical",
+      "count": 4
+    },
+    {
+      "code": "MGW",
+      "description": "Geriatrics",
+      "department": "Medical",
+      "count": 4
+    },
+    {
+      "code": "MP",
+      "description": "Paediatric supplies",
+      "department": "Medical",
+      "count": 4
+    },
+    {
+      "code": "MDQ",
+      "description": "Sterilizing",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MDW",
+      "description": "Xray Boxes/ Ultasound/ Imaging",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MFD",
+      "description": "Hospital bed mattress",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MFG",
+      "description": "Commode chair",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MGU",
+      "description": "Urinary catheters",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MS",
+      "description": "General Surgical supplies",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "MT",
+      "description": "Dental supplies",
+      "department": "Medical",
+      "count": 3
+    },
+    {
+      "code": "M",
+      "description": "Pallet of Sorted Medical items",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MDD",
+      "description": "Dental devices",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MDH",
+      "description": "ENT (Ear Nose Throat)",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MDV",
+      "description": "Vision/ Opthalmology Equipment",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MDX",
+      "description": "Medical devices",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MEF",
+      "description": "Safety glasses (eye protectors)",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MEW",
+      "description": "Assorted/Mixed Box of Eyeglasses",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MFH",
+      "description": "Examination couch/ bench",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MFP",
+      "description": "Patient transport trolley",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MFT",
+      "description": "Equipment trolley",
+      "department": "Medical",
+      "count": 2
+    },
+    {
+      "code": "MDE",
+      "description": "Endoscopy",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MEG",
+      "description": "Sunglasses",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MFA",
+      "description": "Therapy equip/ furniture",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MFC",
+      "description": "Hospital bed parts",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MFE",
+      "description": "Bed-over table",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MFV",
+      "description": "Mobility aids",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MFW",
+      "description": "Wheelchair",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "MGN",
+      "description": "Nursing - dressing/ bandages",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "ML",
+      "description": "Laboratory Equipment",
+      "department": "Medical",
+      "count": 1
+    },
+    {
+      "code": "NZ",
+      "description": "PALLET OF Stationery, unsorted",
+      "department": "Stationery",
+      "count": 24
+    },
+    {
+      "code": "NO",
+      "description": "Office stationery",
+      "department": "Stationery",
+      "count": 17
+    },
+    {
+      "code": "NQ",
+      "description": "School stationery",
+      "department": "Stationery",
+      "count": 8
+    },
+    {
+      "code": "N",
+      "description": "Pallet of Sorted Stationery",
+      "department": "Stationery",
+      "count": 5
+    },
+    {
+      "code": "TPX",
+      "description": "Pretend-play toy",
+      "department": "Toys",
+      "count": 28
+    },
+    {
+      "code": "TS",
+      "description": "Soft Toys",
+      "department": "Toys",
+      "count": 20
+    },
+    {
+      "code": "REC",
+      "description": "Large Circuit/Exercise Equipment",
+      "department": "Toys",
+      "count": 16
+    },
+    {
+      "code": "RMS",
+      "description": "Musical instruments",
+      "department": "Toys",
+      "count": 15
+    },
+    {
+      "code": "RPR",
+      "description": "Ride-on toy/ scooter",
+      "department": "Toys",
+      "count": 15
+    },
+    {
+      "code": "TRG",
+      "description": "Gross-motor toys",
+      "department": "Toys",
+      "count": 15
+    },
+    {
+      "code": "TRF",
+      "description": "Fine-motor toys",
+      "department": "Toys",
+      "count": 14
+    },
+    {
+      "code": "TX",
+      "description": "Other toys",
+      "department": "Toys",
+      "count": 11
+    },
+    {
+      "code": "TZ",
+      "description": "PALLET OF Toys, unsorted",
+      "department": "Toys",
+      "count": 11
+    },
+    {
+      "code": "TT",
+      "description": "Battery-operated toys",
+      "department": "Toys",
+      "count": 10
+    },
+    {
+      "code": "TB",
+      "description": "Baby & Toddler toys",
+      "department": "Toys",
+      "count": 9
+    },
+    {
+      "code": "REE",
+      "description": "Small Exercise Aids",
+      "department": "Toys",
+      "count": 6
+    },
+    {
+      "code": "REX",
+      "description": "Other exercise equipment",
+      "department": "Toys",
+      "count": 6
+    },
+    {
+      "code": "RPS",
+      "description": "Sports equipment (large)",
+      "department": "Toys",
+      "count": 6
+    },
+    {
+      "code": "T",
+      "description": "PALLET of Sorted Toys",
+      "department": "Toys",
+      "count": 6
+    },
+    {
+      "code": "RPX",
+      "description": "Playground item (large)",
+      "department": "Toys",
+      "count": 4
+    },
+    {
+      "code": "TE",
+      "description": "Educational toys",
+      "department": "Toys",
+      "count": 3
+    },
+    {
+      "code": "TW",
+      "description": "Water / sand toys",
+      "department": "Toys",
+      "count": 3
+    },
+    {
+      "code": "REW",
+      "description": "Weights",
+      "department": "Toys",
+      "count": 2
+    },
+    {
+      "code": "RX",
+      "description": "Other recreational items",
+      "department": "Toys",
+      "count": 1
+    },
+    {
+      "code": "TM",
+      "description": "Music toys",
+      "department": "Toys",
+      "count": 1
+    },
+    {
+      "code": "TZR",
+      "description": "PALLET OF Sporting items, unsorted",
+      "department": "Toys",
+      "count": 1
+    }
+  ],
+  "quantity_overall": {
+    "buckets": {
+      "1": 0.86046,
+      "2-5": 0.08647,
+      "6-20": 0.02985,
+      "21-100": 0.01415,
+      "101-1000": 0.00796,
+      "1000+": 0.00111
+    },
+    "pct_qty_eq_1": 0.86046,
+    "median": 1.0,
+    "p90": 2.0,
+    "p99": 87.0,
+    "max": 18462.0
+  },
+  "condition_weights": {
+    "New": 0.19947,
+    "Heavily Used": 0.13755,
+    "Lightly Used": 0.6172,
+    "Mixed": 0.00398,
+    "-": 0.0356,
+    "Broken": 0.00619
+  },
+  "grade_weights": {
+    "A": 0.26537,
+    "B": 0.65989,
+    "blank": 0.0356,
+    "C": 0.03251,
+    "D": 0.00663
+  },
+  "condition_to_grade_weights": {
+    "New": {
+      "A": 0.92239,
+      "B": 0.07761
+    },
+    "Heavily Used": {
+      "B": 0.41318,
+      "A": 0.38424,
+      "C": 0.19132,
+      "D": 0.01125
+    },
+    "Lightly Used": {
+      "B": 0.94554,
+      "C": 0.00896,
+      "A": 0.04515,
+      "D": 0.00036
+    },
+    "Mixed": {
+      "B": 0.77778,
+      "A": 0.16667,
+      "C": 0.05556
+    },
+    "-": {
+      "blank": 1.0
+    },
+    "Broken": {
+      "D": 0.78571,
+      "B": 0.14286,
+      "C": 0.07143
+    }
+  },
+  "published_weights": {
+    "False": 0.77267,
+    "-": 0.01172,
+    "True": 0.21561
+  },
+  "locations": {
+    "distinct_locations": 110,
+    "pct_single_location": 0.85714,
+    "pct_multi_location": 0.14286,
+    "max_locations_in_one_row": 9,
+    "note_pseudo_qty_is_cumulative": "For rows whose Location(qty) includes ONLY real (non-pseudo) locations, the summed quantities equal Quantity On Hand in 99.9% of cases (3621/3625). When a pseudo-location (dispatched/trash/loss/process/recycle/In Transit) is present, the summed quantities usually EXCEED Quantity On Hand by a large margin -- these pseudo-location counts are ALL-TIME CUMULATIVE dispatched/trashed/lost counts, not current stock. Do not treat Location(qty) as a simple partition of Quantity On Hand once a pseudo-location appears.",
+    "locations": [
+      {
+        "name": "30 Furniture",
+        "row_frequency": 1173,
+        "weight": 0.21929,
+        "qty_total_alltime": 10545,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "dispatched",
+        "row_frequency": 543,
+        "weight": 0.10151,
+        "qty_total_alltime": 57439,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "30 Electrical",
+        "row_frequency": 354,
+        "weight": 0.06618,
+        "qty_total_alltime": 3480,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "In Transit",
+        "row_frequency": 280,
+        "weight": 0.05235,
+        "qty_total_alltime": 377,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "32 Computers",
+        "row_frequency": 244,
+        "weight": 0.04562,
+        "qty_total_alltime": 258,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "PG Shed",
+        "row_frequency": 233,
+        "weight": 0.04356,
+        "qty_total_alltime": 559,
+        "type": "real",
+        "pattern": "shed"
+      },
+      {
+        "name": "28 HouseHold",
+        "row_frequency": 169,
+        "weight": 0.03159,
+        "qty_total_alltime": 190,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 P2 Electrical",
+        "row_frequency": 147,
+        "weight": 0.02748,
+        "qty_total_alltime": 159,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "29 Clothing",
+        "row_frequency": 140,
+        "weight": 0.02617,
+        "qty_total_alltime": 153,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "SB Shed",
+        "row_frequency": 126,
+        "weight": 0.02356,
+        "qty_total_alltime": 275,
+        "type": "real",
+        "pattern": "shed"
+      },
+      {
+        "name": "28 P3 Electrical",
+        "row_frequency": 119,
+        "weight": 0.02225,
+        "qty_total_alltime": 205,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "PG Medical G",
+        "row_frequency": 108,
+        "weight": 0.02019,
+        "qty_total_alltime": 117,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "28 M Electrical",
+        "row_frequency": 92,
+        "weight": 0.0172,
+        "qty_total_alltime": 129,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "PG Medical B",
+        "row_frequency": 87,
+        "weight": 0.01626,
+        "qty_total_alltime": 90,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "loss",
+        "row_frequency": 83,
+        "weight": 0.01552,
+        "qty_total_alltime": 1559,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "28 Q BulkRm",
+        "row_frequency": 82,
+        "weight": 0.01533,
+        "qty_total_alltime": 83,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 P7 Electrical",
+        "row_frequency": 80,
+        "weight": 0.01496,
+        "qty_total_alltime": 82,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "PG PTL",
+        "row_frequency": 77,
+        "weight": 0.0144,
+        "qty_total_alltime": 507,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "PG Tent",
+        "row_frequency": 73,
+        "weight": 0.01365,
+        "qty_total_alltime": 110,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "29 Toys",
+        "row_frequency": 70,
+        "weight": 0.01309,
+        "qty_total_alltime": 70,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 P8 Electrical",
+        "row_frequency": 66,
+        "weight": 0.01234,
+        "qty_total_alltime": 72,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 P9 Electrical",
+        "row_frequency": 63,
+        "weight": 0.01178,
+        "qty_total_alltime": 63,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "process",
+        "row_frequency": 56,
+        "weight": 0.01047,
+        "qty_total_alltime": 1981,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "CntrB 09",
+        "row_frequency": 55,
+        "weight": 0.01028,
+        "qty_total_alltime": 88,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "32 Incoming",
+        "row_frequency": 55,
+        "weight": 0.01028,
+        "qty_total_alltime": 67,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 N1 Electrical",
+        "row_frequency": 48,
+        "weight": 0.00897,
+        "qty_total_alltime": 48,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "trash",
+        "row_frequency": 43,
+        "weight": 0.00804,
+        "qty_total_alltime": 268,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "CntrB 07",
+        "row_frequency": 33,
+        "weight": 0.00617,
+        "qty_total_alltime": 64,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "29 Books",
+        "row_frequency": 31,
+        "weight": 0.0058,
+        "qty_total_alltime": 31,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "PG Medical D",
+        "row_frequency": 27,
+        "weight": 0.00505,
+        "qty_total_alltime": 39,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "CntrA 03",
+        "row_frequency": 25,
+        "weight": 0.00467,
+        "qty_total_alltime": 152,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "PG Medical H",
+        "row_frequency": 24,
+        "weight": 0.00449,
+        "qty_total_alltime": 31,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "CntrA 02",
+        "row_frequency": 23,
+        "weight": 0.0043,
+        "qty_total_alltime": 305,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "recycle",
+        "row_frequency": 21,
+        "weight": 0.00393,
+        "qty_total_alltime": 43,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "PG Medical A",
+        "row_frequency": 20,
+        "weight": 0.00374,
+        "qty_total_alltime": 20,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "28 L Stationery",
+        "row_frequency": 20,
+        "weight": 0.00374,
+        "qty_total_alltime": 20,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrF 01",
+        "row_frequency": 20,
+        "weight": 0.00374,
+        "qty_total_alltime": 31,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 08 (Bikes)",
+        "row_frequency": 19,
+        "weight": 0.00355,
+        "qty_total_alltime": 19,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 10 (Medical)",
+        "row_frequency": 18,
+        "weight": 0.00337,
+        "qty_total_alltime": 18,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 N Electrical",
+        "row_frequency": 17,
+        "weight": 0.00318,
+        "qty_total_alltime": 17,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "28 P4 Electrical",
+        "row_frequency": 17,
+        "weight": 0.00318,
+        "qty_total_alltime": 25,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "88 Bikes",
+        "row_frequency": 16,
+        "weight": 0.00299,
+        "qty_total_alltime": 16,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrS 16.5",
+        "row_frequency": 15,
+        "weight": 0.0028,
+        "qty_total_alltime": 15,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 12",
+        "row_frequency": 14,
+        "weight": 0.00262,
+        "qty_total_alltime": 21,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "PG Medical E",
+        "row_frequency": 13,
+        "weight": 0.00243,
+        "qty_total_alltime": 14,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "CntrA 04",
+        "row_frequency": 13,
+        "weight": 0.00243,
+        "qty_total_alltime": 112,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 07",
+        "row_frequency": 11,
+        "weight": 0.00206,
+        "qty_total_alltime": 11,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 25",
+        "row_frequency": 11,
+        "weight": 0.00206,
+        "qty_total_alltime": 12,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 P Electrical",
+        "row_frequency": 10,
+        "weight": 0.00187,
+        "qty_total_alltime": 10,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrA 05",
+        "row_frequency": 10,
+        "weight": 0.00187,
+        "qty_total_alltime": 62,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 06",
+        "row_frequency": 10,
+        "weight": 0.00187,
+        "qty_total_alltime": 30,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 11",
+        "row_frequency": 10,
+        "weight": 0.00187,
+        "qty_total_alltime": 19,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 06",
+        "row_frequency": 10,
+        "weight": 0.00187,
+        "qty_total_alltime": 36,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 10",
+        "row_frequency": 9,
+        "weight": 0.00168,
+        "qty_total_alltime": 36,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 N2 Electrical",
+        "row_frequency": 9,
+        "weight": 0.00168,
+        "qty_total_alltime": 29,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrD 07",
+        "row_frequency": 9,
+        "weight": 0.00168,
+        "qty_total_alltime": 15,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 02",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 104,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "31 Bikes",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 8,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrB 03",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 368,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 08",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 149,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrA 01",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 43,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "29 HKD",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 757,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrS 18",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 203,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 04",
+        "row_frequency": 8,
+        "weight": 0.0015,
+        "qty_total_alltime": 9,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 05",
+        "row_frequency": 7,
+        "weight": 0.00131,
+        "qty_total_alltime": 123,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 N3 Electrical",
+        "row_frequency": 7,
+        "weight": 0.00131,
+        "qty_total_alltime": 8,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrD 10",
+        "row_frequency": 6,
+        "weight": 0.00112,
+        "qty_total_alltime": 17,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 12locals",
+        "row_frequency": 6,
+        "weight": 0.00112,
+        "qty_total_alltime": 67,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 03",
+        "row_frequency": 6,
+        "weight": 0.00112,
+        "qty_total_alltime": 10,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 09",
+        "row_frequency": 6,
+        "weight": 0.00112,
+        "qty_total_alltime": 12,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "29 Household Annex",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 25603,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrS 32",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 202,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 14 (Medical)",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 27,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 08",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 17,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 11 Rolls of fabric",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 9,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 01",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 5,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 P6 Electrical",
+        "row_frequency": 5,
+        "weight": 0.00093,
+        "qty_total_alltime": 5,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrS 15",
+        "row_frequency": 4,
+        "weight": 0.00075,
+        "qty_total_alltime": 97,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 04",
+        "row_frequency": 4,
+        "weight": 0.00075,
+        "qty_total_alltime": 5,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 13",
+        "row_frequency": 4,
+        "weight": 0.00075,
+        "qty_total_alltime": 113,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 P1 Electrical",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 3,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrB 11 (Medical)",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 7,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrD 06",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 6,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "28 P5 Electrical",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 3,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "31 Eyeglasses",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 3,
+        "type": "real",
+        "pattern": "numbered-zone"
+      },
+      {
+        "name": "CntrS 38",
+        "row_frequency": 3,
+        "weight": 0.00056,
+        "qty_total_alltime": 22,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "PG Medical C",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 2,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "CntrS 33",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 172,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 13locals",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 133,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 87",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 88,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrB 15",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 51,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 86",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 53,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 85",
+        "row_frequency": 2,
+        "weight": 0.00037,
+        "qty_total_alltime": 22,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 02",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 1,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "zzz DELETE",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 1,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "CntrS 06",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 32,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 07",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 40,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 22",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 28,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 26",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 40,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 30",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 44,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 35",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 1,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 93",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 40,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 12",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 14,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 81",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 38,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 16",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 398,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "PG Medical F",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 2,
+        "type": "real",
+        "pattern": "PG-area"
+      },
+      {
+        "name": "Ext Trans-Asial",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 1,
+        "type": "pseudo",
+        "pattern": "other"
+      },
+      {
+        "name": "CntrS 91",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 32,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "CntrS 24",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 1054,
+        "type": "real",
+        "pattern": "container"
+      },
+      {
+        "name": "31 Secure storage",
+        "row_frequency": 1,
+        "weight": 0.00019,
+        "qty_total_alltime": 15,
+        "type": "real",
+        "pattern": "numbered-zone"
+      }
+    ],
+    "multi_location_combos_top60": [
+      {
+        "locations": [
+          "30 Furniture",
+          "dispatched"
+        ],
+        "count": 204,
+        "weight": 0.31579
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "dispatched"
+        ],
+        "count": 64,
+        "weight": 0.09907
+      },
+      {
+        "locations": [
+          "PG Shed",
+          "dispatched"
+        ],
+        "count": 30,
+        "weight": 0.04644
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "dispatched",
+          "process"
+        ],
+        "count": 23,
+        "weight": 0.0356
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "process"
+        ],
+        "count": 20,
+        "weight": 0.03096
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "trash"
+        ],
+        "count": 12,
+        "weight": 0.01858
+      },
+      {
+        "locations": [
+          "SB Shed",
+          "dispatched"
+        ],
+        "count": 11,
+        "weight": 0.01703
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "loss"
+        ],
+        "count": 11,
+        "weight": 0.01703
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "dispatched",
+          "loss"
+        ],
+        "count": 8,
+        "weight": 0.01238
+      },
+      {
+        "locations": [
+          "28 P8 Electrical",
+          "loss"
+        ],
+        "count": 8,
+        "weight": 0.01238
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "dispatched",
+          "loss"
+        ],
+        "count": 7,
+        "weight": 0.01084
+      },
+      {
+        "locations": [
+          "CntrA 02",
+          "dispatched"
+        ],
+        "count": 6,
+        "weight": 0.00929
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "dispatched",
+          "process"
+        ],
+        "count": 6,
+        "weight": 0.00929
+      },
+      {
+        "locations": [
+          "28 P3 Electrical",
+          "dispatched"
+        ],
+        "count": 6,
+        "weight": 0.00929
+      },
+      {
+        "locations": [
+          "PG PTL",
+          "dispatched"
+        ],
+        "count": 6,
+        "weight": 0.00929
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "dispatched",
+          "trash"
+        ],
+        "count": 5,
+        "weight": 0.00774
+      },
+      {
+        "locations": [
+          "PG Medical G",
+          "dispatched"
+        ],
+        "count": 5,
+        "weight": 0.00774
+      },
+      {
+        "locations": [
+          "In Transit",
+          "dispatched"
+        ],
+        "count": 5,
+        "weight": 0.00774
+      },
+      {
+        "locations": [
+          "28 N2 Electrical",
+          "dispatched"
+        ],
+        "count": 4,
+        "weight": 0.00619
+      },
+      {
+        "locations": [
+          "CntrB 09",
+          "dispatched"
+        ],
+        "count": 4,
+        "weight": 0.00619
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "dispatched",
+          "recycle"
+        ],
+        "count": 4,
+        "weight": 0.00619
+      },
+      {
+        "locations": [
+          "PG Tent",
+          "dispatched"
+        ],
+        "count": 4,
+        "weight": 0.00619
+      },
+      {
+        "locations": [
+          "PG Medical D",
+          "dispatched"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "CntrA 03",
+          "dispatched"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "PG Shed",
+          "dispatched",
+          "loss"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "CntrB 05",
+          "dispatched"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "PG Shed",
+          "loss"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "CntrA 01",
+          "dispatched"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "CntrA 04",
+          "dispatched"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "CntrB 07",
+          "In Transit"
+        ],
+        "count": 3,
+        "weight": 0.00464
+      },
+      {
+        "locations": [
+          "28 P8 Electrical",
+          "recycle"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "recycle"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrS 32",
+          "dispatched",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrB 02",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrB 02",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "28 P3 Electrical",
+          "dispatched",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "PG Medical D",
+          "dispatched",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrA 02",
+          "dispatched",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "process"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "PG Medical A",
+          "loss"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "31 Bikes",
+          "recycle"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrB 03",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrA 10",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrD 08",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "30 Electrical",
+          "recycle"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrB 02",
+          "trash"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "28 M Electrical",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "SB Shed",
+          "trash"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "PG Shed",
+          "dispatched",
+          "trash"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "30 Electrical"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "PG Shed",
+          "trash"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrB 12locals",
+          "CntrS 86",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "CntrA 05",
+          "PG Shed",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "29 HKD",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "29 Household Annex",
+          "dispatched"
+        ],
+        "count": 2,
+        "weight": 0.0031
+      },
+      {
+        "locations": [
+          "28 P Electrical",
+          "dispatched"
+        ],
+        "count": 1,
+        "weight": 0.00155
+      },
+      {
+        "locations": [
+          "28 P2 Electrical",
+          "loss"
+        ],
+        "count": 1,
+        "weight": 0.00155
+      },
+      {
+        "locations": [
+          "28 P7 Electrical",
+          "dispatched"
+        ],
+        "count": 1,
+        "weight": 0.00155
+      },
+      {
+        "locations": [
+          "30 Furniture",
+          "loss",
+          "trash"
+        ],
+        "count": 1,
+        "weight": 0.00155
+      },
+      {
+        "locations": [
+          "PG Medical E",
+          "dispatched"
+        ],
+        "count": 1,
+        "weight": 0.00155
+      }
+    ]
+  },
+  "inventory_number_format": {
+    "primary_scheme": {
+      "pattern": "6-digit zero-padded numeric, no letter prefix",
+      "regex": "^\\d{6}$",
+      "share_of_rows": 0.9843,
+      "numeric_range": [
+        2546,
+        150843
+      ],
+      "correlates_with_inventoried_date": true,
+      "note": "Numeric value increases monotonically with Inventoried date (nearly sequential allocation) -- IDs from 2026 rows cluster at the top of the range."
+    },
+    "legacy_letter_prefixed": {
+      "pattern": "single letter prefix + digits, occasional Q suffix (+ optional 2-digit split number)",
+      "examples": [
+        "M02118",
+        "E363978",
+        "F66975Q",
+        "H28007",
+        "T16317",
+        "E52844",
+        "F93786Q",
+        "004608Q16"
+      ],
+      "share_of_rows": 0.0157,
+      "prefix_department_map": {
+        "E": "Electrical",
+        "F": "Furniture",
+        "M": "Furniture",
+        "H": "Household",
+        "T": "Toys"
+      },
+      "inventoried_date_range": [
+        "2007-12-04",
+        "2020-05-28"
+      ],
+      "note": "Legacy IDs from an older inventory scheme (pre-~2020), still lingering because the items have never been dispatched/removed. Not seen after 2020 in this snapshot."
+    },
+    "q_suffix": {
+      "pattern": "trailing \"Q\" (occasionally \"Q\"+digits) on either scheme",
+      "meaning_guess": "quantity-split / child record of an original inventory number",
+      "examples": [
+        "002986Q",
+        "005429Q",
+        "012988Q",
+        "004608Q16",
+        "F66975Q",
+        "F93786Q"
+      ]
+    }
+  },
+  "date_distribution": {
+    "year_weights": {
+      "2007": 0.00022,
+      "2010": 0.00044,
+      "2014": 0.00022,
+      "2015": 0.00044,
+      "2016": 0.00022,
+      "2017": 0.00354,
+      "2018": 0.0073,
+      "2019": 0.00354,
+      "2020": 0.00332,
+      "2021": 0.00995,
+      "2022": 0.03074,
+      "2023": 0.04909,
+      "2024": 0.09531,
+      "2025": 0.21053,
+      "2026": 0.58514
+    },
+    "year_counts": {
+      "2007": 1,
+      "2010": 2,
+      "2014": 1,
+      "2015": 2,
+      "2016": 1,
+      "2017": 16,
+      "2018": 33,
+      "2019": 16,
+      "2020": 15,
+      "2021": 45,
+      "2022": 139,
+      "2023": 222,
+      "2024": 431,
+      "2025": 952,
+      "2026": 2646
+    },
+    "month_weights_2026": {
+      "1": 0.07181,
+      "2": 0.065,
+      "3": 0.07785,
+      "4": 0.07974,
+      "5": 0.08277,
+      "6": 0.09713,
+      "7": 0.1353,
+      "8": 0.20181,
+      "9": 0.18859
+    },
+    "note": "Heavy right-skew: 58.5% of all rows dated in 2026 (the current year of the snapshot), rising month-on-month through the year (Aug and Sep 2026 are the two busiest months). Pre-2021 rows are almost entirely the legacy letter-prefixed inventory numbers."
+  },
+  "dimension_rules": {
+    "lwh_presence_rate_overall": 0.84918,
+    "weight_presence_rate_overall": 0.54135,
+    "cbm_presence_rate_overall": 0.97921,
+    "value_presence_rate_overall": 1.0,
+    "cbm_formula": "CBM = (Length_cm * Width_cm * Height_cm) / 1,000,000 -- verified exact (ratio 1.00 median, no deviation) on all 3,840 rows where L, W, H and CBM are all present. Generator should COMPUTE CBM, never sample it independently.",
+    "units": "Length/Width/Height in cm, Weight in kg, Value in HKD (implied, unlabelled), CBM in cubic metres."
+  },
+  "description_style": {
+    "leading_space_rate": 0.9644,
+    "leading_space_note": "Nearly every description (96.4%) starts with a single leading space, an artifact of the source system -- generator should replicate this.",
+    "trailing_whitespace_rate": 0.01238,
+    "multiline_rate": 0.07806,
+    "emoji_prefix_markers": {
+      "square_pallet_marker_rate": 0.03184,
+      "warning_earmark_marker_rate": 0.0188,
+      "box_marker_rate": 0.00376
+    },
+    "first_char_case": {
+      "upper": 0.8441,
+      "digit": 0.02808,
+      "lower": 0.07054,
+      "emoji_or_symbol": 0.05728
+    },
+    "end_punctuation": {
+      "none": 0.98762,
+      "period": 0.00796,
+      "comma": 0.00442
+    },
+    "length_chars": {
+      "min": 2,
+      "p25": 16.0,
+      "median": 26.0,
+      "p75": 40.0,
+      "p90": 52.0,
+      "max": 677
+    },
+    "word_count": {
+      "min": 1,
+      "median": 4.0,
+      "p90": 8.0,
+      "max": 146
+    },
+    "brand_mention_rate_approx": 0.06767,
+    "common_brands_seen": [
+      "Dell",
+      "HP",
+      "Lenovo",
+      "Philips",
+      "IKEA",
+      "Sharp",
+      "Samsung",
+      "Toshiba",
+      "Xbox",
+      "PlayStation",
+      "LG",
+      "Panasonic",
+      "Sony",
+      "Apple",
+      "Nintendo",
+      "Bosch"
+    ],
+    "unit_tokens_seen": [
+      "'",
+      "mm",
+      "\"",
+      "kg",
+      "pcs",
+      "cm",
+      "sets",
+      "pieces",
+      "ml",
+      "inch",
+      "set of",
+      "pairs",
+      "L)"
+    ],
+    "cross_reference_pattern": "Furniture/matched-set items sometimes reference another inventory number in the description, e.g. \"Matches #059856\", \"(matches armchair #128746)\" -- a small but real pattern for paired/matched furniture sets.",
+    "destination_tag_pattern": "A leading \"FOR <TAG>\" (all-caps) block is used for earmarked shipments/programs, e.g. \"FOR HKD\" (Hong Kong Distribution), \"FOR TAIPO\", \"FOR MOLDOVA\", \"FOR S1358\" (shipment/container ref) -- these are program/place codes, not addresses."
+  }
+}

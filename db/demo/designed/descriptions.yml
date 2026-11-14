@@ -1,0 +1,269 @@
+# Wording for filler stock, in the POST-cleanup house style Crossroads expects its
+# cleanup agent to produce: sentence case, specific and accurate, key attributes present,
+# consistent terminology across similar items, brand names only where natural. No emoji,
+# no leading spaces, no "FOR <TAG>" earmarks inside descriptions.
+#
+# "{a|b|c}" picks one alternative. Codes not listed fall back to the package type's own
+# name plus a generic qualifier.
+
+codes:
+  # Furniture
+  FCD: ["Dining chair, {solid oak|beech|walnut-stained rubberwood|white-painted pine}, {upholstered grey seat|padded fabric seat|plain wooden seat|woven rattan seat}"]
+  FCO: ["Office chair, {black|grey|navy} {mesh|fabric} back, {adjustable arms|fixed arms|no arms}, five-star base", "Office chair, high back, black faux leather, tilt lock"]
+  FCI: ["Stool, {wooden|chrome and black|white plastic}, {45|65|75} cm, {four legs|swivel seat|stackable}", "Bar stool, {black|grey} padded seat, footrest"]
+  FTX: ["Side table, {oak veneer|white|black metal frame, glass top}, {45 x 45|50 x 50|60 x 40} cm", "Console table, {walnut veneer|white oak}, one drawer"]
+  FXA: ["Framed print, {landscape|botanical|abstract|city skyline}, {wooden|black|white} frame, {40 x 50|50 x 70|60 x 90} cm", "Wall mirror, {round|rectangular}, {brass|black|wooden} frame"]
+  FTE: ["Coffee table, {oak veneer|walnut veneer|white gloss|glass top, steel frame}, {90 x 50|110 x 60|100 x 100} cm"]
+  FBB: ["Bedside cabinet, {one drawer|two drawers|drawer and shelf}, {white|oak veneer|walnut veneer}"]
+  FTD: ["Dining table, {oak veneer|solid rubberwood|white laminate|glass top}, {four|six} seats, {120 x 75|150 x 90|160 x 90} cm", "Dining table, round, {walnut veneer|white}, 100 cm, four seats"]
+  FCX: ["Accent chair, {grey|mustard|navy} fabric, wooden legs", "Folding director's chair, canvas seat, wooden frame"]
+  FSS: ["Storage shelf, {steel|chrome wire|white laminate}, {four|five} tiers, {80|90|120} cm wide"]
+  FCL: ["Armchair, {grey|beige|charcoal} fabric, {wooden legs|metal legs}", "Recliner armchair, {brown|black} faux leather, manual recline"]
+  FBX: ["Cabinet, {two doors|sliding doors}, {white|oak veneer|grey}, {80|100} cm wide"]
+  FCS: ["Sofa, {two|three}-seater, {grey|beige|navy|charcoal} fabric, {removable cushion covers|fixed cushions}", "Sofa, corner, {grey|beige} fabric, reversible chaise"]
+  FBL: ["Sideboard, {walnut veneer|white gloss|oak veneer}, {two|three} doors, {150|180} cm"]
+  FCQ: ["School chair, {blue|green|grey} plastic seat, steel frame, {stackable|non-folding}"]
+  FSB: ["Bookcase, {three|four|five} shelves, {white|oak veneer|walnut veneer|black}"]
+  FCC: ["Children's chair, {beech|white plastic|painted wood}, {stackable|with arms}"]
+  BSM: ["Single mattress, {foam|pocket sprung|bonnell sprung}, {190 x 90|190 x 100} cm, {in cover|vacuum packed}"]
+  FBV: ["TV cabinet, {low|two-drawer}, {white gloss|walnut veneer|oak veneer}, {120|150|180} cm"]
+  FCH: ["Stacking chair, {black|grey|blue} {polypropylene|fabric} seat, chrome frame"]
+  FDQ: ["School desk, single, {grey|beech} laminate top, steel frame, {adjustable height|fixed height}"]
+  FBR: ["Office cupboard, steel, {two doors|sliding doors}, {three|four} shelves, lockable"]
+  BBM: ["Baby mattress, foam, {120 x 60|130 x 70} cm, waterproof cover"]
+  FBC: ["Chest of drawers, {three|four|five} drawers, {white|oak veneer|walnut veneer}"]
+  CHP: ["Rug, {wool|cotton|polypropylene}, {grey|beige|blue patterned|multicoloured}, {120 x 170|160 x 230|200 x 290} cm"]
+  FBP: ["Office drawer unit, {three drawers|two drawers and file drawer}, {grey|white|oak veneer}, {on castors|fixed}"]
+  FDO: ["Office desk, {white|oak veneer|grey} laminate top, steel frame, {120 x 60|140 x 70|160 x 80} cm", "Office desk, L-shaped, {white|grey} laminate, cable tray"]
+  FCF: ["Folding chair, {black|white|grey} {plastic|padded fabric} seat, steel frame"]
+  FCU: ["Outdoor chair, {teak|grey aluminium|white resin}, {stackable|folding}"]
+  FDP: ["Computer desk, {white|black} laminate, keyboard shelf, {100|120} cm"]
+  BDM: ["Double mattress, {pocket sprung|foam|bonnell sprung}, {190 x 137|190 x 150} cm, in cover"]
+  FDH: ["Desk, {white|oak veneer|walnut veneer}, {one drawer|two drawers|no drawers}, {100|110|120} cm"]
+  FTC: ["Children's table, {beech|white|painted wood}, {60 x 60|80 x 60|round, 70} cm"]
+  FBD: ["Wardrobe, {two|three} doors, {white|oak veneer|walnut veneer}, hanging rail and shelf"]
+  RMP: ["Upright piano, {black|walnut|mahogany} finish, with stool", "Digital piano, 88 weighted keys, with stand"]
+  XX: ["Gift vouchers, {supermarket|home furnishing store}, HK${100|200|500} each"]
+  FTF: ["Folding table, {white|grey} plastic top, steel legs, {150|180} cm"]
+  FXM: ["Mirror, full length, {black|white|wooden} frame"]
+  FXH: ["Clothes rail, chrome, on castors, {120|150} cm"]
+  FTO: ["Conference table, {oak|walnut|white} laminate, {eight|ten} seats"]
+  BBS: ["Baby cot with mattress, {white|natural beech}, adjustable base"]
+  BDB: ["Double bed base, {upholstered grey|wooden slats|white metal}, {137|150} cm"]
+  FCT: ["Sofa bed, {grey|navy|beige} fabric, pull-out mechanism"]
+  FTA: ["Baby changing table, {white|beech}, two shelves"]
+
+  # Electrical
+  EHL: ["Table lamp, {ceramic|brushed steel|wooden} base, {white|cream|grey} fabric shade", "Floor lamp, {black|brushed steel|brass}, adjustable head", "Desk lamp, LED, {black|white}, adjustable arm"]
+  EHX: ["Air purifier, HEPA filter, {small|medium} room", "Electric fan heater, {1500|2000} W, thermostat", "Humidifier, ultrasonic, {3|4} litre"]
+  EUS: ["Speaker, {bookshelf|Bluetooth portable|floor-standing}, {black|white}", "Speaker pair, bookshelf, {black|walnut} finish, with cables"]
+  EXB: ["Hair dryer, {1800|2000} W, two speeds, diffuser", "Electric shaver, rechargeable, with charger", "Electric toothbrush, rechargeable, with charger and spare head"]
+  EX: ["Extension lead, {four|six} sockets, UK plug, surge protected", "Rechargeable torch, LED, USB charging"]
+  EHH: ["Oil-filled radiator heater, {7|9|11} fins, {1500|2000} W, thermostat", "Fan heater, {1800|2000} W, two heat settings"]
+  EKE: ["Electric hot plate, {single|double}, {1000|1500} W", "Multicooker, {5|6} litre, pressure and slow cook"]
+  EKX: ["Hand mixer, five speeds, two beaters", "Sandwich maker, non-stick plates", "Food processor, {1.5|2} litre bowl, slicing disc"]
+  EHF: ["Fan, {pedestal|desk|tower}, {three|five} speeds, oscillating{| with remote}"]
+  EKI: ["Rice cooker, {1|1.8} litre, {white|stainless steel}, keep-warm function"]
+  EUX: ["Headphones, over-ear, {wired|wireless}, {black|white}", "Soundbar, {two|three}-channel, with remote"]
+  EKK: ["Kettle, {glass|stainless steel|white plastic}, {1.5|1.7} litre, cordless"]
+  EKR: ["Refrigerator, {single-door, 120 litre|two-door, 200 litre|two-door, 260 litre}, {white|silver}"]
+  DE: ["Cordless drill, 18 V, two batteries and charger", "Electric sander, orbital, with dust bag", "Jigsaw, variable speed, with blades"]
+  EHC: ["Vacuum cleaner, {bagless cylinder|upright|cordless stick}, with attachments"]
+  EVD: ["DVD player, with remote, HDMI output"]
+  EVT: ["Television, {32|40|43|50}-inch LED, {pedestal stand|stand and remote}"]
+  EKM: ["Microwave oven, {20|23|25} litre, {white|black|stainless steel}, {dial|digital} controls"]
+  EHW: ["Washing machine, front loading, {6|7} kg, white"]
+  EHD: ["Dehumidifier, {10|16|20} litre per day, auto shut-off"]
+  EKC: ["Coffee maker, drip filter, {10|12} cups", "Coffee machine, capsule, {black|red}"]
+  EKT: ["Toaster, {two|four} slice, {white|stainless steel}", "Toaster oven, {10|20} litre, timer"]
+  EOT: ["Telephone, cordless, DECT, with base"]
+  EKJ: ["Blender, {1.5|2} litre jug, {two|three} speeds"]
+
+  # Household
+  H: ["Pallet of sorted household goods, kitchen and dining"]
+  HD: ["Dinner plates, white porcelain, set of {four|six|eight}", "Glass tumblers, set of {six|twelve}", "Cutlery set, stainless steel, {24|30} pieces", "Mugs, stoneware, {assorted colours|white}, set of {four|six}"]
+  CBB: ["Blanket, {fleece|wool|cotton}, {single|double} size, {grey|navy|cream|blue}"]
+  HXB: ["Backpack, {black|navy|grey}, {padded laptop sleeve|two compartments}", "Suitcase, {cabin size|medium}, hard shell, {black|grey}, four wheels", "Tote bags, canvas, bundle of {10|20}"]
+  CBP: ["Pillow, {polyester|feather} filled, standard size, in cover", "Pillowcases, cotton, {white|grey}, pairs"]
+  HK: ["Saucepans, stainless steel, set of {three|five}, with lids", "Frying pan, non-stick, {24|28} cm", "Kitchen utensils, assorted, {bundle|set of eight}", "Food storage containers, plastic, set of {ten|twelve}"]
+  HZO: ["Pallet of household items, unsorted"]
+  HX: ["Laundry basket, plastic, {white|grey}", "Clothes drying rack, folding, steel", "Storage boxes, plastic, lidded, {set of three|set of five}"]
+  CHS: ["Cushion covers, cotton, {grey|blue|patterned}, set of {four|six}", "Tablecloth, cotton, {white|cream}, {six|eight}-seat"]
+  HPX: ["Stair gate, pressure fit, white, 75-85 cm", "Baby carrier, ergonomic, adjustable"]
+  RCM: ["Camping mattress, self-inflating, single", "Air mattress, double, with pump"]
+  HXT: ["Cleaning supplies, assorted, {unopened|sealed} bottles", "Rubbish bins, pedal, {5|12} litre"]
+  CHX: ["Curtains, blackout, {grey|cream}, pair, {140 x 230|165 x 230} cm", "Bath mats, cotton, {grey|white}, pack of two"]
+  HN: ["Vase, {glass|ceramic}, {clear|white|blue}, {20|30} cm", "Photo frames, assorted sizes, set of {three|five}"]
+  HPW: ["Baby walker, adjustable height, with toy tray", "Baby bouncer, reclining, machine-washable cover"]
+  CBS: ["Bed sheets, cotton, {single|double|queen} size, {white|grey|blue}, fitted and flat"]
+  CHT: ["Bath towels, cotton, {white|grey|navy}, pack of {four|six}"]
+  HY: ["Hand soap, liquid, {250|500} ml, sealed bottles", "Shampoo, {200|400} ml, sealed bottles", "Toothbrushes, individually wrapped, box of {50|100}"]
+  HPH: ["High chair, {white|beech}, adjustable tray, harness"]
+  RCX: ["Camping chairs, folding, with carry bag", "Cool box, {25|40} litre"]
+  CBX: ["Duvet, {single|double} size, all-season", "Mattress protector, waterproof, {single|double}"]
+  CCB: ["Sleeping bag, {three|four}-season, with compression sack"]
+  HPS: ["Stroller, {lightweight|full size}, foldable, {one-hand recline|rain cover included}"]
+  RCT: ["Tent, {two|four}-person, dome, with footprint"]
+
+  # Clothing
+  CLZU: ["Pallet of used clothing, men's, women's and children's, sorted by season"]
+  C: ["Pallet of sorted clothing, {winter|summer}, mixed sizes"]
+  CMW: ["Men's winter jackets, {padded|fleece-lined}, sizes M to XL, box of {10|15|20}"]
+  CWW: ["Women's winter coats, {wool blend|padded}, sizes S to L, box of {10|15}"]
+  CLZ: ["Pallet of new clothing, unsorted, with tags"]
+  CLX: ["Uniform polo shirts, {navy|white}, new, sizes S to XL, box of {20|30}", "Rain jackets, lightweight, adult sizes, box of {10|20}"]
+  CLS: ["Shoes, {sports|school|work}, assorted sizes, box of {10|12} pairs", "Winter boots, adult, assorted sizes, box of {8|10} pairs"]
+  CMS: ["Men's T-shirts, cotton, sizes M to XL, box of {20|30}"]
+  CLJ: ["Boys' clothing, ages {4-8|8-12}, {summer|winter}, box of {15|20}"]
+  CWS: ["Women's summer dresses and tops, sizes S to L, box of {15|20}"]
+  CLR: ["Scarves, knitted, assorted colours, box of {20|30}", "Winter hats and gloves, assorted, box of {20|30}"]
+  CLG: ["Girls' clothing, ages {4-8|8-12}, {summer|winter}, box of {15|20}"]
+  CLD: ["Baby clothes, 0-24 months, sleepsuits and bodysuits, box of {20|30}"]
+
+  # Computers
+  VMF: ["Computer monitor, {22|24|27}-inch, {full HD|QHD}, LED, with stand"]
+  VCD: ["Desktop computer, {small form factor|compact tower|mini}, Intel Core {i3|i5|i7}, {8|16} GB RAM, {256|512} GB SSD, Windows 11"]
+  VZX: ["Pallet of computer accessories, mixed, untested"]
+  VB: ["Box of tested computer accessories, keyboards and mice"]
+  V: ["Pallet of tested computer equipment, desktops and monitors"]
+  VXC: ["Computer power and network cables, assorted, bundle of {20|50}"]
+  VZM: ["Pallet of computer monitors, untested"]
+  VA: ["Keyboard and mouse set, wired USB, English layout", "Wireless mouse, with USB receiver, box of {10|20}"]
+  VCL: ["Laptop, {13|14|15.6}-inch, Intel Core {i5|i7}, {8|16} GB RAM, {256|512} GB SSD, charger included"]
+  VPM: ["Multi-function printer, {inkjet|laser}, print, scan and copy"]
+  VXS: ["Computer speakers, stereo pair, USB powered"]
+  VP: ["Printer, {laser|inkjet}, {monochrome|colour}, A4"]
+
+  # Medical
+  MDY: ["Physiotherapy exercise bands, assorted resistance, pack of {10|20}", "Patient transfer belt, with handles", "Walking frame, folding, aluminium, height adjustable"]
+  MGT: ["Reacher grabber, 80 cm", "Raised toilet seat, with arms", "Shower chair, adjustable height, non-slip feet"]
+  MGP: ["Commode pans, plastic, pack of {five|ten}", "Bedside urinals, plastic, pack of {five|ten}"]
+  MGB: ["Blood pressure monitor, upper arm, digital", "Pulse oximeter, fingertip, with batteries", "Digital thermometer, box of {10|20}"]
+  MGS: ["Syringes, {3|5|10} ml, sterile, box of 100", "Hypodermic needles, 23G, sterile, box of 100"]
+  MDA: ["Resuscitation masks, adult and paediatric, pack of {10|20}", "Oxygen face masks, adult, pack of {10|25}"]
+  MGO: ["Oxygen tubing, 2 m, individually packed, box of {25|50}", "Suction catheters, sterile, box of {50|100}"]
+  MDM: ["Breast pump, electric, with accessories", "Maternity pads, pack of {20|40}"]
+  MGE: ["Feeding tubes, sterile, box of {25|50}", "Enteral feeding sets, sterile, box of {20|30}"]
+  MZ: ["Pallet of medical supplies, unsorted"]
+  MGX: ["Wound dressings, assorted sizes, sterile, box of {50|100}", "Disposable underpads, pack of {30|50}"]
+  MW: ["Women's hygiene products, sealed packs, box of {48|96}"]
+  MGG: ["Disposable gloves, nitrile, size {M|L}, box of 100", "Surgical masks, three-ply, box of 50"]
+  MGA: ["First aid kit, {home|workplace|travel}, {30|50|100} pieces"]
+
+  # Toys and recreation
+  TPX: ["Pretend play kitchen, wooden, with accessories", "Doll, soft body, with clothes", "Toy tool set, {plastic|wooden}, in carry case"]
+  TS: ["Soft toy, {bear|rabbit|dog|elephant}, {30|45} cm, new with tags"]
+  REC: ["Exercise bike, upright, adjustable resistance", "Treadmill, folding, 12 km/h"]
+  RMS: ["Acoustic guitar, full size, with soft case", "Ukulele, soprano, with bag", "Keyboard, 61 keys, with stand"]
+  RPR: ["Scooter, children's, three wheels, adjustable handle", "Balance bike, 12-inch wheels"]
+  TRG: ["Play tunnel, pop-up, with carry bag", "Children's basketball hoop, adjustable height"]
+  TRF: ["Jigsaw puzzles, {100|500|1000} pieces, complete, box of {five|ten}", "Building blocks, {wooden|plastic}, {50|100} pieces"]
+  TX: ["Board games, complete, box of {five|eight}", "Colouring books and crayons, bundle of {10|20}"]
+  TZ: ["Pallet of toys, unsorted"]
+  TT: ["Remote control car, with batteries", "Toy train set, battery-operated, with track"]
+  TB: ["Baby activity gym, with hanging toys", "Stacking cups and rings, baby toys, set"]
+
+  # Bikes
+  RPB: ["Bicycle, child's, {12|16|20}-inch wheels{|, stabilisers included}, {red|blue|pink|green} frame"]
+  RPA: ["Bicycle, adult, {hybrid|mountain|folding}, {21|7}-speed, {black|grey|white} frame"]
+
+  # Stationery and books
+  NZ: ["Pallet of stationery, unsorted"]
+  NO: ["Ring binders, A4, {black|blue}, box of {10|20}", "Printer paper, A4, 80 gsm, box of five reams", "Ballpoint pens, {blue|black}, box of 50"]
+  NQ: ["Exercise books, A4, lined, pack of {20|50}", "Pencil cases with pencils and erasers, bundle of {10|20}"]
+  N: ["Pallet of sorted stationery, school and office"]
+  P: ["Pallet of sorted books, English, mixed ages"]
+  PGC: ["Children's picture books, English, bundle of {10|20}", "Children's chapter books, English, ages 7-10, bundle of {10|15}"]
+  PGG: ["Non-fiction books, English, adult, {cookery and travel|history and biography|business and self-help}, bundle of {10|15}"]
+  PL: ["Books in {French|Tagalog|Nepali|Urdu}, mixed ages, bundle of {10|20}"]
+  PGD: ["Children's non-fiction, English, {science|animals|atlases}, bundle of {10|15}"]
+
+  # Boutique
+  QHH: ["Homewares, decorative, boxed, assorted", "Glassware, boxed sets, assorted"]
+  QCC: ["Clothing, boutique quality, women's, on hangers, bundle of {10|20}"]
+
+generic_qualifiers:
+  - "good condition"
+  - "complete"
+  - "tested"
+  - "assorted"
+  - "clean and ready to use"
+  - ""
+
+# Filler order texture.
+chat:
+  purposes:
+    - "Furniture for families moving into public housing"
+    - "Supplies for our weekly community meal"
+    - "Equipment for an after-school homework club"
+    - "Household basics for asylum-seeker families"
+    - "Bedding and kitchen items for elderly members living alone"
+    - "Furnishing a new activity room"
+    - "Items for a residential care home"
+    - "Support for families on our casework list"
+    - "Computers for job-seekers' training"
+    - "Toys and books for a children's corner"
+  requests:
+    - "As discussed with the case worker"
+    - "For a family of four"
+    - "For our activity room"
+    - "Any colour is fine"
+    - "Sturdy enough for daily use"
+    - "Small size preferred, the flat is tiny"
+  buildings: ["Hoi Lai Estate, Block 3", "Lok Fu Estate, Wang Lok House", "Shek Kip Mei Estate, Block 12", "Choi Hung Estate, Kam Hung House", "Tin Shui Estate, Block 5", "Wah Fu Estate, Wah Hing House"]
+  streets: ["Castle Peak Road", "Lung Cheung Road", "Tai Po Road", "King's Road", "Nathan Road", "Tuen Mun Road"]
+  exchanges:
+    - - { body: "Hello, can we come on Saturday instead?" }
+      - { staff: true, body: "Saturday is fine, we are open until 1 pm." }
+    - - { body: "Our driver's name is Mr Chan, he will bring the letter from the centre." }
+      - { staff: true, body: "Thank you, noted." }
+    - - { staff: true, body: "Please bring trolleys, the tables are heavy." }
+      - { body: "Will do, thanks for the reminder." }
+    - - { body: "Is the fridge still available? The family has been waiting." }
+      - { staff: true, body: "Yes, it is designated to this order. See you on the day." }
+    - - { staff: true, body: "The appointment is confirmed. Please come to the main gate and ask for the order desk." }
+
+# Small sets for filler (members share a {finish}). Real production has ~2,000 sets.
+sets:
+  - code: FTD
+    description: "Dining set, {finish}, table and chairs"
+    finishes: ["oak veneer", "white", "walnut veneer", "solid rubberwood"]
+    members:
+      - { code: FTD, description: "Dining table, {finish}, four seats, 120 x 75 cm" }
+      - { code: FCD, qty: [4, 6], description: "Dining chair, {finish}, padded seat" }
+  - code: FDH
+    description: "Study set, {finish}, desk and chair"
+    finishes: ["white", "oak veneer", "birch"]
+    members:
+      - { code: FDH, description: "Desk, {finish}, two drawers, 110 cm" }
+      - { code: FCX, description: "Desk chair, {finish} frame, grey fabric seat" }
+  - code: FCS
+    description: "Living room set, {finish}, sofa and armchair"
+    finishes: ["grey fabric", "beige linen", "navy fabric"]
+    members:
+      - { code: FCS, description: "Three-seater sofa, {finish}" }
+      - { code: FCL, qty: [1, 2], description: "Armchair, {finish}, matches the sofa" }
+  - code: FBC
+    description: "Bedroom set, {finish}, chest of drawers and bedside cabinets"
+    finishes: ["white", "oak veneer", "walnut veneer"]
+    members:
+      - { code: FBC, description: "Chest of drawers, four drawers, {finish}" }
+      - { code: FBB, qty: 2, description: "Bedside cabinet, one drawer, {finish}" }
+  - code: FTC
+    description: "Children's table and chairs, {finish}"
+    finishes: ["beech", "white", "painted pine"]
+    members:
+      - { code: FTC, description: "Children's table, {finish}, 80 x 60 cm" }
+      - { code: FCC, qty: [2, 4], description: "Children's chair, {finish}, stackable" }
+  - code: BDB
+    description: "Double bed, {finish} base with mattress"
+    finishes: ["upholstered grey", "oak veneer", "white metal"]
+    members:
+      - { code: BDB, description: "Double bed base, {finish}, 137 cm" }
+      - { code: BDM, description: "Double mattress, pocket sprung, 190 x 137 cm, fits the {finish} base" }
+  - code: FDO
+    description: "Office workstation, {finish}, desk and drawer unit"
+    finishes: ["white laminate", "oak veneer", "grey laminate"]
+    members:
+      - { code: FDO, description: "Office desk, {finish}, 140 x 70 cm" }
+      - { code: FBP, description: "Office drawer unit, three drawers, {finish}, on castors" }
