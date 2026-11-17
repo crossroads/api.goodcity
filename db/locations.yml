@@ -1007,3 +1007,96 @@
 -
   area: Outdoor
   building: Sunny Bay
+-
+  area: HouseHold
+  building: "28"
+-
+  area: M Electrical
+  building: "28"
+-
+  area: N1 Electrical
+  building: "28"
+-
+  area: P2 Electrical
+  building: "28"
+-
+  area: P3 Electrical
+  building: "28"
+-
+  area: P7 Electrical
+  building: "28"
+-
+  area: P8 Electrical
+  building: "28"
+-
+  area: P9 Electrical
+  building: "28"
+-
+  area: Q BulkRm
+  building: "28"
+-
+  area: Books
+  building: "29"
+-
+  area: Clothing
+  building: "29"
+-
+  area: HKD
+  building: "29"
+-
+  area: Household Annex
+  building: "29"
+-
+  area: Electrical
+  building: "30"
+-
+  area: Furniture
+  building: "30"
+-
+  area: Bikes
+  building: "31"
+-
+  area: Secure storage
+  building: "31"
+-
+  area: Computers
+  building: "32"
+-
+  area: Incoming
+  building: "32"
+-
+  area: Bikes
+  building: "88"
+-
+  area: 08 (Bikes)
+  building: CntrB
+-
+  area: 10 (Medical)
+  building: CntrB
+-
+  area: Medical A
+  building: PG
+-
+  area: Medical B
+  building: PG
+-
+  area: Medical D
+  building: PG
+-
+  area: Medical E
+  building: PG
+-
+  area: Medical G
+  building: PG
+-
+  area: Medical H
+  building: PG
+-
+  area: PTL
+  building: PG
+-
+  area: Shed
+  building: PG
+-
+  area: Shed
+  building: SB

@@ -258,7 +258,7 @@ RSpec.describe 'GET /api/v1/organisations filters', type: :request do
     end
 
     it 'a short prefix finds a long name (what the fuzzy search cannot)' do
-      long = create(:organisation, name_en: "Hong Kong Young Women's Christian Association Jockey Club Shatin Integrated Social Service Centre", organisation_type: ngo, country: hong_kong)
+      long = create(:organisation, name_en: "Hong Kong Golden Kapok Neighbourhood Association Shing Mun Valley Integrated Family and Youth Service Centre", organisation_type: ngo, country: hong_kong)
       create(:order, organisation: long)
       search(searchText: 'Hon')
       expect(ids).not_to include(long.id) # legacy fuzzy search, whole-name similarity: unchanged

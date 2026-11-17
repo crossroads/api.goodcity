@@ -30,10 +30,17 @@ In production mode, you will also need a local redis server, type one of the fol
 
 ## Development
 
-    rake db:create
-    rake db:schema:load / rake db:migrate
-    rake db:seed
-    rake db:demo
+    rails db:create
+    rails db:migrate
+    rails db:seed
+    rails db:demo
+
+    # for a large representative demo set
+    rails db:create
+    rails db:migrate
+    rails db:seed
+    rails goodcity:add_organisations
+    rails db:demo:designed
 
 ## Tests
 

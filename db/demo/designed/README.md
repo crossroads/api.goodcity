@@ -2,9 +2,10 @@
 
 A demo dataset for the **stock app**, built to look and behave like the real warehouse:
 
-- **Real reference data.** Package types, locations, districts, organisations and the rest
-  come from production (a read-only grant of 32 reference tables). Organisations are
-  largely the public s.88 register of tax-exempt charities.
+- **Real reference data.** Package types, locations, districts and the rest come from
+  production (a read-only grant of 32 reference tables). **Organisations are the
+  exception:** they are made-up Hong Kong charities in `db/organisations.yml`, loaded with
+  `rake goodcity:add_organisations` before `rake db:demo:designed`.
 - **Synthetic people.** Every user, beneficiary, contact and message is invented
   (`people.yml`).
 - **A designed spine.** Stock and order cases chosen so every screen has something real

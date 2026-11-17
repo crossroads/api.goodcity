@@ -1,8 +1,8 @@
 module Goodcity
   class DesignedData
     #
-    # Synthetic people: staff, donors, charity users (each tied to a REAL organisation
-    # from the reference data) and a name bank for beneficiaries. Nobody here is real.
+    # Synthetic people: staff, donors, charity users (each tied to a made-up organisation
+    # from db/organisations.yml) and a name bank for beneficiaries. Nobody here is real.
     #
     # The two local test logins are created exactly as goodcity-local's
     # scripts/create-test-users.rb creates them, because the real-API smoke suite and

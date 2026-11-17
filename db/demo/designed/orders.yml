@@ -39,7 +39,7 @@
 - key: o_submitted_requests
   why: "submitted this week with requests and an unread question from the charity"
   type: appointment
-  by: ch_ywca
+  by: ch_shingmun
   created: -2d@10:00
   purpose: organisation
   people_helped: 40
@@ -51,7 +51,7 @@
     - { code: FTF, qty: 2, description: "Folding tables for workshops" }
   events:
     - { at: -2d@10:05, do: submit }
-    - { at: -2d@10:20, do: message, from: ch_ywca, unread: true, body: "Could we collect on Thursday morning? We will bring our own van and two helpers." }
+    - { at: -2d@10:20, do: message, from: ch_shingmun, unread: true, body: "Could we collect on Thursday morning? We will bring our own van and two helpers." }
   expect: { state: submitted, unread: true }
 
 - key: o_pending_org
@@ -74,7 +74,7 @@
 - key: o_checklist_gate
   why: "the processing gate: checklist half done, fridge and wheelchairs designated, an unread staff note"
   type: appointment
-  by: ch_haven
+  by: ch_discharge
   handler: wingyan
   created: -6d@09:30
   purpose: client
@@ -94,7 +94,7 @@
 - key: o_online_van
   why: "online order with a hired van and a delivery address; a short public chat"
   type: online-order
-  by: ch_stjames
+  by: ch_safehome
   handler: priya
   created: -3d@14:00
   purpose: organisation
@@ -113,13 +113,13 @@
     - { at: -2d@10:00, do: designate, item: two_seat_sofa, qty: 1 }
     - { at: -2d@10:05, do: designate, item: office_desks_oak, qty: 2 }
     - { at: -2d@10:30, do: message, from: priya, body: "The van is booked for Friday between 2 and 4 pm. The driver will call when he is ten minutes away." }
-    - { at: -2d@11:10, do: message, from: ch_stjames, unread: true, body: "Thank you! Someone will be at the loading bay." }
+    - { at: -2d@11:10, do: message, from: ch_safehome, unread: true, body: "Thank you! Someone will be at the loading bay." }
   expect: { state: processing }
 
 - key: o_awaiting_today
   why: "awaiting dispatch, scheduled for this afternoon"
   type: appointment
-  by: ch_carpenter
+  by: ch_hunghom
   created: -8d@10:00
   purpose: organisation
   people_helped: 60
@@ -138,7 +138,7 @@
 - key: o_awaiting_overdue
   why: "awaiting dispatch but the appointment was three days ago — overdue"
   type: appointment
-  by: ch_familysvc
+  by: ch_bridgeway
   handler: priya
   created: -12d@11:00
   purpose: organisation
@@ -160,7 +160,7 @@
 - key: o_close_gate
   why: "the close gate: dispatching, two dining chairs gone but the table's line still open — the split set"
   type: appointment
-  by: ch_hkcys
+  by: ch_lanternhill
   created: -9d@10:00
   purpose: organisation
   people_helped: 8
@@ -181,7 +181,7 @@
 - key: o_dispatching_done
   why: "dispatching with every line dispatched — ready to close"
   type: appointment
-  by: ch_twghs
+  by: ch_pineterrace
   created: -5d@09:00
   purpose: organisation
   people_helped: 90
@@ -202,7 +202,7 @@
 - key: o_dispatch_later
   why: "dispatch started, then put back to awaiting dispatch"
   type: appointment
-  by: ch_caritas
+  by: ch_harboursteps
   created: -10d@10:00
   purpose: organisation
   people_helped: 35
@@ -223,7 +223,7 @@
 - key: o_restarted
   why: "processing restarted: awaiting dispatch sent back to submitted"
   type: appointment
-  by: ch_waiji
+  by: ch_meitin
   created: -7d@10:00
   purpose: client
   people_helped: 1
@@ -237,13 +237,13 @@
     - { at: -5d@10:00, do: checklist }
     - { at: -5d@10:05, do: finish_processing }
     - { at: -4d@09:30, do: restart_process }
-    - { at: -4d@09:35, do: message, from: ch_waiji, body: "Sorry, the family now needs a narrower chair. Could we change it?" }
+    - { at: -4d@09:35, do: message, from: ch_meitin, body: "Sorry, the family now needs a narrower chair. Could we change it?" }
   expect: { state: submitted }
 
 - key: o_part_of_set
   why: "wants only the drawer unit from the workstation set — taking part of a set"
   type: appointment
-  by: ch_tinshui
+  by: ch_skyline
   created: -4d@15:00
   purpose: organisation
   people_helped: 20
@@ -336,7 +336,7 @@
 - key: o_online_submitted
   why: "a plain online order just submitted, for a client"
   type: online-order
-  by: ch_lady
+  by: ch_kapok
   created: -1d@09:30
   purpose: client
   people_helped: 3
@@ -352,7 +352,7 @@
 - key: o_resubmitted
   why: "cancelled for 'Changed mind', then resubmitted"
   type: appointment
-  by: ch_srilanka
+  by: ch_multicultural
   created: -18d@10:00
   purpose: organisation
   people_helped: 50
@@ -405,7 +405,7 @@
 - key: o_closed_recent
   why: "closed last month: the fully dispatched laptop and two microwaves"
   type: appointment
-  by: ch_elchk
+  by: ch_tuenmun
   handler: marcus
   created: -35d@10:00
   purpose: organisation
@@ -429,7 +429,7 @@
 - key: o_closed_patio
   why: "a whole set dispatched together, then closed"
   type: appointment
-  by: ch_nursery
+  by: ch_sampans
   created: -80d@10:00
   purpose: organisation
   people_helped: 60
@@ -451,7 +451,7 @@
 - key: o_reopened
   why: "closed, then reopened when the charity reported a problem"
   type: appointment
-  by: ch_lady
+  by: ch_kapok
   created: -20d@10:00
   purpose: organisation
   people_helped: 10
@@ -466,7 +466,7 @@
     - { at: -18d@10:05, do: finish_processing }
     - { at: -15d@10:20, do: dispatch, item: bookcase_walnut }
     - { at: -15d@10:30, do: close }
-    - { at: -14d@09:00, do: message, from: ch_lady, body: "We received one bookcase but the shelves were missing. Could you check?" }
+    - { at: -14d@09:00, do: message, from: ch_kapok, body: "We received one bookcase but the shelves were missing. Could you check?" }
     - { at: -14d@09:30, do: reopen }
     - { at: -14d@09:35, do: message, from: priya, staff: true, body: "Reopened: shelves may still be in the shed. Ah Lam to check." }
     - { at: -1d@09:15, do: note, by: stock_admin, body: "Checked the goods for this order" }  # L11: a recent order for 51111111 (moved off o_restarted: live.spec 10. socket drop needs it empty)
@@ -477,7 +477,7 @@
 - key: o_cancel_no_show
   why: "cancelled 'No show' after processing — its designated line is cancelled with it"
   type: appointment
-  by: ch_salvation
+  by: ch_renewal
   created: -25d@10:00
   purpose: client
   people_helped: 1
@@ -496,7 +496,7 @@
 - key: o_cancel_nothing_suitable
   why: "cancelled 'Nothing suitable' straight from submitted"
   type: online-order
-  by: ch_elchk
+  by: ch_tuenmun
   created: -40d@10:00
   purpose: organisation
   people_helped: 20
@@ -513,7 +513,7 @@
 - key: o_cancel_changed_mind
   why: "cancelled 'Changed mind' by the charity"
   type: appointment
-  by: ch_tinshui
+  by: ch_skyline
   created: -45d@10:00
   purpose: organisation
   people_helped: 12
@@ -529,7 +529,7 @@
 - key: o_cancel_other
   why: "cancelled 'Other' with a free-text reason"
   type: appointment
-  by: ch_carpenter
+  by: ch_hunghom
   created: -50d@10:00
   purpose: organisation
   people_helped: 40
@@ -559,7 +559,7 @@
 - key: o_cancel_too_soon
   why: "cancelled 'Too soon' — the organisation ordered again too quickly"
   type: online-order
-  by: ch_caritas
+  by: ch_harboursteps
   created: -21d@10:00
   purpose: organisation
   people_helped: 30
@@ -595,7 +595,7 @@
 - key: o_bulk_submitted
   why: "Bulk, submitted: labelled Bulk on the row; found only with no type chosen; not in Home's tiles (old counting)"
   type: bulk
-  by: ch_salvation
+  by: ch_renewal
   created: -3d@09:00
   purpose: organisation
   people_helped: 120
@@ -624,7 +624,7 @@
 - key: o_bulk_awaiting
   why: "Bulk, awaiting dispatch, collection booked for later this week"
   type: bulk
-  by: ch_caritas
+  by: ch_harboursteps
   created: -6d@10:00
   purpose: organisation
   people_helped: 60
@@ -640,7 +640,7 @@
 - key: o_bulk_dispatching
   why: "Bulk, dispatching"
   type: bulk
-  by: ch_twghs
+  by: ch_pineterrace
   created: -7d@09:00
   purpose: organisation
   people_helped: 90
@@ -689,7 +689,7 @@
 - key: o_desc_only
   why: "Matched on (Matt Q2): a search word found only in the description, which the row doesn't show"
   type: online-order
-  by: ch_elchk
+  by: ch_tuenmun
   created: -9d@14:00
   purpose: organisation
   people_helped: 3
@@ -703,7 +703,7 @@
 - key: o_client_only
   why: "Matched on (Matt Q2): a client (beneficiary) name — the server matches it; the list payload doesn't carry it"
   type: appointment
-  by: ch_waiji
+  by: ch_meitin
   created: -4d@15:00
   purpose: client
   client: { first_name: "Siu Ming", last_name: "Szeto" }
@@ -734,7 +734,7 @@
 - key: o_fresh_submitted
   why: "L6: submitted an hour ago (after freshen-designed.sh), so not yet late"
   type: appointment
-  by: ch_nursery
+  by: ch_sampans
   created: -2d@09:00
   purpose: organisation
   people_helped: 45
@@ -747,7 +747,7 @@
 - key: o_fresh_processing
   why: "L6: processing since now (after freshen-designed.sh), late only once a 6 pm passes"
   type: appointment
-  by: ch_tinshui
+  by: ch_skyline
   created: -3d@10:00
   purpose: organisation
   people_helped: 25
@@ -760,7 +760,7 @@
 - key: o_fresh_awaiting
   why: "L6: awaiting dispatch, collection booked for tomorrow (after freshen-designed.sh)"
   type: appointment
-  by: ch_lady
+  by: ch_kapok
   created: -5d@10:00
   purpose: organisation
   people_helped: 70
@@ -777,7 +777,7 @@
 - key: o_fresh_dispatching
   why: "L6: dispatching since now (after freshen-designed.sh), late only once a 6 pm passes"
   type: appointment
-  by: ch_hkcys
+  by: ch_lanternhill
   created: -6d@10:00
   purpose: organisation
   people_helped: 12

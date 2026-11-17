@@ -26,14 +26,14 @@ namespace :goodcity do
   end
 
   def organisation_record(organisation_name)
-    OrganisationType.find_by(name: organisation_name) if organisation_name.present?
+    OrganisationType.find_by(name_en: organisation_name) if organisation_name.present?
   end
 
   def country_record(country_name)
-    Country.find_by(name: country_name) if country_name.present?
+    Country.find_by(name_en: country_name) if country_name.present?
   end
 
   def district_record(district_name)
-    District.find_by(name: district_name) if district_name.present?
+    District.find_by(name_en: district_name) if district_name.present?
   end
 end

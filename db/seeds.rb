@@ -229,6 +229,11 @@ storage_types.each do |storage_type|
   StorageType.where(name: storage_type["name"]).first_or_create(storage_type)
 end
 
+# Processing Destinations (production's two; the "process" stock action records one as its source)
+["Processing dept", "Boutique"].each do |name|
+  ProcessingDestination.find_or_create_by(name: name)
+end
+
 # Create PackageCategories
 PackageCategoryImporter.import
 

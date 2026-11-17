@@ -1536,3 +1536,75 @@ VB:
   :length: 60
   :width: 30
   :height: 40
+CBB:
+  :default_packages: CBB
+  :other_packges:
+  :name_en: 'Blanket'
+  :name_zh_tw: '毛毯'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 2121
+HD:
+  :default_packages: HD
+  :other_packges:
+  :name_en: 'Dining items -NON TEXTILE'
+  :name_zh_tw: '飯廳物品-非紡織品'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 427
+HX:
+  :default_packages: HX
+  :other_packges:
+  :name_en: 'Other household items'
+  :name_zh_tw: '其他種類的家具物品'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 170
+HY:
+  :default_packages: HY
+  :other_packges:
+  :name_en: 'Personal care items'
+  :name_zh_tw: '個人護理用品'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 432
+MFW:
+  :default_packages: MFW
+  :other_packges:
+  :name_en: 'Wheelchair'
+  :name_zh_tw: '輪椅'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 2765
+MGA:
+  :default_packages: MGA
+  :other_packges:
+  :name_en: 'First Aid Kits'
+  :name_zh_tw: '急救箱'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 307
+MGS:
+  :default_packages: MGS
+  :other_packges:
+  :name_en: 'MGS	Sharps'
+  :name_zh_tw: '醫療銳器'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 522
+TS:
+  :default_packages: TS
+  :other_packges:
+  :name_en: 'Soft Toys'
+  :name_zh_tw: '軟性玩具'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 522
+VPM:
+  :default_packages: VPM
+  :other_packges:
+  :name_en: 'Multi-function printer, scanner & fax'
+  :name_zh_tw: '打印機,掃描器,傳真機三合一'
+  :other_terms_en:
+  :other_terms_zh_tw: 
+  :default_value_hk_dollar: 672

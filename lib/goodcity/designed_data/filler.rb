@@ -42,7 +42,7 @@ module Goodcity
 
       def sample_package(at: nil, singleton: false, department: nil)
         @n += 1
-        dept = department || ctx.weighted(profile['department_weights'])
+        dept = department || ctx.weighted(department_weights)
         d = profile['departments'].fetch(dept)
         code = code_for(d)
         type = ctx.reference.package_type(code)
@@ -70,6 +70,16 @@ module Goodcity
         end
         spec['weight'] = dimension(dims['weight_kg'], decimals: 1) if dims['weight_kg'] && ctx.chance(dims['weight_presence_rate'].to_f)
         spec
+      end
+
+      # profile.json comes from production, where every code exists. A database seeded from
+      # db/package_types.yml has only a subset, and some departments (Boutique, Building
+      # Fittings) have none of their codes at all: sample only departments this database can
+      # fill. With full production reference data nothing is dropped and sampling is unchanged.
+      def department_weights
+        @department_weights ||= profile['department_weights'].select do |dept, _|
+          profile['departments'].fetch(dept)['codes'].any? { |c| ctx.reference.package_type?(c['code']) }
+        end
       end
 
       def code_for(dept_profile)
@@ -163,7 +173,23 @@ module Goodcity
             else
               []
             end
+          # Decided after the draws above (the RNG sequence, and so the rest of the dataset, is unchanged).
+          s['history'] = [] if stocktake_place?(s['location']) && at >= stocktakes_from
         end
+      end
+
+      # Any quantity action on a package at a stocktake's place marks its counted line dirty, and
+      # applying a stocktake with a dirty line raises. Filler dates shift with the build day, so a
+      # random filler move can land between a stocktake's count and its apply (ST5 on 2026-11-17).
+      # Keep filler history off stocktake places from the first stocktake onwards; the stocktakes
+      # that are MEANT to go stale (ST4 then_move_out) do it themselves.
+      def stocktake_place?(location)
+        @stocktake_places ||= DesignedData.load_yaml('stocktakes').map { |st| st.fetch('place').squish.downcase }.to_set
+        @stocktake_places.include?(location.to_s.squish.downcase)
+      end
+
+      def stocktakes_from
+        @stocktakes_from ||= DesignedData.load_yaml('stocktakes').map { |st| ctx.time(st.fetch('created'), salt: st.fetch('key')) }.min
       end
 
       # --- Sets -------------------------------------------------------------------------
