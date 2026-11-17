@@ -27,10 +27,10 @@ containers:
     storage: Box
     description: "Multi-item box of tested keyboards"
     location: 32 Computers
-    inventoried: -19d@11:00
+    inventoried: "-19d@11:00"
     expect: { in: pallet_computers }
     contents:
-      - { item: keyboards, qty: 10, at: -19d@11:10 }
+      - { item: keyboards, qty: 10, at: "-19d@11:10" }
 
   - key: pallet_computers
     why: "a pallet carrying a box — the box-on-a-pallet case"
@@ -38,11 +38,11 @@ containers:
     storage: Pallet
     description: "Pallet of tested computer equipment, bank office refit"
     location: 32 Computers
-    inventoried: -18d@10:00
+    inventoried: "-18d@10:00"
     expect: { on_hand: 1 }
     contents:
-      - { item: box_keyboards, qty: 1, at: -18d@10:20 }
-      - { item: mini_pcs, qty: 6, at: -18d@10:25 }
+      - { item: box_keyboards, qty: 1, at: "-18d@10:20" }
+      - { item: mini_pcs, qty: 6, at: "-18d@10:25" }
 
   - key: pallet_blankets
     why: "a pallet of soft goods in the bulk room, with loose units of the same item left beside it"
@@ -50,10 +50,10 @@ containers:
     storage: Pallet
     description: "Pallet of sorted household textiles, winter blankets"
     location: 28 Q BulkRm
-    inventoried: -35d@14:00
+    inventoried: "-35d@14:00"
     expect: { on_hand: 1 }
     contents:
-      - { item: wool_blankets, qty: 20, at: -35d@14:30 }
+      - { item: wool_blankets, qty: 20, at: "-35d@14:30" }
 
   - key: box_first_aid
     why: "a medical box whose contents carry expiry dates"
@@ -61,7 +61,7 @@ containers:
     storage: Box
     description: "Multi-item box of sorted medical items, first aid"
     location: PG Medical B
-    inventoried: -50d@15:00
+    inventoried: "-50d@15:00"
     expect: { on_hand: 1 }
     contents:
-      - { item: first_aid_kits, qty: 12, at: -50d@15:20 }
+      - { item: first_aid_kits, qty: 12, at: "-50d@15:20" }

@@ -36,7 +36,7 @@
   photos: 8006
   donor: donor_morgan
   history:
-    - { at: -40d@16:00, message: "Small pull on the back of the left arm, only visible close up. Photographed." }
+    - { at: "-40d@16:00", message: "Small pull on the back of the left arm, only visible close up. Photographed." }
   expect: { on_hand: 1, available: 1, photos: 3, published: true, locations: 1 }
 
 - key: two_seat_sofa
@@ -65,7 +65,7 @@
   dims: [66, 66, 110]
   weight: 12.5
   location: 30 Furniture
-  inventoried: -26d@10:30
+  inventoried: "-26d@10:30"
   published: true
   photos: 8004
   donor: donor_office
@@ -84,11 +84,11 @@
   value: 400
   dims: [66, 66, 110]
   location: 30 Furniture
-  inventoried: -14d@10:00
+  inventoried: "-14d@10:00"
   published: true
   photos: 8004
   history:
-    - { at: -14d@12:00, set: { favourite_image_id: null } }
+    - { at: "-14d@12:00", set: { favourite_image_id: null } }
 
 - key: task_chairs
   why: "a quieter bulk line from the same refit, unpublished"
@@ -100,12 +100,12 @@
   value: 300
   dims: [60, 60, 95]
   location: 30 Furniture
-  inventoried: -26d@10:40
+  inventoried: "-26d@10:40"
   published: false
   photos: 8019
   donor: donor_office
   history:
-    - { at: -2d@15:00, move: 2, to: 28 Q BulkRm, by: stock_admin }  # L1 recents (stock_admin)
+    - { at: "-2d@15:00", move: 2, to: 28 Q BulkRm, by: stock_admin }  # L1 recents (stock_admin)
   expect: { on_hand: 6, published: false }
 
 - key: office_desks_oak
@@ -118,7 +118,7 @@
   value: 900
   dims: [140, 70, 74]
   location: 30 Furniture
-  inventoried: -26d@10:50
+  inventoried: "-26d@10:50"
   published: true
   photos: 8005
   donor: donor_office
@@ -137,7 +137,7 @@
   published: true
   photos: 8020
   history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
-    - { at: -2d@11:00, move: all, to: PG Shed, by: stock_admin }
+    - { at: "-2d@11:00", move: all, to: PG Shed, by: stock_admin }
 
 - key: bookcase_walnut
   why: "two identical bookcases kept in the shed"
@@ -279,7 +279,7 @@
   published: true
   photos: 8025
   history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
-    - { at: -1d@10:30, move: all, to: 28 P2 Electrical, by: stock_admin }
+    - { at: "-1d@10:30", move: all, to: 28 P2 Electrical, by: stock_admin }
 
 - key: fridge_two_door
   why: "designated to an order still in processing — not yet dispatched"
@@ -343,7 +343,7 @@
   dims: [124, 25, 78]
   weight: 14
   location: 32 Incoming
-  inventoried: -1d@15:10
+  inventoried: "-1d@15:10"
   published: false
   photos: 8029
   expect: { photos: 3, published: false }
@@ -379,7 +379,7 @@
   published: true
   history:
     - { at: -60d, publish: false }
-    - { at: -3d@14:00, move: 4, to: SB Shed, by: stock_admin }  # L1 recents (stock_admin)
+    - { at: "-3d@14:00", move: 4, to: SB Shed, by: stock_admin }  # L1 recents (stock_admin)
   expect: { published: false, on_hand: 12 }
 
 # --- Computers --------------------------------------------------------------------
@@ -395,7 +395,7 @@
   dims: [29, 9, 29]
   weight: 4.2
   location: 32 Computers
-  inventoried: -16d@10:00
+  inventoried: "-16d@10:00"
   published: true
   photos: 8001
   max_order_quantity: 4
@@ -427,7 +427,7 @@
   dims: [18, 18, 4]
   weight: 1.2
   location: 32 Computers
-  inventoried: -19d@10:00
+  inventoried: "-19d@10:00"
   published: false
   photos: 8031
   history:
@@ -475,7 +475,7 @@
   dims: [54, 18, 40]
   weight: 3.5
   location: 32 Computers
-  inventoried: -16d@10:20
+  inventoried: "-16d@10:20"
   published: true
   photos: 8003
   donor: donor_office
@@ -494,7 +494,7 @@
   dims: [61, 20, 45]
   weight: 6
   location: 32 Computers
-  inventoried: -16d@10:30
+  inventoried: "-16d@10:30"
   published: true
   photos: 8018
 
@@ -635,7 +635,7 @@
   inventoried: -4d
   published: true
   history:  # one of five moves by the test login stock_admin (Items list L1: its recent locations)
-    - { at: -1d@14:00, move: all, to: 29 Household Annex, by: stock_admin }
+    - { at: "-1d@14:00", move: all, to: 29 Household Annex, by: stock_admin }
 
 - key: p_never_published
   why: "Items review I1 / manifest P3: allow_web_publish NULL (never published) and no photo — the list must still show it, as Private"
@@ -647,9 +647,9 @@
   value: 300
   dims: [124, 66, 90]
   location: 28 HouseHold
-  inventoried: -12d@10:15
+  inventoried: "-12d@10:15"
   history:
-    - { at: -12d@11:00, set: { allow_web_publish: null } }
+    - { at: "-12d@11:00", set: { allow_web_publish: null } }
   expect: { on_hand: 2, available: 2, photos: 0, locations: 1 }
 
 - key: p_case_number
@@ -661,10 +661,10 @@
   qty: 1
   value: 900
   location: 28 HouseHold
-  inventoried: -9d@09:30
+  inventoried: "-9d@09:30"
   published: true
   history:
-    - { at: -9d@10:00, set: { case_number: "64-17" } }
+    - { at: "-9d@10:00", set: { case_number: "64-17" } }
   expect: { on_hand: 1, available: 1 }
 
 - key: p_two_places_mixed
@@ -680,7 +680,7 @@
   inventoried: -6d
   published: true
   history:
-    - { at: -5d@11:00, move: 2, to: 29 Household Annex }
+    - { at: "-5d@11:00", move: 2, to: 29 Household Annex }
   expect: { locations: 2, designated: 1, dispatched: 1 }
 
 - key: soft_toys

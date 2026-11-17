@@ -61,7 +61,7 @@
   description: "Office workstation, desk with matching drawer unit"
   condition: Lightly Used
   grade: B
-  inventoried: -26d@11:30
+  inventoried: "-26d@11:30"
   published: true
   donor: donor_office
   members:
