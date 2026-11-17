@@ -216,7 +216,14 @@ module Api
       end
 
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
-
+      param :location_id, :number, allow_nil: true, desc: <<~DESC
+        Only packages with a packages_locations row at this location id (a package at two places is listed for
+        each). Read-only, for the new stock app's move-stock helper. Unlike `location` (building-area), it can't
+        misparse a name or list the wrong one of two same-named places. A value that isn't a whole number,
+        empty included, is refused with 422 rather than ignored. Packages with no inventory number are left
+        out, as for every search here, so the rows may add up to fewer than the location's packages_count.
+        Without it, every response is unchanged.
+      DESC
       def search_stockit_items
         records = @packages # security
         if params["searchText"].present?
@@ -227,7 +234,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location associated_package_types_for storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
+        params_for_filter = %w[state location location_id associated_package_types_for storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
         records = records.apply_filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,

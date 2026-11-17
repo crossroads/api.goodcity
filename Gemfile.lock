@@ -199,7 +199,6 @@ GEM
     database_cleaner-core (2.0.1)
     date (3.4.1)
     diff-lcs (1.6.1)
-    docile (1.4.1)
     domain_name (0.6.20240107)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
@@ -508,12 +507,6 @@ GEM
       rufus-scheduler (~> 3.2)
       sidekiq (>= 6, < 8)
       tilt (>= 1.4.0, < 3)
-    simplecov (0.22.0)
-      docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-html (0.13.1)
-    simplecov_json_formatter (0.1.4)
     spring (4.3.0)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
@@ -642,7 +635,6 @@ DEPENDENCIES
   shoulda-matchers
   sidekiq (< 8)
   sidekiq-scheduler
-  simplecov
   spring
   spring-commands-rspec
   state_machine

@@ -1,7 +1,5 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-require "simplecov"
-SimpleCov.start
 ENV["RAILS_ENV"] ||= 'test'
 require 'support/env' # Must load our dummy env vars before rails
 require File.expand_path('../config/environment', __dir__)
@@ -13,7 +11,7 @@ require 'paper_trail/frameworks/rspec'
 
 require_relative "support/controller_macros"
 
-WebMock.disable_net_connect!(:allow => "codeclimate.com")
+WebMock.disable_net_connect!
 
 # When running tests using bin/rspec (Spring), the Rails env is preloaded and stored.
 # This means any secrets.yml variables that use ENV data will collect the development

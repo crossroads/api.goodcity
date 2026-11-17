@@ -79,4 +79,7 @@ Rails.application.configure do
     :port  => 1025,
   }
 
+  # allow requests from docker host machine to access the rails server running inside docker container
+  config.hosts << "host.docker.internal"
+
 end

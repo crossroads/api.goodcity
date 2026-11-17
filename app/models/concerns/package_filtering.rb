@@ -39,9 +39,14 @@ module PackageFiltering
     #     (building_name)-(area_name)
     #     28-(All areas)
     #     28-Room1
+    #   location_id
+    #     a location's id: only packages with a packages_locations row there (the move-stock helper, CR-291).
+    #     Unlike `location` it can't misparse a name or pick the wrong one of two same-named places (API-72).
+    #     Absent or nil, the query is exactly what it was before.
     def apply_filter(options={})
       states = (options['state'] || '').strip.split(',') || []
       location = options['location']
+      location_id = options['location_id']
       storage_type_name = options['storage_type_name']
       query = where.not(inventory_number: nil)
       state_filters = states & %w[in_stock received designated dispatched]
@@ -50,6 +55,7 @@ module PackageFiltering
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_loss_states(loss_state_filters) if loss_state_filters.any?
       query = query.filter_by_location(location) if location.present?
+      query = query.filter_by_location_id(location_id) if location_id.present?
       query = query.filter_by_storage_type(storage_type_name) if storage_type_name
       query = query.filter_by_package_types(options["associated_package_types_for"]) if options['associated_package_types_for'].present?
       publish_filters = states & %w[published private]
@@ -116,6 +122,11 @@ module PackageFiltering
       else
         where(nil) # noop
       end
+    end
+
+    # A subquery rather than a join, so it neither duplicates rows nor collides with filter_by_location's join.
+    def filter_by_location_id(location_id)
+      where(id: PackagesLocation.where(location_id: location_id).select(:package_id))
     end
 
     private

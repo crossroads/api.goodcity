@@ -6,7 +6,6 @@ version: 2.1
 # AZURE_SP_TENANT    - tenant of servie principal
 # AZURE_SUBSCRIPTION - name of Azure subscription with the container registry
 # AZURE_ACR_REGISTRY - name of Azure Container Registry
-# CC_TEST_REPORTER_ID   - for reporting code climate statistics
 # GITHUB_TOKEN - token for accessing private repos. See https://github.com/settings/tokens
 
 aliases:

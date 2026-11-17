@@ -1199,6 +1199,117 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
+  describe "Items at one location, by id (search_stockit_items?location_id=, CR-291)" do
+    before { generate_and_set_token(user) }
+
+    let!(:first_twin) { Location.create!(building: 'ZZ', area: 'Twin') }
+    let!(:second_twin) { Location.create!(building: 'ZZ', area: 'Twin') }
+    let(:elsewhere) { create :location, area: 'area3' }
+    let!(:at_first) { create(:package, :with_inventory_number, state: 'received', received_quantity: 2) }
+    let!(:at_second) { create(:package, :with_inventory_number, state: 'received', received_quantity: 3) }
+    let!(:at_both) { create(:package, :with_inventory_number, state: 'received', received_quantity: 4) }
+    let!(:not_here) { create(:package, :with_inventory_number, state: 'received', received_quantity: 1) }
+    let(:ids) { subject['items'].map { |i| i['id'] } }
+
+    before do
+      User.current_user = user
+      initialize_inventory(at_first, location: first_twin)
+      initialize_inventory(at_second, at_both, location: second_twin)
+      initialize_inventory(not_here, location: elsewhere)
+      Package::Operations.move(1, at_both, from: second_twin.id, to: first_twin.id)
+    end
+
+    it 'lists exactly the packages held at that location id, newest id first' do
+      get :search_stockit_items, params: { location_id: second_twin.id.to_s, per_page: 50, page: 1 }
+      expect(response.status).to eq(200)
+      expect(ids).to eq([at_both.id, at_second.id])
+      expect(subject['meta']).to eq('total_pages' => 1, 'search' => nil)
+    end
+
+    it 'reaches the second of two same-named locations, where the name filter lists the first (API-72)' do
+      get :search_stockit_items, params: { location: 'ZZ-Twin' }
+      expect(ids).to match_array([at_first.id, at_both.id])
+      get :search_stockit_items, params: { location_id: second_twin.id.to_s }
+      expect(JSON.parse(response.body)['items'].map { |i| i['id'] }).to match_array([at_second.id, at_both.id])
+    end
+
+    it 'returns each package with its packages_locations rows, so a caller can read the quantity at that place' do
+      get :search_stockit_items, params: { location_id: first_twin.id.to_s }
+      rows = subject['packages_locations'].select { |r| r['package_id'] == at_both.id }
+      expect(rows.map { |r| [r['location_id'], r['quantity']] }).to match_array([[first_twin.id, 1], [second_twin.id, 3]])
+    end
+
+    it 'pages by per_page, with total_pages in meta' do
+      get :search_stockit_items, params: { location_id: second_twin.id.to_s, per_page: 1, page: 2 }
+      expect(ids).to eq([at_second.id])
+      expect(subject['meta']['total_pages']).to eq(2)
+    end
+
+    it 'is an empty list for a location id that holds nothing or does not exist' do
+      get :search_stockit_items, params: { location_id: (Location.maximum(:id) + 1000).to_s }
+      expect(response.status).to eq(200)
+      expect(subject['items']).to eq([])
+    end
+
+    it 'refuses a location_id that is not a whole number with 422, rather than listing everything' do
+      ['abc', '12abc', '-1', '1.5', ''].each do |bad|
+        get :search_stockit_items, params: { location_id: bad }
+        expect(response.status).to eq(422), "location_id=#{bad.inspect} gave #{response.status}"
+        expect(JSON.parse(response.body)['error']).to include('location_id')
+      end
+    end
+
+    it 'needs the same sign-in as every other search_stockit_items call' do
+      request.headers['Authorization'] = nil
+      get :search_stockit_items, params: { location_id: second_twin.id.to_s }
+      expect(response.status).to eq(401)
+    end
+
+    # The legacy stock app never sends location_id. Every body it gets must be the bytes it got before:
+    # the expected body is built by the pre-CR-291 action, verbatim, over the same data.
+    describe 'legacy calls without location_id' do
+      def legacy_body(params)
+        records = Package.all
+        if params[:searchText].present?
+          records = records.search(search_text: params[:searchText], item_id: nil, restrict_multi_quantity: nil, with_inventory_no: true)
+        end
+        filter = %w[state location associated_package_types_for storage_type_name].each_with_object({}) { |k, h| h[k] = params[k.to_sym].presence }
+        q = records.where.not(inventory_number: nil)
+        states = (filter['state'] || '').strip.split(',')
+        q = q.where_states(states & %w[in_stock received designated dispatched]) if (states & %w[in_stock received designated dispatched]).any?
+        q = q.filter_by_location(filter['location']) if filter['location'].present?
+        q = q.distinct.order("packages.id desc").page(params[:page]).per(params[:per_page] || DEFAULT_SEARCH_COUNT)
+        items = ActiveModel::ArraySerializer.new(q, each_serializer: Api::V1::StockitItemSerializer, root: "items",
+          include_order: false, include_packages: false, include_orders_packages: true,
+          include_packages_locations: true, include_package_set: true, include_images: true).as_json
+        { meta: { total_pages: q.total_pages, search: params[:searchText] } }.merge(items).to_json
+      end
+
+      [
+        { location: 'ZZ-Twin' },
+        { location: 'ZZ-(All areas)' },
+        { location: 'ZZ-Twin', state: 'in_stock' },
+        { location: 'ZZ-Twin', per_page: 1, page: 2 },
+        { searchText: '' },
+        { state: 'received' },
+        {}
+      ].each do |params|
+        it "answers #{params.inspect} byte-for-byte as before" do
+          get :search_stockit_items, params: params
+          expect(response.status).to eq(200)
+          expect(response.body).to eq(legacy_body(params))
+        end
+      end
+
+      it 'searchText with the name filter is byte-for-byte as before' do
+        params = { searchText: at_first.inventory_number, location: 'ZZ-Twin' }
+        get :search_stockit_items, params: params
+        expect(subject['items'].map { |i| i['id'] }).to eq([at_first.id])
+        expect(response.body).to eq(legacy_body(params))
+      end
+    end
+  end
+
   context "box/pallet" do
     let(:user) { create(:user, :supervisor, :with_can_manage_packages_permission) }
     let(:box_storage) { create(:storage_type, :with_box) }
