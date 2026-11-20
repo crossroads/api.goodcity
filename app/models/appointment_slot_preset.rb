@@ -12,18 +12,18 @@ class AppointmentSlotPreset < ApplicationRecord
 
   after_save :push_changes
   after_destroy :push_changes
-  push_targets [ Channel::STOCK_CHANNEL ]
+  push_targets [Channel::STOCK_CHANNEL]
 
   private
 
   def no_conflict
     conflicts = AppointmentSlotPreset
-      .where({ day: day, hours: hours, minutes: minutes })
-      .where.not({ id: self.id })
-      .count
+                .where({ day: day, hours: hours, minutes: minutes })
+                .where.not({ id: self.id })
+                .count
 
-    if conflicts.positive?
-      errors.add(:base, I18n.t("appointment_slots.already_exists"))
-    end
+    return unless conflicts.positive?
+
+    errors.add(:base, I18n.t("appointment_slots.already_exists"))
   end
 end
