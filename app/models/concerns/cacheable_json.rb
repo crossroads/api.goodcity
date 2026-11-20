@@ -13,11 +13,16 @@ module CacheableJson
 
   # Methods defined here are going to extend the class, not the instance
   module ClassMethods
+    # The key moves whenever the cached list could change: MAX(updated_at) catches inserts and updates,
+    # and the row count catches removals (destroy, or a callback-free delete/delete_all), which
+    # leave MAX(updated_at) unchanged unless the removed row was the newest. Both are computed in the
+    # caller's scope (e.g. PackageType.visible), so a scoped list keys on its own rows.
     def cache_key(opts = {})
       root = opts[:root] || name.underscore.pluralize
       key = "#{name.underscore}/#{I18n.locale}/#{root}"
       max = maximum(:updated_at)
       key << "/#{max.utc.to_s(:nsec)}" unless max.blank?
+      key << "/n#{count(:all)}"
       key
     end
 

@@ -429,7 +429,7 @@ module Api
 
       def location_abilities
         if (can_manage_locations? || @api_user)
-          can %i[index create destroy], Location
+          can %i[index create update destroy], Location
         end
       end
 
