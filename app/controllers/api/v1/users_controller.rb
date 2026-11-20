@@ -3,8 +3,13 @@ require "goodcity/user_utils"
 module Api
   module V1
     class UsersController < Api::V1::ApiController
+      BROWSE_DEFAULT_PER_PAGE = 50
+      BROWSE_MAX_PER_PAGE = 100
+
       load_and_authorize_resource :user, parent: false
       skip_load_resource :user, only: [:orders_count]
+      # browse authorises itself as the list does (index) and reads only the users the list may read
+      skip_load_and_authorize_resource :user, only: [:browse]
 
       resource_description do
         short 'List Users'
@@ -28,6 +33,32 @@ module Api
         @users = @users.with_roles(params[:roles]) if params[:roles].present?
         @users = @users.where(id: ids_param) if ids_param.present?
         render json: @users.with_eager_loading, each_serializer: serializer
+      end
+
+      api :GET, '/v1/users/browse', 'Every account the caller may list, a page at a time'
+      param :page, String, desc: 'From 1 (default 1)'
+      param :per_page, String, desc: 'Rows a page: default 50, at most 100'
+      param :roles, Array, desc: 'Only people holding one of these roles now (as the list reads it)'
+      description <<-EOS
+        A new route: no existing client calls it, and a server without it answers 404 (it would look for a user
+        whose id is "browse"), so a client can never be handed the unpaged list by mistake.
+        Ordered by last name, first name and id. Each row is slim: name, title, disabled, created_at, and the ids of
+        the person's role grants and memberships, with `user_roles` (role and expires_at), `roles`,
+        `organisations_users` (status) and `organisations` (names) sideloaded. No mobile, email, address or
+        sign-in times: those stay on GET /users/:id. `meta` has page, per_page, total_count and total_pages.
+        Who may call it: whoever may call GET /users.
+      EOS
+      def browse
+        authorize! :index, User
+        users = User.accessible_by(current_ability, :index).exclude_system_users
+        users = users.with_roles(params[:roles]) if params[:roles].present?
+        # (a person holding two of the named roles is joined twice by with_roles: each appears once here)
+        records = User.where(id: users.select(:id))
+                      .includes(user_roles: :role, organisations_users: :organisation)
+                      .order(Arel.sql('LOWER(users.last_name) ASC NULLS LAST, LOWER(users.first_name) ASC NULLS LAST, users.id ASC'))
+                      .page(params['page'])
+                      .per(browse_per_page)
+        render json: browse_json(records)
       end
 
       api :POST, '/v1/users', 'Create user'
@@ -138,6 +169,36 @@ module Api
           root: 'users'
         ).as_json
         render json: { 'meta': { 'search': params['searchText'] } }.merge(data)
+      end
+
+      def browse_per_page
+        asked = params['per_page'].to_i
+        asked < 1 ? BROWSE_DEFAULT_PER_PAGE : [asked, BROWSE_MAX_PER_PAGE].min
+      end
+
+      # The slim rows of the paged list, built from the preloaded associations (a fixed handful of queries a page,
+      # whatever its size: no serializer `pluck`s per row).
+      def browse_json(records)
+        users = records.to_a
+        grants = users.flat_map(&:user_roles)
+        memberships = users.flat_map(&:organisations_users)
+        {
+          meta: { page: records.current_page, per_page: records.limit_value,
+                  total_count: records.total_count, total_pages: records.total_pages },
+          users: users.map do |u|
+            { id: u.id, first_name: u.first_name, last_name: u.last_name, title: u.title, disabled: u.disabled,
+              created_at: u.created_at, user_role_ids: u.user_roles.map(&:id),
+              organisations_user_ids: u.organisations_users.map(&:id) }
+          end,
+          user_roles: grants.map { |g| { id: g.id, user_id: g.user_id, role_id: g.role_id, expires_at: g.expires_at } },
+          roles: grants.map(&:role).compact.uniq.map { |r| { id: r.id, name: r.name, level: r.level } },
+          organisations_users: memberships.map do |m|
+            { id: m.id, user_id: m.user_id, organisation_id: m.organisation_id, status: m.status }
+          end,
+          organisations: memberships.map(&:organisation).compact.uniq.map do |o|
+            { id: o.id, name_en: o.name_en, name_zh_tw: o.name_zh_tw }
+          end
+        }
       end
 
       def user_params

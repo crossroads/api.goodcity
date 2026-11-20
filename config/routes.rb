@@ -144,6 +144,7 @@ Rails.application.routes.draw do
 
         collection do
           put :merge_users
+          get :browse
         end
       end
       resources :addresses, only: [:create, :show]
